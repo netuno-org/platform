@@ -48,7 +48,7 @@ Netuno is made with Java running over GraalVM to easily web application developm
 
 Permission to execute:
 
-`chmod +x setup-workspace.sh`
+`chmod +x setup.sh`
 
 Run the setup script:
 
