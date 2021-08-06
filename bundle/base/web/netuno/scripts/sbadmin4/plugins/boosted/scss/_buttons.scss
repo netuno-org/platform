@@ -1,0 +1,198 @@
+// stylelint-disable selector-no-qualifying-type
+
+//
+// DBScriptsBase styles
+//
+
+.btn {
+  display: inline-block;
+  font-weight: $btn-font-weight;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: $btn-border-width solid transparent;
+  @include button-size($btn-padding-y, $btn-padding-x, $font-size-base, $btn-line-height, $btn-border-radius);
+  @include transition($btn-transition);
+
+  // Share hover and focus styles
+  @include hover-focus {
+    text-decoration: none;
+  }
+
+  &:focus,
+  &.focus {
+    outline: 0;
+    box-shadow: $btn-focus-box-shadow;
+  }
+
+  // Disabled comes first so active can properly restyle
+  &.disabled,
+  &:disabled {
+    opacity: $btn-disabled-opacity;
+    @include box-shadow(none);
+  }
+
+  // Opinionated: add "hand" cursor to non-disabled .btn elements
+  &:not(:disabled):not(.disabled) {
+    cursor: pointer;
+  }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active {
+    @include box-shadow($btn-active-box-shadow);
+
+    &:focus {
+      @include box-shadow($btn-focus-box-shadow, $btn-active-box-shadow);
+    }
+  }
+}
+
+// Boosted mod
+a.btn {
+  text-decoration: none; // Boosted mod remove underline for a.btn
+}
+// End mod
+
+// Future-proof disabling of clicks on `<a>` elements
+a.btn.disabled,
+fieldset:disabled a.btn {
+  pointer-events: none;
+}
+
+
+//
+// Alternate buttons
+//
+
+// boosted mod custom buttons
+// @mixin button-variant($background, $border, $hover-background, $hover-border, $active-background, $active-border, $disabled-background, $disabled-border, $disabled-color, $color) {
+.btn-primary,
+.btn-warning {
+  @include button-variant(theme-color("primary"), theme-color("primary"), $black, $black, $white, $black, $gray-500, $gray-500, $white, $white);
+  &.btn-inverse {
+    @include button-variant(theme-color("primary"), theme-color("primary"), $white, $white, $black, $white, $gray-700, $gray-700, $black, $white);
+  }
+}
+.btn-secondary,
+.btn-light {
+  @include button-variant(transparent, $black, $black, $black, theme-color("primary"), theme-color("primary"), transparent, $gray-500, $gray-500, $black);
+  &.btn-inverse {
+    @include button-variant($white, $white, $black, $white, theme-color("primary"), theme-color("primary"), $gray-700, $gray-700, $black, $black);
+  }
+}
+.btn-success {
+  @include button-variant(theme-color("success"), theme-color("success"), $black, $black, theme-color("primary"), theme-color("primary"), $gray-500, $gray-500, $white, $black);
+  &.btn-inverse {
+    @include button-variant(theme-color("success"), theme-color("success"), $white, $white, theme-color("primary"), theme-color("primary"), $gray-700, $gray-700, $black, $black);
+  }
+}
+.btn-info,
+.btn-dark {
+  @include button-variant($black, $black, $white, $black, theme-color("primary"), theme-color("primary"), $gray-500, $gray-500, $white, $white);
+  &.btn-inverse {
+    @include button-variant(transparent, $white, $white, $white, theme-color("primary"), theme-color("primary"), transparent, $gray-700, $gray-700, $white);
+  }
+}
+.btn-danger {
+  @include button-variant(theme-color("danger"), theme-color("danger"), $black, $black, theme-color("primary"), theme-color("primary"), $gray-500, $gray-500, $white);
+  &.btn-inverse {
+    @include button-variant(theme-color("danger"), theme-color("danger"), $white, $white, theme-color("primary"), theme-color("primary"), $gray-700, $gray-700, $black);
+  }
+}
+
+// Boosted mod custom outline buttons values
+@each $color, $value in $theme-colors {
+  .btn-outline-#{$color} {
+    @if $color == "light" {
+      @include button-outline-variant($value, $gray-900);
+    } @else {
+      @if $color == "warning" {
+        @include button-outline-variant(theme-color("primary"), $black);
+      } @else {
+        @if $color == "info" {
+          @include button-outline-variant(theme-color("secondary"), $black);
+        } @else {
+          @include button-outline-variant($value, $black);
+        }
+      }
+    }
+  }
+}
+
+
+//
+// Link buttons
+//
+
+// Make a button look and behave like a link
+.btn-link {
+  // font-weight: $font-weight-normal; // Boosted mod font-weight stay bold
+  color: $link-color;
+  background-color: transparent;
+
+  // Boosted mod
+  &.btn-inverse {
+    color: #fff;
+  }
+  // end mod
+
+  @include hover {
+    color: $link-hover-color;
+    text-decoration: $link-hover-decoration;
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  &:focus,
+  &.focus {
+    text-decoration: $link-hover-decoration;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: $btn-link-disabled-color;
+    pointer-events: none;
+  }
+
+  // No need for an active state here
+}
+
+
+//
+// Button Sizes
+//
+
+.btn-lg {
+  @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $font-size-lg, $btn-line-height-lg, $btn-border-radius-lg);
+}
+
+.btn-sm {
+  @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $font-size-sm, $btn-line-height-sm, $btn-border-radius-sm);
+}
+
+
+//
+// Block button
+//
+
+.btn-block {
+  display: block;
+  width: 100%;
+
+  // Vertically space out multiple block buttons
+  + .btn-block {
+    margin-top: $btn-block-spacing-y;
+  }
+}
+
+// Specificity overrides
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  &.btn-block {
+    width: 100%;
+  }
+}

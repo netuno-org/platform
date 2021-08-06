@@ -1,0 +1,33 @@
+<button id="netuno-form-_{config=netuno_form_name}-edit-delete-_{util=requestuuid}"
+        type="button"
+        class="btn btn-link"
+        data-toggle="confirmation"
+        data-btn-ok-label="_{&lang=netuno.form.button.yes}"
+        data-btn-ok-class="btn-danger"
+        data-btn-ok-icon="fa fa-trash"
+        data-btn-cancel-label="_{&lang=netuno.form.button.no}"
+        data-btn-cancel-class="btn-default"
+        data-btn-cancel-icon="fa fa-check"
+        data-title="_{&data=displayname}"
+        data-content="_{&lang=netuno.form.button.delete_confirm}">
+    <span class="text-danger">
+        <i class="fa fa-trash"></i> _{lang=netuno.form.button.delete}
+    </span>
+</button>
+
+<script>
+    (function () {
+        if (typeof $ !== 'undefined') {
+            var button = $('#netuno-form-_{config=netuno_form_name}-edit-delete-_{util=requestuuid}');
+            button.confirmation({
+                rootSelector: '#netuno-form-_{config=netuno_form_name}-edit-delete-_{util=requestuuid}',
+                container: button.parents('[netuno-form-edit]'),
+                title: null,
+                singleton: true,
+                onConfirm: function () {
+                    netuno.deleteFormEdit(button);
+                }
+            });
+        }
+    })();
+</script>

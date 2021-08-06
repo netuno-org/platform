@@ -1,0 +1,83 @@
+// o-scroll-up
+//
+//
+
+.o-scroll-up {
+  .o-scroll-up-icon {
+    &::before {
+      font-family: icon-orange, sans-serif;
+      font-size: 1.25rem;
+      line-height: 2;
+      text-align: center;
+      content: "\e93f";
+    }
+    align-items: center;
+    justify-content: center;
+    float: right;
+    width: $o-scroll-up-width;
+    height: $o-scroll-up-height;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    background-color: $gray-700;
+    opacity: .8;
+    transform: rotate(90deg);
+  }
+
+  position: fixed;
+  right: 0;
+  bottom: 2.5rem;
+  z-index: $zindex-o-scroll-up;
+  display: none;
+  // put a safety space between the right of the screen and the scroll link
+  @each $breakpoint, $container-margin in $container-fluid-margin-widths {
+    @include media-breakpoint-up($breakpoint) {
+      right: $container-margin;
+    }
+  }
+  @include media-breakpoint-up(xs) {
+    bottom: .25rem;
+  }
+  @include media-breakpoint-up(sm) {
+    bottom: .375rem;
+  }
+  @include media-breakpoint-up(md) {
+    bottom: .75rem;
+  }
+  @include media-breakpoint-up(lg) {
+    bottom: 2rem;
+  }
+  @include media-breakpoint-up(xl) {
+    bottom: 2.5rem;
+  }
+  @include media-breakpoint-up(xxl) {
+    bottom: 3.75rem;
+  }
+
+  .o-scroll-up-text {
+    display: inline-block;
+    padding: (($o-scroll-up-height - 1.25) / 2) .625rem;
+    font-weight: $font-weight-bold;
+    background-color: #fff;
+    opacity: .8;
+  }
+  // custom class to allow a fixed position
+  &.static {
+    position: static;
+    z-index: auto;
+    display: inline;
+    float: left;
+    .o-scroll-up-text {
+      float: left;
+    }
+    .o-scroll-up-icon {
+      position: relative;
+      display: inline-block;
+      float: none;
+    }
+  }
+
+  @include hover-focus {
+    color: $primary;
+  }
+}

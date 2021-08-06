@@ -1,0 +1,85 @@
+/*
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.netuno.tritao;
+
+import java.util.List;
+
+import org.netuno.proteu.Proteu;
+import org.netuno.psamata.Values;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.util.Rule;
+import org.netuno.tritao.util.TemplateBuilder;
+
+/**
+ * Report Builder Service
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
+public class ReportBuilder {
+	public static void _main(Proteu proteu, Hili hili) throws Exception {
+		if (!Auth.isAuthenticated(proteu, hili, Auth.Type.SESSION, true)) {
+            return;
+        }
+        proteu.getRequestAll().set("report", "true");
+
+        Values rowTable = null;
+        String tableId = proteu.getRequestAll().getString("netuno_report_id");
+        String tableUid = proteu.getRequestAll().getString("netuno_report_uid");
+        String tableName = proteu.getRequestAll().getString("netuno_report_name");
+
+        if (tableId.isEmpty() && !tableName.isEmpty()) {
+            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable("", tableName);
+            if (rsTables.size() == 1) {
+                rowTable = rsTables.get(0);
+                tableId = rsTables.get(0).getString("id");
+            }
+        } else if (!tableUid.isEmpty()) {
+            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable("", "", tableUid);
+            if (rsTables.size() == 1) {
+                rowTable = rsTables.get(0);
+                tableId = rsTables.get(0).getString("id");
+            } else {
+                return;
+            }
+        } else if (!tableId.isEmpty()) {
+            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable(tableId);
+            if (rsTables.size() == 1) {
+                rowTable = rsTables.get(0);
+            }
+        }
+        if (rowTable == null) {
+            return;
+        }
+		if (!Rule.getRule(proteu, hili, tableId).haveAccess()) {
+            return;
+        }
+
+        if (rowTable != null) {
+            proteu.getRequestAll().set("netuno_table_id", tableId);
+            proteu.getRequestAll().set("netuno_table_uid", rowTable.getString("uid"));
+            proteu.getRequestAll().set("netuno_report_id", tableId);
+            proteu.getRequestAll().set("netuno_report_uid", rowTable.getString("uid"));
+            proteu.getConfig().set("netuno_report", "true");
+            proteu.getConfig().set("_report", "true");
+            tableName = rowTable.getString("name");
+            proteu.getConfig().set("netuno_report_name", tableName);
+            proteu.getConfig().set("_report_name", tableName);
+            TemplateBuilder.outputReport(proteu, hili, tableName, rowTable);
+        }
+	}
+}

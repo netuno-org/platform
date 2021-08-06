@@ -1,0 +1,40 @@
+<div class="row netuno-com-datetime">
+    <div class="col-sm-7">
+        <div class="input-group date" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-date-_{util=requestuuid}_" style="position: relative;">
+            <input type="text" class="form-control" name="_{data=name}___date" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-date-_{util=requestuuid}" value="_{data=com.date.value}" maxlength="10" validation="_{data=com.datetime.validation} date" netuno-type="date" />
+            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="input-group clockpicker" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}_">
+            <input type="text" class="form-control" name="_{data=name}___time" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}" value="_{data=com.time.minutes.value}" maxlength="5" validation="_{data=com.datetime.validation} time" netuno-type="time">
+            <span class="input-group-addon">
+                <span class="fa fa-clock-o"></span>
+            </span>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="_{data=name}" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}" value="_{data=com.datetime.value}" />
+<script type="text/javascript">
+    (function () {
+        if (typeof $ !== 'undefined') {
+            $('#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-date-_{util=requestuuid}').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }).on('focus', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            netuno.com.date.load("_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-date-_{util=requestuuid}", "_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-date-_{util=requestuuid}_", function () {
+                var valueDate = $('#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-date-_{util=requestuuid}').val();
+                var valueTime = $('#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}').val();
+                $("#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}").val(valueDate + ' ' + valueTime + ':00');
+            });
+            netuno.com.time.load("_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}", "_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}_", function () {
+                var valueDate = $('#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-date-_{util=requestuuid}').val();
+                var valueTime = $('#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}').val();
+                $("#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}").val(valueDate + ' ' + valueTime + ':00');
+            });
+        }
+    })();
+</script>

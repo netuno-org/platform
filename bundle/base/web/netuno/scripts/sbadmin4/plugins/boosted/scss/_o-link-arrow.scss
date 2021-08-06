@@ -1,0 +1,46 @@
+//
+// o-link-arrow
+// --------------------------------------------------
+
+
+.o-link-arrow {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  text-decoration: none;
+
+  &::after {
+    padding: $o-link-arrow-separator-padding-vertical $o-link-arrow-separator-padding-horizontal;//$o-link-arrow-separator-padding-vertical $o-link-arrow-separator-padding-horizontal;
+    font-family: icon-orange, sans-serif;
+    font-size: $o-link-arrow-separator-size;
+    color: $o-link-arrow-color;
+    content: "\e93e"; // Unicode space added since inline-block means non-collapsing white-space
+  }
+  &:hover,
+  &:focus {
+    &::after {
+      color: $link-hover-color;
+      text-decoration: $link-hover-decoration;
+    }
+  }
+  // previous link
+  &.back {
+    &::after {
+      padding: 0;
+      content: ""; // Unicode space added since inline-block means non-collapsing white-space
+    }
+    &::before {
+      padding: $o-link-arrow-separator-padding-vertical $o-link-arrow-separator-padding-horizontal $o-link-arrow-separator-padding-vertical 0;//$o-link-arrow-separator-padding-vertical $o-link-arrow-separator-padding-horizontal;
+      font-family: icon-orange, sans-serif;
+      font-size: $o-link-arrow-separator-size;
+      color: $o-link-arrow-color;
+      content: "\e93f"; // Unicode space added since inline-block means non-collapsing white-space
+    }
+    &:hover,
+    &:focus {
+      &::before {
+        color: $link-hover-color;
+        text-decoration: $link-hover-decoration;
+      }
+    }
+  }
+}

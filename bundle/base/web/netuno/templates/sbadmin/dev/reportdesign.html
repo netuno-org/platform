@@ -1,0 +1,287 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">
+      <i class="fa fa-edit"></i> _{&lang=netuno.dev.reportdesign.title} <span class="badge badge-warning">_{&data=table.displayname}</span>
+
+      <!-- <button id="buttonReportDesign__{data=table.name}_new" type="button" class="btn btn-default btn-action">
+        Limpar campos
+      </button> -->
+    </h1>
+    <ol class="breadcrumb">
+      <li>
+        <i class="fa fa-edit"></i> _{&lang=netuno.menu.reports}
+      </li>
+      <li>
+        _{&data=table.displayname}
+      </li>
+    </ol>
+  </div>
+</div>
+
+<form id="reportDesign__{data=table.uid}" name="reportDesign__{data=table.name}" method="post" action="ReportDesign_{netuno-config=extension}?netuno_table_uid=_{data=table.uid}">
+  <input type="hidden" name="execute" id="fieldReportDesign__{data=table.name}_execute" value=""/>
+  <input type="hidden" name="copy" id="fieldReportDesign__{data=table.name}_copy" value="0"/>
+  <div class="row netuno_form">
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="col-xs-8">
+          <div class="form-group">
+            <div class="form-group">
+              <h2>_{&lang=netuno.dev.reportdesign.label.edit_existing}</h2>
+              <p>
+                <select class="form-control" id="fieldReportDesign__{data=table.name}_uid" name="uid">
+                  <option value="">_{&lang=netuno.dev.reportdesign.label.creating_new}</option>
+                  _{data=field.items}
+                </select>
+              </p>
+              <p>
+                <button id="buttonReportDesign__{data=table.name}_new" type="button" class="btn btn-default">
+                  _{&lang=netuno.dev.reportdesign.label.creating_new}
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-4">
+          <div class="form-group">
+            <h2>_{&lang=netuno.dev.reportdesign.label.clone_existing_field}</h2>
+            <button id="buttonReportDesign__{data=table.name}_copy" type="button" class="btn btn-default">
+              <i class="fa fa-copy"></i> Clonar
+            </button>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="sub-title">
+            <h2>_{&lang=netuno.dev.reportdesign.label.add_new_field}</h2>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="fieldReportDesign__{data=table.name}_displayName">* _{&lang=netuno.dev.reportdesign.label.displayname}</label>
+            <input class="form-control" type="text" id="fieldReportDesign__{data=table.name}_displayName" name="displayname" value="_{&data=displayname.value}"
+              size="40" validation="required">
+          </div>
+          <div class="form-group">
+            <label for="fieldReportDesign__{data=table.name}_name">* _{&lang=netuno.dev.reportdesign.label.name}</label>
+            <input class="form-control" type="text" id="fieldReportDesign__{data=table.name}_name" name="name" value="_{&data=name.value}" size="40" validation="required sqlname">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label>_{&lang=netuno.dev.reportdesign.label.notnull} </label><br>
+                <input type="checkbox" id="fieldReportDesign__{data=table.name}_notNull" name="notnull" value="true"_{data=notnull.checked}/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="fieldReportDesign__{data=table.name}_type">_{&lang=netuno.dev.reportdesign.label.type}</label>
+            <select class="form-control" id="fieldReportDesign__{data=table.name}_type" name="type" validation="notzero">
+              <option value="0"></option>
+              _{data=type.items}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="row">
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_x">_{&lang=netuno.dev.reportdesign.label.x}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_x" name="x" value="_{data=x.value}" size="2" maxlength="2" validation="required number">
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_y">_{&lang=netuno.dev.reportdesign.label.y}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_y" name="y" value="_{data=y.value}" size="2" maxlength="2" validation="required number">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="more-options">
+        <button class="btn btn-link btn-plus" type="button" data-toggle="collapse" data-target="#fieldReportDesign__{data=table.name}___{util=requestuuid}_collapseMore" aria-expanded="false"
+          aria-controls="fieldReportDesign__{data=table.name}___{util=requestuuid}_collapseMore">
+          <span class="text-primary">
+            <i class="fa fa-plus"></i> _{&lang=netuno.dev.reportdesign.label.view_more_options}
+          </span>
+        </button>
+
+        <div class="collapse" id="fieldReportDesign__{data=table.name}___{util=requestuuid}_collapseMore">
+          <div class="row">
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_width">_{&lang=netuno.dev.reportdesign.label.width}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_width" name="width" value="_{data=width.value}" size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_height">_{&lang=netuno.dev.reportdesign.label.height}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_height" name="height" value="_{data=height.value}" size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_max">_{&lang=netuno.dev.reportdesign.label.max}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_max" name="max" value="_{data=max.value}" size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_min">_{&lang=netuno.dev.reportdesign.label.min}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_min" name="min" value="_{data=min.value}" size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_tdWidth">_{&lang=netuno.dev.reportdesign.label.tdwidth}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_tdWidth" name="tdwidth" value="_{data=tdwidth.value}" size="2" maxlength="3">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_tdHeight">_{&lang=netuno.dev.reportdesign.label.tdheight}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_tdHeight" name="tdheight" value="_{data=tdheight.value}" size="2" maxlength="3">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_colSpan">_{&lang=netuno.dev.reportdesign.label.colspan}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_colSpan" name="colspan" value="_{data=colspan.value}" size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_rowSpan">_{&lang=netuno.dev.reportdesign.label.rowspan}</label>
+                <input type="text" class="form-control" id="fieldReportDesign__{data=table.name}_rowSpan" name="rowspan" value="_{data=rowspan.value}" size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_userView">_{&lang=netuno.dev.reportdesign.label.user.view}</label>
+                <select class="form-control" name="view_user" id="fieldReportDesign__{data=table.name}_userView">
+                  <option value="0"_{data=view.user.all.selected}>_{&lang=netuno.dev.reportdesign.label.user.all}</option>
+                  <option value="-1"_{data=view.user.administrator.selected}>_{&lang=netuno.dev.reportdesign.label.user.administrator}</option>
+                  <option value="-2"_{data=view.user.developer.selected}>_{&lang=netuno.dev.reportdesign.label.user.developer}</option>
+                  _{data=view.user.options}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6 col-xs-6">
+              <div class="form-group">
+                <label for="fieldReportDesign__{data=table.name}_groupView">_{&lang=netuno.dev.reportdesign.label.group.view}</label>
+                <select class="form-control" name="view_group" id="fieldReportDesign__{data=table.name}_groupView">
+                  <option value="0"_{data=view.group.all.selected}>_{&lang=netuno.dev.reportdesign.label.group.all}</option>
+                  <option value="-1"_{data=view.group.administrator.selected}>_{&lang=netuno.dev.reportdesign.label.group.administrator}</option>
+                  <option value="-2"_{data=view.group.developer.selected}>_{&lang=netuno.dev.reportdesign.label.group.developer}</option>
+                  _{data=view.group.options}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="fieldReportDesign__{data=table.name}_componentConfiguration"></div>
+    </div>
+  </div>
+</form>
+<div class="buttons">
+  <button id="buttonReportDesign__{data=table.name}_save" type="button" class="btn btn-primary">
+    <i class="fa fa-check"></i> _{&lang=netuno.form.button.save}
+  </button>
+  <button id="buttonReportDesign__{data=table.name}_clear" type="button" class="btn btn-default">
+    _{&lang=netuno.dev.reportdesign.button.clear_fields}
+  </button>
+  <button id="buttonReportDesign__{data=table.name}_delete" type="button" class="btn btn-link"  data-toggle="modal" data-target="#modalReportDesign__{data=table.name}_delete">
+    <span class="text-danger">
+      <i class="fa fa-remove"></i> _{&lang=netuno.form.button.delete}
+    </span>
+  </button>
+</div>
+
+<div id="modalReportDesign__{data=table.name}_delete" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{&data=displayname}</h4>
+      </div>
+      <div class="modal-body">
+        <p>_{&lang=netuno.dev.reportdesign.delete.confirm.text}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.no}</button>
+        <button type="button" id="buttonReportDesign__{data=table.name}_delete_yes" class="btn btn-danger">_{&lang=netuno.form.button.yes}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function (netuno, $) {
+    $('#fieldReportDesign__{data=table.name}_displayName').on('keyup', function () {
+      var that = $(this);
+      $('#fieldReportDesign__{data=table.name}_name').val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
+    });
+    $("#fieldReportDesign__{data=table.name}_uid").on("change", function () {
+      netuno.loadDevReportField('_{data=table.name}', $(this).val());
+    });
+    $("#fieldReportDesign__{data=table.name}_type").on("change", function () {
+      netuno.componentConfig.load("report", "_{request=netuno_table_uid}");
+      var name = $('#fieldReportDesign__{data=table.name}_name').val();
+      var endsWithId = name.indexOf("_id") == name.length - 3;
+      if ($("#fieldReportDesign__{data=table.name}_type").val() == 'select' && !endsWithId) {
+        if (!endsWithId) {
+          $('#fieldReportDesign__{data=table.name}_name').val(name + "_id");
+        }
+      } else if (endsWithId) {
+        $('#fieldReportDesign__{data=table.name}_name').val(name.substring(0, name.length - 3));
+      }
+    });
+    netuno.componentConfig.load("report", "_{request=netuno_table_uid}");
+    $('#buttonReportDesign__{data=table.name}_new,#buttonReportDesign__{data=table.name}_clear').on("click", function () {
+      $('#fieldReportDesign__{data=table.name}_execute').val('new');
+      $('#fieldReportDesign__{data=table.name}_uid').val('');
+      if (!netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false)) {
+        $('#fieldReportDesign__{data=table.name}_execute').val('');
+      }
+    });
+    $('#buttonReportDesign__{data=table.name}_save').on("click", function () {
+      $('#fieldReportDesign__{data=table.name}_execute').val('save');
+      if (!netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', true)) {
+        $('#fieldReportDesign__{data=table.name}_execute').val('');
+      }
+    });
+    $('#buttonReportDesign__{data=table.name}_delete_yes').on("click", function () {
+      $('#fieldReportDesign__{data=table.name}_execute').val('delete');
+      if (!netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false)) {
+        $('#fieldReportDesign__{data=table.name}_execute').val('');
+      }
+    });
+    $('#buttonReportDesign__{data=table.name}_copy').on("click", function () {
+      netuno.linkDev.show({
+        itemSelected: function(item) {
+          $('#fieldReportDesign__{data=table.name}_execute').val('copy');
+          $('#fieldReportDesign__{data=table.name}_copy').val(item.attr('data-field-uid'));
+          $('#fieldReportDesign__{data=table.name}_uid').val('');
+          netuno.submitDev('netuno_form_design__{data=table.name}', 'reportDesign__{data=table.uid}', false);
+        }
+      });
+    });
+    netuno.loadValidationDev('reportDesign__{data=table.uid}');
+  })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
+</script>

@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-xs-5">
+        <div class="input-group clockpicker" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}_">
+            <input type="text" class="form-control" name="_{data=name}___time" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}" value="_{data=com.time.value}" maxlength="5" validation="_{data=com.time.validation} time">
+            <span class="input-group-addon">
+                <span class="fa fa-clock-o"></span>
+            </span>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="_{data=name}" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}" value="_{data=com.time.value}" />
+<script type="text/javascript">
+    (function () {
+        if (typeof $ !== 'undefined') {
+            var valueTime = '_{data=com.time.value}';
+            netuno.com.time.load("_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}", "_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}_", function () {
+                valueTime = $(this).val();
+                $("\#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}").val(valueTime + ':00.0');
+            });
+        }
+    })();
+</script>

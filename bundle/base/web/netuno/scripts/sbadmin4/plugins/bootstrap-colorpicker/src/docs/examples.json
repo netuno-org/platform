@@ -1,0 +1,20 @@
+{
+  "Basics": {
+    "title": "Getting started"
+  },
+  "p02_Advanced_Examples": {
+    "title": "Advanced examples"
+  },
+  "p03_Colorpicker_Events": {
+    "title": "Events"
+  },
+  "p04_Colorpicker_Extensions": {
+    "title": "Extensions"
+  },
+  "p05_OlderVersions": {
+    "title": "Older versions"
+  },
+  "p06_SupportUs": {
+    "title": "Support this project"
+  }
+}

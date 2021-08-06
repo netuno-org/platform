@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="icon" href="_{netuno-config=url-app-images}/icon.png" type="image/x-icon"/>
+    <link rel="shortcut icon" href="_{netuno-config=url-app-images}/icon.png" type="image/x-icon"/>
+
+    <title>_{netuno-config=title}</title>
+
+    <link href="_{netuno-config=url-theme}/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-theme}/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-theme}/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-theme}/vendor/switch.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-theme}/css/sb-admin.css" rel="stylesheet" type="text/css" />
+
+    <!--link href="_{netuno-config=url-scripts}/plugins/boosted/dist/css/orangeHelvetica.css" rel="stylesheet" type="text/css" /-->
+    <!--link href="_{netuno-config=url-scripts}/plugins/boosted/dist/css/orangeIcons.css" rel="stylesheet" type="text/css" /-->
+    <!--link href="_{netuno-config=url-scripts}/plugins/boosted/dist/css/boosted.css" rel="stylesheet" type="text/css" /-->
+
+    <link href="_{netuno-config=url-scripts}/plugins/select2/dist/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="_{netuno-config=url-scripts}/plugins/tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/trumbowyg/dist/ui/trumbowyg.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/toastr/toastr.css" rel="stylesheet" type="text/css" />
+
+    <link href="_{netuno-config=url-styles}/netuno.css" rel="stylesheet" type="text/css" />
+    _{include=styles}
+    <script src="_{netuno-config=url-scripts}/netuno/base.js"></script>
+    <script>
+        netuno.config.app = '_{netuno-config=app}';
+        netuno.config.isAdmin = function () { return '_{data=user.admin}' == 'true'; };
+        netuno.config.user = function () { return '_{data=user}'; };
+        netuno.config.userCode = function () { return '_{&data=user.code}'; };
+        netuno.config.userName = function () { return '_{&data=user.name}'; };
+        netuno.config.groupCode = function () { return '_{&data=group.code}'; };
+        netuno.config.groupName = function () { return '_{&data=group.name}'; };
+        netuno.config.extension = '_{netuno-config=extension}';
+        netuno.config.urlImages = '_{netuno-config=url-images}';
+        netuno.config.urlScripts = '_{netuno-config=url-scripts}';
+        netuno.config.urlStyles = '_{netuno-config=url-styles}';
+        netuno.config.urlAppImages = '_{netuno-config=url-app-images}';
+        netuno.config.urlAppScripts = '_{netuno-config=url-app-scripts}';
+        netuno.config.urlAppStyles = '_{netuno-config=url-app-styles}';
+        netuno.config.dataTable = _{lang=netuno.search.datatable};
+        netuno.config.validation = {};
+        netuno.config.validation.message = _{lang=netuno.validation};
+        netuno.config.com = {
+            lang: {
+                select: {
+                    defaulttext: '_{lang=netuno.com.select.defaulttext}',
+                    searching: '_{lang=netuno.com.select.searching}',
+                    noresults: '_{lang=netuno.com.select.noresults}'
+                },
+                selectpath: {
+                    defaulttext: '_{lang=netuno.com.selectpath.defaulttext}',
+                    searching: '_{lang=netuno.com.selectpath.searching}',
+                    noresults: '_{lang=netuno.com.selectpath.noresults}'
+                },
+                lastchange: {
+                    defaulttext: '_{lang=netuno.com.lastchange.defaulttext}',
+                    searching: '_{lang=netuno.com.lastchange.searching}',
+                    noresults: '_{lang=netuno.com.lastchange.noresults}'
+                },
+                multiselect: {
+                    defaulttext: '_{lang=netuno.com.multiselect.defaulttext}',
+                    searching: '_{lang=netuno.com.multiselect.searching}',
+                    noresults: '_{lang=netuno.com.multiselect.noresults}'
+                },
+                filesystem: {
+                    deleteconfirm: '_{lang=netuno.com.filesystem.delete.confirm}'
+                }
+            }
+        };
+        netuno.lang = {
+            "menu.forms": "_{&lang=netuno.menu.forms}",
+            "menu.reports": "_{&lang=netuno.menu.reports}",
+            "com.select.clean": "_{&lang=netuno.com.select.clean}"
+        };
+    </script>
+</head>
+<body>

@@ -1,0 +1,19 @@
+<input type="hidden" name="_{data=name}:value" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-value" value="_{data=com.file.value}" file-url="_{data=com.file.url}"/>
+<input type="hidden" name="_{data=name}:null" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-null" value=""/>
+<div class="input-group" style="margin-bottom: 5px;">
+    <label class="input-group-btn">
+        <span class="btn btn-primary">
+            _{&lang=netuno.com.file.button}&hellip; <input type="file" name="_{data=name}" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}" style="display: none;">
+        </span>
+    </label>
+    <input type="text" class="form-control" value="_{&lang=netuno.com.file.defaulttext}" readonly>
+</div>
+<button type="button" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-btView" class="btn btn-info" onclick="netuno.com.file.view('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}');">_{lang=netuno.form.button.view}: <strong style="font-size: 8px;">_{data=com.file.name}</strong> <em style="font-size: 8px;">(_{data=com.file.size.mb} MB)</em></button>
+<button type="button" class="btn btn-warning" onclick="netuno.com.file.clear('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}');">_{lang=netuno.form.button.clear}</button>
+<script>
+    (function () {
+        if (typeof $ !== 'undefined') {
+            netuno.com.file.load('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}');
+        }
+    })();
+</script>

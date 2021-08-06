@@ -1,0 +1,54 @@
+/*
+Error: Undefined variable: "$border-radius".
+        on line 8 of select2-bootstrap4.scss
+
+3: // --------------------------------------------------
+4: 
+5: // Variables directly translating Bootstrap variables
+6: // -------------------------
+7: 
+8: $s2bs-border-radius-base: $border-radius !default;
+9: $s2bs-border-radius-large: $border-radius-lg !default;
+10: $s2bs-border-radius-small: $border-radius-sm !default;
+11: $s2bs-btn-default-bg: transparent !default;
+12: $s2bs-btn-default-border: $dark !default;
+13: $s2bs-btn-default-color: $dark !default;
+
+Backtrace:
+select2-bootstrap4.scss:8
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/variable.rb:49:in `_perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/node.rb:50:in `perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:482:in `visit_variable'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:162:in `block in visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:79:in `block in with_base'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:135:in `with_frame'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:79:in `with_base'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:162:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `map'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:171:in `block in visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:183:in `with_environment'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:170:in `visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `block in visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:190:in `visit_root'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:161:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:10:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/root_node.rb:36:in `css_tree'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/root_node.rb:29:in `render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:389:in `_render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:307:in `render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/sass_scss.rb:391:in `run'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/sass_scss.rb:63:in `process_result'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/base.rb:52:in `parse'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/base.rb:19:in `parse!'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/bin/sass:13:in `<top (required)>'
+/usr/local/bin/sass:22:in `load'
+/usr/local/bin/sass:22:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Error: Undefined variable: \"$border-radius\".\A         on line 8 of select2-bootstrap4.scss\A \A 3: // --------------------------------------------------\A 4: \A 5: // Variables directly translating Bootstrap variables\A 6: // -------------------------\A 7: \A 8: $s2bs-border-radius-base: $border-radius !default;\A 9: $s2bs-border-radius-large: $border-radius-lg !default;\A 10: $s2bs-border-radius-small: $border-radius-sm !default;\A 11: $s2bs-btn-default-bg: transparent !default;\A 12: $s2bs-btn-default-border: $dark !default;\A 13: $s2bs-btn-default-color: $dark !default;"; }

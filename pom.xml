@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.netuno</groupId>
+    <artifactId>netuno</artifactId>
+    <version>7.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>netuno</name>
+
+    <modules>
+        <module>netuno.psamata</module>
+        <module>netuno.proteu</module>
+        <module>netuno.tritao</module>
+        <module>netuno.cli</module>
+        <module>netuno.library.doc</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netuno.version>7.0.0</netuno.version>
+        <netuno.cli.version>7.0.0</netuno.cli.version>
+        <netuno.license.version>7.0.0</netuno.license.version>
+        <netuno.proteu.version>7.0.0</netuno.proteu.version>
+        <netuno.psamata.version>7.0.0</netuno.psamata.version>
+        <netuno.tritao.version>7.0.0</netuno.tritao.version>
+        <netuno.library.doc.version>7.0.0</netuno.library.doc.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.7.2</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

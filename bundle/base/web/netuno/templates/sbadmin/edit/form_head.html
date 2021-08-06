@@ -1,0 +1,15 @@
+
+<h2 class="netuno-form-edit-new-title"></h2> <br>
+    <script type="text/javascript">
+        var netunoFormEditNewTitle = $('#netuno-form-_{config=netuno_form_name}-edit-_{util=requestuuid}').parent().find('h2.netuno-form-edit-new-title');
+        if( $('#netuno-form-_{config=netuno_form_name}-edit-_{util=requestuuid}').find('input[name=netuno_item_uid]').val() == '') {
+            netunoFormEditNewTitle.html('_{&lang=netuno.form.button.add_new_content}');
+        } else {
+            netunoFormEditNewTitle.html('_{&lang=netuno.form.button.edit_content}');
+        }
+    </script>
+
+<form role="form" id="netuno-form-_{config=netuno_form_name}-edit-_{util=requestuuid}" name="netuno_form__{config=netuno_form_name}_edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="netuno_table_uid" value="_{request=netuno_table_uid}" />
+    <input type="hidden" name="netuno_item_uid" value="_{request=netuno_item_uid}" />
+    <input type="hidden" name="netuno_zone" value="_{request=netuno_zone}" />

@@ -1,0 +1,33 @@
+{
+  "name": "select2-bootstrap4-theme",
+  "description": "A theme for Select2 v4 and Bootstrap 4",
+  "keywords": [
+    "bootstrap4",
+    "select2",
+    "css",
+    "sass"
+  ],
+  "homepage": "https://github.com/berkan52/select2-bootstrap4-theme",
+  "main": [
+    "dist/select2-bootstrap4.css",
+    "src/select2-bootstrap4.scss"
+  ],
+  "authors": [
+    "berkan52 <berkan52@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "select2": "^4.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/berkan52/select2-bootstrap4-theme.git"
+  }
+}

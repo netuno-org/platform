@@ -1,0 +1,33 @@
+// List Groups
+
+@mixin list-group-item-variant($state, $background, $color) {
+  .list-group-item-#{$state} {
+    // boosted mod
+    @if $state == "secondary" or $state == "dark"  {
+      color: $white;
+    } @else {
+      color: $color;
+    }
+    // end mod
+    background-color: $background;
+
+    &.list-group-item-action {
+      @include hover-focus {
+        // boosted mod
+        @if $state == "secondary" or $state == "dark"  {
+          color: $white;
+        } @else {
+          color: $color;
+        }
+        // end mod
+        background-color: darken($background, 5%);
+      }
+
+      &.active {
+        color: $white;
+        background-color: $color;
+        border-color: $color;
+      }
+    }
+  }
+}

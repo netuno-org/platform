@@ -1,0 +1,11 @@
+<button type="button" class="btn btn-default" netuno-form-edit-back-button onclick="netuno.backFormEdit(this);">
+	<i class="fa fa-reply"></i> _{lang=netuno.form.button.back}
+</button>
+<script>
+	(function () {
+	    var baseForm = $('#netuno-form-_{config=netuno_form_name}-edit-_{util=requestuuid}').parents('[netuno-form]');
+        if (baseForm.find('[netuno-form-search]').is(':empty')) {
+            baseForm.find('[netuno-form-edit]').find('[netuno-form-edit-back-button]').hide();
+		}
+	})();
+</script>

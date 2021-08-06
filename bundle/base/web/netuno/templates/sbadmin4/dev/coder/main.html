@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            <div class="row">
+                <div class="col-8">
+                    <i class="fa fa-database"></i> _{&lang=netuno.dev.coder.title}
+                </div>
+                <div class="col-4">
+                    <button type="button" class="btn btn-default">_{&lang=netuno.dev.coder.filesystem}</button>
+                </div>
+            </div>
+        </h1>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <i class="fa fa-wrench"></i> _{&lang=netuno.dev.menu.management}
+            </li>
+            <li class="breadcrumb-item active">
+                <i class="fa fa-database"></i> _{&lang=netuno.dev.coder.title}
+            </li>
+        </ol>
+    </div>
+</div>
+<div id="coder">
+    <div netuno-coder-filesystem></div>
+
+    <ul netuno-coder-editor-tabs class="nav nav-tabs">
+    </ul>
+
+    <div netuno-coder-editor></div>
+
+    <div netuno-coder-notifications></div>
+</div>
+<script>
+    (function (NetunoCoder) {
+        new NetunoCoder($('#coder'));
+    })(typeof NetunoCoder == 'undefined' ? parent.NetunoCoder : NetunoCoder);
+</script>

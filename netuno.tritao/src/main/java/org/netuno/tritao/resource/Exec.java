@@ -1,0 +1,370 @@
+/*
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.netuno.tritao.resource;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import org.graalvm.polyglot.Value;
+import org.netuno.library.doc.*;
+import org.netuno.proteu.Proteu;
+import org.netuno.psamata.Values;
+import org.netuno.psamata.io.Path;
+import org.netuno.psamata.script.GraalRunner;
+import org.netuno.psamata.script.ScriptRunner;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.resource.util.ResourceException;
+
+/**
+ * Execution - Resource
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
+@Resource(name = "exec")
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "Exec",
+                introduction = "Realiza a execução de outros scripts, suporta também executar scripts em outras linguagens de programação.\n" +
+                        "Executa o script indicado, retornando o seu output.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "// Executa outro script da App em `server/core/`\n" +
+                                        "const outputOutput = _exec.core(\"outro-script\");\n" +
+                                        "\n"+
+                                        "// Executa outro script da App em `server/services/`\n" +
+                                        "const outputServico = _exec.service(\"outro-servico\");\n"
+                        )
+                }
+        )
+})
+public class Exec extends ResourceBaseValues {
+
+    public Exec(Proteu proteu, Hili hili) {
+        super(proteu, hili, new Values());
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza a transição de variáveis entre scripts, inclusive entre linguagens de programação diferentes.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const minhaVarOriginal = \"test\";\n" +
+                                            "_exec" +
+                                            "    .bind(\"transitarVar\", minhaVarOriginal)" +
+                                            "    .core(\"um-outro-script-em-outra-linguagem\");"
+                            ) })
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "variavel",
+                            description = "Nome da variável que estará disponível no outro script que será executado."
+                    )
+            }),
+            @ParameterDoc(name = "object", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "objeto",
+                            description = "Objeto a ser passado para o outro script que será executado."
+                    )
+            }) 
+    }, returns = {})
+    public Exec bind(String key,
+            Object object) {
+        getHili().bind(key, object);
+        return this;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Execução de scripts que estão na pasta `server/core/`.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_exec.core(\"um-outro-script-em-outra-linguagem\");"
+                            ) })
+    }, parameters = {
+            @ParameterDoc(name = "path", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "caminho",
+                            description = "Caminho do script com origem em 'core/' a executar."
+                    )
+            })
+    }, returns = {})
+    public Values core(String path) throws ResourceException {
+        path = Path.safeFileSystemPath(path);
+        String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(getProteu()) + "/" +  path);
+        if (scriptPath != null) {
+            return getHili().runScriptSandbox(Config.getPathAppCore(getProteu()), path);
+        }
+        throw new ResourceException("Core script not found: "+ path);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Execução de scripts que estão na pasta `server/services/`.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_exec.service(\"um-outro-script-em-outra-linguagem\");"
+                            ) })
+    }, parameters = {
+        @ParameterDoc(name = "path",
+                translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "caminho",
+                            description = "Caminho do script com origem em 'services/' a executar."
+                    )
+                })
+    }, returns = {})
+    public Values service(String path) throws ResourceException {
+        path = Path.safeFileSystemPath(path);
+        String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + "/" +  path);
+        if (scriptPath != null) {
+            return getHili().runScriptSandbox(Config.getPathAppServices(getProteu()), path);
+        }
+        throw new ResourceException("Service script not found: "+ path);
+    }
+    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza uma pausa na execução, útil para provocar algum atraso de processamento controlado.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Para a execução por 3 segundos:\n"
+                                            + "_exec.sleep(3000);"
+                            ) })
+    }, parameters = {
+        @ParameterDoc(name = "interval",
+                translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "intervalo",
+                            description = "Intervalo de tempo em milissegundos que deve fazer a pausa na execução."
+                    )
+                })
+    }, returns = {})
+    public void sleep(long interval) throws InterruptedException {
+        Thread.sleep(interval);
+    }
+    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa a limpeza da memória através da execução do coletor de lixo ([JVM garbage collector](https://www.baeldung.com/jvm-garbage-collectors)).",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Libertar memória exetando o Garbage Collector:\n"
+                                            + "_exec.gc();"
+                            ) })
+    }, parameters = { }, returns = {})
+    public void gc() {
+        System.gc();
+        System.runFinalization();
+    }
+    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Execução de funções de forma assíncrona.",
+                    howToUse = { })
+    }, parameters = {}, returns = {})
+    public Async async(Value... functions) throws ResourceException {
+        return new Async(functions);
+    }
+    
+    public Async asyncData(Object data, Value... functions) throws ResourceException {
+        return new Async(data, functions);
+    }
+    
+    public Async asyncList(Values list, Value function) throws ResourceException {
+        return new Async(function, list);
+    }
+    
+    @LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "Async",
+                introduction = "Orquestra os modos de execução assíncrona.",
+                howToUse = {}
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Async",
+                introduction = "Orchestrates asynchronous execution modes.",
+                howToUse = {}
+        )
+    })
+    public class Async {
+        private ExecutorService executor = null;
+        private Value[] functions = null;
+        private Object data = null;
+        private Values list = null;
+        
+        public Async(Value... functions) {
+            this.functions = functions;
+            executor = Executors.newFixedThreadPool(functions.length);
+        }
+        
+        public Async(Object data, Value... functions) {
+            this.functions = functions;
+            this.data = data;
+            executor = Executors.newFixedThreadPool(functions.length);
+        }
+        
+        public Async(Value function, Values list) {
+            this.functions = new Value[] { function };
+            this.list = list;
+            if (!this.list.isList()) {
+                throw new ResourceException("The asyncList only accept object of list type.");
+            }
+            executor = Executors.newFixedThreadPool(list.size());
+        }
+        
+        private List<Callable<Object>> listOfCallables() {
+            List<Callable<Object>> callables = new ArrayList<>();
+            if (list != null && functions.length == 1) {
+                list.forEach((i) -> {
+                    callables.add(() -> {
+                        return GraalRunner.toObject(functions[0].execute(i));
+                    });
+                });
+            } else {
+                for (int i = 0; i < functions.length; i++) {
+                    final int index = i;
+                    callables.add(() -> {
+                        if (data != null) {
+                            return GraalRunner.toObject(functions[index].execute(data));
+                        } else {
+                            return GraalRunner.toObject(functions[index].execute());
+                        }
+                    });
+                }
+            }
+            return callables;
+        }
+        
+        public List<Object> invokeAll() {
+            List<Object> results = new ArrayList<>();
+            try {
+                List<Future<Object>> futures = executor.invokeAll(listOfCallables());
+                executor.shutdown();
+                for (Future<Object> future : futures) {
+                    results.add(future.get());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new ResourceException("Fail to invoke the execution of all async functions.", e);
+            }
+            return results;
+        }
+        
+        public List<Object> invokeAll(long timeout) {
+            List<Object> results = new ArrayList<>();
+            try {
+                List<Future<Object>> futures = executor.invokeAll(listOfCallables(), timeout, TimeUnit.SECONDS);
+                executor.shutdown();
+                for (Future<Object> future : futures) {
+                    results.add(future.get());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new ResourceException("Fail to invoke the execution of all async functions with timeout of "+ timeout +" seconds.", e);
+            }
+            return results;
+        }
+        
+        public Object invokeAny() {
+            Object result = null;
+            try {
+                result = executor.invokeAny(listOfCallables());
+                executor.shutdown();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new ResourceException("Fail to invoke the execution of any async functions.", e);
+            }
+            return result;
+        }
+        
+        public Object invokeAny(long timeout) {
+            Object result = null;
+            try {
+                result = executor.invokeAny(listOfCallables(), timeout, TimeUnit.SECONDS);
+                executor.shutdown();
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                throw new ResourceException("Fail to invoke the execution of any async functions with timeout of "+ timeout +" seconds.", e);
+            }
+            return result;
+        }
+        
+        public Async start() {
+            if (list != null && functions.length == 1) {
+                list.forEach((i) -> {
+                    executor.execute(new Thread() {
+                        public void run() {
+                            functions[0].execute(i);
+                        }
+                    });
+                });
+            } else {
+                for (int i = 0; i < functions.length; i++) {
+                    final int index = i;
+                    executor.execute(new Thread() {
+                        public void run() {
+                            if (data != null) {
+                                functions[index].execute(data);
+                            } else {
+                                functions[index].execute();
+                            }
+                        }
+                    });
+                }
+            }
+            executor.shutdown();
+            return this;
+        }
+        
+        public boolean await() {
+            return executor.isTerminated();
+        }
+        
+        public boolean await(long timeout) throws InterruptedException {
+            return executor.awaitTermination(timeout, TimeUnit.SECONDS);
+        }
+        
+        public Async stop() {
+            executor.shutdownNow();
+            return this;
+        }
+    }
+
+}

@@ -1,0 +1,50 @@
+/*
+Error: File to import not found or unreadable: ~bootstrap/scss/functions.
+        on line 1 of build.scss
+
+1: @import "~bootstrap/scss/functions";
+2: @import "~bootstrap/scss/variables";
+3: @import "~bootstrap/scss/mixins";
+4: 
+5: @import "select2-bootstrap4";
+
+Backtrace:
+build.scss:1
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/import_node.rb:67:in `rescue in import'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/import_node.rb:44:in `import'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/import_node.rb:28:in `imported_file'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/import_node.rb:37:in `css_import?'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:314:in `visit_import'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:162:in `block in visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:79:in `block in with_base'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:135:in `with_frame'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:79:in `with_base'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:162:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `map'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:171:in `block in visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:183:in `with_environment'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:170:in `visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `block in visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:190:in `visit_root'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:161:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:10:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/root_node.rb:36:in `css_tree'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/root_node.rb:29:in `render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:389:in `_render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:307:in `render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/sass_scss.rb:391:in `run'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/sass_scss.rb:63:in `process_result'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/base.rb:52:in `parse'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/base.rb:19:in `parse!'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/bin/sass:13:in `<top (required)>'
+/usr/local/bin/sass:22:in `load'
+/usr/local/bin/sass:22:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Error: File to import not found or unreadable: ~bootstrap/scss/functions.\A         on line 1 of build.scss\A \A 1: @import \"~bootstrap/scss/functions\";\A 2: @import \"~bootstrap/scss/variables\";\A 3: @import \"~bootstrap/scss/mixins\";\A 4: \A 5: @import \"select2-bootstrap4\";"; }

@@ -1,0 +1,202 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">
+      <i class="fa fa-edit"></i> _{&lang=netuno.dev.form.title}
+
+      <!-- <button id="managementForm_buttonNew" type="button" class="btn btn-default btn-action">
+        _{&lang=netuno.dev.form.button.clear_fields}
+      </button> -->
+    </h1>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <i class="fa fa-wrench"></i> _{&lang=netuno.dev.menu.management}
+      </li>
+      <li class="breadcrumb-item active">
+        <i class="fa fa-edit"></i> _{&lang=netuno.dev.menu.management.form}
+      </li>
+    </ol>
+  </div>
+</div>
+
+<form id="managementForm" name="managementForm" method="post" action="Form_{netuno-config=extension}">
+  <input type="hidden" id="managementForm_execute" name="execute" value=""/>
+  <div class="row netuno_form">
+    <div class="col-lg-8">
+      <div class="form-group">
+        <h2> _{&lang=netuno.dev.form.label.edit_existing_form} </h2>
+        <select class="form-control" id="managementForm_uid" name="uid" onchange="netuno.submitDev('management_form', 'managementForm', false);">
+          <option value=""></option>
+          _{data=form.items}
+        </select>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="row netuno_form">
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="col-lg-12">
+          <h2>_{&lang=netuno.dev.form.label.add}</h2><br>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="form-group">
+            <label for="managementForm_displayName">* _{&lang=netuno.dev.form.label.displayname}</label>
+            <input class="form-control" type="text" id="managementForm_displayName" name="displayname" value="_{&data=displayname.value}" size="50" validation="required">
+          </div>
+          <div class="form-group">
+            <label for="managementForm_name">* _{&lang=netuno.dev.form.label.name}</label>
+            <input class="form-control" type="text" id="managementForm_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
+          </div>
+          <div class="form-group">
+            <label for="managementForm_parent">_{&lang=netuno.dev.form.label.parent}</label>
+            <select class="form-control" name="parent_uid" id="managementForm_parent">
+              <option value=""></option>
+              _{data=parent.items}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="row">
+            <div class="col-6 col-sm-12">
+              <br>
+              <div class="form-group">
+                <span class="switch">
+                  <input type="checkbox" class="switch" id="managementForm_controlShowId" name="show_id" value="true"_{data=showid.checked}/>
+                  <label for="managementForm_controlShowId">_{&lang=netuno.dev.form.label.showid}</label>
+                </span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-12">
+              <div class="form-group">
+                <span class="switch">
+                  <input type="checkbox" class="switch" id="managementForm_controlActive" name="control_active" value="true"_{data=controlactive.checked}/>
+                  <label for="managementForm_controlActive">_{&lang=netuno.dev.form.label.controlactive}</label>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 col-sm-12">
+              <div class="form-group">
+                <span class="switch">
+                  <input type="checkbox" class="switch" id="managementForm_controlUser" name="control_user" value="true"_{data=controluser.checked}/>
+                  <label for="managementForm_controlUser">_{&lang=netuno.dev.form.label.controluser}</label>
+                </span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-12">
+              <div class="form-group">
+                <span class="switch">
+                  <input type="checkbox" class="switch" id="managementForm_controlGroup" name="control_group" value="true"_{data=controlgroup.checked}/>
+                  <label for="managementForm_controlGroup">_{&lang=netuno.dev.form.label.controlgroup}</label>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="managementForm_user">* _{&lang=netuno.dev.form.label.user}</label>
+            <select class="form-control" name="user_uid" id="managementForm_user">
+              <option value="0" _{data=user.all.selected}>_{&lang=netuno.dev.form.label.user.all}</option>
+              <option value="-1" _{data=user.administrator.selected}>_{&lang=netuno.dev.form.label.user.administrator}</option>
+              <option value="-2" _{data=user.developer.selected}>_{&lang=netuno.dev.form.label.user.developer}</option>
+              _{data=user.options}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="managementForm_group">* _{&lang=netuno.dev.form.label.group}</label>
+            <select class="form-control" name="group_uid" id="managementForm_group">
+              <option value="0" _{data=group.all.selected}>_{&lang=netuno.dev.form.label.group.all}</option>
+              <option value="-1" _{data=group.administrator.selected}>_{&lang=netuno.dev.form.label.group.administrator}</option>
+              <option value="-2" _{data=group.developer.selected}>_{&lang=netuno.dev.form.label.group.developer}</option>
+              _{data=group.options}
+            </select>
+          </div>
+        </div>
+      </div>
+      #if($firebase.active())
+      <div class="form-group">
+        <label for="managementForm_name">Firebase</label>
+        <input class="form-control" type="text" id="managementForm_firebase" name="firebase" value="_{data=firebase.value}" size="50">
+      </div>
+      #end
+    </div>
+  </div>
+</form>
+<div class="buttons">
+  <button id="managementForm_buttonSave" type="button" class="btn btn-primary">
+    <i class="fa fa-check"></i> _{&lang=netuno.form.button.save}
+  </button>
+  <button id="managementForm_buttonDelete" type="button" class="btn btn-link" style="display: none;" data-toggle="modal" data-target="#modalManagementForm_delete">
+    <span class="text-danger">
+      <i class="fa fa-trash"></i> _{&lang=netuno.form.button.delete}
+    </span>
+  </button>
+  <button id="managementForm_buttonNew" type="button" class="btn btn-default">
+    _{&lang=netuno.dev.form.button.clear_fields}
+  </button>
+</div>
+
+<div id="modalManagementForm_delete" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{&data=displayname}</h4>
+      </div>
+      <div class="modal-body">
+        <p>_{&lang=netuno.dev.form.delete.confirm.text}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.no}</button>
+        <button type="button" id="modalManagementForm_delete_yes" class="btn btn-danger">_{&lang=netuno.form.button.yes}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function (netuno, $) {
+    $('#managementForm_displayName').on('keyup', function () {
+        var that = $(this);
+        $('#managementForm_name').val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
+    });
+    $('#managementForm_buttonNew').on("click", function () {
+      $('#managementForm_execute').val('new');
+      $('#managementForm_uid').val('');
+      if (!netuno.submitDev('management_form', 'managementForm', false)) {
+        $('#managementForm_execute').val('');
+      }
+    });
+    $('#managementForm_buttonSave').on("click", function () {
+      $('#managementForm_execute').val('save');
+      if (!netuno.submitDev('management_form', 'managementForm', true, function () {
+              netuno.loadDevMenu();
+          })) {
+        $('#managementForm_execute').val('');
+      }
+    });
+    $('#modalManagementForm_delete_yes').on("click", function () {
+      $('#modalManagementForm_delete').modal('hide');
+      $('#managementForm_execute').val('delete');
+      if (!netuno.submitDev('management_form', 'managementForm', false, function () {
+              netuno.loadDevMenu();
+          })) {
+        $('#managementForm_execute').val('');
+      }
+    });
+    if ($('#managementForm_uid').val() != '') {
+      $('#managementForm_buttonDelete').show();
+    }
+    netuno.loadValidationDev('managementForm');
+  })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
+</script>

@@ -1,0 +1,141 @@
+<style>
+    #key {
+      word-wrap: break-word;
+      width: 100%;
+      background: #f1f1f1;
+      border-radius: 5px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      font-family: monaco, consolas;
+      font-size: 10px;
+    }
+
+    .loader-container {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: 20px;
+        height: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+    }
+
+    .loader:before, .loader:after{
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
+        border: 10px solid transparent;
+        border-top-color: #333333;
+    }
+
+    .loader:before{
+        z-index: 100;
+        animation: spin 1s infinite;
+    }
+
+    .loader:after{
+        border: 10px solid #ccc;
+    }
+
+    @keyframes spin{
+        0%{
+            -webkit-transform: rotate(0deg);
+            -ms-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        100%{
+            -webkit-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<div class="container netuno-login">
+    <div class="row">
+        <div class="col-lg-12 text-center logo">
+            <img src="_{netuno-config=url-app-images}/logo.png" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+            <div>
+                <p id="key">_{data=register-key}</p>
+                <p class="text-center">
+                    <button id="register_button" class="btn btn-primary">_{&lang=netuno.register.button}</button>
+                </p>
+                <div class="loader-container" id="loader" style="display: none;">
+                    <div class="loader"></div>
+                </div>
+                <div id="register_success" style="display: none; margin-bottom: 20px;">
+                    <div class="alert alert-success">
+                        _{lang=netuno.register.success}
+                    </div>
+                    <div id="tick" class="text-center"></div>
+                </div>
+                <div id="register_fail" class="alert alert-danger" style="display: none;">
+                    _{lang=netuno.register.fail}
+                </div>
+                <p>_{lang=netuno.register.manually} <a target="_blank" href="https://www.netuno.org">netuno.org</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('key').addEventListener("click", function() {
+  var p = this;
+  setTimeout(function() {
+    var selection = window.getSelection();
+    var range = document.createRange();
+    var t = p.firstChild; range.setStart(t, 0);
+    range.setEnd(t, p.innerText.length);
+    selection.addRange(range);
+  }, 150);
+});
+
+netuno.addPageLoad(function () {
+    var button = $('#register_button');
+    var loader = $('#loader');
+    var elemSuccess = $('#register_success');
+    var elemFail = $('#register_fail');
+    button.on('click', function() {
+        button.hide();
+        elemSuccess.hide();
+        elemFail.hide();
+        loader.show();
+        $.ajax({
+            type: 'POST',
+            url: netuno.config.urlAdmin +'Register'+ netuno.config.extension,
+            data: { "register": "true" }
+        }).done(function(response) {
+            loader.hide();
+            if (response.result === true) {
+                elemSuccess.fadeIn();
+                var tickCount = 6;
+                var tick = function() {
+                    tickCount--;
+                    document.getElementById('tick').innerHTML = ''+ tickCount;
+                    if (tickCount <= 1) {
+                        location.reload();
+                    } else {
+                        window.setTimeout(tick, 1000);
+                    }
+                };
+                tick();
+            } else {
+                button.fadeIn();
+                elemFail.fadeIn();
+            }
+        }).fail(function() {
+            loader.hide();
+            button.fadeIn();
+            elemFail.fadeIn();
+        })
+    });
+});
+
+</script>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Diagram</title>
+    <link rel="stylesheet" href="_{netuno-config=url-dev-styles}/diagram.css">
+</head>
+<body>
+<div class="wrap">
+
+    <canvas id="canvas"></canvas>
+    <div id="canvas-panner"></div>
+
+    <div class="tools">
+        <a id="savebutton" href="javascript:void(0)" download="diagram.png" title="Download snapshot of this diagram">
+            <img src="_{netuno-config=url-dev-images}/diagram/camera.png">
+        </a>
+        <span id="tooltip"></span>
+
+        <div class="canvas-tools" id="canvas-tools">
+            <a href="javascript:nomnoml.magnifyViewport(2)" title="Zoom in">
+                <img src="_{netuno-config=url-dev-images}/diagram/plus.png">
+            </a>
+            <a href="javascript:nomnoml.resetViewport()" title="Reset zoom and panning">
+                <img src="_{netuno-config=url-dev-images}/diagram/equals.png">
+            </a>
+            <a href="javascript:nomnoml.magnifyViewport(-2)" title="Zoom out">
+                <img src="_{netuno-config=url-dev-images}/diagram/minus.png">
+            </a>
+        </div>
+    </div>
+</div>
+<script type="text/vnd.nomnoml.class" id="defaultGraph">
+#foreach($table in $data.get("tables"))
+
+[$table.getString("name")|id: int#foreach($field in $table.get("fields"))| $field.getString("name"): $field.getString("type") #end]
+
+#end
+#foreach($link in $data.get("links"))
+
+[$link.getString("from")]->[$link.getString("to")]
+
+#end
+</script>
+
+<!--[marca]->[carro]-->
+<script src="_{netuno-config=url-dev-scripts}/diagram/lib/zepto.min.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/lib/lodash.min.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/lib/dagre.min.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/skanaar.canvas.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/skanaar.svg.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/skanaar.util.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/skanaar.vector.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.jison.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.parser.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.visuals.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.layouter.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.renderer.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.js"></script>
+<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.app.js"></script>
+
+</body>
+</html>

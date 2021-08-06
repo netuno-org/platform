@@ -1,0 +1,10 @@
+
+<h2>_{data=title}</h2>
+
+<p>
+#if ($_req.getString("test") != "")
+    Query parameter <b>test</b>: <i>_{request=test}</i>
+#else
+    <a href="?test=HelloWorld">Click here to test with an URL parameter.</a>
+#end
+</p>

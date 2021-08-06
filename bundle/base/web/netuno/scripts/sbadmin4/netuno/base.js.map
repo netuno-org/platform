@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "base.js",
+  "sourceRoot": "",
+  "sources": [
+    "base.coffee"
+  ],
+  "names": [],
+  "mappings": ";AACA;AAAA,MAAA;;EAAM;IAAN,MAAA,OAAA;MAKE,WAAa,CAAC,IAAD,CAAA;eACX,IAAC,CAAA,SAAS,CAAC,IAAX,CAAgB,IAAhB;MADW;;MAGb,UAAY,CAAA,CAAA;AACV,YAAA,CAAA,EAAA,GAAA,EAAA,QAAA,EAAA,GAAA,EAAA;AAAA;AAAA;QAAA,KAAA,qCAAA;;uBACE,QAAA,CAAA;QADF,CAAA;;MADU;;MAIZ,cAAgB,CAAC,IAAD,CAAA;eACd,IAAC,CAAA,YAAY,CAAC,IAAd,CAAmB,IAAnB;MADc;;MAGhB,aAAe,CAAC,SAAD,CAAA;AACb,YAAA,WAAA,EAAA,CAAA,EAAA,GAAA,EAAA,GAAA,EAAA;AAAA;AAAA;QAAA,KAAA,qCAAA;;uBACE,WAAA,CAAY,SAAZ;QADF,CAAA;;MADa;;IAfjB;;qBACE,MAAA,GAAQ,CAAA;;qBACR,SAAA,GAAW;;qBACX,YAAA,GAAc;;;;;;EAgBhB;AAnBA",
+  "sourcesContent": [
+    "\nclass Netuno\n  config: {}\n  pageLoads: []\n  contentLoads: []\n\n  addPageLoad: (func) ->\n    @pageLoads.push func\n\n  pageLoaded: () ->\n    for pageLoad in @pageLoads\n      pageLoad()\n\n  addContentLoad: (func) ->\n    @contentLoads.push func\n\n  contentLoaded: (container) ->\n    for contentLoad in @contentLoads\n      contentLoad(container)\n\n`this.netuno = new Netuno()`"
+  ]
+}

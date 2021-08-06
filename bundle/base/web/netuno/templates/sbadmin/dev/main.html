@@ -1,0 +1,132 @@
+<div id="wrapper" class="dev">
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <span class="navbar-brand"><img src="_{netuno-config=url-app-images}/logo-main.png" /></span>
+            <span id="netuno-topbar-after-brand" class="netuno-hook"></span>
+        </div>
+        <!-- Top Menu Items -->
+        <ul class="nav navbar-right top-nav hidden-xs hidden-sm">
+            <li id="netuno-topbar-before-nav" class="netuno-hook"></li>
+            <li class="active">
+                <a href="_{netuno-config=url-admin}Main_{netuno-config=extension}" title="_{&lang=netuno.dev.menu.visualize}">
+                    <i class="fa fa-eye"></i> _{&lang=netuno.dev.menu.visualize}
+                </a>
+            </li>
+            <li class="dropdown">
+                <button href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> _{&data=user.name} <b class="caret"></b></button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#netuno_password" netuno-content="Password_{netuno-config=extension}"><i class="fa fa-fw fa-key"></i> _{&lang=netuno.password.title}</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="_{netuno-config=url-admin}Index_{netuno-config=extension}?action=logout" rel="external"><i class="fa fa-fw fa-power-off"></i> _{lang=netuno.logout}</a>
+                    </li>
+                </ul>
+            </li>
+            <li id="netuno-topbar-after-nav" class="netuno-hook"></li>
+        </ul>
+
+        <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse hidden-lg hidden-md">
+            <ul class="nav navbar-right top-nav hidden-md hidden-lg">
+                <li id="netuno-topbar-before-nav" class="netuno-hook"></li>
+                <li class="active">
+                    <a href="/Main_{netuno-config=extension}" title="_{&lang=netuno.dev.menu.visualize}">
+                        <i class="fa fa-eye"></i> _{&lang=netuno.dev.menu.visualize}
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <button href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> _{&data=user.name} <b class="caret"></b></button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#netuno_password" netuno-content="Password_{netuno-config=extension}"><i class="fa fa-fw fa-key"></i> _{&lang=netuno.password.title}</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="Index_{netuno-config=extension}?action=logout" rel="external"><i class="fa fa-fw fa-power-off"></i> _{lang=netuno.logout}</a>
+                        </li>
+                    </ul>
+                </li>
+                <li id="netuno-topbar-after-nav" class="netuno-hook"></li>
+            </ul>
+            <div class="side-nav">
+                <div id="netuno-side-before-nav" class="netuno-hook"></div>
+                <ul class="nav navbar-nav side-nav" style="display: none;">
+                    <li class="nav-dashboard">
+                        <a href="#dashboard" data-content="Dashboard_{netuno-config=extension}"><i class="fa fa-fw fa-dashboard"></i> _{&lang=netuno.menu.dashboard}</a>
+                    </li>
+                    <li class="nav-management">
+                        <a href="#" data-toggle="collapse"><i class="fa fa-fw fa-wrench"></i> _{&lang=netuno.dev.menu.management} <i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul>
+                            <li>
+                                <a href="#management_form" netuno-dev-content="Form_{netuno-config=extension}"><i class="fa fa-fw fa-edit"></i> _{&lang=netuno.dev.menu.management.form}</a>
+                            </li>
+                            <li>
+                                <a href="#management_report" netuno-dev-content="Report_{netuno-config=extension}"><i class="fa fa-fw fa-area-chart"></i> _{&lang=netuno.dev.menu.management.report}</a>
+                            </li>
+                            <li>
+                                <a href="#management_query" netuno-dev-content="Query_{netuno-config=extension}"><i class="fa fa-fw fa-database"></i> _{&lang=netuno.dev.menu.management.query}</a>
+                            </li>
+                            <li>
+                                <a href="#management_diagram" netuno-dev-content="Diagram_{netuno-config=extension}"><i class="fa fa-fw fa-sitemap"></i> _{&lang=netuno.dev.menu.management.diagram}</a>
+                            </li>
+                            <!--li>
+                                <a href="#management_coder" netuno-dev-content="coder/Main_{netuno-config=extension}"><i class="fa fa-fw fa-code"></i> _{&lang=netuno.dev.menu.management.coder}</a>
+                            </li-->
+                            <!--li>
+                                <a href="#management_system" netuno-dev-content="System_{netuno-config=extension}"><i class="fa fa-fw fa-flash"></i> _{&lang=netuno.dev.menu.management.system}</a>
+                            </li-->
+                        </ul>
+                    </li>
+                </ul>
+                <div id="netuno-side-after-nav" class="netuno-hook"></div>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </nav>
+
+    <div id="page-wrapper">
+        <div id="containers" class="container-fluid">
+            <div id="dashboard">
+                _{include=dev/dashboard}
+            </div>
+            <div id="management_form"></div>
+            <div id="management_report"></div>
+            <div id="management_query"></div>
+            <div id="management_diagram"></div>
+            <div id="management_coder"></div>
+            <div id="management_system"></div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /#page-wrapper -->
+    
+    <script>
+        netuno.addPageLoad(function () {
+            var menu = JSON.parse('_{data=menu-json}');
+
+            netuno.menuDev(menu);
+
+            if (menu.forms.length > 0) {
+                $('.with-form').show();
+                $('.no-form').hide();
+            } else {
+                $('.with-form').hide();
+                $('.no-form').show();
+            }
+            
+            $('.dropdown-menu a').click(function(){
+                $('.dropdown').removeClass('open');
+            });
+        });
+    </script>
+</div>

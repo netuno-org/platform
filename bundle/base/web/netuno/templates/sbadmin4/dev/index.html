@@ -1,0 +1,28 @@
+
+<div id="login_logo" class="animated flipInY"><img src="_{netuno-config=url-app-images}/logo.png"></div>
+<div id="login" class="animated flipInX">
+    <div class="input username"><input type="text" id="inputUserName" placeholder="_{&lang=netuno.login.user}" /></div>
+    <div class="input password"><input type="password" id="inputPassword" placeholder="_{&lang=netuno.login.password}" /></div>
+    <button>_{&lang=netuno.login.button.login}</button>
+</div>
+<div id="login_result"></div>
+<script>
+$("#login button").bind("click", function() {
+    forgot();
+});
+
+$("#login .input.password input").keyup(function(event) {
+    if (event.which == 13) {
+        forgot();
+    }
+});
+
+function forgot() {
+    $.ajax({type: 'POST', url: 'Index_{netuno-config=extension}?action=login',
+        data: {'netuno_user': $("#inputUserName").val(), 'netuno_pass': $("#inputPassword").val() },
+        success: function(response) {
+            $('#login_result').html(response);
+        }
+    });
+}
+</script>

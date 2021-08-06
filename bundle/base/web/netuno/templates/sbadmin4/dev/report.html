@@ -1,0 +1,171 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">
+      <i class="fa fa-area-chart"></i> _{&lang=netuno.dev.report.title}
+
+      <!-- <button id="managementReport_buttonNew" type="button" class="btn btn-default btn-action">
+         _{&lang=netuno.dev.report.button.clear_fields}
+      </button> -->
+    </h1>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <i class="fa fa-fw fa-wrench"></i> _{&lang=netuno.dev.menu.management}
+      </li>
+      <li class="breadcrumb-item active">
+        <i class="fa fa-area-chart"></i> _{&lang=netuno.dev.menu.management.report}
+      </li>
+    </ol>
+  </div>
+</div>
+
+<form id="managementReport" name="managementReport" method="post" action="Report_{netuno-config=extension}">
+  <input type="hidden" id="managementReport_execute" name="execute" value=""/>
+  <div class="row netuno_form">
+    <div class="col-lg-8">
+      <div class="form-group">
+        <label> _{&lang=netuno.dev.report.label.edit_existing_report} </label>
+        <select class="form-control" id="managementReport_uid" name="uid" onchange="netuno.submitDev('management_report', 'managementReport', false);">
+          <option value=""></option>
+          _{data=report.items}
+        </select>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="row netuno_form">
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="form-group">
+            <label for="managementReport_displayName">* _{&lang=netuno.dev.report.label.displayname}</label>
+            <input class="form-control" type="text" id="managementReport_displayName" name="displayname" value="_{&data=displayname.value}" size="50" validation="required">
+          </div>
+          <div class="form-group">
+            <label for="managementReport_name">* _{&lang=netuno.dev.report.label.name}</label>
+            <input class="form-control" type="text" id="managementReport_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="row">
+            <div class="col-6 col-sm-12">
+              <div class="form-group">
+                <span class="switch">
+                  <input type="checkbox" class="switch" id="managementReport_controlUser" name="control_user" value="on"_{data=controluser.checked}/>
+                  <label for="managementReport_controlUser">_{&lang=netuno.dev.report.label.controluser}</label>
+                </span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-12">
+              <div class="form-group">
+                <span class="switch">
+                  <input type="checkbox" class="switch" id="managementReport_controlGroup" name="control_group" value="on"_{data=controlgroup.checked}/>
+                  <label for="managementReport_controlGroup">_{&lang=netuno.dev.report.label.controlgroup}</label>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 col-sm-12">
+              <div class="form-group">
+                <span class="switch">
+                  <input type="checkbox" class="switch" id="managementReport_controlActive" name="control_active" value="on"_{data=controlactive.checked}/>
+                  <label for="managementReport_controlActive">_{&lang=netuno.dev.report.label.controlactive}</label>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="managementReport_parent">_{&lang=netuno.dev.report.label.parent}</label>
+        <select name="parent_id" id="managementReport_parent">
+          <option value="0"></option>
+          _{data=parent.items}
+        </select>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="managementReport_user">* _{&lang=netuno.dev.report.label.user}</label>
+            <select class="form-control" name="user_uid" id="managementReport_user">
+              <option value="0"_{data=user.all.selected}>_{&lang=netuno.dev.report.label.user.all}</option>
+              <option value="-1"_{data=user.administrator.selected}>_{&lang=netuno.dev.report.label.user.administrator}</option>
+              <option value="-2"_{data=user.developer.selected}>_{&lang=netuno.dev.report.label.user.developer}</option>
+              _{data=user.options}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="managementReport_group">* _{&lang=netuno.dev.report.label.group}</label>
+            <select class="form-control" name="group_uid" id="managementReport_group">
+              <option value="0"_{data=group.all.selected}>_{&lang=netuno.dev.report.label.group.all}</option>
+              <option value="-1"_{data=group.administrator.selected}>_{&lang=netuno.dev.report.label.group.administrator}</option>
+              <option value="-2"_{data=group.developer.selected}>_{&lang=netuno.dev.report.label.group.developer}</option>
+              _{data=group.options}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<div class="buttons">
+  <button id="managementReport_buttonSave" type="button" class="btn btn-primary">
+    <i class="fa fa-check"></i> _{&lang=netuno.form.button.save}
+  </button>
+  <button id="managementReport_buttonNew" type="button" class="btn btn-default">
+    _{&lang=netuno.dev.report.button.clear_fields}
+  </button>
+  <button id="managementReport_buttonDelete" type="button" class="btn btn-link" style="display: none;" data-toggle="modal" data-target="#modalManagementReport_delete">
+    <span class="text-danger">
+    <i class="fa fa-trash"></i> _{&lang=netuno.form.button.delete}
+    </span>
+  </button>
+</div>
+
+<div id="modalManagementReport_delete" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{&data=displayname}</h4>
+      </div>
+      <div class="modal-body">
+        <p>_{&lang=netuno.dev.report.delete.confirm.text}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.no}</button>
+        <button type="button" id="modalManagementForm_delete_yes" class="btn btn-danger">_{&lang=netuno.form.button.yes}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function (netuno, $) {
+    $('#managementReport_buttonNew').on("click", function () {
+      $('#managementReport_execute').val('new');
+      $('#managementReport_uid').val('');
+      if (!netuno.submitDev('management_report', 'managementReport', false)) {
+        $('#managementReport_execute').val('');
+      }
+    });
+    $('#managementReport_buttonSave').on("click", function () {
+      $('#managementReport_execute').val('save');
+      if (!netuno.submitDev('management_report', 'managementReport', true)) {
+        $('#managementReport_execute').val('');
+      }
+    });
+    $('#modalManagementReport_delete_yes').on("click", function () {
+      $('#managementReport_execute').val('delete');
+      if (!netuno.submitDev('management_report', 'managementReport', false)) {
+        $('#managementReport_execute').val('');
+      }
+    });
+    if ($('#managementReport_uid').val() != '') {
+      $('#managementReport_buttonDelete').show();
+    }
+    netuno.loadValidationDev('managementReport');
+  })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
+</script>

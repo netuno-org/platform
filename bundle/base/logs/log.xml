@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <File name="file" fileName="logs/netuno.log" append="true">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} - %m%n"/>
+        </File>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="warn">
+            <AppenderRef ref="file"/>
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+        <Logger name="org.netuno" level="warn"></Logger>
+        <Logger name="org.netuno.tritao.resource.Logger" level="trace"></Logger>
+    </Loggers>
+</Configuration>

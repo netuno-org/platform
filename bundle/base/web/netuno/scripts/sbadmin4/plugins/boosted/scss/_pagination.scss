@@ -1,0 +1,189 @@
+.pagination {
+  display: flex;
+  @include list-unstyled();
+  @include border-radius();
+}
+
+// stylelint-disable selector-max-class
+
+.page-link {
+  position: relative;
+  display: block;
+  // Boosted mod
+  min-width: $pagination-min-width;
+  min-height: $pagination-min-width;
+  padding: $pagination-padding-y $pagination-padding-x;
+  margin-left: 0;
+  font-weight: $font-weight-bold;
+  // End mod
+  line-height: $pagination-line-height;
+  color: $pagination-color;
+  background-color: $pagination-bg;
+  border: $pagination-border-width solid $pagination-border-color;
+
+  &:hover {
+    z-index: 2;
+    color: $pagination-hover-color;
+    text-decoration: none;
+    background-color: $pagination-hover-bg;
+    border-color: $pagination-hover-border-color;
+
+    // Boosted mod
+    span {
+      color: #000;
+    }
+    // end mod
+  }
+
+  &:focus {
+    z-index: 2;
+    outline: $pagination-focus-outline;
+    box-shadow: $pagination-focus-box-shadow;
+  }
+
+  // Boosted mod
+  span {
+    color: #fff;
+  }
+  // end mod
+
+  // Opinionated: add "hand" cursor to non-disabled .page-link elements
+  &:not(:disabled):not(.disabled) {
+    cursor: pointer;
+  }
+}
+.page-item {
+  // Boosted mod
+  &.presentation {
+    padding: .625rem 0;
+    font-weight: $font-weight-bold;
+  }
+  &.presentation + .page-item,
+  &:first-child {
+    .page-link {
+      margin-left: 0;
+      @include border-left-radius($border-radius);
+      border-color: $black;
+      &::before {
+        position: absolute;
+        top: .6875rem;
+        left: .8125rem;
+        width: .5625rem;
+        height: .875rem;
+        content: "";
+        background-image: #{$pagination-icon-prev};
+        background-repeat: no-repeat;
+      }
+      @include hover-focus {
+        &::before {
+          background-image: #{$pagination-icon-prev-active};
+        }
+      }
+      &.has-label {
+        padding-right: 1.125rem;
+        padding-left: 2rem;
+      }
+    }
+  }
+
+  &.presentation + .page-item,
+  &:first-child,
+  &:last-child {
+    .page-link {
+      @include hover-focus {
+        color: $pagination-active-color;
+        background-color: $pagination-active-bg;
+        border-color: $pagination-active-border-color;
+      }
+    }
+  }
+
+  // End mod
+  &:last-child {
+    .page-link {
+      @include border-right-radius($border-radius);
+      // Boosted mod
+      border-color: $black;
+      &::before {
+        position: absolute;
+        top: .6875rem;
+        right: .8125rem;
+        width: .5625rem;
+        height: .875rem;
+        content: "";
+        background-image: #{$pagination-icon-next};
+        background-repeat: no-repeat;
+      }
+      @include hover-focus {
+        &::before {
+          background-image: #{$pagination-icon-next-active};
+        }
+      }
+      &.has-label {
+        padding-right: 2rem;
+        padding-left: 1.125rem;
+      }
+      // End mod
+    }
+  }
+
+  &.active .page-link {
+    z-index: 1;
+    color: $pagination-active-color;
+    background-color: $pagination-active-bg;
+    border-color: $pagination-active-border-color;
+  }
+
+  // Boosted mod
+  &.active:first-child .page-link::before {
+    background-image: #{$pagination-icon-prev-active};
+  }
+
+  &.active:last-child .page-link::before {
+    background-image: #{$pagination-icon-next-active};
+  }
+  // end mod
+
+  &.disabled .page-link {
+    color: $pagination-disabled-color;
+    pointer-events: none;
+    // Opinionated: remove the "hand" cursor set previously for .page-link
+    cursor: auto;
+    background-color: $pagination-disabled-bg;
+    border-color: $pagination-disabled-border-color;
+  }
+
+  // Boosted mod
+  &.disabled:first-child .page-link::before {
+    background-image: #{$pagination-icon-prev-disabled};
+  }
+
+  &.disabled:last-child .page-link::before {
+    background-image: #{$pagination-icon-next-disabled};
+  }
+
+  + .page-item {
+    margin-left: .625rem;
+  }
+  // End mod
+}
+
+//
+// Sizing
+//
+// Boosted mod add a min size param
+.pagination-lg {
+  @include pagination-size($pagination-padding-y-lg, $pagination-padding-x-lg, $font-size-lg, $line-height-lg, $border-radius-lg, $pagination-min-width-lg);
+  .page-item:first-child .page-link::before,
+  .page-item:last-child .page-link::before {
+    top: 1rem;
+  }
+}
+
+.pagination-sm {
+  @include pagination-size($pagination-padding-y-sm, $pagination-padding-x-sm, $font-size-sm, $line-height-sm, $border-radius-sm, $pagination-min-width-sm);
+  .page-item:first-child .page-link::before,
+  .page-item:last-child .page-link::before {
+    top: auto;
+  }
+}

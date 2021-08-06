@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "diagram.js",
+  "sourceRoot": "",
+  "sources": [
+    "diagram.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAEA;AAAA,MAAA;;EAAM,gBAAN,MAAA,cAAA;IACE,WAAa,CAAC,SAAD,CAAA;MACX,SAAS,CAAC,IAAV,CAAe,QAAA,CAAA,CAAA;eACb,SAAS,CAAC,IAAV,CAAA;MADa,CAAf;MAEA,CAAA,CAAE,CAAA,qBAAA,CAAA,CAA0B,MAAM,CAAC,MAAM,CAAC,OAAxC,CAAiD,WAAjD,CAAA,CAA+D,MAAM,CAAC,MAAM,CAAC,SAA7E,CAAwF,EAAxF,CAAF,CAA+F,CAAC,EAAhG,CAAmG,OAAnG,EAA4G,QAAA,CAAA,CAAA;QAC1G,SAAS,CAAC,IAAV,CAAgB,KAAhB,EAAuB,QAAA,CAAC,CAAD,EAAI,GAAJ,CAAA;iBAAY;QAAZ,CAAvB;eACA,SAAS,CAAC,OAAV,CAAkB,MAAlB;MAF0G,CAA5G;IAHW;;EADf;;EASA;AATA",
+  "sourcesContent": [
+    "\n\nclass NetunoDiagram\n  constructor: (container) ->\n    container.load ()->\n      container.show()\n    $(\"[netuno-dev-content=\\\"#{ netuno.config.urlBase }dev/Diagram#{ netuno.config.extension }\\\"]\").on 'click', () ->\n      container.attr( 'src', (i, val) -> val)\n      container.fadeOut('slow')\n\n\n`window.NetunoDiagram = NetunoDiagram`"
+  ]
+}

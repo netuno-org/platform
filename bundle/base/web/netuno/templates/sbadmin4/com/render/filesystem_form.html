@@ -1,0 +1,16 @@
+
+<form name="netunoFormFileSystem" id="netunoFormFileSystem" method="post" enctype="multipart/form-data" action="com/FileSystem_{netuno-config=extension}">
+    <input type="hidden" id="netunoFormFileSystemField"name="field" value="_{data=com.filesystem.field}">
+    <input type="hidden" id="netunoFormFileSystemDir" name="dir" value="_{data=com.filesystem.dir}">
+    <input type="hidden" id="netunoFormFileSystemBack" name="back" value="false">
+    <input type="hidden" id="netunoFormFileSystemRename" name="rename" value="">
+    <input type="hidden" id="netunoFormFileSystemRenameTo" name="rename_to" value="">
+    <input type="hidden" id="netunoFormFileSystemDelete" name="delete" value="">
+    <input type="hidden" id="netunoFormFileSystemCreateFolder" name="create_folder" value="">
+    <h3>_{lang=netuno.com.filesystem.upload.title}</h3>
+    <input type="file" id="netunoFormFileSystemUploadFile" name="file[]" multiple="multiple" size="10" data-text="_{lang=netuno.com.filesystem.upload.field.defaulttext}" data-button="_{lang=netuno.com.filesystem.upload.field.button}" />
+    <button type="button" class="overcast glyph filesystemUpload" onclick="$.netuno.fileSystem.upload();">_{lang=netuno.com.filesystem.upload.button.upload}</button>
+    <h3>_{lang=netuno.com.filesystem.folder.title}</h3>
+    <input type="text" id="netunoFormFileSystemCreateFolderName" name="folder" size="50" value=""/>
+    <button type="button" class="overcast glyph filesystemFolder" onclick="$.netuno.fileSystem.createFolder();">_{lang=netuno.com.filesystem.folder.button.create}</button>
+</form>

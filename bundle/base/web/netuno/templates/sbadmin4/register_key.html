@@ -1,0 +1,39 @@
+<style>
+#key {
+  word-wrap: break-word;
+  width: 100%;
+  background: #f1f1f1;
+  border-radius: 5px;
+  padding: 5px;
+  border: 1px solid #ddd;
+  font-family: monaco, consolas;
+  font-size: 10px;
+}
+</style>
+<div class="container netuno-login">
+    <div class="row">
+        <div class="col-lg-12 text-center logo">
+            <img src="_{netuno-config=url-app-images}/logo.png" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8 offset-2 col-sm-6 offset-sm-3 col-md-4 offset-md-4">
+            <div>
+                <p>Registe a chave abaixo em <a target="_blank" href="https://www.netuno.org">netuno.org</a></p>
+                <p id="key">_{data=register-key}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('key').addEventListener("click", function() {
+  var p = this;
+  setTimeout(function() {
+    var selection = window.getSelection();
+    var range = document.createRange();
+    var t = p.firstChild; range.setStart(t, 0);
+    range.setEnd(t, p.innerText.length);
+    selection.addRange(range);
+  }, 150);
+});
+</script>

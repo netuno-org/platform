@@ -1,0 +1,36 @@
+/*
+Error: Invalid CSS after "...-theme-tactile"": expected "{", was ";"
+        on line 4 of style.scss
+
+1: ---
+2: ---
+3: 
+4: @import "jekyll-theme-tactile";
+5: @import "style";
+
+Backtrace:
+style.scss:4
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:1278:in `expected'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:1208:in `expected'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:1203:in `tok!'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:677:in `block'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:670:in `ruleset'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:696:in `block_child'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:686:in `block_contents'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:137:in `stylesheet'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/scss/parser.rb:41:in `parse'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:414:in `_to_tree'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:389:in `_render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:307:in `render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/sass_scss.rb:391:in `run'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/sass_scss.rb:63:in `process_result'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/base.rb:52:in `parse'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/base.rb:19:in `parse!'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/bin/sass:13:in `<top (required)>'
+/usr/local/bin/sass:22:in `load'
+/usr/local/bin/sass:22:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Error: Invalid CSS after \"...-theme-tactile\"\": expected \"{\", was \";\"\A         on line 4 of style.scss\A \A 1: ---\A 2: ---\A 3: \A 4: @import \"jekyll-theme-tactile\";\A 5: @import \"style\";"; }

@@ -1,0 +1,25 @@
+<link href="_{netuno-config=url-styles}/netuno.login.css" rel="stylesheet" type="text/css" />
+<link href="_{netuno-config=url-app-styles}/login.css" rel="stylesheet" type="text/css" />
+<div class="container-fluid netuno-login">
+	<div class="row">
+		<div class="col-lg-12 text-center logo">
+			<img src="_{netuno-config=url-app-images}/logo.png" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-8 offset-2 col-sm-6 offset-sm-3 col-md-4 offset-md-4">
+			<div>
+				<form id="formSignIn" netuno-login-auto="_{data=auto}">
+					<label for="inputUserName" class="sr-only">_{&lang=netuno.login.user}</label>
+					<input type="text" id="inputUserName" class="form-control" placeholder="_{&lang=netuno.login.user}" value="_{data=user}" required autofocus>
+					<label for="inputPassword" class="sr-only">_{&lang=netuno.login.password}</label>
+					<input type="password" id="inputPassword" class="form-control" placeholder="_{&lang=netuno.login.password}" value="_{data=pass}" required>
+					<hr/>
+					<button class="btn btn-lg btn-primary btn-block" type="submit">_{&lang=netuno.login.button.login}</button>
+					<div id="login_result"></div>
+				</form>
+			</div> <!-- /container -->
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="_{netuno-config=url-scripts}/netuno/login.js"></script>

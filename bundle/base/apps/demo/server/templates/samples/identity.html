@@ -1,0 +1,42 @@
+_{include=_|includes/head}
+
+<div class="container netuno-login">
+    <div class="row">
+        <div class="col-lg-12 text-center logo">
+            <img src="_{netuno-config=url-app-images}/logo.png" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+            <h4 class="text-center">_{data=title}</h4>
+            <div class="alert alert-warning text-center" role="alert">
+                <p>Name: <b>_{data=name}</b></p>
+                <p>ID: <b>_{data=id}</b></p>
+                <p>CODE: <b>_{data=code}</b></p>
+            </div>
+            <h4 class="text-center">All data:</h4>
+            <table class="table text-left">
+                <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                #foreach($key in $data.getValues("full").keys())
+                <tr>
+                    <td>$key</td>
+                    <td>
+                        #if($data.getValues("full").get($key))
+                            $data.getValues("full").get($key)
+                        #end
+                    </td>
+                </tr>
+                #end
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+_{include=_|includes/foot}

@@ -1,0 +1,201 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            _{&lang=netuno.group.title}
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <i class="fa fa-users"></i> _{&lang=netuno.group.title}
+            </li>
+        </ol>
+    </div>
+</div>
+
+<form id="netuno_group_form" role="form">
+    <div class="form-group">
+        <h2>_{&lang=netuno.group.group}</h2>
+        <select name="uid" id="netuno_group_form_group_uid" value="_{data=group.uid.value}" netuno-select-service="Group_{netuno-config=extension}?service=json&allow_all=true" style="width: 100%;">
+        </select>
+    </div>
+    <hr>
+    <div class="form-group">
+        <h2>_{&lang=netuno.group.add}</h2><br>
+        <label for="netuno_group_form_group_name">_{&lang=netuno.group.name}</label>
+        <input type="text" name="name" id="netuno_group_form_group_name" value="_{&data=group.name.value}" size="50" maxlength="50" class="form-control" placeholder="_{&lang=netuno.group.name}" validation="required">
+    </div>
+    <div class="form-group">
+        <label for="netuno_group_form_group_admin">_{&lang=netuno.group.admin}</label>
+        <input type="checkbox" name="admin" id="netuno_group_form_group_admin" value="1" _{data=group.admin.checked}>
+    </div>
+    <div class="form-group">
+        <label for="netuno_group_form_group_name">_{&lang=netuno.group.mail}</label>
+        <input type="text" name="mail" id="netuno_group_form_group_mail" value="_{&data=group.mail.value}" size="50" maxlength="50" class="form-control" placeholder="_{&lang=netuno.group.mail}">
+    </div>
+    <div class="form-group">
+        <label for="netuno_group_form_group_active">_{&lang=netuno.form.field.active.label}</label>
+        <input type="checkbox" name="active" id="netuno_group_form_group_active" value="1" _{data=group.active.checked}>
+    </div>
+    <br>
+    <h2>_{&lang=netuno.group.rules.title}</h2>
+    <ul class="nav nav-tabs nav-justified">
+        <li role="presentation"><a href="javascript: void(0);" id="netuno_group_form_rules_button">_{&lang=netuno.rules.forms}</a></li>
+        <li role="presentation"><a href="javascript: void(0);" id="netuno_group_report_rules_button">_{&lang=netuno.rules.reports}</a></li>
+    </ul>
+    <div id="netuno_group_form_rules_container" class="netuno-rules-container" style="display: none;">
+        <div class="row">
+            <div class="col-xs-4"><b>_{&lang=netuno.rules.forms}</b></div>
+            <div class="col-xs-2"><b>_{&lang=netuno.rules.active}</b></div>
+            <div class="col-xs-2"><b>_{&lang=netuno.rules.read}</b></div>
+            <div class="col-xs-2"><b>_{&lang=netuno.rules.write}</b></div>
+            <div class="col-xs-2"><b>_{&lang=netuno.rules.delete}</b></div>
+        </div>
+        <hr/>
+        <div id="netuno_group_form_rules"></div>
+    </div>
+    <div id="netuno_group_report_rules_container" class="netuno-rules-container" style="display: none;">
+        <div class="row">
+            <div class="col-xs-4"><b>_{&lang=netuno.rules.reports}</b></div>
+            <div class="col-xs-2"><b>_{&lang=netuno.rules.active}</b></div>
+            <div class="col-xs-2"><b>_{&lang=netuno.rules.read}</b></div>
+            <div class="col-xs-2"><b>_{&lang=netuno.rules.write}</b></div>
+            <div class="col-xs-2"><b>_{&lang=netuno.rules.delete}</b></div>
+        </div>
+        <hr/>
+        <div id="netuno_group_report_rules"></div>
+    </div>
+    <div class="netuno-form-buttons">
+        <button type="button" id="netuno_group_form_button_save" class="btn btn-primary"><i class="fa fa-check"></i> _{&lang=netuno.form.button.save}</button>
+        <button type="button" id="netuno_group_form_button_new" class="btn btn-default">_{&lang=netuno.form.button.clear}</button>
+        <button type="button" id="netuno_group_form_button_delete" class="btn btn-link" data-toggle="modal" data-target="#netuno-group-form-delete-modal-_{util=requestuuid}">
+          <span class="text-danger"><i class="fa fa-trash"></i> _{&lang=netuno.form.button.delete}</span>
+        </button>
+    </div>
+    <div id="netuno-group-form-delete-modal-_{util=requestuuid}" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">_{&lang=netuno.group.button.delete.confirm.title}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>_{&lang=netuno.group.button.delete.confirm.text~data=group.name.value}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.no}</button>
+                    <button type="button" class="btn btn-danger" id="netuno_group_form_button_delete_confirmed">_{&lang=netuno.form.button.yes}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    (function () {
+        if (typeof netuno === 'undefined') {
+            return;
+        }
+        var url = 'Group_{netuno-config=extension}';
+        var form = $('form#netuno_group_form');
+        var formValidate = netuno.loadValidation(form);
+        var container = form.parent();
+
+        if ('_{request=uid}' == '') {
+            $('#netuno_group_form_button_delete').hide();
+        }
+
+        $('button#netuno_group_form_button_new').on('click', function () {
+            $('#netuno_group_form_group_uid').val('');
+            form.off("submit");
+            form.ajaxForm({
+                url: url + '?execute=new',
+                success: function(response) {
+                    container.html(response);
+                    form = $('#netuno_group_form');
+                    netuno.contentLoaded(container);
+                }
+            }).submit();
+        });
+
+        $('button#netuno_group_form_button_save').on('click', function () {
+            if (formValidate.valid()) {
+                form.ajaxForm({
+                    url: url + '?execute=save',
+                    success: function(response) {
+                        container.html(response);
+                        form = $('#netuno_group_form');
+                        netuno.contentLoaded(container);
+                    }
+                }).submit();
+            }
+        });
+
+        $('button#netuno_group_form_button_delete_confirmed').click(function() {
+            modal = $('div#netuno-group-form-delete-modal-_{util=requestuuid}');
+            modal.on('hidden.bs.modal', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: url + '?execute=delete',
+                    data: form.serialize(),
+                    success: function(response) {
+                        container.html(response);
+                        form = $('#netuno_group_form');
+                        netuno.contentLoaded(container);
+                    }
+                });
+            });
+            modal.modal('hide');
+        });
+
+        var formRulesButton = $('a#netuno_group_form_rules_button');
+        var reportRulesButton = $('a#netuno_group_report_rules_button');
+
+        netuno.com.select.callbackForFieldId('netuno_group_form_group_uid', 'changed', function () {
+            form.off("submit");
+            form.ajaxForm({
+                url: url,
+                success: function(response) {
+                    container.html(response);
+                    $('button#netuno_group_form_rules_button').fadeTo('fast', 1);
+                    $('button#netuno_group_report_rules_button').fadeTo('fast', 1);
+                    $('div#netuno_group_form_rules_container').hide();
+                    $('div#netuno_group_report_rules_container').hide();
+                    netuno.com.select.netunoGroupChanged = true;
+                    netuno.contentLoaded(container);
+                }
+            }).submit();
+        });
+
+        formRulesButton.click(function () {
+            formRulesButton.parent().removeClass('active').addClass('active');
+            reportRulesButton.parent().removeClass('active');
+            $('div#netuno_group_report_rules_container').hide();
+            $('div#netuno_group_form_rules_container').fadeIn();
+            var formRules = $('div#netuno_group_form_rules');
+            if (formRules.is(':empty')) {
+                $.ajax({type: "GET", url: url + "?service=form_rules&uid="+ $('#netuno_group_form_group_uid').val(),
+                    success: function (response) {
+                        formRules.html(response);
+                        netuno.contentLoaded(formRules);
+                    }
+                });
+            }
+        });
+
+        reportRulesButton.click(function () {
+            reportRulesButton.parent().removeClass('active').addClass('active');
+            formRulesButton.parent().removeClass('active');
+            $('div#netuno_group_form_rules_container').hide();
+            $('div#netuno_group_report_rules_container').fadeIn();
+            var reportRules = $('div#netuno_group_report_rules');
+            if (reportRules.is(':empty')) {
+                $.ajax({type: "GET", url: url + "?service=report_rules&uid="+ $('#netuno_group_form_group_uid').val(),
+                    success: function (response) {
+                        reportRules.html(response);
+                        netuno.contentLoaded(reportRules);
+                    }
+                });
+            }
+        });
+
+    })();
+</script>

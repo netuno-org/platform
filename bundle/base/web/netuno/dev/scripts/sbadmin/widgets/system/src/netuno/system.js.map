@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "system.js",
+  "sourceRoot": "",
+  "sources": [
+    "system.coffee"
+  ],
+  "names": [],
+  "mappings": ";AACA;AAAA,MAAA;;EAAM,eAAN,MAAA,aAAA;IACE,WAAa,CAAC,SAAD,CAAA;MACX,OAAO,CAAC,GAAR,CAAY,GAAZ;IADW;;EADf;;EAIA;AAJA",
+  "sourcesContent": [
+    "\nclass NetunoSystem\n  constructor: (container) ->\n    console.log 'a'\n\n`window.NetunoSystem = NetunoSystem`"
+  ]
+}

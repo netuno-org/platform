@@ -1,0 +1,21 @@
+{
+  "name": "datatables-plugins-bootstrap3",
+  "version": "0.1.7",
+  "author": "Anish Shah <anish03shah@gmail.com>",
+  "main": "dist/js/datatables-plugins-bootstrap3.js",
+  "ignore": [
+    ".gitignore",
+    "README.md"
+  ],
+  "keywords": [
+    "datatables",
+    "bootstrap",
+    "plugins"
+  ],
+  "dependencies": {
+    "bootstrap": "3.3.2",
+    "font-awesome": "4.2.0",
+    "datatables": "master"
+  },
+  "license": "MIT"
+}

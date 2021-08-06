@@ -1,0 +1,19 @@
+</tr>
+</thead>
+<tbody>
+
+</tbody>
+</table>
+<script>
+netuno.loadFormSearchDataTable($('#netuno-form-search-table-_{util=requestuuid}'));
+</script>
+<hr/>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="export-content">
+            <h2>_{&lang=netuno.form.button.export}</h2>
+            <button type="button" class="btn btn-default" onclick="netuno.downloadProgress('Search_{netuno-config=extension}?netuno_action=export_xls&'+ $('#netuno-form-_{config=netuno_form_name}-search-_{util=requestuuid}').serialize());">EXCEL</button>
+            <button type="button" class="btn btn-default" onclick="netuno.downloadProgress('Search_{netuno-config=extension}?netuno_action=export_xml&'+ $('#netuno-form-_{config=netuno_form_name}-search-_{util=requestuuid}').serialize());">XML</button>
+        </div>
+    </div>
+</div>

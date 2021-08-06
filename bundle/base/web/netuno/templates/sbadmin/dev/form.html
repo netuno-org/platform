@@ -1,0 +1,343 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">
+      <i class="fa fa-edit"></i> _{&lang=netuno.dev.form.title}
+
+      <!-- <button id="managementForm_buttonNew" type="button" class="btn btn-default btn-action">
+        _{&lang=netuno.dev.form.button.clear_fields}
+      </button> -->
+    </h1>
+    <ol class="breadcrumb">
+      <li>
+        <i class="fa fa-fw fa-wrench"></i> _{&lang=netuno.dev.menu.management}
+      </li>
+      <li>
+        <i class="fa fa-edit"></i> _{&lang=netuno.dev.menu.management.form}
+      </li>
+    </ol>
+  </div>
+</div>
+
+<form id="managementForm" name="managementForm" method="post" action="Form_{netuno-config=extension}">
+  <input type="hidden" id="managementForm_execute" name="execute" value=""/>
+  <div class="row netuno_form">
+    <div class="col-lg-8">
+      <div class="form-group">
+        <h2> _{&lang=netuno.dev.form.label.edit_existing} </h2>
+        <p>
+          <select class="form-control" id="managementForm_uid" name="uid" onchange="netuno.submitDev('management_form', 'managementForm', false);">
+            <option value="">_{&lang=netuno.dev.form.label.creating_new}</option>
+            _{data=form.items}
+          </select>
+        </p>
+        <p>
+          <button id="managementForm_buttonNew" type="button" class="btn btn-default">
+            _{&lang=netuno.dev.form.label.creating_new}
+          </button>
+        </p>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="row netuno_form">
+    <div class="col-lg-12">
+      #if($data.getString("uid.value").isEmpty())
+      <div class="row">
+        <div class="col-lg-12">
+          <h2>_{&lang=netuno.dev.form.label.add}</h2><br>
+        </div>
+      </div>
+      #end
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="form-group">
+            <label for="managementForm_displayName">* _{&lang=netuno.dev.form.label.displayname}</label>
+            <input class="form-control" type="text" id="managementForm_displayName" name="displayname" value="_{&data=displayname.value}" size="50" validation="required">
+          </div>
+          <div class="form-group">
+            <label for="managementForm_name">* _{&lang=netuno.dev.form.label.name}</label>
+            <input class="form-control" type="text" id="managementForm_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
+          </div>
+          <div class="form-group">
+            <label for="managementForm_parent">_{&lang=netuno.dev.form.label.parent}</label>
+            <select class="form-control" name="parent_uid" id="managementForm_parent">
+              <option value=""></option>
+              _{data=parent.items}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="row">
+            <div class="col-xs-6 col-sm-12">
+              <br>
+              <div class="form-group">
+                <label for="managementForm_controlShowId">
+                  <input type="checkbox" id="managementForm_controlShowId" name="show_id" value="true"_{data=showid.checked}/>
+                  _{&lang=netuno.dev.form.label.showid}
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-6 col-sm-12">
+              <div class="form-group">
+                <label for="managementForm_controlActive">
+                  <input type="checkbox" id="managementForm_controlActive" name="control_active" value="true"_{data=controlactive.checked}/>
+                  _{&lang=netuno.dev.form.label.controlactive}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6 col-sm-12">
+              <div class="form-group">
+                <label for="managementForm_controlUser">
+                  <input type="checkbox" id="managementForm_controlUser" name="control_user" value="true"_{data=controluser.checked}/>
+                  _{&lang=netuno.dev.form.label.controluser}
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-6 col-sm-12">
+              <div class="form-group">
+                <label for="managementForm_controlUser">
+                  <input type="checkbox" id="managementForm_controlGroup" name="control_group" value="true"_{data=controlgroup.checked}/>
+                  _{&lang=netuno.dev.form.label.controlgroup}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="managementForm_user">* _{&lang=netuno.dev.form.label.user}</label>
+            <select class="form-control" name="user_uid" id="managementForm_user">
+              <option value="0" _{data=user.all.selected}>_{&lang=netuno.dev.form.label.user.all}</option>
+              _{data=user.options}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="managementForm_group">* _{&lang=netuno.dev.form.label.group}</label>
+            <select class="form-control" name="group_uid" id="managementForm_group">
+              <option value="0" _{data=group.all.selected}>_{&lang=netuno.dev.form.label.group.all}</option>
+              _{data=group.options}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="more-options">
+        <button class="btn btn-link btn-plus" type="button"
+          data-toggle="collapse" data-target="#managementForm_collapseMore"
+          aria-expanded="false" aria-controls="managementForm_collapseMore">
+          <span class="text-primary">
+            <i class="fa fa-plus"></i> _{&lang=netuno.dev.form.label.view_more_options}
+          </span>
+        </button>
+        <div class="collapse" id="managementForm_collapseMore">
+          <h2>_{&lang=netuno.dev.form.label.export.title}</h2>
+          <div class="row">
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="managementForm_exportXLS">
+                  <input type="checkbox" id="managementForm_exportXLS" name="export_xls" value="true"_{data=export_xls.checked}/>
+                  _{&lang=netuno.dev.form.label.export_xls}
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="managementForm_exportXML">
+                  <input type="checkbox" id="managementForm_exportXML" name="export_xml" value="true"_{data=export_xml.checked}/>
+                  _{&lang=netuno.dev.form.label.export_xml}
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="managementForm_exportJSON">
+                  <input type="checkbox" id="managementForm_exportJSON" name="export_json" value="true"_{data=export_json.checked}/>
+                  _{&lang=netuno.dev.form.label.export_json}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="managementForm_exportID">
+                  <input type="checkbox" id="managementForm_exportID" name="export_id" value="true"_{data=export_id.checked}/>
+                  _{&lang=netuno.dev.form.label.export_id}
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="managementForm_exportUID">
+                  <input type="checkbox" id="managementForm_exportUID" name="export_uid" value="true"_{data=export_uid.checked}/>
+                  _{&lang=netuno.dev.form.label.export_uid}
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="managementForm_exportLastChange">
+                  <input type="checkbox" id="managementForm_exportLastChange" name="export_lastchange" value="true"_{data=export_lastchange.checked}/>
+                  _{&lang=netuno.dev.form.label.export_lastchange}
+                </label>
+              </div>
+            </div>
+          </div>
+          #if(!$data.getString("uid.value").isEmpty())
+          <hr/>
+          _{&lang=netuno.dev.form.export.data}
+          <p>
+            <a href="Form_{netuno-config=extension}?uid=_{data=uid.value}&export-data=script-js" target="_blank">Script JS</a>
+            &middot;
+            <a href="Form_{netuno-config=extension}?uid=_{data=uid.value}&export-data=json" target="_blank">JSON</a>
+          </p>
+          #end
+        </div>
+      </div>
+      #if($_firebase.active())
+      <div class="row">
+        <div class="col-xs-6 col-sm-8">
+          <div class="form-group">
+            <label for="managementForm_name">Firebase</label>
+            <input class="form-control" type="text" id="managementForm_firebase" name="firebase" value="_{data=firebase.value}" size="50">
+          </div>
+        </div>
+        #if(!$data.getString("firebase.value").isEmpty())
+        <div class="col-xs-6 col-sm-4">
+          <div class="form-group">
+            <label for="managementForm_name" class="hidden-xs visible-sm visible-md visible-lg">&nbsp;<br></label>
+            <button id="managementForm_buttonFirebaseSync" type="button" class="btn btn-default">
+              <i class="fa fa-cloud-upload"></i> _{&lang=netuno.form.button.sync}
+            </button>
+          </div>
+        </div>
+        #end
+      </div>
+      #end
+    </div>
+  </div>
+</form>
+<div class="buttons">
+  <button id="managementForm_buttonSave" type="button" class="btn btn-primary">
+    <i class="fa fa-check"></i> _{&lang=netuno.form.button.save}
+  </button>
+  <button id="managementForm_buttonDelete" type="button" class="btn btn-link" style="display: none;" data-toggle="modal" data-target="#modalManagementForm_delete">
+    <span class="text-danger">
+      <i class="fa fa-trash"></i> _{&lang=netuno.form.button.delete}
+    </span>
+  </button>
+  <button id="managementForm_buttonClear" type="button" class="btn btn-default">
+    _{&lang=netuno.dev.form.button.clear_fields}
+  </button>
+</div>
+
+<div id="modalManagementForm_delete" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{&data=displayname.value}</h4>
+      </div>
+      <div class="modal-body">
+        <p>_{&lang=netuno.dev.form.confirm.delete.text}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.no}</button>
+        <button type="button" id="modalManagementForm_delete_yes" class="btn btn-danger">_{&lang=netuno.form.button.yes}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modalManagementForm_firebaseSync" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{&data=displayname.value}</h4>
+      </div>
+      <div class="modal-body">
+        <div id="modalManagementForm_firebaseSync_content_text">
+          <p>_{&lang=netuno.dev.form.firebase.sync.confirm.1}</p>
+          <p>_{&lang=netuno.dev.form.firebase.sync.confirm.2}</p>
+        </div>
+        <div id="modalManagementForm_firebaseSync_content_error" style="display: none;">
+          _{&lang=netuno.dev.form.firebase.sync.error}
+        </div>
+        <div id="modalManagementForm_firebaseSync_loader" class="loader" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.no}</button>
+        <button type="button" id="modalManagementForm_firebaseSync_yes" class="btn btn-danger">_{&lang=netuno.form.button.yes}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function (netuno, $) {
+    $('#managementForm_displayName').on('keyup', function () {
+        var that = $(this);
+        $('#managementForm_name').val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
+    });
+    $('#managementForm_buttonNew,#managementForm_buttonClear').on("click", function () {
+      $('#managementForm_execute').val('new');
+      $('#managementForm_uid').val('');
+      if (!netuno.submitDev('management_form', 'managementForm', false)) {
+        $('#managementForm_execute').val('');
+      }
+    });
+    $('#managementForm_buttonSave').on("click", function () {
+      $('#managementForm_execute').val('save');
+      if (!netuno.submitDev('management_form', 'managementForm', true, function () {
+              netuno.loadDevMenu();
+          })) {
+        $('#managementForm_execute').val('');
+      }
+    });
+    $('#modalManagementForm_delete_yes').on("click", function () {
+      $('#modalManagementForm_delete').modal('hide');
+      $('#managementForm_execute').val('delete');
+      if (!netuno.submitDev('management_form', 'managementForm', false, function () {
+              netuno.loadDevMenu();
+          })) {
+        $('#managementForm_execute').val('');
+      }
+    });
+    if ($('#managementForm_uid').val() != '') {
+      $('#managementForm_buttonDelete').show();
+    }
+    $('#managementForm_buttonFirebaseSync').on("click", function () {
+        $('#modalManagementForm_firebaseSync_content_text').show();
+        $('#modalManagementForm_firebaseSync_loader').hide();
+        $('#modalManagementForm_firebaseSync_error').hide();
+        $('#modalManagementForm_firebaseSync').modal('show');
+    });
+    $('#modalManagementForm_firebaseSync_yes').on("click", function () {
+        $('#modalManagementForm_firebaseSync_content_text').hide();
+        $('#modalManagementForm_firebaseSync_loader').show();
+        $.post("Form"+ netuno.config.extension, {
+            execute : 'firebase-sync',
+            uid: $('#managementForm_uid').val()
+        }, function(data, textStatus) {
+            if (data.result) {
+                toastr["success"]("_{&lang=netuno.dev.form.firebase.sync.success}");
+                $('#modalManagementForm_firebaseSync').modal('hide');
+            } else {
+                $('#modalManagementForm_firebaseSync_content_text').hide();
+                $('#modalManagementForm_firebaseSync_loader').hide();
+                $('#modalManagementForm_firebaseSync_content_error').show();
+            }
+            console.log(data);
+        }, "json");
+    });
+    netuno.loadValidationDev('managementForm');
+  })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
+</script>

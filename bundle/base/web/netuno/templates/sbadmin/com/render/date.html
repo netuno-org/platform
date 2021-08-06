@@ -1,0 +1,23 @@
+<div class="row">
+    <div class="col-xs-7">
+        <div class="input-group date" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}_" style="position: relative;">
+            <input type="text" class="form-control" name="_{data=name}" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}" value="_{data=com.date.value}" maxlength="10" validation="_{data=com.date.validation} date" />
+            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+        </div>
+    </div>
+</div>
+<script>
+    (function () {
+        if (typeof $ !== 'undefined') {
+            $('#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}').on('click', function (e) {
+                $('.datepicker').css('z-index', 1000000);
+                e.preventDefault();
+                e.stopPropagation();
+            }).on('focus', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            netuno.com.date.load("_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}", "_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}_");
+        }
+    })();
+</script>

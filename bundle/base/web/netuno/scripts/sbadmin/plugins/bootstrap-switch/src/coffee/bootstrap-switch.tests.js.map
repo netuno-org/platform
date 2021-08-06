@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "bootstrap-switch.tests.js",
+  "sourceRoot": "",
+  "sources": [
+    "bootstrap-switch.tests.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA,QAAA,CAAS,kBAAT,EAA6B,QAAA,CAAA,CAAA;AAE3B,QAAA,aAAA,EAAA;IAAA,UAAA,CAAW,QAAA,CAAA,CAAA;MACT,CAAC,CAAC,OAAO,CAAC,UAAV,GAAuB;aACvB,CAAC,CAAC,EAAE,CAAC,GAAL,GAAW;IAFF,CAAX;IAIA,SAAA,CAAU,QAAA,CAAA,CAAA;aACR,CAAA,CAAE,CAAA,CAAA,CAAA,CAAI,CAAC,CAAC,EAAE,CAAC,eAAe,CAAC,QAAQ,CAAC,SAAlC,CAAA,CAAF,CAAgD,CAAC,eAAjD,CAAiE,SAAjE;IADQ,CAAV;IAGA,aAAA,GAAgB,QAAA,CAAA,CAAA;aACd,CAAA,CAAE,SAAF,EACE;QAAA,IAAA,EAAM,UAAN;QACA,KAAA,EAAO;MADP,CADF,CAGC,CAAC,QAHF,CAGW,MAHX;IADc;IAMhB,UAAA,GAAa,QAAA,CAAC,QAAD,CAAA;aACX,QAAQ,CAAC,IAAT,CAAc,kBAAd,CAAiC,CAAC;IADvB;IAGb,EAAA,CAAG,iEAAH,EAAsE,QAAA,CAAA,CAAA;AACpE,UAAA;MAAA,OAAA,GAAU,aAAA,CAAA,CAAe,CAAC,IAAhB,CAAqB,SAArB,EAAgC,IAAhC,CAAqC,CAAC,eAAtC,CAAA;aACV,MAAA,CAAO,UAAA,CAAW,OAAX,CAAP,CAA2B,CAAC,OAA5B,CAAoC,CAAC,CAAC,EAAE,CAAC,eAAe,CAAC,QAAzD;IAFoE,CAAtE;WAIA,EAAA,CAAG,0DAAH,EAA+D,QAAA,CAAA,CAAA;AAC7D,UAAA,OAAA,EAAA;MAAA,OAAA,GAAU,aAAA,CAAA,CAAe,CAAC,IAAhB,CAAqB,SAArB,EAAgC,KAAhC,CAAsC,CAAC,eAAvC,CAAA;MACV,QAAA,GAAW,aAAA,CAAA,CAAe,CAAC,eAAhB,CAAgC;QAAA,KAAA,EAAO;MAAP,CAAhC;MACX,MAAA,CAAO,UAAA,CAAW,OAAX,CAAmB,CAAC,KAA3B,CAAiC,CAAC,IAAlC,CAAuC,KAAvC;aACA,MAAA,CAAO,UAAA,CAAW,QAAX,CAAoB,CAAC,KAA5B,CAAkC,CAAC,IAAnC,CAAwC,KAAxC;IAJ6D,CAA/D;EAtB2B,CAA7B;AAAA",
+  "sourcesContent": [
+    "describe \"Bootstrap Switch\", ->\n\n  beforeEach ->\n    $.support.transition = false\n    $.fx.off = true\n\n  afterEach ->\n    $(\".#{$.fn.bootstrapSwitch.defaults.baseClass}\").bootstrapSwitch \"destroy\"\n\n  createElement = ->\n    $(\"<input>\",\n      type: \"checkbox\"\n      class: \"switch\"\n    ).appendTo \"body\"\n\n  getOptions = ($element) ->\n    $element.data(\"bootstrap-switch\").options\n\n  it \"should set the default options as element options, except state\", ->\n    $switch = createElement().prop(\"checked\", true).bootstrapSwitch()\n    expect(getOptions($switch)).toEqual $.fn.bootstrapSwitch.defaults\n\n  it \"should override default options with initialization ones\", ->\n    $switch = createElement().prop(\"checked\", false).bootstrapSwitch()\n    $switch2 = createElement().bootstrapSwitch state: false\n    expect(getOptions($switch).state).toBe false\n    expect(getOptions($switch2).state).toBe false\n"
+  ]
+}

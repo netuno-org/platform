@@ -1,0 +1,18 @@
+<div class="row title-row">
+	<div class="col-lg-12">
+		<h1 class="page-header">
+			<i class="fa fa-edit"></i> _{&lang=netuno.form.button.report}
+			<span class="badge badge-warning">_{&data=displayname}</span>
+		</h1>
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<i class="fa fa-area-chart"></i> _{&lang=netuno.menu.reports}
+			</li>
+			<li class="breadcrumb-item active">
+				_{&data=displayname}
+			</li>
+		</ol>
+	</div>
+</div>
+<form role="form" id="netuno-report-_{config=netuno_form_name}-form-_{util=requestuuid}" name="netuno_report__{config=netuno_form_name}_form" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="netuno_report_uid" value="_{request=netuno_report_uid}" />

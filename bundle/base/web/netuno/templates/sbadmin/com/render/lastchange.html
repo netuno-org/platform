@@ -1,0 +1,17 @@
+<div class="row" id="_{config=netuno_form_name}__{data=name}__{config=netuno_form_mode}">
+    <div class="col-md-4">
+        <input type="hidden" name="lastchange_user_id" id="_{config=netuno_form_name}__{data=name}__{config=netuno_form_mode}_user_uid" data-value="_{data=com.lastchange.user_uid}" />
+    </div>
+    <div class="col-md-8">
+        <div class="input-daterange input-group" id="_{config=netuno_form_name}__{data=name}__{config=netuno_form_mode}_range">
+            <span class="input-group-addon">_{lang=netuno.com.lastchange.from}</span>
+            <input type="text" class="input-sm form-control" name="lastchange_time_from" />
+            <span class="input-group-addon">_{lang=netuno.com.lastchange.until}</span>
+            <input type="text" class="input-sm form-control" name="lastchange_time_until" />
+        </div>
+    </div>
+</div>
+<script>
+    netuno.com.select.load("_{config=netuno_form_name}__{data=name}__{config=netuno_form_mode}_user_uid", "_{data=uid}", "LastChange_{netuno-config=extension}");
+    netuno.com.datetime.load("_{config=netuno_form_name}__{data=name}__{config=netuno_form_mode}_range", "_{config=netuno_form_name}__{data=name}__{config=netuno_form_mode}");
+</script>

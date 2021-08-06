@@ -1,0 +1,25 @@
+
+<div class="rules-item-container">
+    <div class="row">
+        <div class="col-4">
+            _{&data=rule.displayname}
+            <div class="rules-item-fields">
+                _{&data=rule.fields}
+            </div>
+        </div>
+        <div class="col-2">
+            _{data=rule.active}
+        </div>
+        <div class="col-2">
+            _{data=rule.permission.read}
+        </div>
+        <div class="col-2">
+            _{data=rule.permission.write}
+        </div>
+        <div class="col-2">
+            _{data=rule.permission.delete}
+        </div>
+    </div>
+    <hr>
+    _{data=rules.children}
+</div>

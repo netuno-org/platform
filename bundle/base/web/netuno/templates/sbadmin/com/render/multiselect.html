@@ -1,0 +1,7 @@
+<div>
+<select name="_{data=name}[]" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}" validation="_{data=com.multiselect.validation}" netuno-select-uid="_{data=uid}" netuno-select-service="_{data=com.multiselect.service}" multiple="multiple" style="width: 100%;">
+    #foreach($item in $data.get('com.multiselect.items'))
+    <option value="$item.getString('uid')" selected>$item.getString('label')</option>
+    #end
+</select>
+</div>

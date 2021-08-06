@@ -1,0 +1,21 @@
+
+<form id="formCoderEditor" name="formCoderEditor" method="post" action="coder/Editor_{netuno-config=extension}">
+    <input type="hidden" name="file" value="">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <textarea id="managementCoderEditor" name="code" class="form-control" rows="10" code-editor="text/x-plsql">_{&request=query}</textarea>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="buttons">
+    <button id="managementCoderButtonSave" type="button" class="btn btn-primary">_{lang=netuno.form.button.save}</button>
+</div>
+<script>
+    (function (netuno, $) {
+        $('#managementQueryButtonRun').on("click", function () {
+            netuno.submitDev('management_query', 'formQuery', false);
+        });
+    })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
+</script>

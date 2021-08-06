@@ -1,0 +1,13 @@
+<input type="text" class="form-control" name="_{data=name}" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}" value="_{&data=com.text.value}" size="_{data=com.text.size}" maxlength="_{data=com.text.maxlength}" validation="_{data=com.text.validation}" data-mask="_{data=com.text.mask}" data-mask-reverse="_{data=com.text.mask.reverse}" data-mask-selectonfocus="_{data=com.text.mask.selectonfocus}" />
+<script>
+     (function () {
+        if (typeof $ !== 'undefined') {
+            var input = $('#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}');
+            if (input.attr('validation').indexOf('numeric') > -1) {
+                input.change(function() {
+                    input.val(input.val().trim());
+                });
+            }
+        }
+     })();
+</script>

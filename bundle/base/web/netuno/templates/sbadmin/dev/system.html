@@ -1,0 +1,45 @@
+
+<div data-widget-host="habitat" class="preview"><script type="text/props">{ "color": "red"}</script></div>
+<script async src="/netuno/dev/scripts/sbadmin/widgets/system/build/bundle.js"></script>
+
+<div id="system">
+    <h1>System</h1>
+    <div class="row">
+        <div class="col-sm-6">
+            <h4>CPU</h4>
+            <p>
+                _{data=cpu|model}
+            </p>
+            <p>
+                _{data=cpu|cores} Cores
+            </p>
+            <p>
+                _{data=cpu|vcores} Virtual Cores
+            </p>
+        </div>
+        <div class="col-sm-6">
+            <h4>Memory</h4>
+            <p>
+                Available: _{data=memory|available}
+            </p>
+            <p>
+                Used: _{data=memory|used}
+            </p>
+            <p>
+                Total: _{data=memory|total}
+            </p>
+        </div>
+        <div class="col-sm-6">
+            <h4>Disk</h4>
+            <p>
+                Available: _{data=disk|available}
+            </p>
+            <p>
+                Used: _{data=disk|used}
+            </p>
+            <p>
+                Total: _{data=disk|total}
+            </p>
+        </div>
+    </div>
+</div>

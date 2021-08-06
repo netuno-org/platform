@@ -1,0 +1,7 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Server modules dependencies.",
+  "author": "netuno.org",
+  "license": "ISC"
+}

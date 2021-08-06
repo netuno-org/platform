@@ -1,0 +1,21 @@
+// Orange rtl overrides
+//
+//
+
+@import "mixins";
+
+// invert chevrons
+
+.svg-arrow-previous {
+  @include svg-arrow-next("#000");
+}
+
+.svg-arrow-next {
+  @include svg-arrow-previous("#000");
+}
+
+// rotate stepbar chevrons
+.stepbar-item::after {
+  transform: rotateY(180deg);
+}
+

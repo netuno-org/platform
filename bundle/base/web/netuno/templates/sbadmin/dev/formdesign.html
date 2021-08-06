@@ -1,0 +1,383 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">
+      <i class="fa fa-edit"></i> _{&lang=netuno.dev.formdesign.title} <span class="badge badge-warning">_{&data=table.displayname}</span>
+      <!-- <button id="buttonFormDesign__{data=table.name}_new" type="button" class="btn btn-default btn-action">
+         _{&lang=netuno.dev.formdesign.button.clear_fields}
+      </button> -->
+    </h1>
+    <ol class="breadcrumb">
+      <li>
+        <i class="fa fa-edit"></i> _{&lang=netuno.menu.forms}
+      </li>
+      <li>
+        _{&data=table.displayname}
+      </li>
+    </ol>
+  </div>
+</div>
+
+<form id="formDesign__{data=table.uid}" name="formDesign__{data=table.name}" method="post" action="FormDesign_{netuno-config=extension}?netuno_table_uid=_{data=table.uid}">
+  <input type="hidden" name="execute" id="fieldFormDesign__{data=table.name}_execute" value=""/>
+  <input type="hidden" name="copy" id="fieldFormDesign__{data=table.name}_copy" value="0"/>
+  <div class="row netuno_form">
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="col-xs-8">
+          <div class="form-group">
+            <h2>_{&lang=netuno.dev.formdesign.label.edit_existing}</h2>
+            <p>
+              <select class="form-control" id="fieldFormDesign__{data=table.name}_uid" name="uid">
+                <option value="">_{&lang=netuno.dev.formdesign.label.creating_new}</option>
+                _{data=field.items}
+              </select>
+            </p>
+            <p>
+              <button id="buttonFormDesign__{data=table.name}_new" type="button" class="btn btn-default">
+                _{&lang=netuno.dev.formdesign.label.creating_new}
+              </button>
+            </p>
+          </div>
+        </div>
+        <div class="col-xs-4">
+          <div class="form-group">
+            <h2>_{&lang=netuno.dev.formdesign.label.clone_existing_field}</h2>
+            <p>
+              <button id="buttonFormDesign__{data=table.name}_copy" type="button" class="btn btn-default">
+                <i class="fa fa-copy"></i> _{&lang=netuno.dev.formdesign.label.clone}
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        #if($data.getString("uid.value").isEmpty())
+        <div class="col-md-12">
+          <div class="sub-title">
+            <h2>_{&lang=netuno.dev.formdesign.label.add_new_field}</h2>
+          </div>
+        </div>
+        #end
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="fieldFormDesign__{data=table.name}_displayName">* _{&lang=netuno.dev.formdesign.label.displayname}</label>
+            <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_displayName" name="displayname" value="_{&data=displayname.value}" size="40" validation="required">
+          </div>
+          <div class="form-group">
+            <label for="fieldFormDesign__{data=table.name}_name">* _{&lang=netuno.dev.formdesign.label.name}</label>
+            <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_name" name="name" value="_{&data=name.value}"
+              size="40" validation="required sqlname">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="fieldFormDesign__{data=table.name}_primaryKey" name="primarykey" value="true"_{data=primarykey.checked}/>
+                  _{&lang=netuno.dev.formdesign.label.primarykey}
+                </label>
+                <br>
+                <label>
+                  <input type="checkbox" id="fieldFormDesign__{data=table.name}_whenFilter" name="whenfilter" value="true"_{data=whenfilter.checked}/>
+                  _{&lang=netuno.dev.formdesign.label.whenfilter}
+                </label>
+                <br>
+                <label>
+                  <input type="checkbox" id="fieldFormDesign__{data=table.name}_whenView" name="whenview" value="true"_{data=whenview.checked}/>
+                  _{&lang=netuno.dev.formdesign.label.whenview}
+                </label>
+                <br>
+                <label>
+                  <input type="checkbox" id="fieldFormDesign__{data=table.name}_whenNew" name="whennew" value="true"_{data=whennew.checked}/>
+                  _{&lang=netuno.dev.formdesign.label.whennew}
+                </label>
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="fieldFormDesign__{data=table.name}_notNull" name="notnull" value="true"_{data=notnull.checked}/>
+                  _{&lang=netuno.dev.formdesign.label.notnull}
+                </label>
+                <br>
+                <label>
+                  <input type="checkbox" id="fieldFormDesign__{data=table.name}_whenResult" name="whenresult" value="true"_{data=whenresult.checked}/>
+                  _{&lang=netuno.dev.formdesign.label.whenresult}
+                </label>
+                <br>
+                <label>
+                  <input type="checkbox" id="fieldFormDesign__{data=table.name}_whenEdit" name="whenedit" value="true"_{data=whenedit.checked}/>
+                  _{&lang=netuno.dev.formdesign.label.whenedit}
+                </label>
+                <br>
+                <label>
+                  <input type="checkbox" id="fieldFormDesign__{data=table.name}_whenExport" name="whenexport" value="true"_{data=whenexport.checked}/>
+                  _{&lang=netuno.dev.formdesign.label.whenexport}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="fieldFormDesign__{data=table.name}_type">_{&lang=netuno.dev.formdesign.label.type}</label>
+            <select required class="form-control" id="fieldFormDesign__{data=table.name}_type" name="type">
+              <option value=""></option>
+              _{data=type.items}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="row">
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_x">_{&lang=netuno.dev.formdesign.label.x}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_x" name="x" value="_{data=x.value}" size="2" maxlength="2" validation="required number">
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_y">_{&lang=netuno.dev.formdesign.label.y}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_y" name="y" value="_{data=y.value}" size="2" maxlength="2" validation="required number">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      #if($_firebase.active())
+      <div class="form-group">
+        <label for="fieldFormDesign__{data=table.name}_firebase">Firebase</label>
+        <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_firebase" name="firebase" value="_{data=firebase.value}" size="50">
+      </div>
+      #end
+
+      <div id="fieldFormDesign__{data=table.name}_componentConfiguration"></div>
+
+      <div class="more-options">
+        <button class="btn btn-link btn-plus" type="button" data-toggle="collapse" data-target="#fieldFormDesign__{data=table.name}__{util=requestuuid}_collapseMore" aria-expanded="false"
+          aria-controls="fieldFormDesign__{data=table.name}__{util=requestuuid}_collapseMore">
+          <span class="text-primary">
+            <i class="fa fa-plus"></i> _{&lang=netuno.dev.formdesign.label.view_more_options}
+          </span>
+        </button>
+
+        <div class="collapse" id="fieldFormDesign__{data=table.name}__{util=requestuuid}_collapseMore">
+          <div class="row">
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_width">_{&lang=netuno.dev.formdesign.label.width}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_width" name="width" value="_{data=width.value}"
+                  size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_height">_{&lang=netuno.dev.formdesign.label.height}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_height" name="height" value="_{data=height.value}"
+                  size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_max">_{&lang=netuno.dev.formdesign.label.max}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_max" name="max" value="_{data=max.value}"
+                  size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_min">_{&lang=netuno.dev.formdesign.label.min}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_min" name="min" value="_{data=min.value}"
+                  size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_tdWidth">_{&lang=netuno.dev.formdesign.label.tdwidth}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_tdWidth" name="tdwidth" value="_{data=tdwidth.value}"
+                  size="2" maxlength="3">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_tdHeight">_{&lang=netuno.dev.formdesign.label.tdheight}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_tdHeight" name="tdheight" value="_{data=tdheight.value}"
+                  size="2" maxlength="3">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_colSpan">_{&lang=netuno.dev.formdesign.label.colspan}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_colSpan" name="colspan" value="_{data=colspan.value}"
+                  size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_rowSpan">_{&lang=netuno.dev.formdesign.label.rowspan}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_rowSpan" name="rowspan" value="_{data=rowspan.value}"
+                  size="2" maxlength="3" validation="number">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_userView">_{&lang=netuno.dev.formdesign.label.user.view}</label>
+                <select class="form-control" name="view_user_uid" id="fieldFormDesign__{data=table.name}_userView">
+                  <option value="0" _{data=view.user.all.selected}>_{&lang=netuno.dev.formdesign.label.user.all}</option>
+                  _{data=view.user.options}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_groupView">_{&lang=netuno.dev.formdesign.label.group.view}</label>
+                <select class="form-control" name="view_group_uid" id="fieldFormDesign__{data=table.name}_groupView">
+                  <option value="0" _{data=view.group.all.selected}>_{&lang=netuno.dev.formdesign.label.group.all}</option>
+                  _{data=view.group.options}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_userEdit">_{&lang=netuno.dev.formdesign.label.user.edit}</label>
+                <select class="form-control" name="edit_user_uid" id="fieldFormDesign__{data=table.name}_userEdit">
+                  <option value="0" _{data=edit.user.all.selected}>_{&lang=netuno.dev.formdesign.label.user.all}</option>
+                  _{data=edit.user.options}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3 col-xs-6">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_groupEdit">_{&lang=netuno.dev.formdesign.label.group.edit}</label>
+                <select class="form-control" name="edit_group_uid" id="fieldFormDesign__{data=table.name}_groupEdit">
+                  <option value="0" _{data=edit.group.all.selected}>_{&lang=netuno.dev.formdesign.label.group.all}</option>
+                  _{data=edit.group.options}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<div class="buttons">
+	<button id="buttonFormDesign__{data=table.name}_save" type="button" class="btn btn-primary">
+      <i class="fa fa-check"></i> _{&lang=netuno.form.button.save}
+    </button>
+    <button id="buttonFormDesign__{data=table.name}_clear" type="button" class="btn btn-default">
+      _{&lang=netuno.dev.formdesign.button.clear_fields}
+    </button>
+	  <button id="buttonFormDesign__{data=table.name}_delete" type="button" class="btn btn-link"  data-toggle="modal" data-target="#modalFormDesign__{data=table.name}_delete">
+      <span class="text-danger">
+        <i class="fa fa-trash"></i> _{&lang=netuno.form.button.delete}
+      </span>
+    </button>
+</div>
+
+<div id="modalFormDesign__{data=table.name}_delete" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{&data=displayname.value}</h4>
+      </div>
+      <div class="modal-body">
+        <p>_{&lang=netuno.dev.formdesign.confirm.delete.text}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.no}</button>
+        <button type="button" id="buttonFormDesign__{data=table.name}_delete_yes" class="btn btn-danger">_{&lang=netuno.form.button.yes}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="componentConfig_{request=netuno_table_uid}LinkModalSelect" tabindex="-1" role="dialog" data-table-uid="_{data=table.uid}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{data=parameter.displayname}</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" style="float: left" data-netuno-back>_{&lang=netuno.form.button.back}</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.close}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function (netuno, $) {
+    $('#fieldFormDesign__{data=table.name}_displayName').on('keyup', function () {
+        var that = $(this);
+        $('#fieldFormDesign__{data=table.name}_name').val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
+    });
+    $("#fieldFormDesign__{data=table.name}_uid").on("change", function () {
+      netuno.loadDevFormField('_{data=table.name}', $(this).val());
+    });
+    $("#fieldFormDesign__{data=table.name}_type").on("change", function () {
+      netuno.componentConfig.load("form", "_{request=netuno_table_uid}");
+      var name = $('#fieldFormDesign__{data=table.name}_name').val();
+      var endsWithId = name.indexOf("_id") == name.length - 3;
+      if ($("#fieldFormDesign__{data=table.name}_type").val() == 'select') {
+        if (!endsWithId) {
+          $('#fieldFormDesign__{data=table.name}_name').val(name + "_id");
+        }
+      } else if (endsWithId) {
+        $('#fieldFormDesign__{data=table.name}_name').val(name.substring(0, name.length - 3));
+      }
+    });
+    netuno.componentConfig.load("form", "_{request=netuno_table_uid}");
+    $('#buttonFormDesign__{data=table.name}_new,#buttonFormDesign__{data=table.name}_clear').on("click", function () {
+      $('#fieldFormDesign__{data=table.name}_execute').val('new');
+      $('#fieldFormDesign__{data=table.name}_uid').val('');
+      if (!netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false)) {
+        $('#fieldFormDesign__{data=table.name}_execute').val('');
+      }
+    });
+    $('#buttonFormDesign__{data=table.name}_save').on("click", function () {
+      $('#fieldFormDesign__{data=table.name}_execute').val('save');
+      if (!netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', true)) {
+        $('#fieldFormDesign__{data=table.name}_execute').val('');
+      }
+    });
+    $('#buttonFormDesign__{data=table.name}_delete_yes').on("click", function () {
+      $('#fieldFormDesign__{data=table.name}_execute').val('delete');
+      $('#buttonFormDesign__{data=table.name}_delete').modal('hide');
+      if (!netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false, function () {
+          $('body').removeClass('modal-open');
+          $('.modal-backdrop').remove();
+      })) {
+        $('#fieldFormDesign__{data=table.name}_execute').val('');
+      }
+    });
+    $('#buttonFormDesign__{data=table.name}_copy').on("click", function () {
+      $('#fieldFormDesign__{data=table.name}_execute').val('new');
+      $('#fieldFormDesign__{data=table.name}_uid').val('');
+      netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false, function () {
+        $('#fieldFormDesign__{data=table.name}_execute').val('');
+        netuno.componentConfig.link.select('_{request=netuno_table_uid}', function (field, uid) {
+            $('#fieldFormDesign__{data=table.name}_execute').val('copy');
+            $('#fieldFormDesign__{data=table.name}_copy').val(uid);
+            $('#fieldFormDesign__{data=table.name}_uid').val('');
+            netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false);
+        });
+      });
+    });
+    netuno.loadValidationDev('formDesign__{data=table.uid}');
+  })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
+</script>

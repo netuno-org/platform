@@ -1,0 +1,28 @@
+<tr class="filesystem_list_item">
+    <td>
+        <span class="filesystem_icon filesystem_item_type__{data=com.filesystem.item.type}" onclick="$.netuno.fileSystem.openItem('_{data=com.filesystem.item.id}', '_{data=com.filesystem.item.type}', '_{data=com.filesystem.item.path}');"></span>
+    <td>
+    <td style="width: 100%;">
+        <div id="netunoFormFileSystemListItemEdit_{data=com.filesystem.item.id}" class="filesystem_list_item_edit" style="display: none;">
+            <input type="text" id="netunoFormFileSystemListItemEditField_{data=com.filesystem.item.id}" name="folder" value="_{data=com.filesystem.item.name}" size="50" />
+            <span class="filesystem_icon filesystem_item_rename" onclick="$.netuno.fileSystem.renameItem('_{data=com.filesystem.item.id}');"></span>
+        </div>
+        <div id="netunoFormFileSystemListItemName_{data=com.filesystem.item.id}" class="filesystem_list_item_name" onclick="$.netuno.fileSystem.openItem('_{data=com.filesystem.item.id}', '_{data=com.filesystem.item.type}', '_{data=com.filesystem.item.path}');">
+            &nbsp; <span id="netunoFormFileSystemListItemNameText_{data=com.filesystem.item.id}">_{data=com.filesystem.item.name}</span>
+        </div>
+    </td>
+    <td class="filesystem_list_item_actions">
+        <span class="filesystem_icon filesystem_item_select" onclick="$.netuno.fileSystem.selectItem('_{data=com.filesystem.field}', '_{netuno-config=url-file-system}', '_{data=com.filesystem.item.path}');"></span>
+        <span class="filesystem_icon filesystem_item_edit" onclick="$.netuno.fileSystem.initEditItem('_{data=com.filesystem.item.id}');"></span>
+        &nbsp;
+        <span class="filesystem_icon filesystem_item_delete" onclick="$.netuno.fileSystem.initDeleteItem('_{data=com.filesystem.item.id}');"></span>
+        <div id="netunoFormFileSystemListItemDeleteConfirmation_{data=com.filesystem.item.id}" style="display: none;">
+            <h2 class="popupTitle">_{data=com.filesystem.item.name}</h2>
+            <p>_{lang=netuno.com.filesystem.delete.confirm}</p>
+            <div class="netuno_buttons">
+                <button type="button" class="paris glyph no" onclick="$.netuno.fileSystem.deleteItemConfirmationModal.modal('destroy');">_{lang=netuno.form.button.no}</button>
+                <button type="button" class="sugar glyph yes" onclick="$.netuno.fileSystem.deleteItem('_{data=com.filesystem.item.id}');">_{lang=netuno.form.button.yes}</button>
+            </div>
+        </div>
+    </td>
+</tr>

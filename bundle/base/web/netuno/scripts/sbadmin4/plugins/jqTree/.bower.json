@@ -1,0 +1,29 @@
+{
+  "name": "jqTree",
+  "version": "1.4.9",
+  "main": [
+    "jqtree.css",
+    "jqtree-circle.png",
+    "tree.jquery.js"
+  ],
+  "dependencies": {
+    "jquery": ">=1.9"
+  },
+  "license": "Apache-2.0",
+  "ignore": [],
+  "keywords": [
+    "jquery-plugin",
+    "tree"
+  ],
+  "homepage": "https://github.com/mbraak/jqTree",
+  "_release": "1.4.9",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.4.9",
+    "commit": "eacd3fa6ff09d28914ace61872c476ee074bc472"
+  },
+  "_source": "https://github.com/mbraak/jqTree.git",
+  "_target": "^1.4.9",
+  "_originalSource": "jqtree",
+  "_direct": true
+}

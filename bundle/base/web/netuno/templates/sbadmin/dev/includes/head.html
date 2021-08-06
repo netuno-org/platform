@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="icon" href="_{netuno-config=url-app-images}/icon.png" type="image/x-icon"/>
+    <link rel="shortcut icon" href="_{netuno-config=url-app-images}/icon.png" type="image/x-icon"/>
+
+    <title>_{netuno-config=title} ~ DEV</title>
+
+    <link href="_{netuno-config=url-styles}/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-styles}/sb-admin.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/toastr/toastr.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/datatables-tabletools/css/dataTables.tableTools.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/datatables-plugins-bootstrap3/dist/css/datatables-plugins-bootstrap3.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/select2/dist/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/select2-bootstrap-theme/dist/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/codemirror/lib/codemirror.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/codemirror/addon/hint/show-hint.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/jqTree/jqtree.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-scripts}/plugins/blueimp-file-upload/css/jquery.fileupload.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-theme}/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-styles}/netuno.css?_{netuno-config=build-number}" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-dev-styles}/netuno.dev.css?_{netuno-config=build-number}" rel="stylesheet" type="text/css" />
+    _{include=styles_dev}
+    <script src="_{netuno-config=url-scripts}/netuno/base.js?_{netuno-config=build-number}"></script>
+
+    <script>
+        netuno.config.isAdmin = function () { return '_{data=user.admin}' == 'true'; };
+        netuno.config.user = function () { return '_{data=user}'; };
+        netuno.config.userCode = function () { return '_{&data=user.code}'; };
+        netuno.config.userName = function () { return '_{&data=user.name}'; };
+        netuno.config.groupCode = function () { return '_{&data=group.code}'; };
+        netuno.config.groupName = function () { return '_{&data=group.name}'; };
+        netuno.config.extension = '_{netuno-config=extension}';
+        netuno.config.urlAdmin = '_{netuno-config=url-admin}';
+        netuno.config.urlImages = '_{netuno-config=url-images}';
+        netuno.config.urlScripts = '_{netuno-config=url-scripts}';
+        netuno.config.urlStyles = '_{netuno-config=url-styles}';
+        netuno.config.urlAppImages = '_{netuno-config=url-app-images}';
+        netuno.config.urlAppScripts = '_{netuno-config=url-app-scripts}';
+        netuno.config.urlAppStyles = '_{netuno-config=url-app-styles}';
+        netuno.config.urlFileSystem = '_{netuno-config=url-file-system}';
+        netuno.config.urlFileSystemDB = '_{netuno-config=url-file-system-db}';
+        netuno.config.dataTable = _{lang=netuno.search.datatable};
+        netuno.config.validation = {};
+        netuno.config.validation.message = _{lang=netuno.validation};
+        netuno.config.com = {
+            lang: {
+                select: {
+                    defaulttext: '_{lang=netuno.com.select.defaulttext}',
+                    searching: '_{lang=netuno.com.select.searching}',
+                    noresults: '_{lang=netuno.com.select.noresults}'
+                },
+                selectpath: {
+                    defaulttext: '_{lang=netuno.com.selectpath.defaulttext}',
+                    searching: '_{lang=netuno.com.selectpath.searching}',
+                    noresults: '_{lang=netuno.com.selectpath.noresults}'
+                },
+                lastchange: {
+                    defaulttext: '_{lang=netuno.com.lastchange.defaulttext}',
+                    searching: '_{lang=netuno.com.lastchange.searching}',
+                    noresults: '_{lang=netuno.com.lastchange.noresults}'
+                },
+                multiselect: {
+                    defaulttext: '_{lang=netuno.com.multiselect.defaulttext}',
+                    searching: '_{lang=netuno.com.multiselect.searching}',
+                    noresults: '_{lang=netuno.com.multiselect.noresults}'
+                },
+                filesystem: {
+                    deleteconfirm: '_{lang=netuno.com.filesystem.delete.confirm}'
+                }
+            }
+        };
+        netuno.lang = {
+            "menu.forms": "_{&lang=netuno.menu.fields}",
+            "menu.reports": "_{&lang=netuno.menu.reports}"
+        };
+
+        netuno.config.urlDevImages = '_{netuno-config=url-dev-images}';
+        netuno.config.urlDevScripts = '_{netuno-config=url-dev-scripts}';
+
+    </script>
+</head>
+<body>

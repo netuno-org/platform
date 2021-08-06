@@ -1,0 +1,182 @@
+</tr>
+</thead>
+<tbody>
+
+</tbody>
+</table>
+<hr/>
+<div class="row">
+    <div class="col-sm-6">
+        <h2 id="netuno-form-search-table-_{util=requestuuid}-bulk-title">_{&lang=netuno.search.bulk.title}<span></span></h2>
+        <input type="checkbox" name="active" id="netuno-form-search-table-_{util=requestuuid}-bulk-checkbox" class="form-control" style="margin-top: 5px;" value="1" onchange="netuno.netunoFormSearchTableBulk__{data=name}__{util=requesttime}()"/>
+        <button type="button" class="btn btn-link" style="display: none; margin-left: 5px;"
+            data-toggle="confirmation"
+            data-btn-ok-label="_{&lang=netuno.form.button.yes}"
+            data-btn-ok-class="btn-danger"
+            data-btn-ok-icon="fa fa-trash"
+            data-btn-cancel-label="_{&lang=netuno.form.button.no}"
+            data-btn-cancel-class="btn-default"
+            data-btn-cancel-icon="fa fa-check"
+            data-title="_{&data=displayname}"
+            data-content="_{&lang=netuno.search.bulk.confirmation.delete}"
+            id="netuno-form-search-table-_{util=requestuuid}-bulk-delete">
+            <span class="text-danger">
+                <i class="fa fa-trash"></i> _{&lang=netuno.search.bulk.button.delete}
+            </span>
+        </button>
+        <button type="button" class="btn btn-default" style="display: none;"
+            data-toggle="confirmation"
+            data-btn-ok-label="_{&lang=netuno.form.button.yes}"
+            data-btn-ok-class="btn-danger"
+            data-btn-ok-icon="fa fa-trash"
+            data-btn-cancel-label="_{&lang=netuno.form.button.no}"
+            data-btn-cancel-class="btn-default"
+            data-btn-cancel-icon="fa fa-check"
+            data-title="_{&data=displayname}"
+            data-content="_{&lang=netuno.search.bulk.confirmation.inactive}"
+            id="netuno-form-search-table-_{util=requestuuid}-bulk-inactive">
+            _{&lang=netuno.search.bulk.button.inactive}
+        </button>
+        <div style="padding-top: 5px; padding-bottom: 5px;">
+            <button type="button" class="btn btn-link" style="display: none;"
+                id="netuno-form-search-table-_{util=requestuuid}-bulk-select-all-page">
+                _{&lang=netuno.search.bulk.button.select_all_page}
+            </button>
+            <button type="button" class="btn btn-link" style="display: none;"
+                id="netuno-form-search-table-_{util=requestuuid}-bulk-unselect-all-page">
+                _{&lang=netuno.search.bulk.button.unselect_all_page}
+            </button>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        #if($data.getBoolean('export_xls') || $data.getBoolean('export_xml') || $data.getBoolean('export_json'))
+        <div class="export-content">
+            <h2>_{&lang=netuno.form.button.export}</h2>
+            #if($data.getBoolean('export_xls'))
+            <button type="button" class="btn btn-default" onclick="netuno.downloadProgress('Search_{netuno-config=extension}?netuno_action=export_xls&'+ $('#netuno-form-_{config=netuno_form_name}-search-_{util=requestuuid}').serialize());">EXCEL</button>
+            #end
+            #if($data.getBoolean('export_xml'))
+            <button type="button" class="btn btn-default" onclick="netuno.downloadProgress('Search_{netuno-config=extension}?netuno_action=export_xml&'+ $('#netuno-form-_{config=netuno_form_name}-search-_{util=requestuuid}').serialize());">XML</button>
+            #end
+            #if($data.getBoolean('export_json'))
+            <button type="button" class="btn btn-default" onclick="netuno.downloadProgress('Search_{netuno-config=extension}?netuno_action=export_json&'+ $('#netuno-form-_{config=netuno_form_name}-search-_{util=requestuuid}').serialize());">JSON</button>
+            #end
+        </div>
+        #end
+    </div>
+</div>
+<script>
+    (function () {
+        if (typeof $ !== 'undefined') {
+            var tableId = 'netuno-form-search-table-_{util=requestuuid}';
+            netuno.loadFormSearchDataTable($('#'+ tableId));
+
+            var bulk = {
+                title: $('#netuno-form-search-table-_{util=requestuuid}-bulk-title'),
+                checkbox: $('#netuno-form-search-table-_{util=requestuuid}-bulk-checkbox'),
+                inactive: $('#netuno-form-search-table-_{util=requestuuid}-bulk-inactive'),
+                delete: $('#netuno-form-search-table-_{util=requestuuid}-bulk-delete'),
+                selectAllPage: $('#netuno-form-search-table-_{util=requestuuid}-bulk-select-all-page'),
+                unselectAllPage: $('#netuno-form-search-table-_{util=requestuuid}-bulk-unselect-all-page')
+            }
+            var bulkCallback = function (data) {
+                bulk.title.find('span').html("&nbsp;("+ data.uids.length +")");
+                if (data.uids.length > 0 && data.active == true) {
+                    if (bulk.inactive.is(':hidden')) {
+                        bulk.inactive.fadeIn();
+                    }
+                    if (bulk.delete.is(':hidden')) {
+                        bulk.delete.fadeIn();
+                    }
+                } else {
+                    bulk.title.find('span').html("")
+                    if (bulk.inactive.is(':visible')) {
+                        bulk.inactive.fadeOut();
+                    }
+                    if (bulk.delete.is(':visible')) {
+                        bulk.delete.fadeOut();
+                    }
+                }
+            };
+            netuno.netunoFormSearchTableBulk__{data=name}__{util=requesttime} = function() {
+                if (bulk.checkbox.is(':checked')) {
+                    netuno.formSearchDataTableBulkActive(tableId, bulkCallback);
+                    if (bulk.selectAllPage.is(':hidden')) {
+                        bulk.selectAllPage.fadeIn();
+                    }
+                    if (bulk.unselectAllPage.is(':hidden')) {
+                        bulk.unselectAllPage.fadeIn();
+                    }
+                } else {
+                    netuno.formSearchDataTableBulkInactive(tableId)
+                    bulk.title.find('span').html("");
+                    bulk.inactive.fadeOut();
+                    bulk.delete.fadeOut();
+                    bulk.selectAllPage.fadeOut();
+                    bulk.unselectAllPage.fadeOut();
+                }
+            };
+
+            bulk.inactive.confirmation({
+                rootSelector: '#netuno-form-search-table-_{util=requestuuid}-bulk-inactive',
+                container: bulk.inactive.parents('[netuno-form-search]'),
+                title: null,
+                singleton: true,
+                html: true,
+                onConfirm: function () {
+                    netuno.executeFormSearchBulk({
+                        action: 'inactive',
+                        tableId: tableId,
+                        callback: function (response) {
+                            if (!response.result) {
+                                toastr["error"]("_{&lang=netuno.search.bulk.fail.inactive}".split("%s").join(''+ response.fails), "_{&data=displayname}");
+                            }
+                            netuno.formSearchDataTableBulkInactive(tableId)
+                            bulk.checkbox.bootstrapSwitch('state', false);
+                            netuno.loadFormSearchDataTable($('#'+ tableId));
+                        }
+                    });
+                }
+            });
+
+            bulk.delete.confirmation({
+                rootSelector: '#netuno-form-search-table-_{util=requestuuid}-bulk-delete',
+                container: bulk.delete.parents('[netuno-form-search]'),
+                title: null,
+                singleton: true,
+                html: true,
+                onConfirm: function () {
+                    netuno.executeFormSearchBulk({
+                        action: 'delete',
+                        tableId: tableId,
+                        callback: function (response) {
+                            if (!response.result) {
+                                toastr["error"]("_{&lang=netuno.search.bulk.fail.delete}".split("%s").join(''+ response.fails), "_{&data=displayname}");
+                            }
+                            netuno.formSearchDataTableBulkInactive(tableId);
+                            bulk.checkbox.bootstrapSwitch('state', false);
+                            netuno.loadFormSearchDataTable($('#'+ tableId));
+                        }
+                    });
+                }
+            });
+
+            bulk.selectAllPage.on('click', function () {
+                $('#'+ tableId).find('tbody').find('tr').each(function () {
+                    var tr = $(this);
+                    if (!tr.hasClass('selected')) {
+                        tr.trigger('click');
+                    }
+                });
+            });
+            bulk.unselectAllPage.on('click', function () {
+                $('#'+ tableId).find('tbody').find('tr').each(function () {
+                    var tr = $(this);
+                    if (tr.hasClass('selected')) {
+                        tr.trigger('click');
+                    }
+                });
+            });
+        }
+    })();
+</script>

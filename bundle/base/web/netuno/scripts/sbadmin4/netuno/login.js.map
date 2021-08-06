@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "login.js",
+  "sourceRoot": "",
+  "sources": [
+    "login.coffee"
+  ],
+  "names": [],
+  "mappings": ";AACA;EAAA,MAAM,CAAC,WAAP,CAAmB,QAAA,CAAA,CAAA;IACjB,CAAA,CAAE,aAAF,CAAgB,CAAC,EAAjB,CAAoB,QAApB,EAA8B,QAAA,CAAC,CAAD,CAAA;MAC5B,CAAC,CAAC,cAAF,CAAA;aACA,CAAC,CAAC,IAAF,CACE;QAAA,IAAA,EAAM,MAAN;QACA,GAAA,EAAK,CAAA,CAAA,CAAI,MAAM,CAAC,MAAM,CAAC,OAAlB,CAA2B,KAA3B,CAAA,CAAmC,MAAM,CAAC,MAAM,CAAC,SAAjD,CAA4D,aAA5D,CADL;QAEA,IAAA,EAAM;UACJ,aAAA,EAAe,CAAA,CAAE,gBAAF,CAAmB,CAAC,GAApB,CAAA,CADX;UAEJ,aAAA,EAAe,CAAA,CAAE,gBAAF,CAAmB,CAAC,GAApB,CAAA;QAFX,CAFN;QAMA,OAAA,EAAS,QAAA,CAAC,QAAD,CAAA;iBACP,CAAA,CAAE,eAAF,CAAkB,CAAC,IAAnB,CAAwB,QAAxB;QADO;MANT,CADF;IAF4B,CAA9B;IAYA,IAAI,CAAA,CAAE,aAAF,CAAgB,CAAC,EAAjB,CAAoB,4BAApB,CAAJ;aACE,CAAA,CAAE,aAAF,CAAgB,CAAC,OAAjB,CAAyB,QAAzB,EADF;;EAbiB,CAAnB;AAAA",
+  "sourcesContent": [
+    "\nnetuno.addPageLoad () ->\n  $('#formSignIn').on 'submit', (e) ->\n    e.preventDefault()\n    $.ajax\n      type: 'POST'\n      url: \"#{ netuno.config.urlBase }Index#{ netuno.config.extension }?action=login\"\n      data: {\n        'netuno_user': $(\"#inputUserName\").val()\n        'netuno_pass': $(\"#inputPassword\").val()\n      }\n      success: (response) ->\n        $('#login_result').html(response)\n\n  if ($('#formSignIn').is('[netuno-login-auto=\"true\"]'))\n    $('#formSignIn').trigger('submit')\n"
+  ]
+}

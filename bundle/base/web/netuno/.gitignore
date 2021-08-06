@@ -1,0 +1,14 @@
+.idea/
+
+node_modules
+
+.sass-cache
+
+dev/scripts/sbadmin/netuno/base.js
+
+.*.swp
+
+*~
+\#*\#
+.\#*
+

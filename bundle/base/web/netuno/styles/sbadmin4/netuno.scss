@@ -1,0 +1,122 @@
+
+body {
+  background-color: #fff;
+  /* overflow-x: hidden; */
+  margin-top: 50px !important;
+}
+
+.netuno-login {
+  margin-top: 80px;
+  margin-bottom: 80px;
+  .logo {
+    margin-bottom: 40px;
+    > img {
+      width: 100%;
+      max-width: 230px;
+    }
+  }
+}
+
+.navbar-brand {
+  padding: 5px;
+  padding-left: 15px;
+  > img {
+    max-height: 40px;
+  }
+  ul {
+    li:nth-of-type(n+1) a {
+      padding-left: 50px !important;
+    }
+  }
+}
+
+
+.sidebar {
+  width: 200px !important;
+  .nav-item {
+    .nav-link {
+      width: 200px !important;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    width: 250px !important;
+    .nav-item {
+      .nav-link {
+        width: 250px !important;
+      }
+    }
+  }
+}
+
+.sidebar-toggled {
+  #content-wrapper {
+    padding-left: 0;
+  }
+}
+
+.sidebar {
+  &.toggled {
+    width: 0 !important;
+    overflow: hidden;
+  }
+}
+
+.error {
+  color: #a94442;
+  font-weight: normal;
+}
+
+.nav-section-title {
+  width: 100%;
+  color: #666;
+  padding-top: 5px;
+  padding-left: 10px;
+  h4 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.nav-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  .nav-link {
+    text-align: left !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.container-fluid {
+  min-height: calc(100vh - 70px) !important;
+}
+
+.netuno-form-buttons {
+  margin-top: 20px;
+}
+
+.netuno-copy {
+  margin-top: 50px;
+  color: #666666;
+  text-align: center;
+  font-size: 12px;
+}
+
+.btn-default {
+  background-color: #eaeaea;
+}
+
+.netuno-rules-container > div:first-child {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.netuno-rules-item-container > div:nth-child(2) {
+  padding-left: 20px;
+}

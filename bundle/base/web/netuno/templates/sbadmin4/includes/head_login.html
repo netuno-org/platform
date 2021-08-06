@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="icon" href="_{netuno-config=url-app-images}/icon.png" type="image/x-icon"/>
+    <link rel="shortcut icon" href="_{netuno-config=url-app-images}/icon.png" type="image/x-icon"/>
+
+    <title>_{netuno-config=title}</title>
+
+    <link href="_{netuno-config=url-theme}/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-theme}/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-theme}/css/sb-admin.css" rel="stylesheet" type="text/css" />
+
+    <link href="_{netuno-config=url-scripts}/plugins/toastr/toastr.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-styles}/netuno.css" rel="stylesheet" type="text/css" />
+    <link href="_{netuno-config=url-app-styles}/login.css" rel="stylesheet" type="text/css" />
+    _{include=styles_login}
+    <script src="_{netuno-config=url-scripts}/netuno/base.js"></script>
+    <script>
+        netuno.config.login = true;
+        netuno.config.app = '_{netuno-config=app}';
+        netuno.config.extension = '_{netuno-config=extension}';
+        netuno.config.urlImages = '_{netuno-config=url-images}';
+        netuno.config.urlScripts = '_{netuno-config=url-scripts}';
+        netuno.config.urlStyles = '_{netuno-config=url-styles}';
+        netuno.config.urlAppImages = '_{netuno-config=url-app-images}';
+        netuno.config.urlAppScripts = '_{netuno-config=url-app-scripts}';
+        netuno.config.urlAppStyles = '_{netuno-config=url-app-styles}';
+        netuno.config.urlFileSystem = '_{netuno-config=url-file-system}';
+        netuno.config.urlFileSystemDB = '_{netuno-config=url-filesystem-db}';
+        netuno.config.validation = {};
+        netuno.config.validation.message = _{lang=netuno.validation};
+    </script>
+</head>
+<body>

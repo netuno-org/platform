@@ -1,0 +1,98 @@
+{{#extend "example-group"}}
+  {{#content "description"}}
+    <p>
+      Using the different Bootstrap Colorpicker events is the best way to react to any colorpicker action.
+      Check the full <a href="Colorpicker.html#event:change">list of events</a>.
+      <br>
+      In all events, the first argument passed to the event handlers (the event) contains the <code>colorpicker</code>,
+      <code>color</code> objects, as well as the <code>value</code>, representing the color string.
+    </p>
+  {{/content}}
+  {{#content "body"}}
+
+    {{#extend "example"}}
+      {{#content "title"}} Playing with events and the ColorItem object {{/content}}
+
+      {{#content "description"}}
+        <p>
+          This example listens to the <code>colorpickerChange</code> and <code>colorpickerCreate</code> events and
+          changes the background color of the parent element using the complementary color of the selected one.
+          This also shows how to use the ColorItem object.
+        </p>
+      {{/content}}
+      {{#content "code"}}
+        <div id="cp1" data-color="rgba(194, 39, 219, 0.4)"></div>
+        <script>
+          $(function () {
+            $('#cp1')
+                .colorpicker({
+                  inline: true,
+                  container: true
+                })
+                .on('colorpickerChange colorpickerCreate', function (e) {
+                  e.colorpicker.picker.parents('.card').find('.card-header')
+                      .css('background-color', e.value);
+
+                  e.colorpicker.picker.parents('.card-body')
+                      .css('background-color', e.color.generate([180])[0].string('rgb'));
+                });
+          });
+        </script>
+      {{/content}}
+    {{/extend}}
+
+
+    {{#extend "example"}}
+      {{#content "title"}} Using events with a custom template element {{/content}}
+      {{#content "description"}}
+        <p>This example shows how to use a custom template with an input inside, that is able to set the color.</p>
+      {{/content}}
+      {{#content "code"}}
+        <div id="cp3" data-color="#305AA2"></div>
+        <script>
+          $(function () {
+            $('#cp3').colorpicker({
+                  inline: true,
+                  container: true,
+                  template: '<div class="colorpicker">' +
+                  '<div class="colorpicker-saturation"><i class="colorpicker-guide"></i></div>' +
+                  '<div class="colorpicker-hue"><i class="colorpicker-guide"></i></div>' +
+                  '<div class="colorpicker-alpha">' +
+                  '   <div class="colorpicker-alpha-color"></div>' +
+                  '   <i class="colorpicker-guide"></i>' +
+                  '</div>' +
+                  '<div class="colorpicker-bar">' +
+                  '   <div class="input-group">' +
+                  '       <input class="form-control input-block color-io" />' +
+                  '   </div>' +
+                  '</div>' +
+                  '</div>'
+                })
+                .on('colorpickerCreate', function (e) {
+                  // initialize the input on colorpicker creation
+                  var io = e.colorpicker.element.find('.color-io');
+
+                  io.val(e.color.string());
+
+                  io.on('change keyup', function () {
+                    e.colorpicker.setValue(io.val());
+                  });
+                })
+                .on('colorpickerChange', function (e) {
+                  var io = e.colorpicker.element.find('.color-io');
+
+                  if (e.value === io.val() || !e.color || !e.color.isValid()) {
+                    // do not replace the input value if the color is invalid or equals
+                    return;
+                  }
+
+                  io.val(e.color.string());
+                });
+          });
+        </script>
+      {{/content}}
+    {{/extend}}
+
+
+  {{/content}}
+{{/extend}}

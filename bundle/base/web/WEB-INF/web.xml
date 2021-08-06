@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="netuno-web" version="3.0">
+	<display-name>netuno-web</display-name>
+	<context-param>
+		<param-name>isLog4jAutoInitializationDisabled</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>log4jContextName</param-name>
+		<param-value>netuno</param-value>
+	</context-param>
+	<context-param>
+		<param-name>log4jConfiguration</param-name>
+		<param-value>/WEB-INF/log.xml</param-value>
+	</context-param>
+	<servlet>
+		<servlet-name>NetunoProteuEnterprise</servlet-name>
+		<servlet-class>org.netuno.proteu.Enterprise</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>NetunoProteuEnterprise</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+</web-app>

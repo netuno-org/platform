@@ -1,0 +1,7 @@
+<script>
+    (function (netuno, toastr) {
+        netuno.notificationDevLinkRemoved = function(name, uid) {
+            toastr["success"]("_{&lang=netuno.dev.link.removed.message}".split('%s').join(name), "_{&lang=netuno.dev.link.removed.title}");
+        };
+    })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof toastr == 'undefined' ? parent.toastr : toastr);
+</script>

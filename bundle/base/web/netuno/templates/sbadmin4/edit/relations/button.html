@@ -1,0 +1,19 @@
+<button id="netuno-form-_{config=netuno_form_name}-edit-relation-button-_{data=name}-_{util=requestuuid}" type="button" class="btn btn-default" netuno-form-edit-relation-button="_{data=name}">
+    _{&data=displayname}
+</button>
+
+<script>
+    $('#netuno-form-_{config=netuno_form_name}-edit-relation-button-_{data=name}-_{util=requestuuid}').on('click', function (e) {
+        var self = $(this);
+        if ("_{request=netuno_item_uid}" == "") {
+            netuno.saveFormEdit(self, "_{data=name}");
+        } else {
+            netuno.modal.create({
+                name: '_{data=name}',
+                callback: function(modal) {
+                    netuno.modal.showAndLoad(modal);
+                }
+            });
+        }
+    });
+</script>

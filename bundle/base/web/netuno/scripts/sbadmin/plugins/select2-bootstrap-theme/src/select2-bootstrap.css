@@ -1,0 +1,70 @@
+/*
+Error: Undefined variable: "$input-border-focus".
+        on line 14 of select2-bootstrap.scss
+
+9: // @see https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_forms.scss#L127
+10: 
+11: $form-control-default-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+12: 
+13: // @see https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/mixins/_forms.scss#L43
+14: $form-control-focus-box-shadow: $form-control-default-box-shadow, 0 0 8px rgba($input-border-focus, 0.6);
+15: 
+16: // @see https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_forms.scss#L128
+17: $form-control-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+18: 
+19: // Custom variables
+
+Backtrace:
+select2-bootstrap.scss:14
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/variable.rb:49:in `_perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/node.rb:50:in `perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/funcall.rb:186:in `perform_arg'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/funcall.rb:133:in `block in _perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/funcall.rb:133:in `each'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/funcall.rb:133:in `each_with_index'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/funcall.rb:133:in `each'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/funcall.rb:133:in `map'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/funcall.rb:133:in `_perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/node.rb:50:in `perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/list_literal.rb:75:in `block in _perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/list_literal.rb:75:in `map'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/list_literal.rb:75:in `_perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/node.rb:50:in `perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/list_literal.rb:75:in `block in _perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/list_literal.rb:75:in `map'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/list_literal.rb:75:in `_perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/script/tree/node.rb:50:in `perform'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:482:in `visit_variable'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:162:in `block in visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:79:in `block in with_base'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:135:in `with_frame'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/stack.rb:79:in `with_base'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:162:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `map'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:52:in `visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:171:in `block in visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:183:in `with_environment'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:170:in `visit_children'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `block in visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:190:in `visit_root'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/base.rb:36:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:161:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/visitors/perform.rb:10:in `visit'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/root_node.rb:36:in `css_tree'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/tree/root_node.rb:29:in `render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:389:in `_render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/engine.rb:307:in `render_with_sourcemap'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/sass_scss.rb:391:in `run'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/sass_scss.rb:63:in `process_result'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/base.rb:52:in `parse'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/lib/sass/exec/base.rb:19:in `parse!'
+/Library/Ruby/Gems/2.3.0/gems/sass-3.5.3/bin/sass:13:in `<top (required)>'
+/usr/local/bin/sass:22:in `load'
+/usr/local/bin/sass:22:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Error: Undefined variable: \"$input-border-focus\".\A         on line 14 of select2-bootstrap.scss\A \A 9: // @see https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_forms.scss#L127\A 10: \A 11: $form-control-default-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);\A 12: \A 13: // @see https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/mixins/_forms.scss#L43\A 14: $form-control-focus-box-shadow: $form-control-default-box-shadow, 0 0 8px rgba($input-border-focus, 0.6);\A 15: \A 16: // @see https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_forms.scss#L128\A 17: $form-control-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;\A 18: \A 19: // Custom variables"; }

@@ -1,0 +1,74 @@
+{
+    "name": "demo",
+    "language": "pt_PT",
+    "locale": "pt_PT",
+    "settings": {
+        "public": {}
+    },
+    "db": {
+        "default": {
+            "password": "",
+            "engine": "h2",
+            "port": "",
+            "host": "",
+            "name": "demo",
+            "username": ""
+        }
+    },
+    "firebase": {
+        "app_name": "",
+        "database_url": "",
+        "key_file": "",
+        "listener_secret": ""
+    },
+    "commands": [
+        {
+            "enabled": true,
+            "path": "ui",
+            "command": "npm run watch"
+        }
+    ],
+    "cron": {
+        "secret": "Cron$ample713",
+        "jobs": [
+            {
+                "name": "sample",
+                "config": "0 1 1 1 1 ?",
+                "url": "/services/jobs/sample.netuno",
+                "params": {
+                    "id": 1
+                }
+            }
+        ]
+    },
+    "smtp": {
+        "default": {
+            "enabled": false,
+            "host": "smtp.gmail.com",
+            "port": 465,
+            "ssl": true,
+            "username": "*****@gmail.com",
+            "password": "*****"
+        }
+    },
+    "remote": {
+        "sample-api": {
+            "url": "http://localhost:8080/sample/api",
+            "json": true,
+            "authorization": {
+                "username": "admin",
+                "password": "test"
+            }
+        }
+    },
+    "setup": {
+        "enabled": true,
+        "schema": {
+            "auto_create": true,
+            "execution": true
+        },
+        "scripts": {
+            "execution": true
+        }
+    }
+}

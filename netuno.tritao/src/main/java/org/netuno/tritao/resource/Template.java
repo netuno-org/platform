@@ -1,0 +1,121 @@
+/*
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.netuno.tritao.resource;
+
+import org.netuno.library.doc.LanguageDoc;
+import org.netuno.library.doc.LibraryDoc;
+import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.proteu.Proteu;
+import org.netuno.psamata.Values;
+import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.util.TemplateBuilder;
+
+import java.util.Map;
+
+/**
+ * Template - Resource
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
+@Resource(name = "template")
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "Template",
+                introduction = "Recurso de gestão de templates. \n" +
+                        "Este recurso permite a manipulação de templates com base no motor de templates do Apache Velocity",
+                howToUse = { }
+        )
+})
+public class Template extends ResourceBase {
+    
+    private boolean core = false;
+
+    public Template(Proteu proteu, Hili hili) {
+        super(proteu, hili);
+    }
+    
+    public Template init() {
+        return new Template(getProteu(), getHili());
+    }
+    
+    public Template initCore() {
+        Template template = new Template(getProteu(), getHili());
+        template.core = true;
+        return template;
+    }
+    
+    public String get(String name) throws Exception {
+        return getOutput(name);
+    }
+
+    public String get(String name, Map data) throws Exception {
+        return getOutput(name, new Values(data));
+    }
+
+    public String get(String name, Values data) throws Exception {
+        return getOutput(name, data);
+    }
+
+    public String getOutput(String name) throws Exception {
+        if (core) {
+            return TemplateBuilder.getOutput(getProteu(), getHili(), name);
+        }
+        return TemplateBuilder.getOutputApp(getProteu(), getHili(), name);
+    }
+
+    public String getOutput(String name, Map data) throws Exception {
+        return getOutput(name, new Values(data));
+    }
+
+    public String getOutput(String name, Values data) throws Exception {
+        if (core) {
+            return TemplateBuilder.getOutput(getProteu(), getHili(), name, data);
+        }
+        return TemplateBuilder.getOutputApp(getProteu(), getHili(), name, data);
+    }
+
+    public void out(String name) throws Exception {
+        output(name);
+    }
+
+    public void out(String name, Map data) throws Exception {
+        output(name, new Values(data));
+    }
+
+    public void out(String name, Values data) throws Exception {
+        output(name, data);
+    }
+
+    public void output(String name) throws Exception {
+        if (core) {
+            TemplateBuilder.output(getProteu(), getHili(), name);
+        }
+        TemplateBuilder.outputApp(getProteu(), getHili(), name);
+    }
+
+    public void output(String name, Map data) throws Exception {
+        output(name, new Values(data));
+    }
+
+    public void output(String name, Values data) throws Exception {
+        if (core) {
+            TemplateBuilder.output(getProteu(), getHili(), name, data);
+        }
+        TemplateBuilder.outputApp(getProteu(), getHili(), name, data);
+    }
+}

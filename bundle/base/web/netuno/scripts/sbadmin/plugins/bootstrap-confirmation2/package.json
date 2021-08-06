@@ -1,0 +1,47 @@
+{
+  "name": "bootstrap-confirmation2",
+  "version": "2.4.2",
+  "homepage": "http://bootstrap-confirmation.js.org",
+  "description": "Bootstrap plugin for on-place confirm boxes using Popover",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Nimit Suwannagate",
+      "email": "ethaizone@hotmail.com"
+    },
+    {
+      "name": "Damien \"Mistic\" Sorel",
+      "email": "contact@git.strangeplanet.fr",
+      "homepage": "http://www.strangeplanet.fr"
+    }
+  ],
+  "main": "bootstrap-confirmation.js",
+  "keywords": [
+    "bootstrap",
+    "confirmation",
+    "popup"
+  ],
+  "peerDependencies": {
+    "bootstrap": ">=3.2.0 <4"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.0",
+    "grunt-contrib-connect": "^1.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-uglify": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-open": "^0.2.3",
+    "grunt-replace": "^1.0.1",
+    "jit-grunt": "^0.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mistic100/Bootstrap-Confirmation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mistic100/Bootstrap-Confirmation/issues"
+  },
+  "scripts": {
+    "test": "grunt test"
+  }
+}

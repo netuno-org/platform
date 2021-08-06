@@ -1,0 +1,36 @@
+
+.component_config_link_popup_table_item {
+  cursor: pointer;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.component_config_link_popup_table_item:hover,
+.component_config_link_popup_table_item:active {
+  background-color: #f1f1f1;
+}
+
+.component_config_link_popup_field_item {
+  cursor: pointer;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.component_config_link_popup_field_item:hover,
+.component_config_link_popup_field_item:active {
+  background-color: #f1f1f1;
+  font-weight: bold;
+}
+
+
+#management_diagram {
+  height: calc(100vh - 70px) !important;
+}
+
+#management_diagram iframe {
+  border: 1px solid #f1f1f1;
+}
+
+.CodeMirror {
+  border: 1px solid #f1f1f1;
+}
