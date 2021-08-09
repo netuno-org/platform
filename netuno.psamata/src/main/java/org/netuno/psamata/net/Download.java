@@ -141,6 +141,11 @@ public class Download {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // To avoid javax.net.ssl.SSLHandshakeException: No subject alternative DNS name matching github-releases.githubusercontent.com found.
+            // There is no way to disable the timeout then need to be 1 second.
+            sc.getClientSessionContext().setSessionCacheSize(1);
+            sc.getClientSessionContext().setSessionTimeout(1);
         } catch (Exception e) {
             throw new Error(e);
         }
