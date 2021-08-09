@@ -66,17 +66,17 @@ The new Netuno version will be generated in `bundle/dist/netuno*` based on the f
 
 Create a new project in the menu File > New  > Project from Existing Sources...
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-new-project-from-existing-sources.png" style="max-width: 600px"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-new-project-from-existing-sources.png" style="max-width: 300px"/>
 
 > Choose the folder where this repository was cloned.
 
 Now choose Import project from external model > Maven:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-import-project.png" style="max-width: 700px"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-import-project.png" style="max-width: 350px"/>
 
 Your project panel should look like this:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-project-modules.png" style="max-width: 400px"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-project-modules.png" style="max-width: 200px"/>
 
 These modules should be detected automatically:
 - netuno.cli
@@ -87,15 +87,15 @@ These modules should be detected automatically:
 
 In the top bar click on Add Configuration...
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png" style="max-width: 600px"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png" style="max-width: 300px"/>
 
 Then click on the + (add) button and choose the Application option:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-add-application.png" style="max-width: 700px"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-add-application.png" style="max-width: 350px"/>
 
 Configure the fields like this:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-configurations.png" style="max-width: 700px"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-configurations.png" style="max-width: 350px"/>
 
 Make sure of:
 - [GraalVM with Java 11](https://github.com/graalvm/graalvm-ce-builds/releases/)
