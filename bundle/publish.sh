@@ -24,9 +24,15 @@ rm -f dist/netuno*.json
 
 cd ..
 
-mvn clean
-mvn compile
-mvn -Dmaven.test.skip=true package
+echo
+echo "MVN Install"
+echo
+./mvn-install.sh
+
+echo
+echo "MVN Package"
+echo
+./mvn-package.sh
 
 cd netuno.cli/protect && ./run.sh && cd ../..
 

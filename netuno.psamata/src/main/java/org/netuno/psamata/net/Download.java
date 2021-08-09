@@ -150,10 +150,7 @@ public class Download {
 
     }
 
-    public Stats http(String url, File file) throws IOException {
-        return http(url, file, null);
-    }
-    public Stats http(String url, File file, DownloadEvent event) throws IOException {
+    private HttpURLConnection getConnection(String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
         connection.setDoOutput(true);
         connection.setDoInput(true);
@@ -161,6 +158,24 @@ public class Download {
         connection.setUseCaches(false);
         connection.setConnectTimeout(60000);
         connection.setRequestMethod("GET");
+        int status = connection.getResponseCode();
+        if (status != HttpURLConnection.HTTP_OK && (
+                (status == HttpURLConnection.HTTP_MOVED_TEMP
+                        || status == HttpURLConnection.HTTP_MOVED_PERM
+                        || status == HttpURLConnection.HTTP_SEE_OTHER)
+        )) {
+            String newURL = connection.getHeaderField("Location");
+            connection.disconnect();
+            return getConnection(newURL);
+        }
+        return connection;
+    }
+
+    public Stats http(String url, File file) throws IOException {
+        return http(url, file, null);
+    }
+    public Stats http(String url, File file, DownloadEvent event) throws IOException {
+        HttpURLConnection connection = getConnection(url);
         int contentLength = connection.getContentLength();
         Stats stats = new Stats();
         stats.setLength(contentLength);
