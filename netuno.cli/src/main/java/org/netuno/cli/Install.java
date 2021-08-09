@@ -359,11 +359,11 @@ public class Install {
                 String url = "";
                 try {
                     if (version.isEmpty()) {
-                        url = "https://github.com/netuno-org/platform/releases/download/latest/release.json";
+                        url = "https://github.com/netuno-org/platform/releases/download/latest/netuno.json";
                         Values data = Values.fromJSON(new Remote().get(url).toString());
                         version = data.getString("version");
                     }
-                    String versionURL = (version.isEmpty() ? "" : "v"+ versionType +"-"+ version.replace(".", "_"));
+                    String versionURL = (version.isEmpty() || version.equalsIgnoreCase("latest") ? "" : "v"+ versionType +"-"+ version.replace(".", "_"));
 
                     url = "https://github.com/netuno-org/platform/releases/download/"+ (versionURL.isEmpty() ? "latest" : versionURL) +"/"+ bundleFileName + (versionURL.isEmpty() ? "" : "-"+ versionURL) + ".zip";
 
@@ -408,17 +408,17 @@ public class Install {
                     if (e instanceof javax.net.ssl.SSLHandshakeException && e.getMessage().contains("github-releases.githubusercontent.com")) {
                         System.out.println(OS.consoleOutput("@|red Temporarily offline, probably being propagated by GitHub. |@ "));
                         System.out.println();
-                        System.out.println(OS.consoleOutput("@|red Please try again later, it may take up to 15 minutes. |@ "));
+                        System.out.println(OS.consoleOutput("@|red Please try again later, and it may take up to 15 minutes. |@ "));
                         System.out.println();
-                        System.out.println(OS.consoleOutput("@|yellow More details at: https://github.com/netuno-org/platform/releases |@ "));
+                        System.out.println(OS.consoleOutput("@|yellow More details: |@https://github.com/netuno-org/platform/releases"));
                     } else {
                         System.out.println(OS.consoleOutput("@|red Offline: |@ "));
                         System.out.println();
-                        System.out.println(OS.consoleOutput("@|red "+ e.getMessage() +": "+ e.getLocalizedMessage() +" |@ "));
+                        System.out.println(OS.consoleOutput("@|red "+ e.getMessage() +": |@ "+ e.getLocalizedMessage()));
                     }
                     System.out.println();
                     System.out.println();
-                    return;
+                    System.exit(0);
                 }
                 System.out.println();
                 System.out.println();
