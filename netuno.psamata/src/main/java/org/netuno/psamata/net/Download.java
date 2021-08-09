@@ -179,29 +179,33 @@ public class Download {
         int contentLength = connection.getContentLength();
         Stats stats = new Stats();
         stats.setLength(contentLength);
-        if (event != null) {
-            event.onInit(stats);
-        }
-        FileOutputStream fos = new FileOutputStream(file);
-        long startTime = System.currentTimeMillis();
-        new Buffer((size) -> {
-            stats.setAmount(size);
-            stats.setPosition(stats.getPosition() + size);
-            stats.setPercent(((float)stats.getPosition() * 100.0f) / (float)stats.getLength());
-            stats.setTime(System.currentTimeMillis() - startTime);
-            if (stats.getTime() > 1000) {
-                    stats.setSpeed(stats.getPosition() / (stats.getTime() / 1000));
-            } else {
-                stats.setSpeed(size);
-            }
+        try (InputStream inputStream = connection.getInputStream()) {
             if (event != null) {
-                event.onProgress(stats);
+                event.onInit(stats);
             }
-            return;
-        }).copy(connection.getInputStream(), fos);
-        fos.close();
-        if (event != null) {
-            event.onComplete(stats);
+            FileOutputStream fos = new FileOutputStream(file);
+            long startTime = System.currentTimeMillis();
+            new Buffer((size) -> {
+                stats.setAmount(size);
+                stats.setPosition(stats.getPosition() + size);
+                stats.setPercent(((float) stats.getPosition() * 100.0f) / (float) stats.getLength());
+                stats.setTime(System.currentTimeMillis() - startTime);
+                if (stats.getTime() > 1000) {
+                    stats.setSpeed(stats.getPosition() / (stats.getTime() / 1000));
+                } else {
+                    stats.setSpeed(size);
+                }
+                if (event != null) {
+                    event.onProgress(stats);
+                }
+                return;
+            }).copy(inputStream, fos);
+            fos.close();
+            if (event != null) {
+                event.onComplete(stats);
+            }
+        } finally {
+            connection.disconnect();
         }
         return stats;
     }

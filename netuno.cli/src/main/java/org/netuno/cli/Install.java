@@ -367,13 +367,13 @@ public class Install {
 
                     url = "https://github.com/netuno-org/platform/releases/download/"+ (versionURL.isEmpty() ? "latest" : versionURL) +"/"+ bundleFileName + (versionURL.isEmpty() ? "" : "-"+ versionURL) + ".zip";
 
-                    System.out.println(OS.consoleOutput("Downloading @|yellow " + url + "|@:"));
+                    final String downloadURL = url;
 
                     Download download = new Download();
                     download.http(url, bundleFile, new Download.DownloadEvent() {
                         @Override
                         public void onInit(Download.Stats stats) {
-
+                            System.out.println(OS.consoleOutput("Downloading @|yellow " + downloadURL + "|@:"));
                         }
 
                         @Override
@@ -411,10 +411,10 @@ public class Install {
                         System.out.println(OS.consoleOutput("@|red Please try again later, and it may take up to 15 minutes. |@ "));
                         System.out.println();
                         System.out.println(OS.consoleOutput("@|yellow More details: |@https://github.com/netuno-org/platform/releases"));
+                    } else if (e instanceof java.io.FileNotFoundException) {
+                        System.out.println(OS.consoleOutput("@|red The download link was not found: |@ "+ e.getMessage()));
                     } else {
-                        System.out.println(OS.consoleOutput("@|red Offline: |@ "));
-                        System.out.println();
-                        System.out.println(OS.consoleOutput("@|red "+ e.getMessage() +": |@ "+ e.getLocalizedMessage()));
+                        System.out.println(OS.consoleOutput("@|red "+ e.getClass().getName() +": |@ "+ e.getMessage()));
                     }
                     System.out.println();
                     System.out.println();
