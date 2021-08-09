@@ -89,7 +89,7 @@ These modules should be detected automatically:
 
 In the top bar click on Add Configuration...
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png" style="max-width: 300px; width: auto;"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png" width="300"/>
 
 Then click on the + (add) button and choose the Application option:
 
