@@ -2,7 +2,7 @@
 
 Quickly build applications adapted to your business logic.
 
-All Netuno core capabilities, such as CLI and Web Server.
+Here is all source of the Netuno core capabilities, such as CLI and Web Server.
 
 ![Overview](https://raw.githubusercontent.com/netuno-org/platform/main/docs/overview.png)
 
@@ -23,7 +23,7 @@ Documentation highlights:
 
 ![Application Architecture](https://raw.githubusercontent.com/netuno-org/platform/main/docs/app-architecture.png)
 
-Netuno is made with Java running over GraalVM to easily web application development with:
+Netuno is made with Java running over GraalVM to make ease the web application development, supporting these languages:
 
 - [JavaScript/ES6](https://www.graalvm.org/javascript/)
 - [Groovy](https://groovy-lang.org)
@@ -31,18 +31,18 @@ Netuno is made with Java running over GraalVM to easily web application developm
 - [Jython (Python)](https://www.jython.org)
 - [Kotlin](https://kotlinlang.org)
 
-> 😎 Applications programming does not require the server restart.
+> 😎 When you are programming does not require any server restart.
 >
-> And server-side, client-side (NPM `run watch`), or any other outputs are integrated into the same console.
+> And server-side, client-side (NPM `run watch`), or any other outputs are integrated into the same console. You just need to look to 1 console to see all.
 
 ## Build Requirements
 
-- Linux, macOS or Unix/BSD;
+- Linux or macOS;
 - Maven
 - NodeJS
 - Java 11
 
-> Scripts are not available for Windows.
+> Build scripts are not available for Windows, then Linux/macOS environment is recommended.
 
 ## Setup
 
@@ -66,17 +66,17 @@ The new Netuno version will be generated in `bundle/dist/netuno*` based on the f
 
 Create a new project in the menu File > New  > Project from Existing Sources...
 
-![IDEA New](https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-new-project-from-existing-sources.png)
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-new-project-from-existing-sources.png" style="max-width: 600px"/>
 
 > Choose the folder where this repository was cloned.
 
 Now choose Import project from external model > Maven:
 
-![IDEA New](https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-import-project.png)
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-import-project.png" style="max-width: 700px"/>
 
 Your project panel should look like this:
 
-![IDEA New](https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-project-modules.png)
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-project-modules.png" style="max-width: 400px"/>
 
 These modules should be detected automatically:
 - netuno.cli
@@ -87,15 +87,15 @@ These modules should be detected automatically:
 
 In the top bar click on Add Configuration...
 
-![IDEA New](https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png)
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png" style="max-width: 600px"/>
 
 Then click on the + (add) button and choose the Application option:
 
-![IDEA New](https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-add-application.png)
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-add-application.png" style="max-width: 700px"/>
 
 Configure the fields like this:
 
-![IDEA New](https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-configurations.png)
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-configurations.png" style="max-width: 700px"/>
 
 Make sure of:
 - [GraalVM with Java 11](https://github.com/graalvm/graalvm-ce-builds/releases/)
