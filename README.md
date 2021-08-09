@@ -2,11 +2,11 @@
 
 Quickly build applications adapted to your business logic.
 
-Here is all source of the Netuno core capabilities, such as CLI and Web Server.
+In here you can find the source of all the Netuno core capabilities, such as CLI and Web Server.
 
 ![Overview](https://raw.githubusercontent.com/netuno-org/platform/main/docs/overview.png)
 
-More in [netuno.org](https://www.netuno.org/)
+Find more in [netuno.org](https://www.netuno.org/)
 
 [Get Started](https://doc.netuno.org/docs/en/installation/)
 &middot; [First Steps](https://doc.netuno.org/docs/en/academy/start/demonstration/form/)
@@ -23,7 +23,7 @@ Documentation highlights:
 
 ![Application Architecture](https://raw.githubusercontent.com/netuno-org/platform/main/docs/app-architecture.png)
 
-Netuno is made with Java running over GraalVM to make ease the web application development, supporting these languages:
+Netuno is written in Java and runs in GraalVM to facilitate web application development, it currently suppports the following programming languages:
 
 - [JavaScript/ES6](https://www.graalvm.org/javascript/)
 - [Groovy](https://groovy-lang.org)
@@ -31,9 +31,9 @@ Netuno is made with Java running over GraalVM to make ease the web application d
 - [Jython (Python)](https://www.jython.org)
 - [Kotlin](https://kotlinlang.org)
 
-> 😎 When you are programming does not require any server restart.
+> 😎 While you are programming you won't need to restart the server to compile the newly updated code.
 >
-> And server-side, client-side (NPM `run watch`), or any other outputs are integrated into the same console. You just need to look to 1 console to see all.
+> All log outputs such as server-side, client-side (NPM `run watch`) and other outputs are integrated in the same console. By having this feature you'll only need to look to one console thus easing your work.
 
 ## Build Requirements
 
@@ -42,11 +42,11 @@ Netuno is made with Java running over GraalVM to make ease the web application d
 - NodeJS
 - Java 11
 
-> Build scripts are not available for Windows, then Linux/macOS environment is recommended.
+> Build scripts are currently not available for Windows, so we recommend a Linux/macOS based environment.
 
 ## Setup
 
-Permission to execute:
+Allow permission to execute:
 
 `chmod +x setup.sh`
 
@@ -60,7 +60,7 @@ Run the setup script:
 
 `./publish.sh`
 
-The new Netuno version will be generated in `bundle/dist/netuno*` based on the final output generated in `bundle/out/netuno`.
+The published Netuno version will be generated in `bundle/dist/netuno*` which is based on the final output generated in `bundle/out/netuno`.
 
 ## Run/Debug With IntelliJ IDEA Community Edition
 
@@ -89,7 +89,7 @@ In the top bar click on Add Configuration...
 
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png" width="450"/>
 
-Then click on the + (add) button and choose the Application option:
+Then click on the + (plus) button and choose the Application option:
 
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-add-application.png" width="525"/>
 
@@ -107,7 +107,7 @@ Make sure of:
 
 ### IntelliJ Run/Debug Error
 
-If you got this error:
+If you get this error:
 
 ```
 Connected to the target VM, address: '127.0.0.1:62490', transport: 'socket'
@@ -137,4 +137,4 @@ Just go to IDE Preferences and disable the coroutine agent:
 
 > Click on Apply button.
 
-Now should run/debug normally.
+Now it should run/debug normally.

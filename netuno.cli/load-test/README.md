@@ -1,9 +1,9 @@
 
 # Load Test
 
-Simple web stress mecanisms using ApacheBench (Apache Benchmark).
+Simple web stress mechanisms using ApacheBench (Apache Benchmark).
 
-Useful with the VisualVM to find leaks.
+Useful for using with VisualVM to find leaks.
 
 ### GET
 

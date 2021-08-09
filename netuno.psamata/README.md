@@ -1,4 +1,4 @@
 
 # Netuno Psamata
 
-Useful implementations to all other projects.
+Useful implementations to any other projects.

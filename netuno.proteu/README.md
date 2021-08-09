@@ -1,5 +1,5 @@
 
 # Netuno Proteu
 
-Centralized management of the HTTP communications, expanding Java Servlet functionalities.
+Centralized management of HTTP communications, expanding Java Servlet capabilities.
 
