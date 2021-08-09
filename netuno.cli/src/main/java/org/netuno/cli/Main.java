@@ -102,6 +102,9 @@ public final class Main implements Runnable {
 
         System.setProperty("idea.use.native.fs.for.win", "false");
         System.setProperty("idea.io.use.nio2", "true");
+
+        // Disable DNS Cache
+        java.security.Security.setProperty("networkaddress.cache.ttl" , "0");
         
         /*System.out.println(GraalRunner.isGraal());
 
