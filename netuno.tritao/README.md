@@ -1,8 +1,8 @@
 
 # Netuno Tritão
 
-Web and database core functionalities, execution of the all web interfaces, web services, applications scripts, 
-resources, database operations, actions, and much more.  
+Web and database core functionalities, execution of all of the web interfaces, web services, applications scripts, 
+resources, database operations, actions and many others.  
 
 ### Databases
 
@@ -37,4 +37,4 @@ Many programming resources supported, some to low-code integration with:
 - Database
 - Performance Monitor
 
-> Much more in the [library documentation](https://doc.netuno.org/docs/en/library/overview/).
+> Find more and detailed information in the [library documentation](https://doc.netuno.org/docs/en/library/overview/).
