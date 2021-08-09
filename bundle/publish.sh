@@ -18,7 +18,9 @@ do
     esac
 done
 
-rm -f netuno-v7-*.zip
+rm -f dist/netuno*.jar
+rm -f dist/netuno*.zip
+rm -f dist/netuno*.json
 
 cd ..
 
@@ -32,15 +34,11 @@ cd netuno.tritao/protect && ./run.sh && cd ../..
 
 cd bundle && node index.js && cd ..
 
-mkdir bundle/dist
+mkdir -p bundle/dist
 
 cp bundle/out/netuno/netuno.jar bundle/dist/netuno.jar
 
 mv bundle/out/netuno.zip bundle/dist/netuno.zip
-
-cp bundle/netuno.zip bundle/dist/netuno-v7-latest.zip
-
-cp bundle/out/netuno/netuno.jar bundle/dist/netuno-latest.jar
 
 BuildVersion=`unzip -p netuno.cli/target/netuno-cli-*-jar-with-dependencies.jar META-INF/MANIFEST.MF | grep "Build-Number:" | grep -Eow "[0-9\.]+"`
 
@@ -50,4 +48,7 @@ cd bundle
 
 printf '{"version":"%s","type":"%s"}\n' "$BuildVersion" "$VersionType" > dist/netuno.json
 
-
+echo
+echo
+echo "Done."
+echo

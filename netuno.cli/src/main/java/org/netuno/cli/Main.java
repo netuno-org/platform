@@ -150,7 +150,7 @@ public final class Main implements Runnable {
         System.out.println();
 
         try {
-            Values data = Values.fromJSON(new Remote().get("https://www.netuno.org/netuno.json").toString());
+            Values data = Values.fromJSON(new Remote().get("https://github.com/netuno-org/platform/releases/download/latest/release.json").toString());
             int compareVersion = buildNumber().compareTo(data.getString("version"));
             if (compareVersion < 0) {
                 if (data.getString("type").equals("critical")) {
@@ -163,6 +163,23 @@ public final class Main implements Runnable {
                 System.out.println();
                 System.out.println();
                 //Thread.sleep(1000);
+            }
+            if (data.hasKey("message")) {
+                Values message = data.getValues("message");
+                String content = message.getString("content");
+                String command = message.getString("command");
+                if (!content.isEmpty()) {
+                    System.out.println();
+                    System.out.println("   " + OS.consoleOutput(content));
+                }
+                if (!command.isEmpty()) {
+                    System.out.println();
+                    System.err.println(OS.consoleCommand(command));
+                }
+                if (!content.isEmpty() || !command.isEmpty()) {
+                    System.out.println();
+                    System.out.println();
+                }
             }
         } catch (Throwable t) {
 
