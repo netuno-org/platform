@@ -66,17 +66,17 @@ The new Netuno version will be generated in `bundle/dist/netuno*` based on the f
 
 Create a new project in the menu File > New  > Project from Existing Sources...
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-new-project-from-existing-sources.png" width="300"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-new-project-from-existing-sources.png" width="450"/>
 
 > Choose the folder where this repository was cloned.
 
 Now choose Import project from external model > Maven:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-import-project.png" style="max-width: 350px; width: auto;"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-import-project.png" width="525"/>
 
 Your project panel should look like this:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-project-modules.png" style="max-width: 200px; width: auto;"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-project-modules.png" width="300"/>
 
 These modules should be detected automatically:
 - netuno.cli
@@ -87,15 +87,15 @@ These modules should be detected automatically:
 
 In the top bar click on Add Configuration...
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png" width="300"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-add-configuration.png" width="450"/>
 
 Then click on the + (add) button and choose the Application option:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-add-application.png" style="max-width: 350px; width: auto;"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-add-application.png" width="525"/>
 
 Configure the fields like this:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-configurations.png" style="max-width: 350px; width: auto;"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-configurations.png" width="525"/>
 
 Make sure of:
 - [GraalVM with Java 11](https://github.com/graalvm/graalvm-ce-builds/releases/)
@@ -133,7 +133,7 @@ Process finished with exit code 134 (interrupted by signal 6: SIGABRT)
 
 Just go to IDE Preferences and disable the coroutine agent:
 
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-disable-coroutines-agent.png" style="max-width: 300px; width: auto;"/>
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-disable-coroutines-agent.png" width="450"/>
 
 > Click on Apply button.
 
