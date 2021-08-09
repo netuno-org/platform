@@ -1,0 +1,123 @@
+{
+    "dashboardcontainer": {
+        "datavisualization": {
+            "table": {
+                "title": "Table",
+                "workers": "Workers",
+                "total": "Total Hours"
+            },
+            "chart": {
+                "title": "Chart",
+                "label": "Hours"
+            },
+            "loading_error": "Failed to load the list of workers' total hours records."
+        },
+        "listservices": {
+            "introduction": {
+                "title": "Introduction",
+                "how-to-start": {
+                    "title": "How to start",
+                    "content": "<p>If you are new to Netuno, <a href='https://doc.netuno.org/docs/en/academy/start/demonstration/form/' target='_blank'>start by creating your first form</a>.</p>"
+                },
+                "from-the-root": {
+                    "title": "From the Netuno root directory",
+                    "content": "<p>App directory: <b>apps/demo/</b></p><p>App configurations directory: <b>apps/demo/config/</b></p><p>Services source code directory: <b>apps/demo/server/services</b></p><p>Templates source code directory: <b>apps/demo/server/templates</b></p><p><a href='https://doc.netuno.org/docs/en/library/app-folders/app-folder-structure/' target='_blank'>+ information about folder structure.</a></p>"
+                },
+                "button-link": "https://doc.netuno.org/en/"
+            },
+            "services": {
+                "title": "Service Examples",
+                "modal": {
+                    "url": "URL adress",
+                    "path": "Physical File Path",
+                    "source-code": "Source Code in ",
+                    "execute-button": "Execute"
+                },
+                "calc-hours": {
+                    "title": "Calculate Hours",
+                    "intro": "<p>Finds the future time by adding 100 hours on top of the current time. You can change the number of hours in the URL parameter to perform other calculations.</p>"
+                },
+                "date-format": {
+                    "title": "Format Date and Hours",
+                    "intro": "<p>When working with dates and times it is often necessary to perform the conversion to string and vice-versa so we present some examples of how it can be done.</p>"
+                },
+                "export-excel": {
+                    "title": "Export to Excel",
+                    "intro": "<p>Demonstration of how you can export your data to Excel.</p>"
+                },
+                "export-pdf": {
+                    "title": "Export to PDF",
+                    "intro": "<p>Demonstration of how you can export your data to PDF.</p>"
+                },
+                "user": {
+                    "title": "User",
+                    "intro": "<p>Displays the currently logged in user information.</p>"
+                },
+                "group": {
+                    "title": "Group",
+                    "intro": "<p>Displays the currently logged in user's group information.</p>"
+                },
+                "mail-send": {
+                    "title": "Send Email",
+                    "intro": "<p>Example of how to send emails using a Google/GMail account. Replace the <b>*****</b> (asterisks) by your respective account information in both the code and App configuration at <i>config/</i>.</p>"
+                },
+                "print-lines": {
+                    "title": "Plain text print",
+                    "intro": "<p>Outputs content in plain text.</p>"
+                },
+                "print-template": {
+                    "title": "Templates",
+                    "intro": "<p>Serves to generate HTML and keep the code clean and tidy, check the contents of the templates in <i>server/templates/samples</i>.</p>"
+                },
+                "query-parameter": {
+                    "title": "Parameters in Database Queries",
+                    "intro": "<p>Uses the passed URL parameters as filters and returns the data found in the database matching the parameters in <i>JSON</i> format.</p>"
+                },
+                "db": {
+                    "title": "Database Transactions",
+                    "intro": "<p>Demonstrates how to perform database transactions such as inserts, updates, deletes, and selects by code.</p>"
+                },
+                "query-interaction": {
+                    "title": "Data Iteration",
+                    "intro": "<p>Returns the records found by the query through a <i>for</i> loop in <i>JSON</i> format.</p>"
+                },
+                "query-result": {
+                    "title": "Simple Data Retrieval",
+                    "intro": "<p>Returns the records found by the query in <i>JSON</i> format.</p>"
+                },
+                "uid": {
+                    "title": "UUID",
+                    "intro": "<p>Generates a uuid/guid which is a random string of unique identification.</p>"
+                },
+                "upload": {
+                    "title": "Upload",
+                    "intro": "<p>Demonstrates how file uploads are performed.</p>"
+                },
+                "remote-delete-json": {
+                    "title": "Remote Delete JSON",
+                    "intro": "<p>Performs an HTTP remote request of type <i>delete</i> that usually serves to delete a specific entity from the server.</p>"
+                },
+                "remote-patch-json": {
+                    "title": "Remote Patch JSON",
+                    "intro": "<p>Performs an HTTP remote request of type <i>patch</i> which is normally used to send data changes.</p>"
+                },
+                "remote-post-json": {
+                    "title": "Remote Post JSON",
+                    "intro": "<p>Performs an HTTP remote request of type <i>post</i> which is usually used to create or insert new data structures.</p>"
+                },
+                "remote-put-json": {
+                    "title": "Remote Put JSON",
+                    "intro": "<p>Performs an HTTP remote request of type <i>put</i> which is usually used to set the data, create if it doesn't exist or change otherwise.</p>"
+                },
+                "remote-get-json": {
+                    "title": "Remote Get JSON",
+                    "intro": "<p>Makes a remote HTTP request of type <i>get</i> that is normally used to get data.</p>"
+                },
+                "remote-mailjet-sms": {
+                    "title": "SMS",
+                    "intro": "<p>Demonstrates how to send SMS through an external service, in this case we use the <i>Mailjet</i> service. You'll need to configure the <b>YOUR_TOKEN</b> and the <b>YOUR_INTERNATIONAL_PHONE_NUMBER</b> fields.</p>"
+                }
+            }
+        }
+    }
+}

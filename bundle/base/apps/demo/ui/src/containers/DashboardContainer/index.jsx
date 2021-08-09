@@ -3,31 +3,34 @@ import { message } from 'antd';
 import ListServices from "../ListServices/index.jsx";
 import DataVisualization from "../DataVisualization/index.jsx";
 
+import { injectIntl } from 'react-intl';
+const messages = 'dashboardcontainer.datavisualization';
+
 import styles from './index.less';
 
-export default class DashboardContainer extends Component {
+class DashboardContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            trabalhadores: []
+            workers: []
         };
     }
 
     componentDidMount() {
-        this.loadTrabalhadores();
+        this.loadWorkers();
     }
 
-    loadTrabalhadores() {
+    loadWorkers() {
         netuno.service({
-            url: '/services/trabalhadores',
-            success: (data)=> {
+            url: '/services/workers',
+            success: (data) => {
                 this.setState({
-                    trabalhadores: data.json
+                    workers: data.json
                 });
             },
-            fail: (data)=> {
+            fail: (data) => {
                 console.log(data);
-                message.error("Falha ao carregar a lista do total de registos dos trabalhadores.")
+                message.error(this.props.intl.formatMessage({ id: `${messages}.loading_error` }))
             }
         });
     }
@@ -35,9 +38,11 @@ export default class DashboardContainer extends Component {
     render() {
         return (
             <div>
-                <DataVisualization data={this.state.trabalhadores} title={"Trabalhadores"} />
+                <DataVisualization data={this.state.workers} />
                 <ListServices />
             </div>
         );
     }
 }
+
+export default injectIntl(DashboardContainer)

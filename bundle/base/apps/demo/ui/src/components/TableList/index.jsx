@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 
 import styles from './index.less';
 
+import { FormattedMessage } from 'react-intl';
+const messages = 'dashboardcontainer.datavisualization.table';
+
 class TableList extends Component {
 
     constructor(props) {
@@ -11,7 +14,7 @@ class TableList extends Component {
         };
     }
 
-    static getDerivedStateFromProps(nextProps, prevState){
+    static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.tableData) {
             return {
                 tableData: nextProps.tableData
@@ -24,21 +27,21 @@ class TableList extends Component {
         const tableFinalData = this.state.tableData.map(
             (record, i) =>
                 <tr key={i}>
-                    <td>{record.nome}</td>
+                    <td>{record.name}</td>
                     <td>{record.total}</td>
                 </tr>
         );
 
         return (
-            <table className={ styles.table }>
+            <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>{ this.props.title }</th>
-                        <th>Total de Horas</th>
+                        <th><FormattedMessage id={`${messages}.workers`} /></th>
+                        <th><FormattedMessage id={`${messages}.total`} /></th>
                     </tr>
                 </thead>
                 <tbody>
-                {tableFinalData}
+                    {tableFinalData}
                 </tbody>
             </table>
         );

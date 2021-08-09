@@ -1,13 +1,28 @@
 import React from "react";
 import ReactDOM from "react-dom";
+
+import { IntlProvider } from "react-intl";
+import flatten from 'flat';
+import messages_en_us from "../lang/en_US.json";
+import messages_pt_pt from "../lang/pt_PT.json";
+const messages = {
+    'en-us': messages_en_us,
+    'pt-pt': messages_pt_pt
+};
+const locale = (netuno.config.langCode).replace("_", "-");
+
 import DashboardContainer from "./containers/DashboardContainer/index.jsx";
 
 const dashboardDiv = document.getElementById("app-dashboard");
 
-const dashboardContainer = dashboardDiv ? ReactDOM.render(<DashboardContainer />, dashboardDiv) : false;
-    
+const dashboardContainer = dashboardDiv ? ReactDOM.render(
+    <IntlProvider locale={locale} messages={flatten(messages[locale])}>
+        <DashboardContainer />
+    </IntlProvider>
+    , dashboardDiv) : false;
+
 netuno.addNavigationLoad(() => {
-    $('[netuno-navigation]').find('a').on('netuno:click', (e)=> {
+    $('[netuno-navigation]').find('a').on('netuno:click', (e) => {
         const link = $(e.target);
         if (dashboardContainer && link.is('[netuno-navigation-dashboard]')) {
             // Memu > Dashboard > Clicked!
@@ -24,18 +39,18 @@ netuno.addContentLoad((container) => {
         // When form edit is loaded...
     }
 });
-    
+
 netuno.addPageLoad(() => {
     // When page is loaded...
     let modal = $('#app-dashboard-modal-form')
-    modal.on('hidden.bs.modal', ()=> {
+    modal.on('hidden.bs.modal', () => {
         modal.find('[netuno-form-edit]').empty()
     });
-    $('#app-dashboard-modal-form-button').on('click', ()=> {
+    $('#app-dashboard-modal-form-button').on('click', () => {
         modal.modal('show')
         netuno.loadFormEdit(modal.find('[netuno-form]'))
     });
-    modal.find('[netuno-form]').on('netuno:save', ()=> {
+    modal.find('[netuno-form]').on('netuno:save', () => {
         modal.modal('hide')
     });
 });

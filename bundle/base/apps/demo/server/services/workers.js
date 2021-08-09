@@ -9,15 +9,15 @@ var dbRegistos = _db.query(
     "ORDER BY total ASC"
 );
 
-var trabalhadores = _val.list();
+var workers = _val.list();
 
 for (var i = 0; i < dbRegistos.size(); i++) {
     var dbRegisto = dbRegistos.get(i);
-    trabalhadores.add(
+    workers.add(
         _val.map()
-        .set("nome", dbRegisto.getString("nome"))
+        .set("name", dbRegisto.getString("nome"))
         .set("total", dbRegisto.getInt("total"))
     );
 }
 
-_out.json(trabalhadores);
+_out.json(workers);

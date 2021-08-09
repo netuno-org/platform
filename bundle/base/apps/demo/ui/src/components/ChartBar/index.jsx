@@ -3,7 +3,10 @@ import { Bar } from 'react-chartjs-2';
 
 import styles from './index.less';
 
-export default class ChartBar extends Component {
+import { injectIntl } from 'react-intl';
+const messages = 'dashboardcontainer.datavisualization.chart';
+
+class ChartBar extends Component {
 
     constructor(props) {
         super(props);
@@ -12,7 +15,7 @@ export default class ChartBar extends Component {
         }
     }
 
-    static getDerivedStateFromProps(nextProps, prevState){
+    static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.chartData) {
             let colors = [
                 'rgb(255, 99, 132)',
@@ -30,7 +33,7 @@ export default class ChartBar extends Component {
                 labels: [],
                 datasets: [
                     {
-                        label: "Horas",
+                        label: nextProps.intl.formatMessage({ id: `${messages}.label` }),
                         data: [],
                         backgroundColor: []
                     }
@@ -38,7 +41,7 @@ export default class ChartBar extends Component {
             };
 
             for (const i in nextProps.chartData) {
-                labels.push(nextProps.chartData[i].nome);
+                labels.push(nextProps.chartData[i].name);
                 values.push(nextProps.chartData[i].total);
                 chartDataValues.datasets[0].backgroundColor[i] = colors[i];
             }
@@ -46,7 +49,7 @@ export default class ChartBar extends Component {
             chartDataValues.labels = labels;
             chartDataValues.datasets[0].data = values;
 
-            return {chartData: chartDataValues};
+            return { chartData: chartDataValues };
         }
         return null;
     }
@@ -76,3 +79,5 @@ export default class ChartBar extends Component {
         );
     }
 }
+
+export default injectIntl(ChartBar)

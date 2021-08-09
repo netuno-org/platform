@@ -84,7 +84,17 @@ module.exports = {
                     'style-loader',
                     'css-loader'
                 ]
-            }
+            },
+            {
+                test: /\.json$/,
+                include: [
+                    path.resolve(__dirname, 'src')
+                ],
+                exclude: /node_modules/,
+                use: [
+                    'json5-loader'
+                ]
+              },
         ]
     }
 };

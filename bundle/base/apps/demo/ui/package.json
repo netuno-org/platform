@@ -19,13 +19,13 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-import": "^1.11.2",
     "babel-plugin-react-css-modules": "^5.2.6",
+    "css-loader": "^2.1.1",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
-    "css-loader": "^2.1.1",
-    "style-loader": "^0.23.1",
     "prop-types": "^15.7.2",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
+    "style-loader": "^0.23.1",
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2"
   },
@@ -34,6 +34,9 @@
     "@monaco-editor/react": "^3.6.3",
     "antd": "^4.7.3",
     "chart.js": "^2.8.0",
-    "react-chartjs-2": "^2.7.6"
+    "flat": "^5.0.2",
+    "json-loader": "^0.5.7",
+    "react-chartjs-2": "^2.7.6",
+    "react-intl": "^5.20.7"
   }
 }
