@@ -25,6 +25,7 @@ import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.StreamGobbler;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.net.Download;
+import org.netuno.psamata.net.Remote;
 import picocli.CommandLine;
 
 import java.io.*;
@@ -51,7 +52,7 @@ import org.apache.logging.log4j.Logger;
 public class Install {
     private static Logger logger = LogManager.getLogger(Install.class);
 
-    private static String graalVMVersion = "21.1.0";
+    private static String graalVMVersion = "21.2.0";
     
     @CommandLine.Option(names = { "-p", "path" }, paramLabel = "path", description = "Path to install.")
     protected String path = ".";
@@ -355,42 +356,70 @@ public class Install {
             }
 
             if (!bundleFile.exists()) {
-                String bundleURL = "https://www.netuno.org/" + bundleFileName + (version.isEmpty() ? "" : "-v"+ versionType +"-"+ version.replace(".", "_")) + ".zip";
-
-                System.out.println(OS.consoleOutput("Downloading @|yellow " + bundleURL + "|@:"));
-                Download download = new Download();
-                download.http(bundleURL, bundleFile, new Download.DownloadEvent() {
-                    @Override
-                    public void onInit(Download.Stats stats) {
-
+                String url = "";
+                try {
+                    if (version.isEmpty()) {
+                        url = "https://github.com/netuno-org/platform/releases/download/latest/release.json";
+                        Values data = Values.fromJSON(new Remote().get(url).toString());
+                        version = data.getString("version");
                     }
+                    String versionURL = (version.isEmpty() ? "" : "v"+ versionType +"-"+ version.replace(".", "_"));
 
-                    @Override
-                    public void onProgress(Download.Stats stats) {
-                        System.out.print("\r");
-                        System.out.print(OS.consoleOutput(String.format(
-                                "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
-                                        "        ",
-                                FileUtils.byteCountToDisplaySize(stats.getPosition()),
-                                FileUtils.byteCountToDisplaySize(stats.getLength()),
-                                stats.getSpeed() / 1024,
-                                stats.getTime() / 1000)
-                        ));
-                    }
+                    url = "https://github.com/netuno-org/platform/releases/download/"+ (versionURL.isEmpty() ? "latest" : versionURL) +"/"+ bundleFileName + (versionURL.isEmpty() ? "" : "-"+ versionURL) + ".zip";
 
-                    @Override
-                    public void onComplete(Download.Stats stats) {
-                        System.out.println();
-                        if (bundleFile.exists()) {
-                            bundleFile.deleteOnExit();
-                            System.out.println();
-                            System.out.print(OS.consoleOutput("@|green Netuno download was successfully completed.|@"));
-                        } else {
-                            System.out.print(OS.consoleOutput("@|red Netuno download failed.|@"));
+                    System.out.println(OS.consoleOutput("Downloading @|yellow " + url + "|@:"));
+
+                    Download download = new Download();
+                    download.http(url, bundleFile, new Download.DownloadEvent() {
+                        @Override
+                        public void onInit(Download.Stats stats) {
+
                         }
-                    }
-                });
 
+                        @Override
+                        public void onProgress(Download.Stats stats) {
+                            System.out.print("\r");
+                            System.out.print(OS.consoleOutput(String.format(
+                                    "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
+                                            "        ",
+                                    FileUtils.byteCountToDisplaySize(stats.getPosition()),
+                                    FileUtils.byteCountToDisplaySize(stats.getLength()),
+                                    stats.getSpeed() / 1024,
+                                    stats.getTime() / 1000)
+                            ));
+                        }
+
+                        @Override
+                        public void onComplete(Download.Stats stats) {
+                            System.out.println();
+                            if (bundleFile.exists()) {
+                                bundleFile.deleteOnExit();
+                                System.out.println();
+                                System.out.print(OS.consoleOutput("@|green Netuno download was successfully completed.|@"));
+                            } else {
+                                System.out.print(OS.consoleOutput("@|red Netuno download failed.|@"));
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    logger.debug("Fail to download "+ url, e);
+                    System.out.println();
+                    System.out.println();
+                    if (e instanceof javax.net.ssl.SSLHandshakeException && e.getMessage().contains("github-releases.githubusercontent.com")) {
+                        System.out.println(OS.consoleOutput("@|red Temporarily offline, probably being propagated by GitHub. |@ "));
+                        System.out.println();
+                        System.out.println(OS.consoleOutput("@|red Please try again later, it may take up to 15 minutes. |@ "));
+                        System.out.println();
+                        System.out.println(OS.consoleOutput("@|yellow More details at: https://github.com/netuno-org/platform/releases |@ "));
+                    } else {
+                        System.out.println(OS.consoleOutput("@|red Offline: |@ "));
+                        System.out.println();
+                        System.out.println(OS.consoleOutput("@|red "+ e.getMessage() +": "+ e.getLocalizedMessage() +" |@ "));
+                    }
+                    System.out.println();
+                    System.out.println();
+                    return;
+                }
                 System.out.println();
                 System.out.println();
             }

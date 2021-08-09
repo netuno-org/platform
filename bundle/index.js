@@ -74,9 +74,9 @@ var loadJars = (jarsFolder, jarsFolderIndex) => {
             jars += (jars == '' ? '' : ':') + jarFile.folder + '/' + jarFile.name +'-'+ jarFile.version +'.jar'
         })
         console.log('');
-        console.log('-libraryjars  <java.home>/lib/rt.jar:'+ jars);
+        console.log('JARS:', jars);
         console.log('');
-        console.log(jarsFiles);
+        //console.log(jarsFiles);
 
         //<trash>
         //fs.copySync(config.output.bundle +'/web/', config.base.root +'/netuno.jar')
@@ -156,7 +156,7 @@ var loadJars = (jarsFolder, jarsFolderIndex) => {
 
                     fs.removeSync(config.output.bundle +'/logs/netuno.log')
 
-                    cmd = 'zip -r '+ config.output.bundleName +'.zip '+ config.output.bundleName
+                    cmd = 'zip -qr '+ config.output.bundleName +'.zip '+ config.output.bundleName
                     console.log('$ '+ cmd)
                     exec(cmd, { cwd: config.output.root, maxBuffer: 1024 * 10000 }, (err, stdout, stderr) => {
                         if (err) {
