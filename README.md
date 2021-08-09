@@ -66,6 +66,8 @@ The new Netuno version will be generated in `bundle/dist/netuno*` based on the f
 
 Create a new project in the menu File > New  > Project from Existing Sources...
 
+![IDEA New](https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-new-project-from-existing-sources.png){:style="max-width: 300px; width: auto;"}
+
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-new-project-from-existing-sources.png" style="max-width: 300px; width: auto;"/>
 
 > Choose the folder where this repository was cloned.
