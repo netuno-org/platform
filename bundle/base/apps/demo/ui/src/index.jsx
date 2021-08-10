@@ -22,18 +22,21 @@ import DashboardContainer from "./containers/DashboardContainer/index.jsx";
 
 const dashboardDiv = document.getElementById("app-dashboard");
 
-const dashboardContainer = dashboardDiv ? ReactDOM.render(
+const dashboardContainerRef = React.createRef();
+
+dashboardDiv && ReactDOM.render(
     <IntlProvider locale={locale} messages={flatten(messages[locale])}>
-        <DashboardContainer />
+      <DashboardContainer ref={dashboardContainerRef} />
     </IntlProvider>
-    , dashboardDiv) : false;
+    , dashboardDiv
+);
 
 netuno.addNavigationLoad(() => {
     $('[netuno-navigation]').find('a').on('netuno:click', (e) => {
         const link = $(e.target);
-        if (dashboardContainer && link.is('[netuno-navigation-dashboard]')) {
+        if (dashboardContainerRef.current && link.is('[netuno-navigation-dashboard]')) {
             // Memu > Dashboard > Clicked!
-            dashboardContainer.loadTrabalhadores();
+            dashboardContainerRef.current.loadWorkers();
         }
     });
 });
