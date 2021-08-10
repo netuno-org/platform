@@ -42,12 +42,12 @@ import org.netuno.psamata.io.OutputStream;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class Proteu {
-	public enum HTTPStatus {
+    public enum HTTPStatus {
         Continue100(100, "Continue"),
         SwitchingProtocol101(101, "Switching Protocol"),
         Processing102(102, "Processing"),
         EarlyHints103(103, "Early Hints"),
-	    OK200(200, "OK"),
+        OK200(200, "OK"),
         Created201(201, "Created"),
         Accepted202(202, "Accepted"),
         NonAuthoritativeInformation203(203, "Non-Authoritative Information"),
@@ -106,8 +106,8 @@ public class Proteu {
         private int code;
         private String description;
         HTTPStatus(int code, String description) {
-         this.code = code;
-         this.description = description;
+            this.code = code;
+            this.description = description;
         }
         public int getCode() {
             return code;
@@ -116,8 +116,8 @@ public class Proteu {
             return description;
         }
         public String toString(){
-			 return code +" "+ description;
-		 }
+             return code +" "+ description;
+         }
         public static HTTPStatus fromCode(int code) {
             if (code > 0) {
                 for (HTTPStatus status : HTTPStatus.values()) {
@@ -128,7 +128,7 @@ public class Proteu {
             }
             return null;
         }
-	};
+    };
 
     public enum ContentType {
         PDF("pdf", "application/pdf"),

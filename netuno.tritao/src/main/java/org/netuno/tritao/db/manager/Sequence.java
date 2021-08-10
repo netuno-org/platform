@@ -106,10 +106,10 @@ public class Sequence extends Base {
             String newRawSQLName = DB.sqlInjectionRawName(newName);
             if (!new CheckExists(this).sequence(newRawSQLName)) {
                 if (isH2()) {
-                    getManager().execute("create sequence "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(newRawSQLName) + " start with currval('"+ oldRawSQLName +"');");
+                    getManager().execute("create sequence "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(newRawSQLName) + " start with (next value for "+ getBuilder().escape(oldRawSQLName) +");");
                     drop(oldRawSQLName);
                 } else if (isPostgreSQL()) {
-                    getManager().execute("alter sequence " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " rename to " + getBuilder().escape(newRawSQLName) + "");
+                    getManager().execute("alter sequence " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
                 }
             }
         } catch (Exception e) {
@@ -131,13 +131,17 @@ public class Sequence extends Base {
     }
 
     public int getCurrentValue(String sequenceName) {
-        int value = 0;
-        if (isH2()) {
-            value = getManager().query("select currval('" + sequenceName + "') as last_value ").get(0).getInt("last_value");
-        } else if (isPostgreSQL()) {
-            value = getManager().query("select last_value from " + getBuilder().escape(sequenceName) + "").get(0).getInt("last_value");
+        try {
+            int value = 0;
+            if (isH2()) {
+                value = getManager().query("select current_value from information_schema.sequences where sequence_name = " + getBuilder().escape(DB.sqlInjectionRawName(sequenceName)) + "").get(0).getInt("current_value");
+            } else if (isPostgreSQL()) {
+                value = getManager().query("select last_value from " + getBuilder().escape(DB.sqlInjectionRawName(sequenceName)) + "").get(0).getInt("last_value");
+            }
+            return value <= 0 ? 1 : value;
+        } catch (Exception e) {
+            throw new DBError(e).setLogFatal("Current value for sequence "+ sequenceName +".");
         }
-        return value <= 0 ? 1 : value;
     }
 
     public String commandNextValue(String sequenceName) {

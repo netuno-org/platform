@@ -22,6 +22,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.Group;
+import org.netuno.tritao.com.TextHTML;
 import org.netuno.tritao.com.User;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.Manager;
@@ -572,7 +573,7 @@ public class Config {
             components.set("textnum", new org.netuno.tritao.com.Text(proteu, hili).setName("textnum"));
             components.set("textfloat", new org.netuno.tritao.com.Text(proteu, hili).setName("textfloat"));
             components.set("textarea", new org.netuno.tritao.com.TextArea(proteu, hili).setName("textarea"));
-            components.set("texthtml", new org.netuno.tritao.com.TextHtml(proteu, hili).setName("texthtml"));
+            components.set("texthtml", new TextHTML(proteu, hili).setName("texthtml"));
             components.set("textmd", new org.netuno.tritao.com.TextMD(proteu, hili).setName("textmd"));
             //components.set("textvault", new org.netuno.tritao.com.TextVault(proteu, hili).setName("textvault"));
             components.set("checkbox", new org.netuno.tritao.com.Checkbox(proteu, hili).setName("checkbox"));

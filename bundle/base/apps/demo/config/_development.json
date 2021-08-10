@@ -1,7 +1,7 @@
 {
     "name": "demo",
-    "language": "pt_PT",
-    "locale": "pt_PT",
+    "language": "en_GB",
+    "locale": "en_GB",
     "settings": {
         "public": {}
     },
@@ -11,7 +11,7 @@
             "engine": "h2",
             "port": "",
             "host": "",
-            "name": "demo",
+            "name": "demo_en",
             "username": ""
         }
     },
@@ -62,13 +62,13 @@
         }
     },
     "setup": {
-        "enabled": true,
+        "enabled": false,
         "schema": {
-            "auto_create": true,
-            "execution": true
+            "auto_create": false,
+            "execution": false
         },
         "scripts": {
-            "execution": true
+            "execution": false
         }
     }
 }

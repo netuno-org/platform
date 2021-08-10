@@ -52,7 +52,7 @@ public class TextArea extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.textarea.value", value);
             getDesignData().set("com.textarea.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
             getDesignData().set("com.textarea.cols", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "cols");

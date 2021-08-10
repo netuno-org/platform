@@ -20,22 +20,33 @@ package org.netuno.tritao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
+import org.netuno.proteu.ProteuException;
+import org.netuno.proteu._Web;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.resource.Req;
+import org.netuno.tritao.resource.Template;
 import org.netuno.tritao.util.TemplateBuilder;
 
+import javax.script.ScriptException;
+import java.io.IOException;
 import java.util.List;
 
 /**
  * Index Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Index {
+@_Web(url = "/org/netuno/tritao/Index")
+public class Index extends WebMaster {
 
     private static Logger logger = LogManager.getLogger(Index.class);
 
-    public static void _main(final Proteu proteu, final Hili hili) throws Exception {
+    public Index(Proteu proteu, Hili hili) {
+        super(proteu, hili);
+    }
+
+    public void run() throws ScriptException, IOException, ProteuException {
         /*
         String devBillboardCheckSUM = org.apache.commons.codec.digest.DigestUtils.sha256Hex(
             org.netuno.psamata.io.InputStream.readAll(
@@ -43,49 +54,51 @@ public class Index {
             )
         );
         */
-        if (proteu.getRequestAll().getString("action").equals("login")) {
-            Auth.clearSession(proteu, hili);
-            if (proteu.getRequestAll().getString("username").length() > 0 && proteu.getRequestAll().getString("password").length() > 0) {
-                if (Auth.signIn(proteu, hili, Auth.Type.SESSION)) {
-                    TemplateBuilder.output(proteu, hili, "login_success");
+        Req req = resource(Req.class);
+        Template template = resource(Template.class).initCore();
+        if (req.getString("action").equals("login")) {
+            Auth.clearSession(getProteu(), getHili());
+            if (req.getString("username").length() > 0 && req.getString("password").length() > 0) {
+                if (Auth.signIn(getProteu(), getHili(), Auth.Type.SESSION)) {
+                    template.out("login_success");
                 } else {
-                TemplateBuilder.output(proteu, hili, "notification/login_wrong");
+                    template.out("notification/login_wrong");
                 }
             } else {
-                TemplateBuilder.output(proteu, hili, "notification/login_empty");
+                template.out("notification/login_empty");
             }
             return;
         }
-    	if (proteu.getRequestAll().getString("action").equals("logout")) {
-            if (Auth.hasBackupSession(proteu, hili)) {
-                Auth.restoreBackupedSession(proteu, hili);
+    	if (req.getString("action").equals("logout")) {
+            if (Auth.hasBackupSession(getProteu(), getHili())) {
+                Auth.restoreBackupedSession(getProteu(), getHili());
             } else {
-                Auth.clearSession(proteu, hili);
+                Auth.clearSession(getProteu(), getHili());
             }
         }
-        if (!Auth.isAuthenticated(proteu, hili)) {
+        if (!Auth.isAuthenticated(getProteu(), getHili())) {
             Values data = new Values();
             data.set("user.admin", "false");
-            data.set("username", Config.getLoginUser(proteu));
-                data.set("password", Config.getLoginPass(proteu));
-                data.set("auto", Config.isLoginAuto(proteu));
-            TemplateBuilder.output(proteu, hili, "includes/head_login", data);
+            data.set("username", Config.getLoginUser(getProteu()));
+            data.set("password", Config.getLoginPass(getProteu()));
+            data.set("auto", Config.isLoginAuto(getProteu()));
+            TemplateBuilder.output(getProteu(), getHili(), "includes/head_login", data);
             String outputUsers = "";
-            for (Values rowTritaoUser : Config.getDataBaseBuilder(proteu).selectUser("")) {
+            for (Values rowTritaoUser : Config.getDataBaseBuilder(getProteu()).selectUser("")) {
                 if (rowTritaoUser.getBoolean("active") && rowTritaoUser.getInt("group_id") >= -1) {
-                    List<Values> groups = Config.getDataBaseBuilder(proteu).selectGroup(rowTritaoUser.getString("group_id"));
+                    List<Values> groups = Config.getDataBaseBuilder(getProteu()).selectGroup(rowTritaoUser.getString("group_id"));
                     if (groups.size() == 1 && groups.get(0).getBoolean("active")) {
-                        outputUsers = outputUsers.concat(TemplateBuilder.getOutput(proteu, hili, "index_user_item", rowTritaoUser));
+                        outputUsers = outputUsers.concat(template.get("index_user_item", rowTritaoUser));
                     }
                 }
             }
-            if (Config.isLoginAvatar(proteu)) {
+            if (Config.isLoginAvatar(getProteu())) {
                 data.set("users", outputUsers);
             }
-            TemplateBuilder.output(proteu, hili, "login", data);
-            TemplateBuilder.output(proteu, hili, "includes/foot_login", data);
+            template.out("login", data);
+            template.out("includes/foot_login", data);
         } else {
-            Main._main(proteu, hili);
-	}
+            new Main(getProteu(), getHili()).run();
+        }
     }
 }

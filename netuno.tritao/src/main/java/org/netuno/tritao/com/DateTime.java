@@ -67,7 +67,7 @@ public class DateTime extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (this.isModeEdit() && value.isEmpty()
                     && getConfiguration().getParameter("DEFAULT_CURRENT").getValue() != null
                     && getConfiguration().getParameter("DEFAULT_CURRENT").getValueAsBoolean()) {

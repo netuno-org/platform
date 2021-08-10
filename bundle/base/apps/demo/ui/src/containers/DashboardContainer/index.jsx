@@ -22,7 +22,7 @@ class DashboardContainer extends Component {
 
     loadWorkers() {
         netuno.service({
-            url: '/services/workers',
+            url: this.props.intl.locale.indexOf('pt') == 0 ? '/services/trabalhadores' : '/services/workers',
             success: (data) => {
                 this.setState({
                     workers: data.json
@@ -30,7 +30,7 @@ class DashboardContainer extends Component {
             },
             fail: (data) => {
                 console.log(data);
-                message.error(this.props.intl.formatMessage({ id: `${messages}.loading_error` }))
+                message.error(this.props.intl.formatMessage({ id: `${messages}.loading_error` }));
             }
         });
     }
@@ -45,4 +45,4 @@ class DashboardContainer extends Component {
     }
 }
 
-export default injectIntl(DashboardContainer)
+export default injectIntl(DashboardContainer);

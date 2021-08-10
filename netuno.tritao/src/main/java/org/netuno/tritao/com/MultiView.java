@@ -91,7 +91,7 @@ public class MultiView  extends ComponentBase {
     public Component render() {
         try {
             if (isModeEdit()) {
-                new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+                new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             	getDesignData().set("com.multiselect.value", value);
             	getDesignData().set("com.multiselect.referenceId", getValuesId());
 

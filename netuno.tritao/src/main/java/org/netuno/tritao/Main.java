@@ -23,46 +23,61 @@ import org.json.JSONException;
 import org.netuno.proteu.Proteu;
 import java.io.IOException;
 
+import org.netuno.proteu.ProteuException;
+import org.netuno.proteu._Web;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import java.util.List;
 
 import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.resource.Lang;
+import org.netuno.tritao.resource.Template;
+import org.netuno.tritao.util.DataLabel;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
+
+import javax.script.ScriptException;
 
 /**
  * Main Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Main {
+@_Web(url = "/org/netuno/tritao/Main")
+public class Main extends WebMaster {
     private static Logger logger = LogManager.getLogger(Main.class);
-    public static void _main(Proteu proteu, Hili hili) throws Exception {
-        if (!Auth.isAuthenticated(proteu, hili, Auth.Type.SESSION, true)) {
+    private Lang lang = null;
+
+    public Main(Proteu proteu, Hili hili) {
+        super(proteu, hili);
+    }
+
+    public void run() throws IOException, ProteuException, ScriptException {
+        if (!Auth.isAuthenticated(getProteu(), getHili(), Auth.Type.SESSION, true)) {
             return;
         }
-        Values user = Auth.getUser(proteu, hili, Auth.Type.SESSION);
-        Values group = Auth.getGroup(proteu, hili, Auth.Type.SESSION);
+        Values user = Auth.getUser(getProteu(), getHili(), Auth.Type.SESSION);
+        Values group = Auth.getGroup(getProteu(), getHili(), Auth.Type.SESSION);
         if (user == null || group == null) {
-            Auth.clearSession(proteu, hili);
-            Auth.isAuthenticated(proteu, hili, Auth.Type.SESSION, true);
+            Auth.clearSession(getProteu(), getHili());
+            Auth.isAuthenticated(getProteu(), getHili(), Auth.Type.SESSION, true);
             return;
         }
+        this.lang = resource(Lang.class);
         Values data = new Values();
         data.set("user", user.getString("user"));
         data.set("user.code", user.getString("code"));
         data.set("user.name", user.getString("name"));
         data.set("group.code", group.getString("code"));
         data.set("group.name", group.getString("name"));
-        if (Rule.getRule(proteu, hili).isAdmin()) {
-            data.set("include.admin", TemplateBuilder.getOutput(proteu, hili, "includes/admin"));
+        if (Rule.getRule(getProteu(), getHili()).isAdmin()) {
+            data.set("include.admin", TemplateBuilder.getOutput(getProteu(), getHili(), "includes/admin"));
             data.set("user.admin", "true");
     	} else {
             data.set("user.admin", "false");
     	}
-        if (Rule.getRule(proteu, hili).isDev()) {
-            data.set("include.dev", TemplateBuilder.getOutput(proteu, hili, "includes/dev"));
-            data.set("include.admin", TemplateBuilder.getOutput(proteu, hili, "includes/admin"));
+        if (Rule.getRule(getProteu(), getHili()).isDev()) {
+            data.set("include.dev", TemplateBuilder.getOutput(getProteu(), getHili(), "includes/dev"));
+            data.set("include.admin", TemplateBuilder.getOutput(getProteu(), getHili(), "includes/admin"));
             data.set("user.dev", "true");
         } else {
             data.set("user.dev", "false");
@@ -71,64 +86,67 @@ public class Main {
         Values jsonMenu = new Values();
         Values jsonArrayForms = new Values();
         jsonArrayForms.toList();
-        if (haveAnyChildTableToAccess(proteu, hili, "0")) {
-            jsonMenuTables(proteu, hili, jsonArrayForms, "0");
-            jsonMenuTablesOrphans(proteu, hili, jsonArrayForms);
+        if (haveAnyChildTableToAccess("0")) {
+            jsonMenuTables(jsonArrayForms, "0");
+            jsonMenuTablesOrphans(jsonArrayForms);
         }
         jsonMenu.put("forms", jsonArrayForms);
-        proteu.getRequestAll().set("report", "true");
+        getProteu().getRequestAll().set("report", "true");
         Values jsonArrayReports = new Values();
         jsonArrayReports.toList();
-        if (haveAnyChildTableToAccess(proteu, hili, "0")) {
-            jsonMenuTables(proteu, hili, jsonArrayReports, "0");
-            jsonMenuTablesOrphans(proteu, hili, jsonArrayReports);
+        if (haveAnyChildTableToAccess("0")) {
+            jsonMenuTables(jsonArrayReports, "0");
+            jsonMenuTablesOrphans(jsonArrayReports);
         }
-        proteu.getRequestAll().set("report", "false");
+        getProteu().getRequestAll().set("report", "false");
         jsonMenu.put("reports", jsonArrayReports);
         data.set("menu", jsonMenu.toJSON());
 
-        TemplateBuilder.output(proteu, hili, "includes/head", data);
-        TemplateBuilder.output(proteu, hili, "main", data);
-        TemplateBuilder.output(proteu, hili, "includes/foot", data);
+        Template template = resource(Template.class).initCore();
+        template.out("includes/head", data);
+        template.out("main", data);
+        template.out("includes/foot", data);
     }
     
-    private static void addTable(Proteu proteu, Hili hili, Values jsonArray, Values rowTable) throws IOException, JSONException {
-    	if (haveAnyChildTableToAccess(proteu, hili, rowTable.getString("id"))) {
+    private void addTable(Values jsonArray, Values rowTable) throws IOException, JSONException {
+    	if (haveAnyChildTableToAccess(rowTable.getString("id"))) {
             //if (Rule.getRule(proteu, rowTritaoTableByParent.getString("id")).haveAccess()) {
             Values jsonArrayChilds = new Values();
-            jsonMenuTables(proteu, hili, jsonArrayChilds, rowTable.getString("id"));
+            jsonMenuTables(jsonArrayChilds, rowTable.getString("id"));
             Values jsonObject = new Values();
             jsonObject.put("uid", rowTable.getString("uid"));
             jsonObject.put("name", rowTable.getString("name"));
-            jsonObject.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(rowTable.getString("displayname")));
+            jsonObject.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(
+                    DataLabel.form(lang, rowTable)
+            ));
             jsonObject.put("items", jsonArrayChilds);
             jsonArray.add(jsonObject);
             //}
         }
     }
     
-    private static void jsonMenuTablesOrphans(Proteu proteu, Hili hili, Values jsonArray) throws IOException, JSONException {
-    	List<Values> rsTableByOrphans = Config.getDataBaseBuilder(proteu).selectTablesByOrphans();
+    private void jsonMenuTablesOrphans(Values jsonArray) throws IOException, JSONException {
+    	List<Values> rsTableByOrphans = Config.getDataBaseBuilder(getProteu()).selectTablesByOrphans();
         for (Values rowTritaoTableByOrphans : rsTableByOrphans) {
-            addTable(proteu, hili, jsonArray, rowTritaoTableByOrphans);
+            addTable(jsonArray, rowTritaoTableByOrphans);
         }
     }
     
-	private static void jsonMenuTables(Proteu proteu, Hili hili, Values jsonArray, String id) throws IOException, JSONException {
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(proteu).selectTablesByParent(id);
+	private void jsonMenuTables(Values jsonArray, String id) throws IOException, JSONException {
+        List<Values> rsTableByParent = Config.getDataBaseBuilder(getProteu()).selectTablesByParent(id);
         for (Values rowTritaoTableByParent : rsTableByParent) {
-            addTable(proteu, hili, jsonArray, rowTritaoTableByParent);
+            addTable(jsonArray, rowTritaoTableByParent);
         }
     }
 
-    private static boolean haveAnyChildTableToAccess(Proteu proteu, Hili hili, String id) throws IOException {
-        if (Rule.getRule(proteu, hili, id).haveAccess()) {
+    private boolean haveAnyChildTableToAccess(String id) throws IOException {
+        if (Rule.getRule(getProteu(), getHili(), id).haveAccess()) {
             return true;
         }
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(proteu).selectTablesByParent(id);
+        List<Values> rsTableByParent = Config.getDataBaseBuilder(getProteu()).selectTablesByParent(id);
         for (Values rowTritaoTableByParent : rsTableByParent) {
-            if (Rule.getRule(proteu, hili, rowTritaoTableByParent.getString("id")).haveAccess()
-            	|| haveAnyChildTableToAccess(proteu, hili, rowTritaoTableByParent.getString("id"))) {
+            if (Rule.getRule(getProteu(), getHili(), rowTritaoTableByParent.getString("id")).haveAccess()
+            	|| haveAnyChildTableToAccess(rowTritaoTableByParent.getString("id"))) {
                 return true;
             }
         }

@@ -51,6 +51,7 @@ import org.netuno.tritao.com.Id;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.db.DataItem;
+import org.netuno.tritao.util.DataLabel;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
 import org.w3c.dom.DOMImplementation;
@@ -329,6 +330,7 @@ public class Search {
             if (rule.getWrite() > Rule.NONE) {
                 rowTritaoTable.put("button-new", TemplateBuilder.getOutput(proteu, hili, "search/buttons/new", rowTritaoTable));
             }
+            rowTritaoTable.set("displayname", DataLabel.form(proteu, hili, rowTritaoTable));
             TemplateBuilder.output(proteu, hili, "search/head", rowTritaoTable);
             TemplateBuilder.outputApp(proteu, hili, "search/".concat(tableName).concat("_head"), rowTritaoTable);
             TemplateBuilder.output(proteu, hili, "search/form/head");
@@ -435,6 +437,7 @@ public class Search {
                 if (!rowDesignXY.getBoolean("whenresult")) {
                     continue;
                 }
+                rowDesignXY.set("displayname", DataLabel.formField(proteu, hili, rowTritaoTable, rowDesignXY));
                 Component com = Config.getNewComponent(proteu, hili, rowDesignXY.getString("type"));
                 com.setProteu(proteu);
                 com.setDesignData(rowDesignXY);
@@ -469,7 +472,9 @@ public class Search {
     	fontHeader.setColor((short)0xc);
     	fontHeader.setBold(true);
     	cellStyleHeader.setFont(fontHeader);
-    	wb.setSheetName(0, WorkbookUtil.createSafeSheetName(rowTritaoTable.getString("displayname")));
+    	wb.setSheetName(0, WorkbookUtil.createSafeSheetName(
+    	        DataLabel.form(proteu, hili, rowTritaoTable)
+        ));
     	List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
     	org.netuno.tritao.db.DataSelected dataSelected = Config.getDataBaseBuilder(proteu).selectSearch(0, 0, "");
     	List<Values> rsSearch = dataSelected.getResults();
@@ -495,7 +500,7 @@ public class Search {
             }
             cell = row.createCell(cellNum);
             cell.setCellStyle(cellStyleHeader);
-            cell.setCellValue(rowTritaoDesignXY.getString("displayname"));
+            cell.setCellValue(DataLabel.formField(proteu, hili, rowTritaoTable, rowTritaoDesignXY));
             cellNum++;
 	}
     	if (exportLastChange) {
@@ -571,7 +576,7 @@ public class Search {
         Element child = null;
         xmldoc = impl.createDocument(null, tableName, null);
         Element root = xmldoc.getDocumentElement();
-        root.setAttribute("name", rowTritaoTable.getString("displayname"));
+        root.setAttribute("name", DataLabel.form(proteu, hili, rowTritaoTable));
     	List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
     	org.netuno.tritao.db.DataSelected dataSelected = Config.getDataBaseBuilder(proteu).selectSearch(0, 0, "");
     	List<Values> rsSearch = dataSelected.getResults();
@@ -603,7 +608,7 @@ public class Search {
                 com.setMode(Component.Mode.SearchResult);
                 com.setValues(tableName.concat("_"), rowSearch);
                 child = xmldoc.createElementNS(null, rowTritaoDesignXY.getString("name"));
-                child.setAttribute("name", rowTritaoDesignXY.getString("displayname"));
+                child.setAttribute("name", DataLabel.formField(proteu, hili, rowTritaoTable, rowTritaoDesignXY));
                 child.setTextContent(com.getTextValue());
                 e.appendChild(child);
     	    }

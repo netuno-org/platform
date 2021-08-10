@@ -23,6 +23,7 @@ import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.util.TemplateBuilder;
 
 import java.util.Map;
@@ -59,63 +60,81 @@ public class Template extends ResourceBase {
         return template;
     }
     
-    public String get(String name) throws Exception {
+    public String get(String name) throws ResourceException {
         return getOutput(name);
     }
 
-    public String get(String name, Map data) throws Exception {
+    public String get(String name, Map data) throws ResourceException {
         return getOutput(name, new Values(data));
     }
 
-    public String get(String name, Values data) throws Exception {
+    public String get(String name, Values data) throws ResourceException {
         return getOutput(name, data);
     }
 
-    public String getOutput(String name) throws Exception {
-        if (core) {
-            return TemplateBuilder.getOutput(getProteu(), getHili(), name);
+    public String getOutput(String name) throws ResourceException {
+        try {
+            if (core) {
+                return TemplateBuilder.getOutput(getProteu(), getHili(), name);
+            }
+            return TemplateBuilder.getOutputApp(getProteu(), getHili(), name);
+        } catch (Exception e) {
+            throw new ResourceException("Unable to output the template: "+ name, e);
         }
-        return TemplateBuilder.getOutputApp(getProteu(), getHili(), name);
     }
 
-    public String getOutput(String name, Map data) throws Exception {
+    public String getOutput(String name, Map data) throws ResourceException {
         return getOutput(name, new Values(data));
     }
 
-    public String getOutput(String name, Values data) throws Exception {
-        if (core) {
-            return TemplateBuilder.getOutput(getProteu(), getHili(), name, data);
+    public String getOutput(String name, Values data) throws ResourceException {
+        try {
+            if (core) {
+                return TemplateBuilder.getOutput(getProteu(), getHili(), name, data);
+            }
+            return TemplateBuilder.getOutputApp(getProteu(), getHili(), name, data);
+        } catch (Exception e) {
+            throw new ResourceException("Unable to output the template: "+ name
+                    +"\nWith data: "+ data.toJSON(), e);
         }
-        return TemplateBuilder.getOutputApp(getProteu(), getHili(), name, data);
     }
 
-    public void out(String name) throws Exception {
+    public void out(String name) throws ResourceException {
         output(name);
     }
 
-    public void out(String name, Map data) throws Exception {
+    public void out(String name, Map data) throws ResourceException {
         output(name, new Values(data));
     }
 
-    public void out(String name, Values data) throws Exception {
+    public void out(String name, Values data) throws ResourceException {
         output(name, data);
     }
 
-    public void output(String name) throws Exception {
-        if (core) {
-            TemplateBuilder.output(getProteu(), getHili(), name);
+    public void output(String name) throws ResourceException {
+        try {
+            if (core) {
+                TemplateBuilder.output(getProteu(), getHili(), name);
+            }
+            TemplateBuilder.outputApp(getProteu(), getHili(), name);
+        } catch (Exception e) {
+            throw new ResourceException("Unable to output the template: "+ name, e);
         }
-        TemplateBuilder.outputApp(getProteu(), getHili(), name);
     }
 
-    public void output(String name, Map data) throws Exception {
+    public void output(String name, Map data) throws ResourceException {
         output(name, new Values(data));
     }
 
-    public void output(String name, Values data) throws Exception {
-        if (core) {
-            TemplateBuilder.output(getProteu(), getHili(), name, data);
+    public void output(String name, Values data) throws ResourceException {
+        try {
+            if (core) {
+                TemplateBuilder.output(getProteu(), getHili(), name, data);
+            }
+            TemplateBuilder.outputApp(getProteu(), getHili(), name, data);
+        } catch (Exception e) {
+            throw new ResourceException("Unable to output the template: "+ name
+                    +"\nWith data: "+ data.toJSON(), e);
         }
-        TemplateBuilder.outputApp(getProteu(), getHili(), name, data);
     }
 }

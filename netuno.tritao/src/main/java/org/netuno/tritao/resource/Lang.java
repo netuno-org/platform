@@ -88,10 +88,11 @@ public class Lang extends ResourceBase {
         Locale locale = getProteu().getLocale();
         if (!localeName.equalsIgnoreCase("default")) {
             locale = new java.util.Locale(localeName);
-        }
-        if (asDefault) {
-            getProteu().setLocale(locale);
-            getProteu().getConfig().set("_lang:default", getProteu().getConfig().get(configKey));
+            if (asDefault) {
+                getProteu().setLocale(locale);
+                getProteu().getConfig().set("_lang:default", getProteu().getConfig().get(configKey));
+                getProteu().getConfig().set("_lang:locale", localeName);
+            }
         }
         LangResource langResource = (LangResource)getProteu().getConfig().get(configKey);
         Path path = Paths.get(Config.getPathAppLanguages(getProteu()));
@@ -100,23 +101,31 @@ public class Lang extends ResourceBase {
                 Values langNames = new Values();
                 files.sorted().forEach(
                     (f) -> {
-                        if (FilenameUtils.isExtension(f.getFileName().toString(), "properties")) {
-                            String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
-                            if (fileName.indexOf("_") > 0) {
-                                fileName = fileName.substring(0, fileName.indexOf("_"));
-                                if (!langNames.contains(fileName)) {
-                                    langNames.add(fileName);
-                                }
+                        String fileName = f.getFileName().toString();
+                        if (fileName.startsWith(".") || fileName.endsWith("~")
+                            || fileName.endsWith(".swp") || fileName.endsWith("#")) {
+                            return;
+                        }
+                        if (!FilenameUtils.isExtension(fileName, "properties")) {
+                            return;
+                        }
+                        fileName = FilenameUtils.removeExtension(f.getFileName().toString());
+                        if (fileName.indexOf("_") > 0) {
+                            fileName = fileName.substring(0, fileName.indexOf("_"));
+                            if (!langNames.contains(fileName)) {
+                                langNames.add(fileName);
                             }
                         }
                     }
                 );
-                final Locale localeLoading = locale;
+                final Locale localeLang = localeName.equalsIgnoreCase("default") ?
+                        new Locale(getProteu().getConfig().getString("_lang:locale"))
+                        : new Locale(localeName);
                 langNames.list(String.class).forEach((name) -> {
                     try {
-                        langResource.addExtra(new LangResource(name, Config.getPathAppLanguages(getProteu()), localeLoading));
+                        langResource.addExtra(new LangResource(name, Config.getPathAppLanguages(getProteu()), localeLang));
                     } catch (Exception e) {
-                        logger.warn("Error loading language file "+ name +"_"+ localeLoading +" into the folder:" + Config.getPathAppLanguages(getProteu()), e);
+                        logger.warn("Error loading language file "+ name +"_"+ localeLang +" into the folder:" + Config.getPathAppLanguages(getProteu()), e);
                     }
                 });
             } catch (Exception e) {
@@ -124,6 +133,10 @@ public class Lang extends ResourceBase {
             }
         }
         return new Lang(getProteu(), getHili(), langResource);
+    }
+
+    public final String getOrDefault(final String key, final String defaultText) {
+        return langResource.getOrDefault(key, defaultText);
     }
 
     public final String get(final String key) {

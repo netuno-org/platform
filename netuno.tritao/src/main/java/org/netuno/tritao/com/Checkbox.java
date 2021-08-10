@@ -68,7 +68,7 @@ public class Checkbox extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (getMode() == Mode.SearchForm || getMode() == Mode.EditNew) {
             	getDesignData().set("com.checkbox.checked", getConfiguration().getParameter("DEFAULT").getValue() == "true" ? " checked " : "");
             } else {

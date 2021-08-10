@@ -84,6 +84,14 @@ public class LangResource {
         load(name, path, locale);
     }
 
+    public final String getOrDefault(final String key, String defaultValue) {
+        String text = get(key);
+        if (text == null || text.isEmpty() || text.equals(key)) {
+            return defaultValue;
+        }
+        return text;
+    }
+
     /**
      * Get.
      * @param key Key

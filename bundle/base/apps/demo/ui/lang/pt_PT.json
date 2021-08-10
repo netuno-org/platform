@@ -10,7 +10,7 @@
                 "title": "Gráfico",
                 "label": "Horas"
             },
-            "loading_error": "Failed to load the list of workers' total hours records."
+            "loading_error": "Falha ao carregar a lista de trabalhadores e o registo de total de horas."
         },
         "listservices": {
             "introduction": {

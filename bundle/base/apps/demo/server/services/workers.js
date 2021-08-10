@@ -1,23 +1,22 @@
 
-var dbRegistos = _db.query(
-    "SELECT DISTINCT " +
-    "trabalhador.nome, SUM(DATEDIFF(HOUR, registo.inicio, registo.fim)) AS total " +
-    "FROM trabalhador INNER JOIN registo " +
-    "ON trabalhador.id = registo.trabalhador_id " +
-    "WHERE trabalhador.active = true AND registo.active = true " +
-    "GROUP BY trabalhador.nome " +
-    "ORDER BY total ASC"
-);
+const dbRecords = _db.query(`
+    SELECT DISTINCT
+        worker.name, SUM(DATEDIFF(HOUR, record.start, record.end)) AS total
+    FROM worker INNER JOIN record
+        ON worker.id = record.worker_id
+    WHERE worker.active = true AND record.active = true
+    GROUP BY worker.name
+    ORDER BY total ASC
+`);
 
-var workers = _val.list();
+const list = _val.list();
 
-for (var i = 0; i < dbRegistos.size(); i++) {
-    var dbRegisto = dbRegistos.get(i);
-    workers.add(
+for (const dbRecord of dbRecords) {
+    list.add(
         _val.map()
-        .set("name", dbRegisto.getString("nome"))
-        .set("total", dbRegisto.getInt("total"))
+            .set("name", dbRecord.getString("name"))
+            .set("total", dbRecord.getInt("total"))
     );
 }
 
-_out.json(workers);
+_out.json(list);

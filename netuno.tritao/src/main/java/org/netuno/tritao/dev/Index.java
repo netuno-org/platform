@@ -18,8 +18,10 @@
 package org.netuno.tritao.dev;
 
 import org.netuno.proteu.Proteu;
+import org.netuno.proteu._Web;
 import org.netuno.psamata.PsamataException;
 import org.netuno.tritao.Auth;
+import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Hili;
 
 import java.io.IOException;
@@ -28,13 +30,18 @@ import java.io.IOException;
  * Index Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Index {
-    
-    public static void _main(Proteu proteu, Hili hili) throws Exception {
-    	if (Auth.isDevAuthenticated(proteu, hili, Auth.Type.SESSION, true)) {
-			Main._main(proteu, hili);
+@_Web(url = "/org/netuno/tritao/dev/Index")
+public class Index extends WebMaster {
+
+    public Index(Proteu proteu, Hili hili) {
+        super(proteu, hili);
+    }
+
+    public void run() throws Exception {
+    	if (Auth.isDevAuthenticated(getProteu(), getHili(), Auth.Type.SESSION, true)) {
+			new Main(getProteu(), getHili()).run();
         } else {
-			proteu.redirect("../Index"+ org.netuno.proteu.Config.getExtension());
+			getProteu().redirect("../Index"+ org.netuno.proteu.Config.getExtension());
         }
     }
 }

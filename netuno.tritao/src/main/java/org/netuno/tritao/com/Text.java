@@ -94,7 +94,7 @@ public class Text extends ComponentBase {
 
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.text.value", getMode() == Component.Mode.SearchForm ? "" : value);
             getDesignData().set("com.text.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             getDesignData().set("com.text.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");

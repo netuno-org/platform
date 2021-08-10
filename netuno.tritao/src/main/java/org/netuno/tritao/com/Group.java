@@ -83,7 +83,7 @@ public class Group extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.select.value", value);
             getDesignData().set("com.select.validation", getValidation(getDesignData()));
             getDesignData().set("com.select.service", "Group"+ org.netuno.proteu.Config.getExtension() +"?service=json"+

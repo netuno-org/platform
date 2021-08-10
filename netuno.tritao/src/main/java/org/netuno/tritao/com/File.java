@@ -92,7 +92,7 @@ public class File extends ComponentBase {
 
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.file.value", value == null ? "" : value);
             if (value != null) {
                 String tableName = getTableData().getString("name");

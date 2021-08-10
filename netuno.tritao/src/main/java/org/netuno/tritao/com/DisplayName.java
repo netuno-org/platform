@@ -21,6 +21,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.com.Component.Mode;
 import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.util.DataLabel;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -30,22 +31,25 @@ import org.netuno.tritao.util.TemplateBuilder;
 public class DisplayName {
     private Proteu proteu;
     private Hili hili;
+    private Values designData;
+    private Values tableData;
     private Component.Mode mode;
-    private Values rowDesign;
 	
-    public DisplayName(Proteu proteu, Hili hili, Component.Mode mode, Values rowDesign) {
+    public DisplayName(Proteu proteu, Hili hili, Values designData, Values tableData, Component.Mode mode) {
         this.proteu = proteu;
         this.hili = hili;
+        this.designData = designData;
+        this.tableData = tableData;
         this.mode = mode;
-        this.rowDesign = rowDesign;
     }
 	
     public void render() {
         try {
-            if (this.mode != Mode.SearchForm && this.mode != Mode.SearchResult && rowDesign.getBoolean("notnull")) {
-                TemplateBuilder.output(proteu, hili, "com/render/displayname_required", rowDesign);
+            Values data = new Values().set("displayname", DataLabel.formField(proteu, hili, tableData, designData));
+            if (this.mode != Mode.SearchForm && this.mode != Mode.SearchResult && designData.getBoolean("notnull")) {
+                TemplateBuilder.output(proteu, hili, "com/render/displayname_required", data);
             } else {
-                TemplateBuilder.output(proteu, hili, "com/render/displayname", rowDesign);
+                TemplateBuilder.output(proteu, hili, "com/render/displayname", data);
             }
         } catch (Exception e) {
             throw new Error(e);

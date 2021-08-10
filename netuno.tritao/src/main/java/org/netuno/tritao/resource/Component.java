@@ -60,7 +60,7 @@ public class Component extends ResourceBase {
     }
 
     public void renderDisplayName() {
-        new DisplayName(getProteu(), getHili(), component.getMode(), component.getDesignData()).render();
+        new DisplayName(getProteu(), getHili(), component.getDesignData(), component.getTableData(), component.getMode()).render();
     }
 
     public final boolean isRenderSearchForm() {

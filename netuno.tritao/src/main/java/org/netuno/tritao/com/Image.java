@@ -98,7 +98,7 @@ public class Image extends ComponentBase {
 
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.image.value", value == null ? "" : value);
             getDesignData().set("com.image.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             if (value != null) {

@@ -51,7 +51,7 @@ public class UID extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (getMode() == Mode.EditNew || getMode() == Mode.EditRestoreNew) {
             	value = java.util.UUID.randomUUID().toString();
             }

@@ -52,7 +52,7 @@ public class Color extends ComponentBase {
 
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.color.value", getMode() == Component.Mode.SearchForm ? "" : value);
             getDesignData().set("com.color.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             getDesignData().set("com.color.validation", getValidation(getDesignData()));

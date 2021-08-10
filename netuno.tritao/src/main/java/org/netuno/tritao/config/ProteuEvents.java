@@ -210,6 +210,7 @@ public class ProteuEvents implements Events {
 
         try {
             if (proteu.getConfig().getBoolean("_lang:disabled") == false) {
+                proteu.getConfig().set("_lang:en_GB", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "en_GB"));
                 proteu.getConfig().set("_lang:en_US", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "en_US"));
                 proteu.getConfig().set("_lang:pt_PT", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "pt_PT"));
                 proteu.getConfig().set("_lang:pt_BR", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "pt_BR"));
@@ -217,6 +218,7 @@ public class ProteuEvents implements Events {
 
                 proteu.setLocale(new java.util.Locale(appConfig.getString("locale")));
                 proteu.getConfig().set("_lang:default", proteu.getConfig().get("_lang:" + appConfig.getString("language")));
+                proteu.getConfig().set("_lang:locale", appConfig.getString("language"));
             }
         } catch (Exception e) {
             logger.fatal("Loading languages...", e);

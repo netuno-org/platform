@@ -21,22 +21,35 @@ import org.json.JSONException;
 import org.netuno.proteu.Proteu;
 import java.io.IOException;
 
+import org.netuno.proteu.ProteuException;
+import org.netuno.proteu._Web;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
+import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
 
 import java.util.List;
 
 import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.resource.Lang;
+import org.netuno.tritao.resource.Template;
 import org.netuno.tritao.util.TemplateBuilder;
+
+import javax.script.ScriptException;
 
 /**
  * Main Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Main {
-    public static void _main(Proteu proteu, Hili hili) throws Exception {
-    	if (!Auth.isDevAuthenticated(proteu, hili, Auth.Type.SESSION, true)) {
+@_Web(url = "/org/netuno/tritao/dev/Main")
+public class Main extends WebMaster {
+
+    public Main(Proteu proteu, Hili hili) {
+        super(proteu, hili);
+    }
+
+    public void run() throws IOException, ProteuException, ScriptException {
+    	if (!Auth.isDevAuthenticated(getProteu(), getHili(), Auth.Type.SESSION, true)) {
             return;
         }
 
@@ -45,20 +58,20 @@ public class Main {
         
         Values jsonArrayForms = new Values();
         jsonArrayForms.toList();
-        jsonMenuTables(proteu, hili, jsonArrayForms, "0");
-        jsonMenuTablesOrphans(proteu, hili, jsonArrayForms);
+        jsonMenuTables(jsonArrayForms, "0");
+        jsonMenuTablesOrphans(jsonArrayForms);
         jsonMenu.put("forms", jsonArrayForms);
         
-        proteu.getRequestAll().set("report", "true");
+        getProteu().getRequestAll().set("report", "true");
         Values jsonArrayReports = new Values();
         jsonArrayReports.toList();
-        jsonMenuTables(proteu, hili, jsonArrayReports, "0");
-        jsonMenuTablesOrphans(proteu, hili, jsonArrayReports);
-        proteu.getRequestAll().set("report", "false");
+        jsonMenuTables(jsonArrayReports, "0");
+        jsonMenuTablesOrphans(jsonArrayReports);
+        getProteu().getRequestAll().set("report", "false");
         jsonMenu.put("reports", jsonArrayReports);
 
-        if (proteu.getRequestAll().getString("service").equals("json")) {
-    	    proteu.outputJSON(jsonMenu);
+        if (getProteu().getRequestAll().getString("service").equals("json")) {
+    	    getProteu().outputJSON(jsonMenu);
     	    return;
         }
 
@@ -66,14 +79,15 @@ public class Main {
 
         data.set("menu-json", jsonMenu.toJSON());
 
-        TemplateBuilder.output(proteu, hili, "dev/includes/head");
-        TemplateBuilder.output(proteu, hili, "dev/main", data);
-        TemplateBuilder.output(proteu, hili, "dev/includes/foot");
+        Template template = resource(Template.class).initCore();
+        template.out("dev/includes/head");
+        template.out("dev/main", data);
+        template.out("dev/includes/foot");
     }
     
-    private static void addTable(Proteu proteu, Hili hili, Values jsonArray, Values rowTable) throws IOException, JSONException {
+    private void addTable(Values jsonArray, Values rowTable) throws IOException, JSONException {
     	Values jsonArrayChilds = new Values();
-        jsonMenuTables(proteu, hili, jsonArrayChilds, rowTable.getString("id"));
+        jsonMenuTables(jsonArrayChilds, rowTable.getString("id"));
         Values jsonObject = new Values();
         jsonObject.put("id", rowTable.getString("id"));
         jsonObject.put("uid", rowTable.getString("uid"));
@@ -83,17 +97,17 @@ public class Main {
         jsonArray.add(jsonObject);
     }
     
-    private static void jsonMenuTablesOrphans(Proteu proteu, Hili hili, Values jsonArray) throws IOException, JSONException {
-    	List<Values> rsTableByOrphans = Config.getDataBaseBuilder(proteu).selectTablesByOrphans();
+    private void jsonMenuTablesOrphans(Values jsonArray) throws IOException, JSONException {
+    	List<Values> rsTableByOrphans = Config.getDataBaseBuilder(getProteu()).selectTablesByOrphans();
         for (Values rowTritaoTableByOrphans : rsTableByOrphans) {
-        	addTable(proteu, hili, jsonArray, rowTritaoTableByOrphans);
+        	addTable(jsonArray, rowTritaoTableByOrphans);
         }
     }
     
-    private static void jsonMenuTables(Proteu proteu, Hili hili, Values jsonArray, String id) throws IOException, JSONException {
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(proteu).selectTablesByParent(id);
+    private void jsonMenuTables(Values jsonArray, String id) throws IOException, JSONException {
+        List<Values> rsTableByParent = Config.getDataBaseBuilder(getProteu()).selectTablesByParent(id);
         for (Values rowTritaoTableByParent : rsTableByParent) {
-            addTable(proteu, hili, jsonArray, rowTritaoTableByParent);
+            addTable(jsonArray, rowTritaoTableByParent);
         }
     }
 

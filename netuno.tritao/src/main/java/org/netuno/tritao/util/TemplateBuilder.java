@@ -348,7 +348,7 @@ public class TemplateBuilder {
             }
         }
         if (htmlEncode) {
-            output = org.apache.commons.lang3.StringEscapeUtils.escapeHtml4(output);
+            output = org.apache.commons.text.StringEscapeUtils.escapeHtml4(output);
         }
         return output;
     }

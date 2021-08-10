@@ -28,6 +28,7 @@ import java.util.List;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.db.DataSelected;
 import org.netuno.tritao.db.DataItem;
+import org.netuno.tritao.util.DataLabel;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
 
@@ -212,7 +213,7 @@ public class Edit {
                     restore = true;
                 } else if (dataItem.getStatus() == DataItem.Status.Relations) {
                     restore = true;
-                    rowTable.set("relation.table.displayname", dataItem.getRelationTable().get("displayname"));
+                    rowTable.set("relation.table.displayname", DataLabel.form(proteu, hili, dataItem.getRelationTable()));
                     TemplateBuilder.output(proteu, hili, "edit/notification/delete_error_relations", rowTable);
                 } else {
                     restore = true;
@@ -345,7 +346,7 @@ public class Edit {
                 }
                 com.setValues(valuesPrefix, values);
                 if (!Rule.hasDesignFieldEditAccess(proteu, hili, rowTritaoDesignXY)) {
-                    new DisplayName(proteu, hili, com.getMode(), com.getDesignData()).render();
+                    new DisplayName(proteu, hili, com.getDesignData(), com.getTableData(), com.getMode()).render();
                     proteu.getOutput().print(com.getHtmlValue());
                 } else {
                     com.render();
@@ -438,6 +439,7 @@ public class Edit {
             if (relations.size() > 0) {
                 TemplateBuilder.output(proteu, hili, "edit/relations/head", rowTable);
                 for (Values relation : relations) {
+                    relation.set("displayname", DataLabel.form(proteu, hili, relation));
                     TemplateBuilder.output(proteu, hili, "edit/relations/button", relation);
                 }
                 TemplateBuilder.output(proteu, hili, "edit/relations/foot", rowTable);

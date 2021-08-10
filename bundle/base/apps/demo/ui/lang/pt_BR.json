@@ -1,0 +1,123 @@
+{
+    "dashboardcontainer": {
+        "datavisualization": {
+            "table": {
+                "title": "Tabela",
+                "workers": "Trabalhadores",
+                "total": "Total de Horas"
+            },
+            "chart": {
+                "title": "Gráfico",
+                "label": "Horas"
+            },
+            "loading_error": "Falha ao carregar a lista de trabalhadores e o registro de total de horas."
+        },
+        "listservices": {
+            "introduction": {
+                "title": "Introdução",
+                "how-to-start": {
+                    "title": "Como Iniciar",
+                    "content": "<p>Se é novo no Netuno, <a href='https://doc.netuno.org/docs/pt-PT/academy/start/demonstration/form/' target='_blank'>inicie criando o seu primeiro formulário</a>.</p>"
+                },
+                "from-the-root": {
+                    "title": "A partir da raíz do Netuno",
+                    "content": "<p>Pasta da App: <b>apps/demo/</b></p><p>Configurações da App: <b>apps/demo/config/</b></p><p>Código fonte dos serviços: <b>apps/demo/server/services</b></p><p>Código fonte dos templates: <b>apps/demo/server/templates</b></p><p><a href='https://doc.netuno.org/docs/pt-PT/library/app-folders/app-folder-structure/' target='_blank'>+ informações sobre a estrutura de pastas.</a></p>"
+                },
+                "button-link": "https://doc.netuno.org/pt-PT/"
+            },
+            "services": {
+                "title": "Exemplos de Serviços",
+                "modal": {
+                    "url": "Endereço (URL)",
+                    "path": "Caminho (Disco/HD)",
+                    "source-code": "Código Fonte ",
+                    "execute-button": "Executar"
+                },
+                "calc-hours": {
+                    "title": "Calcular Horas",
+                    "intro": "<p>Encontra a hora futura ao somar 100 horas sobre a hora atual, pode alterar o número de horas no parâmetro da URL para realizar outros cálculos.</p>"
+                },
+                "date-format": {
+                    "title": "Formatar Data e Hora",
+                    "intro": "<p>Ao trabalhar com datas e horas muitas vezes é preciso realizar a conversão para string e vice-versa, alguns exemplos de como pode ser feito.</p>"
+                },
+                "export-excel": {
+                    "title": "Exportar para Excel",
+                    "intro": "<p>Demonstração de como é possível exportar os seus dados para o Excel.</p>"
+                },
+                "export-pdf": {
+                    "title": "Exportar para PDF",
+                    "intro": "<p>Demonstração de como exportar para o formato PDF a sua informação.</p>"
+                },
+                "user": {
+                    "title": "User",
+                    "intro": "<p>Apresenta a informação do utilizador atualmente logado nesta aplicação.</p>"
+                },
+                "group": {
+                    "title": "Group",
+                    "intro": "<p>Apresenta a informação do grupo do utilizador atualmente logado nesta aplicação.</p>"
+                },
+                "mail-send": {
+                    "title": "Enviar Mail",
+                    "intro": "<p>Exemplo de como enviar e-mail utilizando uma conta Google/GMail, troque no código e na configuração da App em <i>config/</i>, onde os <b>*****</b> (asteriscos) devem ser substituídos pelas informações da respectivas da conta.</p>"
+                },
+                "print-lines": {
+                    "title": "Linhas de Texto",
+                    "intro": "<p>Envia linhas de texto como output.</p>"
+                },
+                "print-template": {
+                    "title": "Templates",
+                    "intro": "<p>Serve para gerar HTML e manter o código limpo e organizado, verifique o conteúdo dos templates em <i>server/templates/samples</i>.</p>"
+                },
+                "query-parameter": {
+                    "title": "Parâmetros em Consulta de Dados",
+                    "intro": "<p>Retorna em <i>JSON</i> os registos encontrados em base de dados a partir dos filtros passados em parâmetros no endereço (URL).</p>"
+                },
+                "db": {
+                    "title": "Operações de Base de Dados",
+                    "intro": "<p>Demonstra como realizar operações de base de dados via código como inserts, updates, deletes, e selects.</p>"
+                },
+                "query-interaction": {
+                    "title": "Iteração de Dados",
+                    "intro": "<p>Retorna em <i>JSON</i> os registos filtrados e carregados através de um loop do tipo <i>for</i>.</p>"
+                },
+                "query-result": {
+                    "title": "Simples Obtenção de Dados",
+                    "intro": "<p>Retorna em <i>JSON</i> diretamente os registos encontrados pela query.</p>"
+                },
+                "uid": {
+                    "title": "UUID",
+                    "intro": "<p>Gera um uuid/guid que é uma string aleatório de identificação única.</p>"
+                },
+                "upload": {
+                    "title": "Upload",
+                    "intro": "<p>Demonstra como é realizado o upload de ficheiros.</p>"
+                },
+                "remote-delete-json": {
+                    "title": "Remote Delete JSON",
+                    "intro": "<p>Realiza um pedido remoto HTTP (request) do tipo <i>delete</i> que normalmente serve para eliminar uma entidade especifica do servidor.</p>"
+                },
+                "remote-patch-json": {
+                    "title": "Remote Patch JSON",
+                    "intro": "<p>Realiza um pedido remoto HTTP (request) do tipo <i>patch</i> que normalmente serve para enviar alterações de dados.</p>"
+                },
+                "remote-post-json": {
+                    "title": "Remote Post JSON",
+                    "intro": "<p>Realiza um pedido remoto HTTP (request) do tipo <i>post</i> que normalmente serve para criar ou inserir novas estruturas de dados.</p>"
+                },
+                "remote-put-json": {
+                    "title": "Remote Put JSON",
+                    "intro": "<p>Realiza um pedido remoto HTTP (request) do tipo <i>put</i> que normalmente serve para definir os dados, cria caso não exista ou altera caso exista.</p>"
+                },
+                "remote-get-json": {
+                    "title": "Remote Get JSON",
+                    "intro": "<p>Realiza um pedido remoto HTTP (request) do tipo <i>get</i> que normalmente serve para obter dados.</p>"
+                },
+                "remote-mailjet-sms": {
+                    "title": "SMS",
+                    "intro": "<p>Demonstra como enviar SMS através de um serviço externo, neste caso é o serviço do <i>Mailjet</i>, necessita configurar o <b>YOUR_TOKEN</b> e o <b>YOUR_INTERNATIONAL _PHONE_NUMBER</b>.</p>"
+                }
+            }
+        }
+    }
+}

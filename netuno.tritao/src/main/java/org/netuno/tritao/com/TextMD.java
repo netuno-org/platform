@@ -64,7 +64,7 @@ public class TextMD extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getMode(), getDesignData()).render();
+            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.textmd.value", value);
             getDesignData().set("com.textmd.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
             getDesignData().set("com.textmd.cols", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "cols");
