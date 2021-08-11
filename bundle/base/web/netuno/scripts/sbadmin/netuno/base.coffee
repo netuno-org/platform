@@ -8,6 +8,9 @@ class Netuno
   addPageLoad: (func) ->
     @pageLoads.push func
 
+  removePageLoad: (func) ->
+      @pageLoads = @pageLoads.filter (e) -> e != func
+
   pageLoaded: () ->
     for pageLoad in @pageLoads
       pageLoad()
@@ -15,12 +18,18 @@ class Netuno
   addContentLoad: (func) ->
     @contentLoads.push func
 
+  removeContentLoad: (func) ->
+    @contentLoads = @contentLoads.filter (e) -> e != func
+
   contentLoaded: (container) ->
     for contentLoad in @contentLoads
       contentLoad(container)
 
   addNavigationLoad: (func) ->
     @navigationLoads.push func
+
+  removeNavigationLoad: (func) ->
+    @navigationLoads = @navigationLoads.filter (e) -> e != func
 
   navigationLoaded: () ->
     for navigationLoad in @navigationLoads

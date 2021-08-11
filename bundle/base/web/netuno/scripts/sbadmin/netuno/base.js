@@ -8,6 +8,12 @@
         return this.pageLoads.push(func);
       }
 
+      removePageLoad(func) {
+        return this.pageLoads = this.pageLoads.filter(function(e) {
+          return e !== func;
+        });
+      }
+
       pageLoaded() {
         var i, len, pageLoad, ref, results;
         ref = this.pageLoads;
@@ -23,6 +29,12 @@
         return this.contentLoads.push(func);
       }
 
+      removeContentLoad(func) {
+        return this.contentLoads = this.contentLoads.filter(function(e) {
+          return e !== func;
+        });
+      }
+
       contentLoaded(container) {
         var contentLoad, i, len, ref, results;
         ref = this.contentLoads;
@@ -36,6 +48,12 @@
 
       addNavigationLoad(func) {
         return this.navigationLoads.push(func);
+      }
+
+      removeNavigationLoad(func) {
+        return this.navigationLoads = this.navigationLoads.filter(function(e) {
+          return e !== func;
+        });
       }
 
       navigationLoaded() {

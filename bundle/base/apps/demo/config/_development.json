@@ -23,7 +23,7 @@
     },
     "commands": [
         {
-            "enabled": true,
+            "enabled": false,
             "path": "ui",
             "command": "npm run watch"
         }

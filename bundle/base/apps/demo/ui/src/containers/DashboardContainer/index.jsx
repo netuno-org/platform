@@ -1,5 +1,8 @@
 import React, { Component } from "react";
-import { message } from 'antd';
+
+import message from 'antd/lib/message';
+import Spin from 'antd/lib/spin';
+
 import ListServices from "../ListServices/index.jsx";
 import DataVisualization from "../DataVisualization/index.jsx";
 
@@ -12,8 +15,10 @@ class DashboardContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            workers: []
+            workers: [],
+            loading: false
         };
+        this.loadWorkers = this.loadWorkers.bind(this);
     }
 
     componentDidMount() {
@@ -21,14 +26,17 @@ class DashboardContainer extends Component {
     }
 
     loadWorkers() {
+        this.setState({ workers: [], loading: true });
         netuno.service({
             url: this.props.intl.locale.indexOf('pt') == 0 ? '/services/trabalhadores' : '/services/workers',
             success: (data) => {
                 this.setState({
-                    workers: data.json
+                    workers: data.json,
+                    loading: false
                 });
             },
             fail: (data) => {
+                this.setState({ loading: false });
                 console.log(data);
                 message.error(this.props.intl.formatMessage({ id: `${messages}.loading_error` }));
             }
@@ -36,13 +44,17 @@ class DashboardContainer extends Component {
     }
 
     render() {
+        const { loading } = this.state;
         return (
             <div>
+              { loading == false ?
                 <DataVisualization data={this.state.workers} />
-                <ListServices />
+                : <Spin/>
+              }
+              <ListServices />
             </div>
         );
     }
 }
 
-export default injectIntl(DashboardContainer);
+export default injectIntl(DashboardContainer, {forwardRef: true});

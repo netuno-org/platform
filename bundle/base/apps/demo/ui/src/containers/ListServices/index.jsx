@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { Button, Typography } from 'antd';
+import Button from 'antd/lib/button';
+import Typography from 'antd/lib/typography';
 
 import { HomeOutlined, QuestionOutlined } from '@ant-design/icons';
 
