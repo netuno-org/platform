@@ -153,7 +153,7 @@ public final class Main implements Runnable {
         System.out.println();
 
         try {
-            Values data = Values.fromJSON(new Remote().get("https://github.com/netuno-org/platform/releases/download/latest/release.json").toString());
+            Values data = Values.fromJSON(new Remote().get("https://github.com/netuno-org/platform/releases/download/latest/netuno.json").toString());
             int compareVersion = buildNumber().compareTo(data.getString("version"));
             if (compareVersion < 0) {
                 if (data.getString("type").equals("critical")) {
