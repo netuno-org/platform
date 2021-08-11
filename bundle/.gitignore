@@ -36,7 +36,7 @@ package-lock.json
 base/netuno.jar
 base/web/WEB-INF/lib/
 base/web/WEB-INF/classes
-bundle/base/logs/*.log
+base/logs/*.log
 
 out/
 
