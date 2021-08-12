@@ -38,6 +38,8 @@ base/web/WEB-INF/lib/
 base/web/WEB-INF/classes
 base/logs/*.log
 
+base/graalvm
+
 out/
 
 *~

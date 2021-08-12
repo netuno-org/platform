@@ -132,6 +132,8 @@ public class Server {
     
     public void run() {
         try {
+            Install.graalCheckAndSetup();
+
             Config.setName(name);
             
             Config.setWebHome(webHome);

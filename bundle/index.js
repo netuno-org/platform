@@ -44,8 +44,11 @@ fs.emptyDirSync(config.output.bundle)
 fs.removeSync(config.output.bundle +'.zip')
 
 fs.copySync(config.base.root, config.output.bundle, {
-    filter: path => {
-        return path.indexOf('node_modules') < 0
+    filter: (src, dest) => {
+        return src.indexOf('graalvm') < 0 && src.indexOf('node_modules') < 0 
+            && src.endsWith('~') == false
+            && src.endsWith('#') == false
+            && src.endsWith('.swp') == false
     }
 })
 

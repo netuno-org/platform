@@ -27,6 +27,8 @@ import java.util.jar.Manifest;
 import org.apache.commons.lang3.SystemUtils;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.fusesource.jansi.AnsiConsole;
 import org.netuno.cli.monitoring.Stats;
@@ -47,6 +49,7 @@ import picocli.CommandLine;
         mixinStandardHelpOptions = false,
         version = "")
 public final class Main implements Runnable {
+    private static Logger logger = LogManager.getLogger(Main.class);
 
     static {
         System.setProperty("log4j.configurationFile", "logs/log.xml");
@@ -185,7 +188,7 @@ public final class Main implements Runnable {
                 }
             }
         } catch (Throwable t) {
-
+            logger.debug("Fail to check the latest version.", t);
         }
 
         String path = ScriptRunner.searchScriptFile("config");
@@ -231,7 +234,6 @@ public final class Main implements Runnable {
             System.out.println(OS.consoleOutput("@|white    License " + License.getTypeText() + "  //  " + License.getMail() + " |@"));
             System.out.println();
         }*/
-        
 
         if (parsed.size() >= 2) {
             if (parsed.get(1).getCommand().getClass() == Server.class) {

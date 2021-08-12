@@ -70,7 +70,10 @@ public class Install {
     protected boolean yes = false;
 
     @CommandLine.Option(names = { "-g", "graal" }, paramLabel = "graal", description = "Download and use GraalVM to best performance.")
-    protected boolean graalVM = true;
+    protected boolean graal = true;
+
+    @CommandLine.Option(names = { "-k", "keep" }, paramLabel = "keep", description = "Keeps the current Netuno version.")
+    protected boolean keep = false;
 
     @CommandLine.Option(names = { "-v", "version" }, paramLabel = "latest", description = "The version of Netuno that should be install, \"latest\" for the current version in development.")
     protected String version = "";
@@ -151,383 +154,196 @@ public class Install {
             checksumLocal = Values.fromJSON(org.netuno.psamata.io.InputStream.readFromFile(checksumFile));
         }
 
-        if (graalVM) {
-            String graalVMFolderName = "graalvm";
-            
-            File graalVMFolder = new File(path, graalVMFolderName);
-            int installGraalVM = 0;
-            if (new File(path, graalVMFolderName).exists()) {
-                ProcessBuilder builder = new ProcessBuilder();
-                builder.command(new String[]{
-                    (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX ? "./" : "")
-                            + "java",
-                    "-version"
-                });
-                builder.directory(new File(graalVMFolder, "bin"));
-                StringBuilder versionOutput = new StringBuilder();
-                StringBuilder versionError = new StringBuilder();
-                int exitCode = 0;
-                try {
-                    Process process = builder.start();
-                    StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), versionOutput::append);
-                    Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-                    StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), versionError::append);
-                    Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-                    exitCode = process.waitFor();   
-                } catch (Exception e) {
-                    logger.debug("Fail getting the GraalVM version.", e);
-                    FileUtils.deleteDirectory(graalVMFolder);
-                }
-                logger.debug("GraalVM Version - Exit Code: "+ exitCode);
-                logger.debug("GraalVM Version - Output:\n"+ versionOutput);
-                logger.debug("GraalVM Version - Error:\n"+ versionError);
-                if (versionOutput.toString().contains("GraalVM CE "+ graalVMVersion)
-                        || versionError.toString().contains("GraalVM CE "+ graalVMVersion)) {
-                    installGraalVM = 1;
-                } else {
-                    logger.debug("Is not the GraalVM CE "+ graalVMVersion +" then reinstall.");
-                    FileUtils.deleteDirectory(graalVMFolder);
-                }
-            }
-            if (installGraalVM == 0) {
-            	String graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-windows-amd64-" + graalVMVersion + ".zip";
-                String graalVMFileName = "graalvm.zip";
-                if (SystemUtils.IS_OS_MAC) {
-                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-darwin-amd64-" + graalVMVersion + ".tar.gz";
-                    graalVMFileName = "graalvm.tar.gz";
-                } else if (SystemUtils.IS_OS_LINUX) {
-                    if (SystemUtils.OS_ARCH.equals("amd64")) {
-                        graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-linux-amd64-" + graalVMVersion + ".tar.gz";
-                    } else if (SystemUtils.OS_ARCH.equals("aarch64")) {
-                        graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-linux-aarch64-" + graalVMVersion + ".tar.gz";
-                    } else {
-                        System.out.println();
-                        System.out.println(OS.consoleOutput("@|red    GraalVM not support this architecture. |@"));
-                        System.out.println();
-                        System.out.println(OS.consoleOutput("@|yellow    To continue then install with: |@"));
-                        System.out.println(OS.consoleNetunoCommand("install graal=false"));
-                        System.out.println();
-                        return;
-                    }
-                    graalVMFileName = "graalvm.tar.gz";
-                }
-                installGraalVM: while (installGraalVM <= 1) {
-                    File graalVMFile = new File(path, graalVMFileName);
+        if (graal) {
+            graalSetup(path);
+        }
 
-                    final String graalVMURLFinal = graalVMURL;
+        int installNetuno = 0;
+        installNetuno: while (installNetuno <= 1) {
+            File netunoJar = new File(path, "netuno.jar");
+            File netunoJarNew = new File(path, "netuno.jar.new");
+            if (keep == false) {
+                String bundleFileName = "netuno";
+                File bundleFile = new File(path, bundleFileName + ".zip");
 
-                    if (!graalVMFile.exists()) {
-                        System.out.println(OS.consoleOutput("Downloading @|yellow " + graalVMURLFinal + "|@:"));
+                String versionType = Config.VERSION;
+                if (!version.isEmpty() && version.indexOf(":") > 0) {
+                    versionType = version.substring(0, version.indexOf(":"));
+                    version = version.substring(version.indexOf(":") + 1);
+                }
+
+                if (!bundleFile.exists()) {
+                    String url = "";
+                    try {
+                        if (version.isEmpty()) {
+                            url = "https://github.com/netuno-org/platform/releases/download/latest/netuno.json";
+                            Values data = Values.fromJSON(new Remote().get(url).toString());
+                            version = data.getString("version");
+                        }
+                        String versionURL = (version.isEmpty() || version.equalsIgnoreCase("latest") ? "" : "v" + versionType + "-" + version.replace(".", "_"));
+
+                        url = "https://github.com/netuno-org/platform/releases/download/" + (versionURL.isEmpty() ? "latest" : versionURL) + "/" + bundleFileName + (versionURL.isEmpty() ? "" : "-" + versionURL) + ".zip";
+
+                        final String downloadURL = url;
+
                         Download download = new Download();
-                        download.http(graalVMURL, graalVMFile, new Download.DownloadEvent() {
+                        download.http(url, bundleFile, new Download.DownloadEvent() {
                             @Override
                             public void onInit(Download.Stats stats) {
-
+                                System.out.println(OS.consoleOutput("Downloading @|yellow " + downloadURL + "|@:"));
                             }
 
                             @Override
                             public void onProgress(Download.Stats stats) {
                                 System.out.print("\r");
-                                System.out.print(OS.consoleOutput(
-                                        String.format(
-                                                "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
-                                                        "        ",
-                                                FileUtils.byteCountToDisplaySize(stats.getPosition()),
-                                                FileUtils.byteCountToDisplaySize(stats.getLength()),
-                                                stats.getSpeed() / 1024,
-                                                stats.getTime() / 1000)
-                                        )
-                                );
+                                System.out.print(OS.consoleOutput(String.format(
+                                        "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
+                                                "        ",
+                                        FileUtils.byteCountToDisplaySize(stats.getPosition()),
+                                        FileUtils.byteCountToDisplaySize(stats.getLength()),
+                                        stats.getSpeed() / 1024,
+                                        stats.getTime() / 1000)
+                                ));
                             }
 
                             @Override
                             public void onComplete(Download.Stats stats) {
                                 System.out.println();
-                                System.out.println();
-                                if (graalVMFile.exists()) {
-                                    graalVMFile.deleteOnExit();
-                                    System.out.println(OS.consoleOutput("@|green GraalVM download was successfully completed.|@"));
+                                if (bundleFile.exists()) {
+                                    bundleFile.deleteOnExit();
+                                    System.out.println();
+                                    System.out.print(OS.consoleOutput("@|green Netuno download was successfully completed.|@"));
                                 } else {
-                                    System.out.println(OS.consoleOutput("@|red GraalVM download failed.|@"));
+                                    System.out.print(OS.consoleOutput("@|red Netuno download failed.|@"));
                                 }
                             }
                         });
-                    }
-
-                    System.out.println();
-                    System.out.print(OS.consoleOutput("Extracting @|yellow GraalVM|@ . "));
-                    if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
-                        int strip = SystemUtils.IS_OS_MAC ? 3 : 1;
-                        new File(path, graalVMFolderName).mkdirs();
-                        ProcessBuilder builder = new ProcessBuilder();
-                        builder.command(new String[]{"sh", "-c", "tar -xzf " + graalVMFileName + " --strip " + strip + " -C " + graalVMFolderName});
-                        builder.directory(new File(path));
-                        Process process = builder.start();
-                        Values executing = new Values();
-                        executing.set("run", true);
-                        new Thread(() -> {
-                            while (executing.getBoolean("run")) {
-                                try {
-                                    Thread.sleep(1000);
-                                    System.out.print(". ");
-                                } catch (InterruptedException e) {
-
-                                }
-                            }
-                        }).start();
-                        try {
-                            StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
-                            Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-                            StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err::println);
-                            Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-                            int exitCode = process.waitFor();
-                            if (exitCode != 0) {
-                                if (new File(path, graalVMFileName).delete() && installGraalVM == 0) {
-                                    System.out.println();
-                                    System.out.println(OS.consoleOutput("@|red The GraalVM file has corrupted... will try download again!|@ . "));
-                                    System.out.println();
-                                    installGraalVM++;
-                                    continue installGraalVM;
-                                } else {
-                                    throw new Error("Extracting GraalVM was failed.");
-                                }
-                            }
-                            break;
-                        } finally {
-                            executing.set("run", false);
-                        }
-                    } else {
-                        File zipFileGraalVM = new File(path, graalVMFileName);
-                        ZipFile zipFile = new ZipFile(zipFileGraalVM);
-                        try {
-                            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                            int countElements = 0;
-                            while (entries.hasMoreElements()) {
-                                ZipEntry entry = entries.nextElement();
-                                String name = entry.getName();
-                                if (name.isEmpty()) {
-                                    continue;
-                                }
-                                if (countElements % 10 == 0) {
-                                    System.out.print(". ");
-                                }
-                                File entryDestination = new File(path, name);
-                                if (entry.isDirectory()) {
-                                    entryDestination.mkdirs();
-                                } else {
-                                    if (entryDestination.exists()) {
-                                        new File(entryDestination.getPath()).delete();
-                                    }
-                                    entryDestination.getParentFile().mkdirs();
-                                    InputStream in = zipFile.getInputStream(entry);
-                                    OutputStream out = new FileOutputStream(entryDestination);
-                                    IOUtils.copy(in, out);
-                                    out.flush();
-                                    in.close();
-                                    out.close();
-                                }
-                                countElements++;
-                            }
-                        } finally {
-                            zipFile.close();
-                        }
-                        for (File file : new File(path).listFiles()) {
-                            if (file.isDirectory() && file.getName().startsWith("graalvm-") && file.getName().endsWith("-"+ graalVMVersion)) {
-                                file.renameTo(new File(path, "graalvm"));
-                            }
-                        }
-                        break;
-                    }
-                }
-
-                System.out.println();
-                System.out.println();
-            }
-        }
-        int installNetuno = 0;
-        installNetuno: while (installNetuno <= 1) {
-            String bundleFileName = "netuno";
-            File bundleFile = new File(path, bundleFileName + ".zip");
-            
-            String versionType = Config.VERSION;
-            if (!version.isEmpty() && version.indexOf(":") > 0) {
-            	versionType = version.substring(0, version.indexOf(":"));
-            	version = version.substring(version.indexOf(":") + 1);
-            }
-
-            if (!bundleFile.exists()) {
-                String url = "";
-                try {
-                    if (version.isEmpty()) {
-                        url = "https://github.com/netuno-org/platform/releases/download/latest/netuno.json";
-                        Values data = Values.fromJSON(new Remote().get(url).toString());
-                        version = data.getString("version");
-                    }
-                    String versionURL = (version.isEmpty() || version.equalsIgnoreCase("latest") ? "" : "v"+ versionType +"-"+ version.replace(".", "_"));
-
-                    url = "https://github.com/netuno-org/platform/releases/download/"+ (versionURL.isEmpty() ? "latest" : versionURL) +"/"+ bundleFileName + (versionURL.isEmpty() ? "" : "-"+ versionURL) + ".zip";
-
-                    final String downloadURL = url;
-
-                    Download download = new Download();
-                    download.http(url, bundleFile, new Download.DownloadEvent() {
-                        @Override
-                        public void onInit(Download.Stats stats) {
-                            System.out.println(OS.consoleOutput("Downloading @|yellow " + downloadURL + "|@:"));
-                        }
-
-                        @Override
-                        public void onProgress(Download.Stats stats) {
-                            System.out.print("\r");
-                            System.out.print(OS.consoleOutput(String.format(
-                                    "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
-                                            "        ",
-                                    FileUtils.byteCountToDisplaySize(stats.getPosition()),
-                                    FileUtils.byteCountToDisplaySize(stats.getLength()),
-                                    stats.getSpeed() / 1024,
-                                    stats.getTime() / 1000)
-                            ));
-                        }
-
-                        @Override
-                        public void onComplete(Download.Stats stats) {
-                            System.out.println();
-                            if (bundleFile.exists()) {
-                                bundleFile.deleteOnExit();
-                                System.out.println();
-                                System.out.print(OS.consoleOutput("@|green Netuno download was successfully completed.|@"));
-                            } else {
-                                System.out.print(OS.consoleOutput("@|red Netuno download failed.|@"));
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    logger.debug("Fail to download "+ url, e);
-                    System.out.println();
-                    System.out.println();
-                    if (e instanceof javax.net.ssl.SSLHandshakeException && e.getMessage().contains("github-releases.githubusercontent.com")) {
-                        System.out.println(OS.consoleOutput("@|red Temporarily offline, probably being propagated by GitHub. |@ "));
+                    } catch (Exception e) {
+                        logger.debug("Fail to download " + url, e);
                         System.out.println();
-                        System.out.println(OS.consoleOutput("@|red Please try again later, and it may take up to 15 minutes. |@ "));
                         System.out.println();
-                        System.out.println(OS.consoleOutput("@|yellow More details: |@https://github.com/netuno-org/platform/releases"));
-                    } else if (e instanceof java.io.FileNotFoundException) {
-                        System.out.println(OS.consoleOutput("@|red The download link was not found: |@ "+ e.getMessage()));
-                    } else {
-                        System.out.println(OS.consoleOutput("@|red "+ e.getClass().getName() +": |@ "+ e.getMessage()));
-                    }
-                    System.out.println();
-                    System.out.println();
-                    System.exit(0);
-                }
-                System.out.println();
-                System.out.println();
-            }
-
-            System.out.println(OS.consoleOutput("@|green Unzipping Netuno... |@ "));
-            System.out.println();
-            if (remove) {
-                System.out.println(OS.consoleOutput("@|red and removing... |@ "));
-                System.out.println();
-            }
-            boolean allFilesUpdated = true;
-            ZipFile zipFile = null;
-            try {
-                zipFile = new ZipFile(bundleFile);
-            } catch (ZipException zipException) {
-                bundleFile.delete();
-                installNetuno++;
-                continue installNetuno;
-            }
-            File netunoJar = new File(path, "netuno.jar");
-            File netunoJarNew = new File(path, "netuno.jar.new");
-            try {
-                Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    String name = entry.getName().substring(bundleFileName.length());
-                    if (name.isEmpty()) {
-                        continue;
-                    }
-                    if (name.substring(1).equals(checksumFileName)) {
-                        checksumBundle = Values.fromJSON(
-                                org.netuno.psamata.io.InputStream.readAll(zipFile.getInputStream(entry))
-                        );
-                        break;
-                    }
-                }
-                entries = zipFile.entries();
-                int countElements = 0;
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    String name = entry.getName().substring(bundleFileName.length());
-                    if (name.isEmpty()) {
-                        continue;
-                    }
-                    if (name.substring(1).equals(checksumFileName)
-                            || name.equalsIgnoreCase(".DS_Store")) {
-                        continue;
-                    }
-                    if (countElements % 10 == 0) {
-                        System.out.print(". ");
-                    }
-                    File entryDestination = new File(path, name);
-                    if (name.substring(1).equals("netuno.jar")) {
-                        entryDestination = new File(path, name + ".new");
-                    }
-                    if (entry.isDirectory()) {
-                        entryDestination.mkdirs();
-                    } else {
-                        File localFile = null;
-                        if (force == false && entryDestination.exists()
-                                && !getChecksum(entryDestination)
-                                .equalsIgnoreCase(checksumLocal.getString(name))) {
-                            localFile = new File(entryDestination.getPath() + ".local");
-                            new File(entryDestination.getPath()).renameTo(localFile);
-                        }
-                        entryDestination.getParentFile().mkdirs();
-                        InputStream in = zipFile.getInputStream(entry);
-                        OutputStream out = new FileOutputStream(entryDestination);
-                        IOUtils.copy(in, out);
-                        out.flush();
-                        in.close();
-                        out.close();
-                        if (force == false && localFile != null) {
-                            allFilesUpdated = false;
-                            File newBundleFile = new File(entryDestination.getPath() + ".new");
-                            new File(entryDestination.getPath()).renameTo(newBundleFile);
-                            new File(localFile.getPath()).renameTo(entryDestination);
+                        if (e instanceof javax.net.ssl.SSLHandshakeException && e.getMessage().contains("github-releases.githubusercontent.com")) {
+                            System.out.println(OS.consoleOutput("@|red Temporarily offline, probably being propagated by GitHub. |@ "));
                             System.out.println();
-                            System.out.println(OS.consoleOutput("@|yellow " +
-                                    entryDestination.getPath() + " |@- @|red is not " +
-                                    (remove ? "removed" : "updated") +
-                                    " because has local changes |@ "));
-                            if (remove) {
-                                rm(newBundleFile);
-                            }
-                            rm(localFile);
+                            System.out.println(OS.consoleOutput("@|red Please try again later, and it may take up to 15 minutes. |@ "));
+                            System.out.println();
+                            System.out.println(OS.consoleOutput("@|yellow More details: |@https://github.com/netuno-org/platform/releases"));
+                        } else if (e instanceof java.io.FileNotFoundException) {
+                            System.out.println(OS.consoleOutput("@|red The download link was not found: |@ " + e.getMessage()));
                         } else {
-                            if (remove) {
-                                rm(entryDestination);
-                            }
+                            System.out.println(OS.consoleOutput("@|red " + e.getClass().getName() + ": |@ " + e.getMessage()));
+                        }
+                        System.out.println();
+                        System.out.println();
+                        System.exit(0);
+                    }
+                    System.out.println();
+                    System.out.println();
+                }
+
+                System.out.println(OS.consoleOutput("@|green Unzipping Netuno... |@ "));
+                System.out.println();
+                if (remove) {
+                    System.out.println(OS.consoleOutput("@|red and removing... |@ "));
+                    System.out.println();
+                }
+                boolean allFilesUpdated = true;
+                ZipFile zipFile = null;
+                try {
+                    zipFile = new ZipFile(bundleFile);
+                } catch (ZipException zipException) {
+                    bundleFile.delete();
+                    installNetuno++;
+                    continue installNetuno;
+                }
+                try {
+                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                    while (entries.hasMoreElements()) {
+                        ZipEntry entry = entries.nextElement();
+                        String name = entry.getName().substring(bundleFileName.length());
+                        if (name.isEmpty()) {
+                            continue;
+                        }
+                        if (name.substring(1).equals(checksumFileName)) {
+                            checksumBundle = Values.fromJSON(
+                                    org.netuno.psamata.io.InputStream.readAll(zipFile.getInputStream(entry))
+                            );
+                            break;
                         }
                     }
-                    countElements++;
+                    entries = zipFile.entries();
+                    int countElements = 0;
+                    while (entries.hasMoreElements()) {
+                        ZipEntry entry = entries.nextElement();
+                        String name = entry.getName().substring(bundleFileName.length());
+                        if (name.isEmpty()) {
+                            continue;
+                        }
+                        if (name.substring(1).equals(checksumFileName)
+                                || name.equalsIgnoreCase(".DS_Store")) {
+                            continue;
+                        }
+                        if (countElements % 10 == 0) {
+                            System.out.print(". ");
+                        }
+                        File entryDestination = new File(path, name);
+                        if (name.substring(1).equals("netuno.jar")) {
+                            entryDestination = new File(path, name + ".new");
+                        }
+                        if (entry.isDirectory()) {
+                            entryDestination.mkdirs();
+                        } else {
+                            File localFile = null;
+                            if (force == false && entryDestination.exists()
+                                    && !getChecksum(entryDestination)
+                                    .equalsIgnoreCase(checksumLocal.getString(name))) {
+                                localFile = new File(entryDestination.getPath() + ".local");
+                                new File(entryDestination.getPath()).renameTo(localFile);
+                            }
+                            entryDestination.getParentFile().mkdirs();
+                            InputStream in = zipFile.getInputStream(entry);
+                            OutputStream out = new FileOutputStream(entryDestination);
+                            IOUtils.copy(in, out);
+                            out.flush();
+                            in.close();
+                            out.close();
+                            if (force == false && localFile != null) {
+                                allFilesUpdated = false;
+                                File newBundleFile = new File(entryDestination.getPath() + ".new");
+                                new File(entryDestination.getPath()).renameTo(newBundleFile);
+                                new File(localFile.getPath()).renameTo(entryDestination);
+                                System.out.println();
+                                System.out.println(OS.consoleOutput("@|yellow " +
+                                        entryDestination.getPath() + " |@- @|red is not " +
+                                        (remove ? "removed" : "updated") +
+                                        " because has local changes |@ "));
+                                if (remove) {
+                                    rm(newBundleFile);
+                                }
+                                rm(localFile);
+                            } else {
+                                if (remove) {
+                                    rm(entryDestination);
+                                }
+                            }
+                        }
+                        countElements++;
+                    }
+                    if (!checksumBundle.isEmpty()) {
+                        System.out.println();
+                        org.netuno.psamata.io.OutputStream.writeToFile(
+                                checksumBundle.toJSON(4),
+                                checksumFile,
+                                false
+                        );
+                    }
+                } finally {
+                    zipFile.close();
                 }
-                if (!checksumBundle.isEmpty()) {
-                    System.out.println();
-                    org.netuno.psamata.io.OutputStream.writeToFile(
-                            checksumBundle.toJSON(4),
-                            checksumFile,
-                            false
-                    );
-                }
-            } finally {
-                zipFile.close();
-            }
-            System.out.println();
-            if (!allFilesUpdated) {
                 System.out.println();
+                if (!allFilesUpdated) {
+                    System.out.println();
+                }
             }
             if (remove) {
                 if (netunoJar.exists()) {
@@ -678,5 +494,234 @@ public class Install {
     private String getChecksum(InputStream is) throws IOException {
         String md5 = DigestUtils.md5Hex(is);
         return md5;
+    }
+
+    public static void graalCheckAndSetup() {
+        try {
+            if (!graalCheck(".")) {
+                System.out.println();
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|red Setting up the GraalVM is required.|@ "));
+                graalSetup(".");
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|gree GraalVM has been successfully updated.|@ "));
+                System.out.println();
+                System.out.println();
+                System.exit(0);
+            }
+        } catch (Exception e) {
+            logger.debug("GraalVM setup failed in the current path.", e);
+            System.out.println(OS.consoleOutput("@|red GraalVM Setup failed: |@ "+ e.getMessage()));
+            System.out.println();
+        }
+    }
+
+    public static boolean graalCheck(String path) throws IOException {
+        String graalVMFolderName = "graalvm";
+        File graalVMFolder = new File(path, graalVMFolderName);
+        if (new File(path, graalVMFolderName).exists()) {
+            ProcessBuilder builder = new ProcessBuilder();
+            builder.command(new String[]{
+                    (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX ? "./" : "")
+                            + "java",
+                    "-version"
+            });
+            builder.directory(new File(graalVMFolder, "bin"));
+            StringBuilder versionOutput = new StringBuilder();
+            StringBuilder versionError = new StringBuilder();
+            int exitCode = 0;
+            try {
+                Process process = builder.start();
+                StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), versionOutput::append);
+                Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
+                StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), versionError::append);
+                Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
+                exitCode = process.waitFor();
+            } catch (Exception e) {
+                logger.debug("Fail getting the GraalVM version.", e);
+                FileUtils.deleteDirectory(graalVMFolder);
+            }
+            /*
+            logger.debug("GraalVM Version - Exit Code: "+ exitCode);
+            logger.debug("GraalVM Version - Output:\n"+ versionOutput);
+            logger.debug("GraalVM Version - Error:\n"+ versionError);
+            */
+            if (versionOutput.toString().contains("GraalVM CE "+ graalVMVersion)
+                    || versionError.toString().contains("GraalVM CE "+ graalVMVersion)) {
+                return true;
+            } else {
+                logger.debug("Is not the GraalVM CE "+ graalVMVersion +" then reinstall.");
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static void graalSetup(String path) throws IOException, InterruptedException {
+        String graalVMFolderName = "graalvm";
+        File graalVMFolder = new File(path, graalVMFolderName);
+        int installGraalVM = 0;
+        if (graalCheck(path)) {
+            installGraalVM = 1;
+        } else {
+            FileUtils.deleteDirectory(graalVMFolder);
+        }
+        if (installGraalVM == 0) {
+            String graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-windows-amd64-" + graalVMVersion + ".zip";
+            String graalVMFileName = "graalvm.zip";
+            if (SystemUtils.IS_OS_MAC) {
+                graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-darwin-amd64-" + graalVMVersion + ".tar.gz";
+                graalVMFileName = "graalvm.tar.gz";
+            } else if (SystemUtils.IS_OS_LINUX) {
+                if (SystemUtils.OS_ARCH.equals("amd64")) {
+                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-linux-amd64-" + graalVMVersion + ".tar.gz";
+                } else if (SystemUtils.OS_ARCH.equals("aarch64")) {
+                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-linux-aarch64-" + graalVMVersion + ".tar.gz";
+                } else {
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|red    GraalVM not support this architecture. |@"));
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|yellow    To continue then install with: |@"));
+                    System.out.println(OS.consoleNetunoCommand("install graal=false"));
+                    System.out.println();
+                    return;
+                }
+                graalVMFileName = "graalvm.tar.gz";
+            }
+            installGraalVM: while (installGraalVM <= 1) {
+                File graalVMFile = new File(path, graalVMFileName);
+
+                final String graalVMURLFinal = graalVMURL;
+
+                if (!graalVMFile.exists()) {
+                    System.out.println();
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("Downloading @|yellow " + graalVMURLFinal + "|@:"));
+                    Download download = new Download();
+                    download.http(graalVMURL, graalVMFile, new Download.DownloadEvent() {
+                        @Override
+                        public void onInit(Download.Stats stats) {
+
+                        }
+
+                        @Override
+                        public void onProgress(Download.Stats stats) {
+                            System.out.print("\r");
+                            System.out.print(OS.consoleOutput(
+                                            String.format(
+                                                    "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
+                                                            "        ",
+                                                    FileUtils.byteCountToDisplaySize(stats.getPosition()),
+                                                    FileUtils.byteCountToDisplaySize(stats.getLength()),
+                                                    stats.getSpeed() / 1024,
+                                                    stats.getTime() / 1000)
+                                    )
+                            );
+                        }
+
+                        @Override
+                        public void onComplete(Download.Stats stats) {
+                            System.out.println();
+                            System.out.println();
+                            if (graalVMFile.exists()) {
+                                graalVMFile.deleteOnExit();
+                                System.out.println(OS.consoleOutput("@|green GraalVM download was successfully completed.|@"));
+                            } else {
+                                System.out.println(OS.consoleOutput("@|red GraalVM download failed.|@"));
+                            }
+                        }
+                    });
+                }
+
+                System.out.println();
+                System.out.print(OS.consoleOutput("Extracting @|yellow GraalVM|@ . "));
+                if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
+                    int strip = SystemUtils.IS_OS_MAC ? 3 : 1;
+                    new File(path, graalVMFolderName).mkdirs();
+                    ProcessBuilder builder = new ProcessBuilder();
+                    builder.command(new String[]{"sh", "-c", "tar -xzf " + graalVMFileName + " --strip " + strip + " -C " + graalVMFolderName});
+                    builder.directory(new File(path));
+                    Process process = builder.start();
+                    Values executing = new Values();
+                    executing.set("run", true);
+                    new Thread(() -> {
+                        while (executing.getBoolean("run")) {
+                            try {
+                                System.out.print(". ");
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+
+                            }
+                        }
+                    }).start();
+                    try {
+                        StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+                        Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
+                        StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err::println);
+                        Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
+                        int exitCode = process.waitFor();
+                        process.destroy();
+                        if (exitCode != 0) {
+                            if (new File(path, graalVMFileName).delete() && installGraalVM == 0) {
+                                System.out.println();
+                                System.out.println(OS.consoleOutput("@|red The GraalVM file has corrupted... will try download again!|@ . "));
+                                System.out.println();
+                                installGraalVM++;
+                                continue installGraalVM;
+                            } else {
+                                throw new Error("Extracting GraalVM was failed.");
+                            }
+                        }
+                        break;
+                    } finally {
+                        executing.set("run", false);
+                    }
+                } else {
+                    File zipFileGraalVM = new File(path, graalVMFileName);
+                    ZipFile zipFile = new ZipFile(zipFileGraalVM);
+                    try {
+                        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                        int countElements = 0;
+                        while (entries.hasMoreElements()) {
+                            ZipEntry entry = entries.nextElement();
+                            String name = entry.getName();
+                            if (name.isEmpty()) {
+                                continue;
+                            }
+                            if (countElements % 10 == 0) {
+                                System.out.print(". ");
+                            }
+                            File entryDestination = new File(path, name);
+                            if (entry.isDirectory()) {
+                                entryDestination.mkdirs();
+                            } else {
+                                if (entryDestination.exists()) {
+                                    new File(entryDestination.getPath()).delete();
+                                }
+                                entryDestination.getParentFile().mkdirs();
+                                InputStream in = zipFile.getInputStream(entry);
+                                OutputStream out = new FileOutputStream(entryDestination);
+                                IOUtils.copy(in, out);
+                                out.flush();
+                                in.close();
+                                out.close();
+                            }
+                            countElements++;
+                        }
+                    } finally {
+                        zipFile.close();
+                    }
+                    for (File file : new File(path).listFiles()) {
+                        if (file.isDirectory() && file.getName().startsWith("graalvm-") && file.getName().endsWith("-"+ graalVMVersion)) {
+                            file.renameTo(new File(path, "graalvm"));
+                        }
+                    }
+                    break;
+                }
+            }
+
+            System.out.println();
+            System.out.println();
+        }
     }
 }

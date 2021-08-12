@@ -56,6 +56,7 @@ public class Clone {
     protected String target = "";
 
     public void run() throws IOException, SQLException, ClassNotFoundException, ScriptException {
+        Install.graalCheckAndSetup();
         System.err.println();
         System.out.print(OS.consoleOutput("@|yellow Clone Application|@ "));
         System.err.println();

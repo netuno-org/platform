@@ -399,6 +399,7 @@ public class App {
     protected boolean silent = false;
 
     public void run() throws IOException {
+        Install.graalCheckAndSetup();
         while (true) {
             if (name.length() == 0) {
                 System.out.print(OS.consoleOutput("@|yellow App name:|@ "));
