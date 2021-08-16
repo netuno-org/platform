@@ -49,12 +49,12 @@ fs.copySync(config.base.root, config.output.bundle, {
             && src.endsWith('~') == false
             && src.endsWith('#') == false
             && src.endsWith('.swp') == false
+            && src.endsWith('.log') == false
     }
 })
 
 fs.removeSync(config.output.bundle +'/apps/_')
 fs.removeSync(config.output.bundle +'/web/WEB-INF/classes')
-fs.removeSync(config.output.bundle +'/logs/*.log')
 
 fs.copySync(config.netuno.cli.bundle, config.output.bundle +'/netuno.jar')
 
