@@ -17,7 +17,7 @@
                 "title": "Introduction",
                 "how-to-start": {
                     "title": "How to start",
-                    "content": "<p>If you are new to Netuno, <a href='https://doc.netuno.org/docs/en/academy/start/demonstration/form/' target='_blank'>start by creating your first form</a>.</p>"
+                    "content": "<p>If you are new to Netuno, start by creating your <a href='https://doc.netuno.org/docs/en/academy/start/demonstration/form/' target='_blank'>first form</a>, and confirm the <a href='https://doc.netuno.org/docs/pt-PT/academy/start/demonstration/config/' target='_blank'>initial configurations</a>.</p>"
                 },
                 "from-the-root": {
                     "title": "From the Netuno root directory",

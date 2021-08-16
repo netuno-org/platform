@@ -439,6 +439,7 @@ public class Install {
             System.out.println();
             break;
         }
+        System.exit(0);
     }
 
     public void rm(final File folderOrFile) {
