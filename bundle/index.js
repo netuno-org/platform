@@ -1,7 +1,7 @@
 
 const fs = require('fs-extra')
 
-const { exec } = require('child_process')
+const { exec, execSync } = require('child_process')
 
 const folder = require('path').dirname(require.main.filename)
 
@@ -52,6 +52,8 @@ fs.copySync(config.base.root, config.output.bundle, {
             && src.endsWith('.log') == false
     }
 })
+
+execSync('trash-put *.json', { cwd: config.output.bundle +'/apps/', maxBuffer: 1024 * 10000 })
 
 fs.removeSync(config.output.bundle +'/apps/_')
 fs.removeSync(config.output.bundle +'/web/WEB-INF/classes')

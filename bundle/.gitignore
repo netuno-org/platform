@@ -34,9 +34,13 @@ license*.json
 package-lock.json
 
 base/netuno.jar
+
 base/web/WEB-INF/lib/
 base/web/WEB-INF/classes
+
 base/logs/*.log
+
+base/apps/*.json
 
 base/graalvm
 

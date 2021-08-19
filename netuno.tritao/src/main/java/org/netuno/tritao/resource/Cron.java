@@ -342,6 +342,21 @@ public class Cron extends ResourceBase {
         }
     }
 
+
+    public Values schedules() throws ResourceException {
+        try {
+            return (Values)Class.forName("org.netuno.cli.Cron")
+                    .getMethod("schedules",
+                            String.class)
+                    .invoke(
+                            null,
+                            Config.getApp(getProteu())
+                    );
+        } catch (Exception e) {
+            throw new ResourceException("cron.schedules()", e);
+        }
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -438,6 +453,55 @@ public class Cron extends ResourceBase {
                     );
         } catch (Exception e) {
             throw new ResourceException("cron.resume("+ key +")", e);
+        }
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Remove (apaga) um agendamento de execução de serviço.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_cron.delete(\"atualizaPrecos\")\n"
+                            ) }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Removes a service execution schedule.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_cron.delete(\"pricesUpdate\")\n"
+                            ) })
+    },
+            parameters = {
+                    @ParameterDoc(name = "key", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "chave",
+                                    description = "Nome chave de identificação do job."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Job ID key name."
+                            )
+                    })
+            },
+            returns = {}
+    )
+    public void delete(String key) throws ResourceException {
+        try {
+            Class.forName("org.netuno.cli.Cron")
+                    .getMethod("delete",
+                            String.class,
+                            String.class)
+                    .invoke(
+                            null,
+                            Config.getApp(getProteu()),
+                            key
+                    );
+        } catch (Exception e) {
+            throw new ResourceException("cron.delete("+ key +")", e);
         }
     }
 }

@@ -26,6 +26,8 @@ import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.util.ErrorException;
 import org.netuno.tritao.resource.util.ResourceException;
 
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Map;
 import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
@@ -2447,6 +2449,110 @@ public class Remote extends org.netuno.psamata.net.Remote {
     
     public RemoteResponse json(String method, String url, String data) {
         return new RemoteResponse(proteu, super.json(method, url, data));
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Verifica se o nome de servidor ou IP está disponível.",
+                            howToUse = {}),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Check whether the server name or IP is available.",
+                            howToUse = {})
+            },
+            parameters = {
+                    @ParameterDoc(name = "host", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "servidor",
+                                    description = "Nome ou IP do servidor."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Server name or IP."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Resultado se endereço está disponível."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Result if address is available."
+                    )
+            }
+    )
+    public boolean ping(String host) {
+        try {
+            InetAddress target = InetAddress.getByName(host);
+            if (target.isReachable(5000)) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Verifica se a porta está disponível para um nome ou IP de servidor.",
+                            howToUse = {}),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Checks if the port is available for a server name or IP.",
+                            howToUse = {})
+            },
+            parameters = {
+                    @ParameterDoc(name = "host", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "servidor",
+                                    description = "Nome ou IP do servidor."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Server name or IP."
+                            )
+                    }),
+                    @ParameterDoc(name = "port", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "porto",
+                                    description = "Número do porto."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Port number."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Resultado se a porta está disponível."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Result if port is available."
+                    )
+            }
+    )
+    public boolean portListening(String host, int port) {
+        try {
+            InetAddress target = InetAddress.getByName(host);
+            Socket socket = new Socket(target, port);
+            socket.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @LibraryDoc(translations = {

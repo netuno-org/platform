@@ -22,11 +22,15 @@ import org.netuno.psamata.Values;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
+import static org.quartz.impl.matchers.GroupMatcher.jobGroupEquals;
 
 /**
  * Manage the CRON Jobs execution.
@@ -65,10 +69,33 @@ public class Cron {
         schedule(app, key, config, url, null);
     }
 
+    public static Values schedules(String app) {
+        try {
+            Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
+            Values schedules = new Values().forceList();
+            for (JobKey jobKey : jobsKeys) {
+                List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+                JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                schedules.add(
+                        new Values()
+                                .set("key", jobKey.getName())
+                                .set("detail", jobDetail)
+                                .set("trigger", triggers.get(0))
+                );
+            }
+            return schedules;
+        } catch (Exception e) {
+            logger.trace(e.getMessage(), e);
+            logger.error("\n#\n# Getting schedules for the "+ app +" app:\n#     "+ e.getMessage() +"\n#\n");
+        }
+        return null;
+    }
+
     public static void schedule(String app, String key, String config, String url, String params) {
         try {
             JobKey jobKey = new JobKey(key, app);
             if (scheduler.checkExists(jobKey)) {
+                scheduler.pauseJob(jobKey);
                 scheduler.deleteJob(jobKey);
             }
             JobDetail jobDetail = newJob(CronJob.class)
@@ -104,5 +131,9 @@ public class Cron {
 
     public static void resume(String app, String key) throws SchedulerException {
         scheduler.resumeJob(new JobKey(app, key));
+    }
+
+    public static void delete(String app, String key) throws SchedulerException {
+        scheduler.deleteJob(new JobKey(app, key));
     }
 }
