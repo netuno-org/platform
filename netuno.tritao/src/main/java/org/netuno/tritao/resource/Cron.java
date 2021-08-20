@@ -180,19 +180,12 @@ public class Cron extends ResourceBase {
     
     @AppEvent(type=AppEventType.BeforeServiceConfiguration)
     private void beforeServiceConfiguration() {
-        if (!getProteu().getConfig().getValues("_app:config").getString("name").equals(getProteu().getRequestAll().getString("app"))) {
-            return;
-        }
         if (!getProteu().getRequestAll().getString("job").isEmpty() && !getProteu().getRequestAll().getString("secret").isEmpty()) {
-            String secret = getProteu().getConfig().getString("_cron:secret");
-            Values jobs = getProteu().getConfig().getValues("_cron:jobs", new Values());
-            Values job = jobs.find("name", getProteu().getRequestAll().getString("job"));
             Service service = Service.getInstance(getProteu());
-            if (job != null && job.getBoolean("enabled", true) && job.getString("url").contains(org.netuno.tritao.config.Config.getUrlServices(getProteu()) + service.path)) {
-                Values params = job.getValues("params", new Values());
-                String paramsSecret = params.getString("secret");
-                if ((paramsSecret.isEmpty() && secret.equals(getProteu().getRequestAll().getString("secret")))
-                        || (!paramsSecret.isEmpty() && params.has("secret", getProteu().getRequestAll().getString("secret")))) {
+            for (Values schedule : schedules().listOfValues()) {
+                if (schedule.has("key", getProteu().getRequestAll().getString("job"))
+                        && schedule.getString("url").endsWith(org.netuno.tritao.config.Config.getUrlServices(getProteu()) + service.path)
+                        && schedule.getValues("params").has("secret", getProteu().getRequestAll().getString("secret"))) {
                     service.allow();
                 }
             }
@@ -312,14 +305,30 @@ public class Cron extends ResourceBase {
     	                    )
     	            }) 
     		},
-    		returns = {}
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "A instância atual do Cron."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The current Cron instance."
+                    )
+            }
     )
-    public void schedule(String key, String config, String url) throws ResourceException {
-        schedule(key, config, url, null);
-    }
-
-    public void schedule(String key, String config, String url, Values params) throws ResourceException {
+    public Cron schedule(String key, String config, String url, Values params) throws ResourceException {
         try {
+            if (params == null) {
+                params = new Values()
+                        .set("job", key)
+                        .set("secret", getProteu().getConfig().getString("_cron:secret"));
+            }
+            if (!params.hasKey("job")) {
+                params.set("job", key);
+            }
+            if (!params.hasKey("secret")) {
+                params.set("secret", getProteu().getConfig().getString("_cron:secret"));
+            }
             url = Config.getFullOrLocalURL(getProteu(), url);
             params.set("app", Config.getApp(getProteu()));
             Class.forName("org.netuno.cli.Cron")
@@ -335,14 +344,41 @@ public class Cron extends ResourceBase {
                             key,
                             config,
                             url,
-                            params != null ? params.set("job", key).toJSON() : null
+                            params.toJSON()
                     );
         } catch (Exception e) {
             throw new ResourceException("cron.schedule("+ key +")", e);
         }
+        return this;
     }
 
+    public Cron schedule(String key, String config, String url) throws ResourceException {
+        return schedule(key, config, url, null);
+    }
 
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Lista de todos os agendamentos de serviços da aplicação.",
+                            howToUse = {  }),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "List of all application service schedules.",
+                            howToUse = {  })
+            },
+            parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "A lista de todos os serviços agendados da aplicação que estão configurados no Cron."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The list of all scheduled services of the application that are configured in Cron."
+                    )
+            }
+    )
     public Values schedules() throws ResourceException {
         try {
             return (Values)Class.forName("org.netuno.cli.Cron")
@@ -357,23 +393,24 @@ public class Cron extends ResourceBase {
         }
     }
 
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Muda o estado de execução para **pause**, neste estado não é executado o serviço associado.",
-                    howToUse = {
-                            @SourceCodeDoc(
-                                    type = SourceCodeTypeDoc.JavaScript,
-                                    code = "_cron.pause(\"atualizaPrecos\")\n"
-                            ) }),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Changes the execution state to **pause**, in this state the associated service is not executed.",
-                    howToUse = {
-                            @SourceCodeDoc(
-                                    type = SourceCodeTypeDoc.JavaScript,
-                                    code = "_cron.pause(\"pricesUpdate\")\n"
-                            ) })
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Muda o estado de execução para **pause**, neste estado não é executado o serviço associado.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.pause(\"atualizaPrecos\")\n"
+                                    ) }),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Changes the execution state to **pause**, in this state the associated service is not executed.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.pause(\"pricesUpdate\")\n"
+                                    ) })
             },
     		parameters = {
     				@ParameterDoc(name = "key", translations = {
@@ -388,11 +425,20 @@ public class Cron extends ResourceBase {
     	                    )
     	            })
     		},
-    		returns = {}
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Se foi possível pausar o serviço agendado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Whether it was possible to pause the scheduled service."
+                    )
+            }
     )
-    public void pause(String key) throws ResourceException {
+    public boolean pause(String key) throws ResourceException {
         try {
-            Class.forName("org.netuno.cli.Cron")
+            return (Boolean)Class.forName("org.netuno.cli.Cron")
                     .getMethod("pause",
                             String.class,
                             String.class)
@@ -406,24 +452,25 @@ public class Cron extends ResourceBase {
         }
     }
 
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Muda o estado de execução para **resume**, após um " +
-                            "agendamento estar no estado _pause_, este pode ser reativado por via de _resume_",
-                    howToUse = {
-                            @SourceCodeDoc(
-                                    type = SourceCodeTypeDoc.JavaScript,
-                                    code = "_cron.resume(\"atualizaPrecos\")\n"
-                            ) }),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Changes the execution state to **resume**, after a schedule is in the _pause_ state, it can be reactivated via _resume_.",
-                    howToUse = {
-                            @SourceCodeDoc(
-                                    type = SourceCodeTypeDoc.JavaScript,
-                                    code = "_cron.resume(\"pricesUpdate\")\n"
-                            ) })
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Muda o estado de execução para **resume**, após um " +
+                                    "agendamento estar no estado _pause_, este pode ser reativado por via de _resume_",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.resume(\"atualizaPrecos\")\n"
+                                    ) }),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Changes the execution state to **resume**, after a schedule is in the _pause_ state, it can be reactivated via _resume_.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.resume(\"pricesUpdate\")\n"
+                                    ) })
     		},
     		parameters = {
     				@ParameterDoc(name = "key", translations = {
@@ -438,11 +485,20 @@ public class Cron extends ResourceBase {
     	                    )
     	            })
     		},
-    		returns = {}
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Se foi possível continuar o serviço agendado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Whether it was possible to continue the scheduled service."
+                    )
+            }
     )
-    public void resume(String key) throws ResourceException {
+    public boolean resume(String key) throws ResourceException {
         try {
-            Class.forName("org.netuno.cli.Cron")
+            return (Boolean)Class.forName("org.netuno.cli.Cron")
                     .getMethod("resume",
                             String.class,
                             String.class)
@@ -456,24 +512,25 @@ public class Cron extends ResourceBase {
         }
     }
 
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Remove (apaga) um agendamento de execução de serviço.",
-                    howToUse = {
-                            @SourceCodeDoc(
-                                    type = SourceCodeTypeDoc.JavaScript,
-                                    code = "_cron.delete(\"atualizaPrecos\")\n"
-                            ) }),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Removes a service execution schedule.",
-                    howToUse = {
-                            @SourceCodeDoc(
-                                    type = SourceCodeTypeDoc.JavaScript,
-                                    code = "_cron.delete(\"pricesUpdate\")\n"
-                            ) })
-    },
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Interrompe um agendamento de execução de serviço.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.delete(\"atualizaPrecos\")\n"
+                                    ) }),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Interrupts a service execution schedule.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.interrupt(\"pricesUpdate\")\n"
+                                    ) })
+            },
             parameters = {
                     @ParameterDoc(name = "key", translations = {
                             @ParameterTranslationDoc(
@@ -487,11 +544,79 @@ public class Cron extends ResourceBase {
                             )
                     })
             },
-            returns = {}
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Se foi possível interromper o serviço agendado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Whether it was possible to stop the scheduled service."
+                    )
+            }
     )
-    public void delete(String key) throws ResourceException {
+    public boolean interrupt(String key) throws ResourceException {
         try {
-            Class.forName("org.netuno.cli.Cron")
+            return (Boolean)Class.forName("org.netuno.cli.Cron")
+                    .getMethod("interrupt",
+                            String.class,
+                            String.class)
+                    .invoke(
+                            null,
+                            Config.getApp(getProteu()),
+                            key
+                    );
+        } catch (Exception e) {
+            throw new ResourceException("cron.interrupt("+ key +")", e);
+        }
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Remove (apaga) um agendamento de execução de serviço.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.delete(\"atualizaPrecos\")\n"
+                                    ) }),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Removes a service execution schedule.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.delete(\"pricesUpdate\")\n"
+                                    ) })
+            },
+            parameters = {
+                    @ParameterDoc(name = "key", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "chave",
+                                    description = "Nome chave de identificação do job."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Job ID key name."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Se foi possível apagar o serviço agendado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Whether it was possible to delete the scheduled service."
+                    )
+            }
+    )
+    public boolean delete(String key) throws ResourceException {
+        try {
+            return (Boolean)Class.forName("org.netuno.cli.Cron")
                     .getMethod("delete",
                             String.class,
                             String.class)
@@ -502,6 +627,128 @@ public class Cron extends ResourceBase {
                     );
         } catch (Exception e) {
             throw new ResourceException("cron.delete("+ key +")", e);
+        }
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Remove (apaga) um agendamento de execução de serviço.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.delete(\"atualizaPrecos\")\n"
+                                    ) }),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Removes a service execution schedule.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "_cron.delete(\"pricesUpdate\")\n"
+                                    ) })
+            },
+            parameters = {
+                    @ParameterDoc(name = "key", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "chave",
+                                    description = "Nome chave de identificação do job."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Job ID key name."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Se foi possível apagar o serviço agendado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Whether it was possible to delete the scheduled service."
+                    )
+            }
+    )
+    public boolean remove(String key) throws ResourceException {
+        try {
+            return (Boolean)Class.forName("org.netuno.cli.Cron")
+                    .getMethod("delete",
+                            String.class,
+                            String.class)
+                    .invoke(
+                            null,
+                            Config.getApp(getProteu()),
+                            key
+                    );
+        } catch (Exception e) {
+            throw new ResourceException("cron.remove("+ key +")", e);
+        }
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Verifica se a chave do serviço agendado existe.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "if (_cron.checkExists(\"atualizaPrecos\")) {\n" +
+                                                    "    _out.print(\"O serviço agendado 'atualizaPrecos' existe!\")\n" +
+                                                    "}\n"
+                                    ) }),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Checks if the scheduled service key exists.",
+                            howToUse = {
+                                    @SourceCodeDoc(
+                                            type = SourceCodeTypeDoc.JavaScript,
+                                            code = "if (_cron.checkExists(\"pricesUpdate\")) {\n" +
+                                                    "    _out.print(\"The scheduled service 'pricesUpdate' exists!\")\n" +
+                                                    "}\n"
+                                    ) })
+            },
+            parameters = {
+                    @ParameterDoc(name = "key", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "chave",
+                                    description = "Nome chave de identificação do job."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Job ID key name."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Se o serviço agendado foi encontrado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Whether the scheduled service was found."
+                    )
+            }
+    )
+    public boolean checkExists(String key) throws ResourceException {
+        try {
+            return (Boolean)Class.forName("org.netuno.cli.Cron")
+                    .getMethod("checkExists",
+                            String.class,
+                            String.class)
+                    .invoke(
+                            null,
+                            Config.getApp(getProteu()),
+                            key
+                    );
+        } catch (Exception e) {
+            throw new ResourceException("cron.checkExists("+ key +")", e);
         }
     }
 }

@@ -29,6 +29,7 @@ import java.util.Set;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
+import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.impl.matchers.GroupMatcher.jobGroupEquals;
 
@@ -76,9 +77,12 @@ public class Cron {
             for (JobKey jobKey : jobsKeys) {
                 List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                JobDataMap jobDataMap = jobDetail.getJobDataMap();
                 schedules.add(
                         new Values()
                                 .set("key", jobKey.getName())
+                                .set("url", jobDataMap.getString("url"))
+                                .set("params", Values.fromJSON(jobDataMap.getString("params")))
                                 .set("detail", jobDetail)
                                 .set("trigger", triggers.get(0))
                 );
@@ -93,7 +97,7 @@ public class Cron {
 
     public static void schedule(String app, String key, String config, String url, String params) {
         try {
-            JobKey jobKey = new JobKey(key, app);
+            JobKey jobKey = jobKey(key, app);
             if (scheduler.checkExists(jobKey)) {
                 scheduler.pauseJob(jobKey);
                 scheduler.deleteJob(jobKey);
@@ -125,15 +129,57 @@ public class Cron {
         }
     }
 
-    public static void pause(String app, String key) throws SchedulerException {
-        scheduler.pauseJob(new JobKey(app, key));
+    public static boolean pause(String app, String key) throws SchedulerException {
+        Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
+        for (JobKey jobKey : jobsKeys) {
+            if (jobKey.getName().equalsIgnoreCase(key)) {
+                scheduler.pauseJob(jobKey);
+                return true;
+            }
+        }
+        return false;
     }
 
-    public static void resume(String app, String key) throws SchedulerException {
-        scheduler.resumeJob(new JobKey(app, key));
+    public static boolean resume(String app, String key) throws SchedulerException {
+        Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
+        for (JobKey jobKey : jobsKeys) {
+            if (jobKey.getName().equalsIgnoreCase(key)) {
+                scheduler.resumeJob(jobKey);
+                return true;
+            }
+        }
+        return false;
     }
 
-    public static void delete(String app, String key) throws SchedulerException {
-        scheduler.deleteJob(new JobKey(app, key));
+    public static boolean interrupt(String app, String key) throws SchedulerException {
+        Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
+        for (JobKey jobKey : jobsKeys) {
+            if (jobKey.getName().equalsIgnoreCase(key)) {
+                scheduler.interrupt(jobKey);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean delete(String app, String key) throws SchedulerException {
+        Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
+        for (JobKey jobKey : jobsKeys) {
+            if (jobKey.getName().equalsIgnoreCase(key)) {
+                scheduler.deleteJob(jobKey);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkExists(String app, String key) throws SchedulerException {
+        Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
+        for (JobKey jobKey : jobsKeys) {
+            if (jobKey.getName().equalsIgnoreCase(key)) {
+                return scheduler.checkExists(jobKey);
+            }
+        }
+        return false;
     }
 }
