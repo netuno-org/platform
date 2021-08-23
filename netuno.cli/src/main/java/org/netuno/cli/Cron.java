@@ -76,6 +76,7 @@ public class Cron {
             Values schedules = new Values().forceList();
             for (JobKey jobKey : jobsKeys) {
                 List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+                Trigger trigger = triggers.get(0);
                 JobDetail jobDetail = scheduler.getJobDetail(jobKey);
                 JobDataMap jobDataMap = jobDetail.getJobDataMap();
                 schedules.add(
@@ -84,7 +85,7 @@ public class Cron {
                                 .set("url", jobDataMap.getString("url"))
                                 .set("params", Values.fromJSON(jobDataMap.getString("params")))
                                 .set("detail", jobDetail)
-                                .set("trigger", triggers.get(0))
+                                .set("trigger", trigger)
                 );
             }
             return schedules;

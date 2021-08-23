@@ -74,6 +74,7 @@ public class DataItem {
     public String errorTitle = "";
     public String errorMessage = "";
     public Values record = new Values();
+    public Values oldRecord = new Values();
     public Values values = new Values();
     public Values relationTable = new Values();
     public Values relationItem = new Values();
@@ -293,7 +294,14 @@ public class DataItem {
     }
 
     public void setRecord(Values record) {
+        if (this.record != null && !this.record.isEmpty()) {
+            this.oldRecord = this.record;
+        }
         this.record = record;
+    }
+
+    public Values getOldRecord() {
+        return this.oldRecord;
     }
 
     public Values getValues() {
@@ -349,10 +357,11 @@ public class DataItem {
         this.firebaseValues = firebaseValues;
         return this;
     }
-    
+
     @Override
     protected void finalize() throws Throwable {
         this.record = null;
+        this.oldRecord = null;
         this.values = null;
         this.relationTable = null;
         this.relationItem = null;

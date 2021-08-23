@@ -2290,7 +2290,7 @@ public class CoreBusiness extends Base {
 
     public void update(Values table, Values values, DataItem dataItem) {
         dataItem.setTable(table.getString("name"));
-        if (dataItem.getRecord() == null) {
+        if (dataItem.getRecord() == null || dataItem.getRecord().isEmpty()) {
             Values item = getItemById(table.getString("name"), dataItem.getId());
             if (item == null) {
                 dataItem.setStatus(DataItem.Status.NotFound);
@@ -2486,6 +2486,9 @@ public class CoreBusiness extends Base {
         } else {
             saveLog(LogAction.Update, table, dataItem, itemLog);
         }
+
+        dataItem.setRecord(getItemById(table.getString("name"), dataItem.getId()));
+
         getManager().scriptSaved(getProteu(), getHili(), table.getString("name"), dataItem);
 
         for (Values rowTritaoDesignXY : rsDesignXY) {
@@ -2571,7 +2574,7 @@ public class CoreBusiness extends Base {
 
     public void delete(Values table, Values item, DataItem dataItem) {
         dataItem.setTable(table.getString("name"));
-        if (dataItem.getRecord() == null) {
+        if (dataItem.getRecord() == null || dataItem.getRecord().isEmpty()) {
             Values record = getItemById(table.getString("name"), dataItem.getId());
             if (record == null) {
                 dataItem.setStatus(DataItem.Status.NotFound);
