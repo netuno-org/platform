@@ -2665,6 +2665,43 @@ public class DB extends ResourceBase {
     }
 
     @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Através do número longo que identifica o tempo exato, cria um novo objeto Timestamp para ser utilizado em operações de base de dados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Through the long number that identifies the exact time, it creates a new Timestamp object to be used in database operations.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "time", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Número longo referente ao tempo exato."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Long number referring to the exact time."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Novo objeto do tipo: _java.sql.Timestamp_"
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "New object of type: _java.sql.Timestamp_"
+                    )
+            }
+    )
+    public Timestamp timestamp(Long time) {
+        return new Timestamp(time);
+    }
+
+    @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
                 description = "Obtém a data atual para ser utilizada em operações de base de dados.",
@@ -2800,6 +2837,43 @@ public class DB extends ResourceBase {
     )
     public java.util.Date date(Instant instant) {
         return Date.from(instant);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Através do número longo que identifica a data exata, cria um novo objeto Date para ser utilizado em operações de base de dados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Through the long number that identifies the exact date, it creates a new Date object to be used in database operations.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "time", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Número longo referente a data exata."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Long number for the exact date."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Novo objeto do tipo: _java.sql.Date_"
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "New object of type: _java.sql.Date_"
+                    )
+            }
+    )
+    public Date date(Long time) {
+        return new Date(time);
     }
 
     @MethodDoc(translations = {
@@ -2939,6 +3013,43 @@ public class DB extends ResourceBase {
     )
     public java.util.Date time(Instant instant) {
         return Time.from(instant);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Através do número longo que identifica a hora exata, cria um novo objeto Time para ser utilizado em operações de base de dados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Through the long number that identifies the exact time, it creates a new Time object to be used in database operations.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "time", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Número longo referente a hora exato."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Long number referring to the exact time."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Novo objeto do tipo: _java.sql.Time_"
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "New object of type: _java.sql.Time_"
+                    )
+            }
+    )
+    public Time time(Long time) {
+        return new Time(time);
     }
     
     @LibraryDoc(translations = {
