@@ -47,11 +47,18 @@ public class WSServletContextHandler extends ServletContextHandler {
     
     private static Logger logger = LogManager.getLogger(WSServletContextHandler.class);
     
-    public WSServletContextHandler(String app, Values config, int options) throws ServletException, DeploymentException {
+    public WSServletContextHandler(String app, String defaultHost, Values config, int options) throws ServletException, DeploymentException {
         super(options);
-        
-        // VIRTUAL HOSTS
-        //this.setVirtualHosts(vhosts);
+
+        String[] virtualHosts = null;
+        if (config.hasKey("host") && !config.getString("host").isEmpty()) {
+            virtualHosts = new String[] { config.getString("host") };
+        } else if (!defaultHost.isEmpty()) {
+            virtualHosts = new String[] { defaultHost };
+        }
+        if (virtualHosts != null) {
+            this.setVirtualHosts(virtualHosts);
+        }
         
         String url = config.getString("public");
         
@@ -137,6 +144,7 @@ public class WSServletContextHandler extends ServletContextHandler {
             if (!wsConfig.isMap() || wsConfig.isEmpty()) {
                 continue;
             }
+            String defaultHost = wsConfig.getString("host");
             Values endpointsConfig = wsConfig.getValues("endpoints", new Values());
             if (!endpointsConfig.isList() || endpointsConfig.isEmpty()) {
                 continue;
@@ -150,7 +158,7 @@ public class WSServletContextHandler extends ServletContextHandler {
                     continue;
                 }
                 try {
-                    handlers.add(new WSServletContextHandler(app, endpointConfig, ServletContextHandler.SESSIONS));
+                    handlers.add(new WSServletContextHandler(app, defaultHost, endpointConfig, ServletContextHandler.SESSIONS));
                 } catch (Exception ex) {
                     String message = "The "+ app +" app is not able to initialize the endpoint "+ endpointConfig.getString("public" +".");
                     logger.debug(message, ex);
