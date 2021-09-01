@@ -269,19 +269,35 @@ public class Val extends ResourceBase {
                             )
                     })
     }, parameters = {}, returns = {})
-    public static String toJSON(List<Values> values) {
+    public String toJSON(List<Values> values) {
         return Values.toJSON(values);
     }
 
-    public static String toJSON(List<Values> values, int indentFactor) {
+    public String toJSON(List<Values> values, int indentFactor) {
         return Values.toJSON(values, indentFactor);
     }
 
-    public static String toJSON(List<Values> values, boolean htmlEscape) {
+    public String toJSON(List<Values> values, boolean htmlEscape) {
         return Values.toJSON(values, htmlEscape);
     }
 
-    public static String toJSON(List<Values> values, boolean htmlEscape, int indentFactor) {
+    public String toJSON(List<Values> values, boolean htmlEscape, int indentFactor) {
         return Values.toJSON(values, htmlEscape, indentFactor);
+    }
+
+    public String toJSON(Values values) {
+        return values.toJSON();
+    }
+
+    public String toJSON(Values values, boolean htmlEscape) {
+        return values.toJSON(htmlEscape);
+    }
+
+    public String toJSON(Values values, int indentFactor) {
+        return values.toJSON(indentFactor);
+    }
+
+    public String toJSON(Values values, boolean htmlEscape, int indentFactor) {
+        return values.toJSON(htmlEscape, indentFactor);
     }
 }

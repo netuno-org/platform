@@ -2147,6 +2147,10 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return result;
     }
 
+    public final String join(String splitter) {
+        return toString(splitter);
+    }
+
     public static final String safeString(Object object) {
         return safeString(object, "");
     }

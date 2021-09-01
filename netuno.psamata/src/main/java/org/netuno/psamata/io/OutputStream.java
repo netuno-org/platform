@@ -150,6 +150,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(bytes);
         return this;
     }
+
     /**
      * Print, write integer.
      * @param v Integer
@@ -159,6 +160,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Integer.toString(v));
         return this;
     }
+
     /**
      * Print, write short.
      * @param v Short
@@ -168,6 +170,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Short.toString(v));
         return this;
     }
+
     /**
      * Print, write float.
      * @param v Float
@@ -182,6 +185,7 @@ public class OutputStream extends java.io.OutputStream {
         }
         return this;
     }
+
     /**
      * Print, write double.
      * @param v Double
@@ -196,6 +200,7 @@ public class OutputStream extends java.io.OutputStream {
         }
         return this;
     }
+
     /**
      * Print, write long.
      * @param v Long
@@ -205,6 +210,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Long.toString(v));
         return this;
     }
+
     /**
      * Print, write char.
      * @param v Char
@@ -214,6 +220,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Character.toString(v));
         return this;
     }
+
     /**
      * Print, write boolean.
      * @param v Boolean
@@ -223,6 +230,79 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Boolean.toString(v));
         return this;
     }
+
+    public final OutputStream printAndClose(final String bytes) throws IOException {
+        try {
+            print(bytes);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final int v) throws IOException {
+        try {
+            print(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final short v) throws IOException {
+        try {
+            print(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final float v) throws IOException {
+        try {
+            print(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final double v) throws IOException {
+        try {
+            print(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final long v) throws IOException {
+        try {
+            print(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final char v) throws IOException {
+        try {
+            print(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final boolean v) throws IOException {
+        try {
+            print(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
     /**
      * Write a line brake.
      * @throws IOException Write exception
@@ -231,6 +311,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes("\n");
         return this;
     }
+
     /**
      * Write String line.
      * @param bytes Text of the line
@@ -240,6 +321,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(bytes + "\n");
         return this;
     }
+
     /**
      * Print, write integer.
      * @param v Integer
@@ -249,6 +331,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Integer.toString(v) + "\n");
         return this;
     }
+
     /**
      * Print, write short.
      * @param v Short
@@ -258,6 +341,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Short.toString(v) + "\n");
         return this;
     }
+
     /**
      * Print, write float.
      * @param v Float
@@ -272,6 +356,7 @@ public class OutputStream extends java.io.OutputStream {
         }
         return this;
     }
+
     /**
      * Print, write double.
      * @param v Double
@@ -286,6 +371,7 @@ public class OutputStream extends java.io.OutputStream {
         }
         return this;
     }
+
     /**
      * Print, write long.
      * @param v Long
@@ -295,6 +381,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Long.toString(v) + "\n");
         return this;
     }
+
     /**
      * Print, write char.
      * @param v Char
@@ -304,6 +391,7 @@ public class OutputStream extends java.io.OutputStream {
         writeBytes(Character.toString(v) + "\n");
         return this;
     }
+
     /**
      * Print, write boolean.
      * @param v Boolean
@@ -311,6 +399,87 @@ public class OutputStream extends java.io.OutputStream {
      */
     public final OutputStream println(final boolean v) throws IOException {
         writeBytes(Boolean.toString(v) + "\n");
+        return this;
+    }
+
+    public final OutputStream printlnAndClose() throws IOException {
+        try {
+            println();
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final String bytes) throws IOException {
+        try {
+            println(bytes);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final int v) throws IOException {
+        try {
+            println(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final short v) throws IOException {
+        try {
+            println(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final float v) throws IOException {
+        try {
+            println(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final double v) throws IOException {
+        try {
+            println(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final long v) throws IOException {
+        try {
+            println(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final char v) throws IOException {
+        try {
+            println(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final boolean v) throws IOException {
+        try {
+            println(v);
+        } finally {
+            close();
+        }
         return this;
     }
     
