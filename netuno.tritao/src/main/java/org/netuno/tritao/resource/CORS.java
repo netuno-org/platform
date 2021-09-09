@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.resource;
 
+import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
@@ -26,10 +27,14 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.proteu.Proteu;
+import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.Service;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
+
+import java.io.IOException;
 
 /**
  * CORS (Cross-Origin Resource Sharing) - Resource
@@ -53,6 +58,7 @@ import org.netuno.tritao.resource.event.AppEventType;
         )
 })
 public class CORS extends ResourceBase {
+    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(CORS.class);
 
     public CORS(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -69,6 +75,24 @@ public class CORS extends ResourceBase {
     @AppEvent(type=AppEventType.AfterServiceConfiguration)
     private void afterServiceConfiguration() {
         load();
+    }
+
+    @AppEvent(type=AppEventType.BeforeServiceNotFound)
+    private void beforeServiceNotFound() {
+        if (getProteu().getRequestHeader().getString("Method").equalsIgnoreCase("options")) {
+            Values entry = getProteu().getConfig().getValues("_cors:entry");
+            if (entry != null && getProteu().getResponseHeader().has("Access-Control-Allow-Origin", getProteu().getRequestHeader().getString("Origin"))) {
+                if (entry.getBoolean("optionsAutoResponse", true)) {
+                    Service service = Service.getInstance(getProteu());
+                    try {
+                        service.setNotFoundDefaultError(false);
+                        getProteu().outputJSON(new Values().set("result", true));
+                    } catch (IOException | ProteuException e) {
+                        logger.debug("Auto response failed to the method OPTIONS when executing the service path: "+ service.path(), e);
+                    }
+                }
+            }
+        }
     }
     
     @MethodDoc(
@@ -404,6 +428,7 @@ public class CORS extends ResourceBase {
                 Values origins = entry.getValues("origins", new Values());
                 for (String origin : origins.list(String.class)) {
                     if (origin.equals(getProteu().getRequestHeader().getString("Origin"))) {
+                        getProteu().getConfig().set("_cors:entry", entry);
                         Values header = new Values()
                         .set("Access-Control-Allow-Origin", origin)
                         .set("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
