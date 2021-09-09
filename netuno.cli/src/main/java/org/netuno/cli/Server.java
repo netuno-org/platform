@@ -173,7 +173,8 @@ public class Server {
             Config.loadAppConfigs();
             
             App.setup();
-            
+
+            boolean forceApp = false;
             if (!app.isEmpty()) {
                 if (new File(app).exists() && new File(app).isDirectory()) {
                     appConfig = Config.loadAppConfig(app);
@@ -182,6 +183,7 @@ public class Server {
                     Config.setAppForce(app);
                 }
                 appConfig = Config.loadAppConfig(Config.getAppForce());
+                forceApp = true;
                 logger.info("" +
                         "\n# " +
                         "\n# Force Application: " + Config.getAppForce() +
@@ -355,8 +357,8 @@ public class Server {
             });*/
             
             List<Handler> handlers = new ArrayList<Handler>();
-            
-            handlers.addAll(WSServletContextHandler.loadHandlers(appConfig));
+
+            handlers.addAll(WSServletContextHandler.loadHandlers(forceApp ? appConfig : null));
             
             handlers.add(webapp);
             
