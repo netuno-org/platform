@@ -21,6 +21,7 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.resource.util.ResourceException;
 
 import java.util.List;
 import java.util.Map;
@@ -299,5 +300,51 @@ public class Val extends ResourceBase {
 
     public String toJSON(Values values, boolean htmlEscape, int indentFactor) {
         return values.toJSON(htmlEscape, indentFactor);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Instância do tipo Values para armazenar dados que persistem na memória, ou seja os dados aqui guardados ficam disponíveis por todos os pedidos HTTP.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Contagem mantida em memória que aumenta a cada refresh:\n"
+                                            + "const persistente = _val.persistent()\n"
+                                            + "persistente.set('counter', persistente.getInt('counter') + 1)\n"
+                                            + "_out.json(persistente)"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Values type instance to store data that persists in memory, that is, the data stored here are available for all HTTP requests.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Count kept in memory that increases with each refresh:\n"
+                                            + "const persistent = _val.persistent()\n"
+                                            + "persistent.set('counter', persistent.getInt('counter') + 1)\n"
+                                            + "_out.json(persistent)"
+                            )
+                    })
+    }, parameters = { }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados que são mantidos em memória e que estão disponíveis para todas as solicitações."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data that is kept in memory and is available for all requests."
+            )
+    })
+    public Values persistent() throws ResourceException {
+        try {
+            String appName = resource(App.class).name();
+            return (Values)Class.forName("org.netuno.cli.utils.PersistentMemoryData")
+                    .getMethod("forApp", String.class)
+                    .invoke(null, appName);
+        } catch (Exception e) {
+            throw new ResourceException("val.persistent()", e);
+        }
     }
 }
