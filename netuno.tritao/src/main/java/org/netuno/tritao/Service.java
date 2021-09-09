@@ -511,6 +511,7 @@ public class Service {
 
     public static void _main(Proteu proteu, Hili hili) throws IOException, ProteuException {
         Service service = new Service(proteu, hili);
+        proteu.getConfig().set("_service:not-found:default-error", true);
         proteu.getConfig().set("_service:instance", service);
         try {
             String method = proteu.getRequestHeader().getString("Method").toLowerCase();
@@ -643,18 +644,39 @@ public class Service {
             }
             return true;
         } else if (!file.equals("config")) {
-            proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
-            logger.warn("\n"
-                    + "\n#"
-                    + "\n# "+ EmojiParser.parseToUnicode(":compass:") +" Service not found for "+ proteu.getRequestHeader().getString("Method").toUpperCase() +" method: "
-                    + "\n#"
-                    + "\n# " + Config.getPathAppServices(proteu)
-                    + "\n# " + file
-                    + "\n#"
-                    + "\n"
-            );
+            EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceNotFound);
+            if (isNotFoundDefaultError()) {
+                proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
+                logger.warn("\n"
+                        + "\n#"
+                        + "\n# " + EmojiParser.parseToUnicode(":compass:") + " Service not found for " + proteu.getRequestHeader().getString("Method").toUpperCase() + " method: "
+                        + "\n#"
+                        + "\n# " + Config.getPathAppServices(proteu)
+                        + "\n# " + file
+                        + "\n#"
+                        + "\n"
+                );
+            }
+            EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceNotFound);
+            proteu.getConfig().unset("_service:not-found:default-error");
         }
         return false;
+    }
+
+    public boolean isNotFoundDefaultError() {
+        return proteu.getConfig().getBoolean("_service:not-found:default-error");
+    }
+
+    public void setNotFoundDefaultError(boolean value) {
+        proteu.getConfig().set("_service:not-found:default-error", value);
+    }
+
+    public boolean notFoundDefaultError() {
+        return isNotFoundDefaultError();
+    }
+
+    public void notFoundDefaultError(boolean value) {
+        setNotFoundDefaultError(value);
     }
     
     public static Service getInstance(Proteu proteu) {
