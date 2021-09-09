@@ -78,5 +78,13 @@ public enum AppEventType {
     /**
      * To execute after the service end.
      */
-    AfterServiceEnd
+    AfterServiceEnd,
+    /**
+     * To execute before the service not found.
+     */
+    BeforeServiceNotFound,
+    /**
+     * To execute after the service not found.
+     */
+    AfterServiceNotFound
 }
