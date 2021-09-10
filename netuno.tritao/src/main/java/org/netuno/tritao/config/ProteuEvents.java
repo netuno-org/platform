@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.config;
 
+import com.vdurmont.emoji.EmojiParser;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
@@ -196,7 +197,7 @@ public class ProteuEvents implements Events {
             throw new ConfigError("App not loaded.").setLogFatal(true);
         }
         if (appConfig == null || appConfig.isEmpty()) {
-            throw new ConfigError("App "+ app +" configuration for "+ environment +" not loaded.").setLogFatal(true);
+            throw new ConfigError(EmojiParser.parseToUnicode(":construction:") +" App "+ app +" configuration for the "+ environment +" environment could not be loaded.").setLogFatal(true);
         }
 
         proteu.getConfig().set("_env", environment);
@@ -226,12 +227,12 @@ public class ProteuEvents implements Events {
 
         Values dbs = appConfig.getValues("db");
         if (dbs == null) {
-            throw new DBError("App "+ app +" without database configuration for "+ environment +".").setLogFatal(true);
+            throw new DBError(EmojiParser.parseToUnicode(":construction:") +" App "+ app +" without database configuration for the "+ environment +" environment.").setLogFatal(true);
         }
         for (String key : dbs.keys()) {
             Values db = dbs.getValues(key);
             if (db == null) {
-                String message = "App "+ app +" with empty database configuration for "+ environment +".";
+                String message = EmojiParser.parseToUnicode(":construction:") +" App "+ app +" with empty database configuration for "+ environment +".";
                 throw new DBError(message).setLogFatal(true);
             }
             if (!db.getBoolean("enabled", true)) {
@@ -626,7 +627,9 @@ public class ProteuEvents implements Events {
 
     public void beforeClose(Proteu proteu, Object faros) {
         Hili hili = (Hili)faros;
-        hili.runScriptSandbox(Config.getPathAppCore(proteu), "_request_close");
+        if (proteu.getConfig().getValues("_app:config") != null) {
+            hili.runScriptSandbox(Config.getPathAppCore(proteu), "_request_close");
+        }
     }
 
     public void afterClose(Proteu proteu, Object faros) {

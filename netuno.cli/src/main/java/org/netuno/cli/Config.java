@@ -17,6 +17,7 @@
 
 package org.netuno.cli;
 
+import com.vdurmont.emoji.EmojiParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -649,7 +650,7 @@ public final class Config {
 
     /**
      * Set performance monitor interval.
-     * @param performanceMonitorInterval Time in seconds.
+     * @param monitorInterval Time in seconds.
      */
     public static void setMonitorInterval(long monitorInterval) {
         Config.monitorInterval = monitorInterval;
@@ -945,7 +946,9 @@ public final class Config {
                     config.set("lastModified", homeConfigFile.lastModified());
                     Config.setAppConfig(appName, config);
                 } catch (IOException | JSONException e) {
-                    logger.error("Try load config: "+ homeConfigFile.getPath(), e);
+                    String message = "Configuration load failed: "+ homeConfigFile.getPath() +"\n\t"+ EmojiParser.parseToUnicode(":rotating_light:") +" Error: "+ e.getMessage();
+                    logger.trace(message, e);
+                    logger.error(message);
                 }
             }
             return config;
@@ -971,7 +974,7 @@ public final class Config {
                         config.set("lastModified", configFile.lastModified());
                         Config.setAppConfig(appName, config);
                     } catch (IOException | JSONException e) {
-                        logger.error("Try load config: "+ configFile.getPath(), e);
+                        logger.error("Configuration load failed: "+ configFile.getPath(), e);
                     }
                 }
                 return config;

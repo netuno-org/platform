@@ -393,6 +393,13 @@ public class Service {
                                         if (schemaIn.hasKey("security")) {
                                             endpoint.set("security", schemaIn.getValues("security"));
                                             schemaIn.unset("security");
+                                        } else {
+                                            endpoint.set(
+                                                    "security",
+                                                    new Values().add(
+                                                            new Values().set("BearerAuth", new Values().forceList())
+                                                    )
+                                            );
                                         }
                                         if (serviceMethod.equalsIgnoreCase("get")
                                                 || serviceMethod.equalsIgnoreCase("delete")) {

@@ -534,25 +534,31 @@ public class App {
             if (language.length() == 0) {
                 System.out.println();
                 System.out.println(OS.consoleOutput("@|yellow Languages available:|@ "));
-                System.out.println(OS.consoleOutput("\t@|green 1|@ - Portuguese (pt_PT)"));
-                System.out.println(OS.consoleOutput("\t@|green 2|@ - Brazilian Portuguese (pt_BR)"));
-                System.out.println(OS.consoleOutput("\t@|green 3|@ - English (en_US)"));
-                System.out.println(OS.consoleOutput("\t@|green 4|@ - Spanish (es_ES)"));
-                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [1]|@ "));
+                System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazilian Portuguese (pt_BR)"));
+                System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
+                System.out.println(OS.consoleOutput("\t@|green PT|@ - Portuguese (pt_PT)"));
+                System.out.println(OS.consoleOutput("\t@|green UK|@ - British English (en_UK)"));
+                System.out.println(OS.consoleOutput("\t@|green US|@ - American English (en_US)"));
+                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [UK]|@ "));
                 Scanner scanner = new Scanner(System.in);
                 String option = scanner.nextLine();
-                if (option.isEmpty() || option.equals("1")) {
-                    language = "pt_PT";
-                } else if (option.equals("2")) {
+                if (option.equals("BR")) {
                     language = "pt_BR";
-                } else if (option.equals("3")) {
-                    language = "en_US";
-                } else if (option.equals("3")) {
+                } else if (option.equals("ES")) {
                     language = "es_ES";
+                } else if (option.equals("PT")) {
+                    language = "pt_PT";
+                } else if (option.isEmpty() || option.equals("UK")) {
+                    language = "en_UK";
+                } else if (option.equals("US")) {
+                    language = "en_US";
                 }
             }
-            if (language.equals("pt_PT") || language.equals("pt_BR")
-                    || language.equals("en_US") || language.equals("es_ES")) {
+            if (language.equals("pt_BR")
+                    || language.equals("es_ES")
+                    || language.equals("pt_PT")
+                    || language.equals("en_UK")
+                    || language.equals("en_US")) {
                 break;
             } else {
                 language = "";
@@ -564,51 +570,56 @@ public class App {
             if (locale.length() == 0) {
                 System.out.println();
                 System.out.println(OS.consoleOutput("@|yellow Locale available:|@ "));
-                System.out.println(OS.consoleOutput("\t@|green 1|@ - Brazil (pt_BR)"));
-                System.out.println(OS.consoleOutput("\t@|green 2|@ - China (zh_CN)"));
-                System.out.println(OS.consoleOutput("\t@|green 3|@ - French (fr_FR)"));
-                System.out.println(OS.consoleOutput("\t@|green 4|@ - Germany (de_DE)"));
-                System.out.println(OS.consoleOutput("\t@|green 5|@ - Italy (it_IT)"));
-                System.out.println(OS.consoleOutput("\t@|green 6|@ - Japan (jp_JP)"));
-                System.out.println(OS.consoleOutput("\t@|green 7|@ - Korea (ko_KR)"));
-                System.out.println(OS.consoleOutput("\t@|green 8|@ - Portugal (pt_PT)"));
-                System.out.println(OS.consoleOutput("\t@|green 9|@ - Spanish (es_ES)"));
-                System.out.println(OS.consoleOutput("\t@|green 10|@ - United Kingdom (en_UK)"));
-                System.out.println(OS.consoleOutput("\t@|green 11|@ - United States (en_US)"));
+                System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazil (pt_BR)"));
+                System.out.println(OS.consoleOutput("\t@|green CN|@ - China (zh_CN)"));
+                System.out.println(OS.consoleOutput("\t@|green DE|@ - Germany (de_DE)"));
+                System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
+                System.out.println(OS.consoleOutput("\t@|green FR|@ - French (fr_FR)"));
+                System.out.println(OS.consoleOutput("\t@|green IT|@ - Italy (it_IT)"));
+                System.out.println(OS.consoleOutput("\t@|green JP|@ - Japan (jp_JP)"));
+                System.out.println(OS.consoleOutput("\t@|green KR|@ - Korea (ko_KR)"));
+                System.out.println(OS.consoleOutput("\t@|green PT|@ - Portugal (pt_PT)"));
+                System.out.println(OS.consoleOutput("\t@|green UK|@ - United Kingdom (en_UK)"));
+                System.out.println(OS.consoleOutput("\t@|green US|@ - United States (en_US)"));
 
-                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [8]|@ "));
+                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [UK]|@ "));
                 Scanner scanner = new Scanner(System.in);
                 String option = scanner.nextLine();
-                if (option.equals("1")) {
+                if (option.equals("BR")) {
                     locale = "pt_BR";
-                } else if (option.equals("2")) {
+                } else if (option.equals("CN")) {
                     locale = "zh_CN";
-                } else if (option.equals("3")) {
-                    locale = "fr_FR";
-                } else if (option.equals("4")) {
+                } else if (option.equals("DE")) {
                     locale = "de_DE";
-                } else if (option.equals("5")) {
-                    locale = "it_IT";
-                } else if (option.equals("6")) {
-                    locale = "jp_JP";
-                } else if (option.equals("7")) {
-                    locale = "ko_KR";
-                } else if (option.isEmpty() || option.equals("8")) {
-                    locale = "pt_PT";
-                } else if (option.equals("9")) {
+                } else if (option.equals("ES")) {
                     locale = "es_ES";
-                } else if (option.equals("10")) {
+                } else if (option.equals("FR")) {
+                    locale = "fr_FR";
+                } else if (option.equals("IT")) {
+                    locale = "it_IT";
+                } else if (option.equals("JP")) {
+                    locale = "jp_JP";
+                } else if (option.equals("KR")) {
+                    locale = "ko_KR";
+                } else if (option.equals("PT")) {
+                    locale = "pt_PT";
+                } else if (option.isEmpty() || option.equals("UK")) {
                     locale = "en_UK";
-                } else if (option.equals("11")) {
+                } else if (option.equals("US")) {
                     locale = "en_US";
                 }
             }
             if (locale.equals("pt_BR")
-                    || locale.equals("zh_CN") || locale.equals("fr_FR")
-                    || locale.equals("de_DE") || locale.equals("it_IT")
-                    || locale.equals("jp_JP") || locale.equals("ko_KR")
-                    || locale.equals("pt_PT") || locale.equals("es_ES")
-                    || locale.equals("en_US") || locale.equals("en_UK")) {
+                    || locale.equals("zh_CN")
+                    || locale.equals("de_DE")
+                    || locale.equals("es_ES")
+                    || locale.equals("fr_FR")
+                    || locale.equals("it_IT")
+                    || locale.equals("jp_JP")
+                    || locale.equals("ko_KR")
+                    || locale.equals("pt_PT")
+                    || locale.equals("en_UK")
+                    || locale.equals("en_US")) {
                 break;
             } else {
                 locale = "";
@@ -875,6 +886,7 @@ public class App {
         System.err.println(OS.consoleOutput("    >    @|cyan http://|@@|green " + name.replace("_", "-") + "|@@|cyan .local.netu.no:" + Config.getPort() + "/ |@"));
         System.out.println();
         System.out.println();
+        System.exit(0);
     }
 
     private static void makeDirs(String name) {
