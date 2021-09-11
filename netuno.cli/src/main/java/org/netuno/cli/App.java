@@ -400,6 +400,8 @@ public class App {
 
     public void run() throws IOException {
         Install.graalCheckAndSetup();
+        System.err.println();
+        System.err.println();
         while (true) {
             if (name.length() == 0) {
                 System.out.print(OS.consoleOutput("@|yellow App name:|@ "));
@@ -536,28 +538,28 @@ public class App {
                 System.out.println(OS.consoleOutput("@|yellow Languages available:|@ "));
                 System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazilian Portuguese (pt_BR)"));
                 System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
+                System.out.println(OS.consoleOutput("\t@|green GB|@ - British English (en_GB)"));
                 System.out.println(OS.consoleOutput("\t@|green PT|@ - Portuguese (pt_PT)"));
-                System.out.println(OS.consoleOutput("\t@|green UK|@ - British English (en_UK)"));
                 System.out.println(OS.consoleOutput("\t@|green US|@ - American English (en_US)"));
-                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [UK]|@ "));
+                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [GB]|@ "));
                 Scanner scanner = new Scanner(System.in);
                 String option = scanner.nextLine();
-                if (option.equals("BR")) {
+                if (option.equalsIgnoreCase("BR")) {
                     language = "pt_BR";
-                } else if (option.equals("ES")) {
+                } else if (option.equalsIgnoreCase("ES")) {
                     language = "es_ES";
-                } else if (option.equals("PT")) {
+                } else if (option.isEmpty() || option.equalsIgnoreCase("GB")) {
+                    language = "en_GB";
+                } else if (option.equalsIgnoreCase("PT")) {
                     language = "pt_PT";
-                } else if (option.isEmpty() || option.equals("UK")) {
-                    language = "en_UK";
-                } else if (option.equals("US")) {
+                } else if (option.equalsIgnoreCase("US")) {
                     language = "en_US";
                 }
             }
             if (language.equals("pt_BR")
                     || language.equals("es_ES")
                     || language.equals("pt_PT")
-                    || language.equals("en_UK")
+                    || language.equals("en_GB")
                     || language.equals("en_US")) {
                 break;
             } else {
@@ -575,37 +577,41 @@ public class App {
                 System.out.println(OS.consoleOutput("\t@|green DE|@ - Germany (de_DE)"));
                 System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
                 System.out.println(OS.consoleOutput("\t@|green FR|@ - French (fr_FR)"));
+                System.out.println(OS.consoleOutput("\t@|green GB|@ - Great Britain (en_GB)"));
                 System.out.println(OS.consoleOutput("\t@|green IT|@ - Italy (it_IT)"));
                 System.out.println(OS.consoleOutput("\t@|green JP|@ - Japan (jp_JP)"));
                 System.out.println(OS.consoleOutput("\t@|green KR|@ - Korea (ko_KR)"));
                 System.out.println(OS.consoleOutput("\t@|green PT|@ - Portugal (pt_PT)"));
-                System.out.println(OS.consoleOutput("\t@|green UK|@ - United Kingdom (en_UK)"));
                 System.out.println(OS.consoleOutput("\t@|green US|@ - United States (en_US)"));
 
-                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [UK]|@ "));
+                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan ["+ language.substring(3) +"]|@ "));
                 Scanner scanner = new Scanner(System.in);
                 String option = scanner.nextLine();
-                if (option.equals("BR")) {
+                if (option.equalsIgnoreCase("BR") ||
+                        (option.isEmpty() && language.equalsIgnoreCase("pt_BR"))) {
                     locale = "pt_BR";
-                } else if (option.equals("CN")) {
+                } else if (option.equalsIgnoreCase("CN")) {
                     locale = "zh_CN";
-                } else if (option.equals("DE")) {
+                } else if (option.equalsIgnoreCase("DE")) {
                     locale = "de_DE";
-                } else if (option.equals("ES")) {
+                } else if (option.equalsIgnoreCase("ES")) {
                     locale = "es_ES";
-                } else if (option.equals("FR")) {
+                } else if (option.equalsIgnoreCase("FR")) {
                     locale = "fr_FR";
-                } else if (option.equals("IT")) {
+                } else if (option.equalsIgnoreCase("GB") ||
+                        (option.isEmpty() && language.equalsIgnoreCase("en_GB"))) {
+                    locale = "en_GB";
+                } else if (option.equalsIgnoreCase("IT")) {
                     locale = "it_IT";
-                } else if (option.equals("JP")) {
+                } else if (option.equalsIgnoreCase("JP")) {
                     locale = "jp_JP";
-                } else if (option.equals("KR")) {
+                } else if (option.equalsIgnoreCase("KR")) {
                     locale = "ko_KR";
-                } else if (option.equals("PT")) {
+                } else if (option.equalsIgnoreCase("PT") ||
+                        (option.isEmpty() && language.equalsIgnoreCase("pt_PT"))) {
                     locale = "pt_PT";
-                } else if (option.isEmpty() || option.equals("UK")) {
-                    locale = "en_UK";
-                } else if (option.equals("US")) {
+                } else if (option.equalsIgnoreCase("US") ||
+                        (option.isEmpty() && language.equalsIgnoreCase("en_US"))) {
                     locale = "en_US";
                 }
             }
@@ -618,7 +624,7 @@ public class App {
                     || locale.equals("jp_JP")
                     || locale.equals("ko_KR")
                     || locale.equals("pt_PT")
-                    || locale.equals("en_UK")
+                    || locale.equals("en_GB")
                     || locale.equals("en_US")) {
                 break;
             } else {
