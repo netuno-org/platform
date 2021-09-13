@@ -983,31 +983,25 @@ public class DB extends ResourceBase {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
             language = LanguageDoc.PT,
-            description = "Inicia o processamento em lote de execuções em base de dados, com base em um único comando que será executado múltiplas vezes com variação dos dados.",
+            description = "Executa comandos diretamente na base de dados, pode ser executados comandos como inserts e updates à medida.",
             howToUse = {
                 @SourceCodeDoc(
                     type = SourceCodeTypeDoc.JavaScript,
-                    code = "const batchComParametros = _db.batch(`\n" +
-                    "        insert into producto(id, uid, nome, preco, active)\n" +
-                    "        values(nextval('producto_id'), ?, ?, ?, true)\n" +
-                    "    `)\n" +
-                    "    .put(_uid.generate(), \"Netuno Lote 1\", 3.2)\n" +
-                    "    .put(_uid.generate(), \"Netuno Lote 2\", 5.4)\n" +
-                    "const resultados = batchComParametros.execute()"
+                    code = "const linhasAfetadas = _db.execute(`\n" +
+                            "    insert into product(id, uid, nome, preco, active)\n" +
+                            "    values(nextval('product_id'), \"${_uid.generate()}\", \"${_db.sanitize('Netuno Insert Teste 1')}\", 3.2, true)\n" +
+                            "`)"
                 )}),
         @MethodTranslationDoc(
             language = LanguageDoc.EN,
-            description = "Starts the batch processing of executions in the database, based on a single command that will be executed multiple times with variation of the data.",
+            description = "Execute commands directly on the database, commands such as inserts and updates can be executed as required.",
             howToUse = {
                 @SourceCodeDoc(
                     type = SourceCodeTypeDoc.JavaScript,
-                    code = "const batchParameters = _db.batch(`\n" +
-                    "        insert into product(id, uid, name, price, active)\n" +
-                    "        values(nextval('product_id'), ?, ?, ?, true)\n" +
-                    "    `)\n" +
-                    "    .put(_uid.generate(), \"Netuno Batch 1\", 3.2)\n" +
-                    "    .put(_uid.generate(), \"Netuno Batch 2\", 5.4)\n" +
-                    "const results = batchParameters.execute()"
+                        code = "const linhasAfetadas = _db.execute(`\n" +
+                                "    insert into product(id, uid, name, price, active)\n" +
+                                "    values(nextval('product_id'), \"${_uid.generate()}\", \"${_db.sanitize('Netuno Insert Test 1')}\", 3.2, true)\n" +
+                                "`)"
                 )
             }),
     }, parameters = {
@@ -1015,21 +1009,21 @@ public class DB extends ResourceBase {
             @ParameterTranslationDoc(
                 language = LanguageDoc.PT,
                 name = "comandoSQL",
-                description = "Comando SQL que será utilizado como base para todas as interações."
+                description = "Comando SQL que será executado diretamente na base de dados."
             ),
             @ParameterTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "SQL command that will be used as the basis for all interactions."
+                description = "SQL command that will be executed directly on the database."
             )
         })
     }, returns = {
         @ReturnTranslationDoc(
             language = LanguageDoc.PT,
-            description = "Gestor da execução de operações em lote."
+            description = "Número de linhas afetadas pelo comando executado."
         ),
         @ReturnTranslationDoc(
             language = LanguageDoc.EN,
-            description = "Batch execution manager."
+            description = "Number of lines affected by the executed command."
         )
     })
     public int execute(String command) throws ResourceException {
@@ -1040,6 +1034,71 @@ public class DB extends ResourceBase {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa comandos diretamente na base de dados, pode ser executados comandos como inserts e updates à medida.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const linhasAfetadas = _db.execute(`\n" +
+                                            "    insert into product(id, uid, nome, preco, active)\n" +
+                                            "    values(nextval('product_id'), ?, ?, ?, true)\n" +
+                                            "    `, _val.list()\n" +
+                                            "        .add(_uid.generate())\n" +
+                                            "        .add(\"Netuno Insert Teste 1\")\n" +
+                                            "        .add(3.2)\n" +
+                                            ")"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Execute commands directly on the database, commands such as inserts and updates can be executed as required.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const rowsAffected = _db.execute(`\n" +
+                                            "    insert into product(id, uid, name, price, active)\n" +
+                                            "    values(nextval('product_id'), ?, ?, ?, true)\n" +
+                                            "    `, _val.list()\n" +
+                                            "        .add(_uid.generate())\n" +
+                                            "        .add(\"Netuno Insert Test 1\")\n" +
+                                            "        .add(3.2)\n" +
+                                            ")"
+                            )
+                    }),
+    }, parameters = {
+            @ParameterDoc(name = "sqlCommand", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "comandoSQL",
+                            description = "Comando SQL que será executado diretamente na base de dados."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "SQL command that will be executed directly on the database."
+                    )
+            }),
+            @ParameterDoc(name = "params", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "parametros",
+                            description = "Lista dos valores dos parâmetros que são injetados no comando."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "List of parameter values that are injected into the command."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Número de linhas afetadas pelo comando executado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Number of lines affected by the executed command."
+            )
+    })
     public int execute(String command, List params) throws ResourceException {
         return execute(command, params.toArray());
     }
@@ -1048,6 +1107,63 @@ public class DB extends ResourceBase {
         return execute(command, params.toArray());
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa comandos diretamente na base de dados, pode ser executados comandos como inserts e updates à medida.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const linhasAfetadas = _db.execute(`\n" +
+                                            "    insert into product(id, uid, nome, preco, active)\n" +
+                                            "    values(nextval('product_id'), ?, ?, ?, true)\n" +
+                                            "`, _uid.generate(), \"Netuno Insert Teste 1\", 3.2)"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Execute commands directly on the database, commands such as inserts and updates can be executed as required.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const rowsAffected = _db.execute(`\n" +
+                                            "    insert into product(id, uid, name, price, active)\n" +
+                                            "    values(nextval('product_id'), ?, ?, ?, true)\n" +
+                                            "`, _uid.generate(), \"Netuno Insert Test 1\", 3.2)"
+                            )
+                    }),
+    }, parameters = {
+            @ParameterDoc(name = "sqlCommand", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "comandoSQL",
+                            description = "Comando SQL que será executado diretamente na base de dados."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "SQL command that will be executed directly on the database."
+                    )
+            }),
+            @ParameterDoc(name = "params", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "parametros",
+                            description = "Sequência de valores dos parâmetros que são injetados no comando."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The sequence of parameter values that are injected into the command."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Número de linhas afetadas pelo comando executado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Number of lines affected by the executed command."
+            )
+    })
     public int execute(String command, Object... params) throws ResourceException {
         try {
             return ops().execute(command, params);
