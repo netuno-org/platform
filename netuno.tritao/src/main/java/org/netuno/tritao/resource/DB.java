@@ -989,7 +989,7 @@ public class DB extends ResourceBase {
                     type = SourceCodeTypeDoc.JavaScript,
                     code = "const linhasAfetadas = _db.execute(`\n" +
                             "    insert into product(id, uid, nome, preco, active)\n" +
-                            "    values(nextval('product_id'), \"${_uid.generate()}\", \"${_db.sanitize('Netuno Insert Teste 1')}\", 3.2, true)\n" +
+                            "    values(nextval('product_id'), '${_uid.generate()}', '${_db.sanitize('Netuno Insert Teste 1')}', 3.2, true)\n" +
                             "`)"
                 )}),
         @MethodTranslationDoc(
@@ -998,9 +998,9 @@ public class DB extends ResourceBase {
             howToUse = {
                 @SourceCodeDoc(
                     type = SourceCodeTypeDoc.JavaScript,
-                        code = "const linhasAfetadas = _db.execute(`\n" +
+                        code = "const rowsAffected = _db.execute(`\n" +
                                 "    insert into product(id, uid, name, price, active)\n" +
-                                "    values(nextval('product_id'), \"${_uid.generate()}\", \"${_db.sanitize('Netuno Insert Test 1')}\", 3.2, true)\n" +
+                                "    values(nextval('product_id'), '${_uid.generate()}', '${_db.sanitize('Netuno Insert Test 1')}', 3.2, true)\n" +
                                 "`)"
                 )
             }),
