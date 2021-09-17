@@ -423,7 +423,7 @@ public class Hili {
                     script = cachedScript.right;
                 }
                 if (!script.isEmpty()) {
-                    Matcher m = Pattern.compile("^\\s*\\/\\/\\s+(_core)\\s+[:]+\\s+(.*)$", Pattern.MULTILINE)
+                    Matcher m = Pattern.compile("^\\s*\\/\\/\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE)
                             .matcher(script);
                     while (m.find()) {
                         String importScriptFolder = m.group(1);
