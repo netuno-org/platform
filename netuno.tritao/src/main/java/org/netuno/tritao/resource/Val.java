@@ -36,25 +36,56 @@ import java.util.Map;
                 language = LanguageDoc.PT,
                 title = "Val",
                 introduction = "Recurso para interagir com listas ou mapas com chaves e valores (dicionários). \n" +
-                        "O valores é um objecto de armazenamento dados que pode ser representado como uma lista ou como um mapa de dados (dicionário). " +
+                        "O valores é um objeto de armazenamento dados que pode ser representado como uma lista ou como um mapa de dados (dicionário). " +
                         "Uma vez inicializado como uma dessas estruturas, lista ou mapa, não poderá mais ser alterado para a outra.",
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,
                                 code = "const mapaDeDados = _val.map()\n"
-                                        + "  .set('id', 1)\n"
-                                        + "  .set('name', 'Netuno')\n"
-                                        + "  .set('site', 'www.netuno.org')\n"
-                                        + "  .set('active', 'true')\n"
+                                        + "    .set('id', 1)\n"
+                                        + "    .set('name', 'Netuno')\n"
+                                        + "    .set('site', 'www.netuno.org')\n"
+                                        + "    .set('active', 'true')\n"
                                         + "const idComoString = mapaDeDados.getString('id')\n"
                                         + "const name = mapaDeDados['name']\n"
                                         + "const site = mapaDeDados['site']\n"
+                                        + "const active = mapaDeDados.getBoolean('active')\n"
                                         + "\n"
                                         + "const listaDeDados = _val.list()\n"
-                                        + "listaDeDados.add('Linha 1')\n"
-                                        + "listaDeDados.push('Linha 2')\n"
+                                        + "    .add('Linha 1')\n"
+                                        + "    .push('Linha 2')\n"
+                                        + "    .add('Linha 3')\n"
                                         + "for (const linha of listaDeDados) {\n"
-                                        + "  _log.info(linha)\n"
+                                        + "    _log.info(linha)\n"
+                                        + "}"
+                        )
+                }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Val",
+                introduction = "Resource to interact with lists or maps with keys and values (dictionaries). \n" +
+                        "Values is a data storage object that can be represented as a list or as a data map (dictionary). " +
+                        "Once initialized as one of these structures, list or map, it can no longer be changed to the other.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "const dataMap = _val.map()\n"
+                                        + "    .set('id', 1)\n"
+                                        + "    .set('name', 'Netuno')\n"
+                                        + "    .set('site', 'www.netuno.org')\n"
+                                        + "    .set('active', 'true')\n"
+                                        + "const idAsString = dataMap.getString('id')\n"
+                                        + "const name = dataMap['name']\n"
+                                        + "const site = dataMap['site']\n"
+                                        + "const active = dataMap.getBoolean('active')\n"
+                                        + "\n"
+                                        + "const dataList = _val.list()\n"
+                                        + "    .add('Linha 1')\n"
+                                        + "    .push('Linha 2')\n"
+                                        + "    .add('Linha 3')\n"
+                                        + "for (const line of dataList) {\n"
+                                        + "    _log.info(line)\n"
                                         + "}"
                         )
                 }
@@ -70,12 +101,55 @@ public class Val extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Inicializa valores de modo genérico, o primeiro dado a ser atribuído definirá se será lista ou mapa.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Initializes values in a generic way, the first data to be assigned will define whether it will be list or map.",
                     howToUse = {})
-    }, parameters = {}, returns = {})
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O novo objeto de valores genérico."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new generic value object."
+            )
+    })
     public Values init() {
         return new Values();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Inicializa valores de modo genérico, o primeiro dado a ser atribuído definirá se será lista ou mapa.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Initializes values in a generic way, the first data to be assigned will define whether it will be list or map.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "obj", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            description = "Objeto para carregar o novo objeto de valores criado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Object to load the newly created values object."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O novo objeto de valores iniciado com os dados do objeto passado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new values object starts with the data from the passed object."
+            )
+    })
     public Values init(Map m) {
         return new Values(m);
     }
@@ -88,12 +162,20 @@ public class Val extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Inicia um novo objeto de valores mas do tipo lista.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Starts a new object of values but of type list.",
                     howToUse = {})
     }, parameters = {}, returns = {
-        @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "O novo objeto de valores iniciado como lista."
-        )
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O novo objeto de valores iniciado como lista."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new values object started as list."
+            )
     })
     public Values list() {
         Values v = new Values();
@@ -105,12 +187,20 @@ public class Val extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Inicia um novo objeto de valores mas do tipo mapa.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Starts a new object of values but of type map.",
                     howToUse = {})
     }, parameters = {}, returns = {
-        @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "O novo objeto de valores iniciado como mapa."
-        )
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O novo objeto de valores iniciado como mapa."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new values object started as map."
+            )
     })
     public Values map() {
         Values v = new Values();
@@ -122,12 +212,31 @@ public class Val extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Verifica se o objeto é do tipo de valores.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks whether the object is of the value type.",
                     howToUse = {})
-    }, parameters = {}, returns = {
-        @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Resultado da verificação se é do tipo valores ou não."
-        )
+    }, parameters = {
+            @ParameterDoc(name = "obj", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            description = "Objeto para ser validado se é do tipo de valores."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Object to be validated if it is of the value type."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Resultado da verificação se é do tipo valores ou não."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Result of checking whether it is of type values or not."
+            )
     })
     public boolean is(Object o) {
         if (o == null) {
@@ -143,12 +252,31 @@ public class Val extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Transforma um objeto em valores se possível.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Turns an object into values if possible.",
                     howToUse = {})
-    }, parameters = {}, returns = {
-        @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "O objeto convertido para valores."
-        )
+    }, parameters = {
+            @ParameterDoc(name = "obj", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            description = "Objeto para ser convertido."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Object to be converted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O objeto convertido para valores."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The object converted to values."
+            )
     })
     public Values cast(Object o) {
         if (o instanceof Values) {
@@ -158,22 +286,35 @@ public class Val extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Transforma um objeto de valores para uma lista normal.",
-                howToUse = {})
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Transforma um objeto de valores para uma lista normal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Transforms an object from values to a normal list.",
+                    howToUse = {})
     }, parameters = {
-        @ParameterDoc(name = "valores", translations = {
-            @ParameterTranslationDoc(
-                    language=LanguageDoc.PT,
-                    description = "Objeto de valores no modo lista."
-            )
+        @ParameterDoc(name = "values", translations = {
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.PT,
+                        name="valores",
+                        description = "Objeto de valores no modo lista."
+                ),
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.EN,
+                        description = "Value object in list mode."
+                )
         })
     }, returns = {
-        @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Uma nova lista normal com os itens do objeto de valores recebido."
-        )
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Uma nova lista normal com os itens do objeto de valores recebido."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A new normal list of items from the received value object."
+            )
     })
     public List list(Values values) {
         return values.list();
@@ -189,22 +330,35 @@ public class Val extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Transforma um objeto de valores para uma lista normal.",
-                howToUse = {})
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Transforma um objeto de valores para uma lista normal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Transforms an object from values to a normal list.",
+                    howToUse = {})
     }, parameters = {
-        @ParameterDoc(name = "valores", translations = {
-            @ParameterTranslationDoc(
-                    language=LanguageDoc.PT,
-                    description = "Objeto de valores no modo lista."
-            )
+        @ParameterDoc(name = "values", translations = {
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.PT,
+                        name = "valores",
+                        description = "Objeto de valores no modo lista."
+                ),
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.EN,
+                        description = "Value object in list mode."
+                )
         })
     }, returns = {
-        @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Uma nova lista normal com os itens do objeto de valores recebido."
-        )
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Uma nova lista normal com os itens do objeto de valores recebido."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A new normal list of items from the received value object."
+            )
     })
     public List toList(Values o) {
         return o.toList();
@@ -219,6 +373,37 @@ public class Val extends ResourceBase {
     	return null;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Transforma um objeto de valores para um mapa normal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Transforms an object from values to a normal map.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "values", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="valores",
+                            description = "Objeto de valores no modo mapa."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Value object in map mode."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Uma novo mapa normal com os dados do objeto de valores recebido."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A new normal map with the data from the received values object."
+            )
+    })
     public Map map(Values o) {
         return o.map();
     }
@@ -232,6 +417,37 @@ public class Val extends ResourceBase {
     	return null;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Transforma um objeto de valores para um mapa normal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Transforms an object from values to a normal map.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "values", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="valores",
+                            description = "Objeto de valores no modo mapa."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Value object in map mode."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Uma novo mapa normal com os dados do objeto de valores recebido."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A new normal map with the data from the received values object."
+            )
+    })
     public Map toMap(Values o) {
         return o.toMap();
     }
@@ -248,9 +464,34 @@ public class Val extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Obtém o values de uma string com JSON.",
+                    description = "Obtém o values de uma string com array ou objecto em JSON.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the values of a string with an array or object in JSON.",
                     howToUse = {})
-    }, parameters = {}, returns = {})
+    }, parameters = {
+            @ParameterDoc(name = "text", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="texto",
+                            description = "Conteúdo JSON."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "JSON content."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O objeto de valores carregado com a estrutura e dados obtidos com a string JSON."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The values object loaded with the structure and data obtained with the JSON string."
+            )
+    })
     public Values fromJSON(String content) {
         return Values.fromJSON(content);
     }
@@ -263,43 +504,195 @@ public class Val extends ResourceBase {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
                                     code = "const lista = _val.list()\n"
-                                            + "lista.add(\"Item 1\")"
-                                            + "lista.add(\"Item 2\")"
-                                            + "lista.add(\"Item 3\")"
-                                            + "const jsonString = _val.toJSON(values);"
+                                            + "    .add(\"Item 1\")\n"
+                                            + "    .add(\"Item 2\")\n"
+                                            + "    .add(\"Item 3\")\n"
+                                            + "const listaString = _val.toJSON(lista)\n"
+                                            + "_out.println(`${listaString}<br/>`)\n"
+                                            +"const mapa = _val.map()\n"
+                                            + "    .set(\"chave1\", \"Valor 1\")\n"
+                                            + "    .set(\"chave2\", \"Valor 2\")\n"
+                                            + "const mapaString = _val.toJSON(mapa)\n"
+                                            + "_out.println(`${mapaString}<br/>`)"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Convert values to JSON.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const list = _val.list()\n"
+                                            + "    .add(\"Item 1\")\n"
+                                            + "    .add(\"Item 2\")\n"
+                                            + "    .add(\"Item 3\")\n"
+                                            + "const listString = _val.toJSON(list)\n"
+                                            + "_out.println(`${listString}<br/>`)\n"
+                                            +"const map = _val.map()\n"
+                                            + "    .set(\"key1\", \"Value 1\")\n"
+                                            + "    .set(\"key2\", \"Value 2\")\n"
+                                            + "const mapString = _val.toJSON(map)\n"
+                                            + "_out.println(`${mapString}<br/>`)"
                             )
                     })
-    }, parameters = {}, returns = {})
-    public String toJSON(List<Values> values) {
-        return Values.toJSON(values);
+    }, parameters = {
+            @ParameterDoc(name = "values", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="valores",
+                            description = "Objeto de valores para ser transformado no formato JSON."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Values object to be transformed into JSON format."
+                    )
+            }),
+            @ParameterDoc(name = "htmlEscape", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="emHTML",
+                            description = "Ativa a formatação automática em HTML dos caracteres especiais que estão nos valores de texto, útil para a transformação de acentos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Turns on automatic HTML formatting of special characters that are in text values, useful for transforming accents."
+                    )
+            }),
+            @ParameterDoc(name = "indentFactor", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="indentacao",
+                            description = "Quantidade de espaços que deve ser utilizado na indentação do JSON."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Number of spaces that should be used in JSON indentation."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "String JSON com a estrutura e dados do objeto de valores."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "String JSON with the structure and data of the values object."
+            )
+    })
+    public String toJSON(Values values, boolean htmlEscape, int indentFactor) {
+        return values.toJSON(htmlEscape, indentFactor);
     }
 
-    public String toJSON(List<Values> values, int indentFactor) {
-        return Values.toJSON(values, indentFactor);
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Converte o values para JSON.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Convert values to JSON.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "values", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="valores",
+                            description = "Objeto de valores para ser transformado no formato JSON."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Values object to be transformed into JSON format."
+                    )
+            }),
+            @ParameterDoc(name = "htmlEscape", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="emHTML",
+                            description = "Ativa a formatação automática em HTML dos caracteres especiais que estão nos valores de texto, útil para a transformação de acentos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Turns on automatic HTML formatting of special characters that are in text values, useful for transforming accents."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "String JSON com a estrutura e dados do objeto de valores."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "String JSON with the structure and data of the values object."
+            )
+    })
+    public String toJSON(Values values, boolean htmlEscape) {
+        return values.toJSON(htmlEscape);
     }
 
-    public String toJSON(List<Values> values, boolean htmlEscape) {
-        return Values.toJSON(values, htmlEscape);
-    }
-
-    public String toJSON(List<Values> values, boolean htmlEscape, int indentFactor) {
-        return Values.toJSON(values, htmlEscape, indentFactor);
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Converte o values para JSON.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Convert values to JSON.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "values", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="valores",
+                            description = "Objeto de valores para ser transformado no formato JSON."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Values object to be transformed into JSON format."
+                    )
+            }),
+            @ParameterDoc(name = "indentFactor", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name="indentacao",
+                            description = "Quantidade de espaços que deve ser utilizado na indentação do JSON."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Number of spaces that should be used in JSON indentation."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "String JSON com a estrutura e dados do objeto de valores."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "String JSON with the structure and data of the values object."
+            )
+    })
+    public String toJSON(Values values, int indentFactor) {
+        return values.toJSON(indentFactor);
     }
 
     public String toJSON(Values values) {
         return values.toJSON();
     }
 
-    public String toJSON(Values values, boolean htmlEscape) {
-        return values.toJSON(htmlEscape);
+    public String toJSON(List<Values> values, boolean htmlEscape, int indentFactor) {
+        return Values.toJSON(values, htmlEscape, indentFactor);
     }
 
-    public String toJSON(Values values, int indentFactor) {
-        return values.toJSON(indentFactor);
+    public String toJSON(List<Values> values, boolean htmlEscape) {
+        return Values.toJSON(values, htmlEscape);
     }
 
-    public String toJSON(Values values, boolean htmlEscape, int indentFactor) {
-        return values.toJSON(htmlEscape, indentFactor);
+    public String toJSON(List<Values> values, int indentFactor) {
+        return Values.toJSON(values, indentFactor);
+    }
+
+    public String toJSON(List<Values> values) {
+        return Values.toJSON(values);
     }
 
     @MethodDoc(translations = {
