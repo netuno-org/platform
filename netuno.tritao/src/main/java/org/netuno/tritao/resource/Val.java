@@ -740,4 +740,49 @@ public class Val extends ResourceBase {
             throw new ResourceException("val.persistent()", e);
         }
     }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Instância do tipo Values para armazenar dados que ficam disponíveis apenas durante a execução do pedido HTTP, é útil para partilhar dados entre scripts.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Define que esta sendo processado o cliente 10:\n"
+                                            + "const global = _val.global()\n"
+                                            + "global.set('clienteId', 10)\n"
+                                            + "_out.json(global)"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Instance of type Values to store data that is only available during the execution of the HTTP request, it is useful to share data between scripts.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Defines that client 10 is being processed:\n"
+                                            + "const global = _val.global()\n"
+                                            + "global.set('clienteId', 10)\n"
+                                            + "_out.json(global)"
+                            )
+                    })
+    }, parameters = { }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados que são partilhados globalmente entre os diversos scripts durante a execução da chamada HTTP."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data that is shared globally between the different scripts during the execution of the HTTP call."
+            )
+    })
+    public Values global() throws ResourceException {
+        Values config = resource(Config.class);
+        Values global = config.getValues("_val:global");
+        if (global == null) {
+            global = new Values();
+            config.set("_val:global", global);
+        }
+        return global;
+    }
 }
