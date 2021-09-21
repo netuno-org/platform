@@ -2343,8 +2343,10 @@ public class CoreBusiness extends Base {
          * "group_id"))).concat(","); groupIdLoaded = true; }
          */
         Values itemLog = new Values();
-        if (insert && values.hasKey("uid")) {
-            update = update.concat(" ").concat(getBuilder().escape("uid")).concat(" ='").concat(values.getString("uid")).concat("',");
+        boolean uidAlreadyLoaded = false;
+        if (insert && !values.hasKey("uid")) {
+            uidAlreadyLoaded = true;
+            update = update.concat(" ").concat(getBuilder().escape("uid")).concat(" = '").concat(UUID.randomUUID().toString()).concat("',");
         }
         for (int _x = 0; _x < rsDesignXY.size(); _x++) {
             Values rowTritaoDesignXY = rsDesignXY.get(_x);
@@ -2374,6 +2376,9 @@ public class CoreBusiness extends Base {
                 }
                 itemLog.set(data.getName(), data.getValue());
                 String value = getDataValue(data);
+                if (com.getName().equalsIgnoreCase("uid") && uidAlreadyLoaded) {
+                    continue;
+                }
                 if (data.getName().equals("user_id")) {
                     userIdLoaded = true;
                 }
