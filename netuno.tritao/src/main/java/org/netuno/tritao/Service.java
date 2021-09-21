@@ -62,6 +62,7 @@ public class Service {
     private Hili hili = null;
     public String method = "";
     public String path = "";
+    public Boolean generatingOpenAPIDefinition = false;
     public Boolean allowed = false;
     public Boolean cancelled = false;
     public Boolean outValidation = true;
@@ -107,6 +108,10 @@ public class Service {
 
     public String path() {
         return path;
+    }
+
+    public boolean isGeneratingOpenAPIDefinition() {
+        return this.generatingOpenAPIDefinition;
     }
 
     public Boolean wasCancelled() {
@@ -413,7 +418,7 @@ public class Service {
                                         if (serviceMethod.equalsIgnoreCase("get")
                                                 || serviceMethod.equalsIgnoreCase("delete")) {
                                             if (schemaIn.hasKey("properties")) {
-                                                Values parameters = new Values();
+                                                Values parameters = new Values().forceList();
                                                 Values schemaInProperties = schemaIn.getValues("properties");
                                                 for (String key : schemaInProperties.keys()) {
                                                     Values schemaInProperty = schemaInProperties.getValues(key);
@@ -543,6 +548,7 @@ public class Service {
                 }
             }
             if (service.path.equals("_openapi")) {
+                service.generatingOpenAPIDefinition = true;
                 Values openapi = new Values();
                 Path fileInfo = Paths.get(Config.getPathAppServices(proteu), "_openapi.json");
                 if (Files.exists(fileInfo)) {
@@ -578,11 +584,15 @@ public class Service {
                 if (!service.wasCancelled()
                         && !service.isAllowed()
                         && !Auth.isAuthenticated(proteu, hili)) {
-                    proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
+                    if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
+                        proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
+                    }
                     return;
                 }
                 if (service.wasCancelled()) {
-                    proteu.responseHTTPError(Proteu.HTTPStatus.ServiceUnavailable503, hili);
+                    if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
+                        proteu.responseHTTPError(Proteu.HTTPStatus.ServiceUnavailable503, hili);
+                    }
                     return;
                 }
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
