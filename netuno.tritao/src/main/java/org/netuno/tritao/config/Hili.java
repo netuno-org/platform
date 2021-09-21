@@ -87,6 +87,8 @@ public class Hili {
     
     private int scriptsRunning = 0;
 
+    private boolean stopped = false;
+
     static {
         System.setProperty("idea.use.native.fs.for.win", "false");
         System.setProperty("idea.io.use.nio2", "true");
@@ -378,7 +380,12 @@ public class Hili {
             graalRunner.set(language, !key.startsWith("_") ? "_"+ key : key, obj);
         }
     }
-    
+
+    public void stop() {
+        stopped = true;
+        graalRunner.closeContext();
+    }
+
     public void resetScriptContext() {
         cacheBindings.clear();
         currentBindings = null;
@@ -574,6 +581,9 @@ public class Hili {
                 return null;
             }
         } catch (Throwable t) {
+            if (stopped) {
+                return null;
+            }
             if (t instanceof HiliError && t.getMessage().contains(EmojiParser.parseToUnicode(":boom:") +" SCRIPT RUNTIME ERROR")) {
                 throw (HiliError)t;
             }

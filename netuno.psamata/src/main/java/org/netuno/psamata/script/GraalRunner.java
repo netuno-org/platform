@@ -93,7 +93,23 @@ public class GraalRunner {
         
         //https://www.graalvm.org/truffle/javadoc/org/graalvm/polyglot/ResourceLimits.html
         //contextBuilder.resourceLimits(new ResourceLimits())
-        
+        /*
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        final Context context = Context.newBuilder("js").build();
+        final Future<Object> futureResult = executor.submit(() -> context.eval("js", "while(true);"));
+
+        try {
+            final Object result = futureResult.get(10, TimeUnit.SECONDS);
+            System.out.println("Script evaluated within 10 seconds, result: " + result);
+        } catch (TimeoutException e) {
+            context.interrupt(Duration.ZERO);
+            System.out.println("Script not evaluated within 10 seconds, interrupted.");
+        }
+
+        System.out.println("Done.");
+         */
+
         if (options != null) {
             contextBuilder.options(options);
         }
@@ -109,7 +125,7 @@ public class GraalRunner {
     }
     
     public void closeContext() {
-        contexts.get(contexts.size() - 1).close();
+        contexts.get(contexts.size() - 1).close(true);
         contexts.remove(contexts.size() - 1);
         context = null;
         if (contexts.size() > 0) {
@@ -120,7 +136,7 @@ public class GraalRunner {
     public void close() {
         if (contexts != null) {
             for (Context context : contexts) {
-                context.close();
+                context.close(true);
             }
             contexts.clear();
         }

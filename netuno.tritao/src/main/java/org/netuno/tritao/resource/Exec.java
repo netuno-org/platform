@@ -46,7 +46,8 @@ import org.netuno.tritao.resource.util.ResourceException;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Exec",
-                introduction = "Realiza a execução de outros scripts, suporta também executar scripts em outras linguagens de programação.\n" +
+                introduction = "Funcionalidades para auxiliar à execução do código.\n" +
+                        "Realiza a execução de outros scripts, suporta também executar scripts em outras linguagens de programação.\n" +
                         "Executa o script indicado, retornando o seu output.",
                 howToUse = {
                         @SourceCodeDoc(
@@ -56,6 +57,23 @@ import org.netuno.tritao.resource.util.ResourceException;
                                         "\n"+
                                         "// Executa outro script da App em `server/services/`\n" +
                                         "const outputServico = _exec.service(\"outro-servico\");\n"
+                        )
+                }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Exec",
+                introduction = "Functionalities to aid code execution.\n" +
+                        "It performs the execution of other scripts, it also supports the execution of scripts in other programming languages.\n" +
+                        "Executes the indicated script, returning its output.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "// Run another App script in `server/core/`\n" +
+                                        "const outputOutput = _exec.core(\"other-script\");\n" +
+                                        "\n"+
+                                        "// Run another App script in `server/services/`\n" +
+                                        "const outputService = _exec.service(\"other-service\");\n"
                         )
                 }
         )
@@ -73,10 +91,21 @@ public class Exec extends ResourceBaseValues {
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
-                                    code = "const minhaVarOriginal = \"test\";\n" +
+                                    code = "const minhaVarOriginal = \"teste\";\n" +
                                             "_exec" +
                                             "    .bind(\"transitarVar\", minhaVarOriginal)" +
-                                            "    .core(\"um-outro-script-em-outra-linguagem\");"
+                                            "    .core(\"outro-script-talvez-em-outra-linguagem\");"
+                            ) }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Transitions variables between scripts, including between different programming languages.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const originalVar = \"test\";\n" +
+                                            "_exec" +
+                                            "    .bind(\"transitVar\", originalVar)" +
+                                            "    .core(\"another-script-maybe-in-another-language\");"
                             ) })
     }, parameters = {
             @ParameterDoc(name = "key", translations = {
@@ -84,13 +113,21 @@ public class Exec extends ResourceBaseValues {
                             language=LanguageDoc.PT,
                             name = "variavel",
                             description = "Nome da variável que estará disponível no outro script que será executado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Variable name that will be available in the other script that will be executed."
                     )
             }),
-            @ParameterDoc(name = "object", translations = {
+            @ParameterDoc(name = "value", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "objeto",
                             description = "Objeto a ser passado para o outro script que será executado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Object to be passed to the other script that will be executed."
                     )
             }) 
     }, returns = {})
@@ -107,14 +144,26 @@ public class Exec extends ResourceBaseValues {
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
-                                    code = "_exec.core(\"um-outro-script-em-outra-linguagem\");"
+                                    code = "_exec.core(\"outro-script-talvez-em-outro-linguagem\");"
+                            ) }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Execution of scripts that are in the `server/core/` folder.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_exec.core(\"another-script-maybe-in-another-language\");"
                             ) })
     }, parameters = {
             @ParameterDoc(name = "path", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "caminho",
-                            description = "Caminho do script com origem em 'core/' a executar."
+                            description = "Caminho do script com origem em `core/` a executar."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Script path with source in `core/` to execute."
                     )
             })
     }, returns = {})
@@ -134,17 +183,29 @@ public class Exec extends ResourceBaseValues {
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
-                                    code = "_exec.service(\"um-outro-script-em-outra-linguagem\");"
+                                    code = "_exec.service(\"outro-script-talvez-em-outro-linguagem\");"
+                            ) }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Execution of scripts that are in the `server/services/` folder.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_exec.service(\"another-script-maybe-in-another-language\");"
                             ) })
     }, parameters = {
-        @ParameterDoc(name = "path",
-                translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "caminho",
-                            description = "Caminho do script com origem em 'services/' a executar."
-                    )
-                })
+            @ParameterDoc(name = "path",
+                    translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "caminho",
+                                    description = "Caminho do script com origem em 'services/' a executar."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Script path originating from 'services/' to be executed."
+                            )
+                    })
     }, returns = {})
     public Values service(String path) throws ResourceException {
         path = Path.safeFileSystemPath(path);
@@ -164,21 +225,62 @@ public class Exec extends ResourceBaseValues {
                                     type = SourceCodeTypeDoc.JavaScript,
                                     code = "// Para a execução por 3 segundos:\n"
                                             + "_exec.sleep(3000);"
+                            ) }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Pauses execution, useful for causing some controlled processing delay.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Stop the execution for 3 seconds:\n"
+                                            + "_exec.sleep(3000);"
                             ) })
     }, parameters = {
-        @ParameterDoc(name = "interval",
-                translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "intervalo",
-                            description = "Intervalo de tempo em milissegundos que deve fazer a pausa na execução."
-                    )
-                })
+            @ParameterDoc(name = "interval",
+                    translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "intervalo",
+                                    description = "Intervalo de tempo em milissegundos que deve fazer a pausa na execução."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Time interval in milliseconds to pause execution."
+                            )
+                    }),
     }, returns = {})
     public void sleep(long interval) throws InterruptedException {
         Thread.sleep(interval);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza a paragem da execução do script atual, útil para interromper da execução.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Para a execução:\n"
+                                            + "_out.println('Vai parar...<br>');\n"
+                                            + "_exec.stop();\n"
+                                            + "_out.println('Não chega nesta linha.');"
+                            ) }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "It stops the execution of the current script, useful for interrupting the execution.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// For the execution:\n"
+                                            + "_out.println('Will stop...<br>');\n"
+                                            + "_exec.stop();\n"
+                                            + "_out.println('Not run this line.');"
+                            ) })
+    }, parameters = { }, returns = {})
+    public void stop() {
+        getHili().stop();
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -186,7 +288,16 @@ public class Exec extends ResourceBaseValues {
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
-                                    code = "// Libertar memória exetando o Garbage Collector:\n"
+                                    code = "// Libertar memória executando o Garbage Collector:\n"
+                                            + "_exec.gc();"
+                            ) }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Performs memory cleanup by running the garbage collector ([JVM garbage collector](https://www.baeldung.com/jvm-garbage-collectors)).",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Free up memory by running Garbage Collector:\n"
                                             + "_exec.gc();"
                             ) })
     }, parameters = { }, returns = {})
@@ -199,6 +310,10 @@ public class Exec extends ResourceBaseValues {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Execução de funções de forma assíncrona.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Execution of functions asynchronously.",
                     howToUse = { })
     }, parameters = {}, returns = {})
     public Async async(Value... functions) throws ResourceException {
