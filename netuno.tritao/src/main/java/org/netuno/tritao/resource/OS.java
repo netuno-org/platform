@@ -29,6 +29,8 @@ import org.netuno.tritao.config.Hili;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ParameterDoc;
@@ -60,8 +62,66 @@ public class OS extends ResourceBase {
 
     public String directory = ".";
 
+    public boolean readCommandOutput = true;
+    public boolean readCommandError = true;
+    public long waitFor = 100;
+
     public OS(Proteu proteu, Hili hili) {
         super(proteu, hili);
+    }
+
+    public boolean readCommandOutput() {
+        return isReadCommandOutput();
+    }
+
+    public boolean isReadCommandOutput() {
+        return readCommandOutput;
+    }
+
+    public OS readCommandOutput(boolean readCommandOutput) {
+        setReadCommandError(readCommandOutput);
+        return this;
+    }
+
+    public OS setReadCommandOutput(boolean readCommandOutput) {
+        this.readCommandOutput = readCommandOutput;
+        return this;
+    }
+
+    public boolean readCommandError() {
+        return isReadCommandError();
+    }
+
+    public boolean isReadCommandError() {
+        return readCommandError;
+    }
+
+    public OS readCommandError(boolean readCommandError) {
+        setReadCommandError(readCommandError);
+        return this;
+    }
+
+    public OS setReadCommandError(boolean readCommandError) {
+        this.readCommandError = readCommandError;
+        return this;
+    }
+
+    public long waitFor() {
+        return getWaitFor();
+    }
+
+    public long getWaitFor() {
+        return waitFor;
+    }
+
+    public OS waitFor(long waitFor) {
+        setWaitFor(waitFor);
+        return this;
+    }
+
+    public OS setWaitFor(long waitFor) {
+        this.waitFor = waitFor;
+        return this;
     }
 
     @MethodDoc(translations = {
@@ -494,13 +554,35 @@ public class OS extends ResourceBase {
             builder.command(ArrayUtils.addAll(new String[] {"sh", "-c"}, command));
         }
         builder.directory(new java.io.File(directory));
-
         Process process = builder.start();
-        
-        String input = InputStream.readAll(process.getInputStream());
-        String error = InputStream.readAll(process.getErrorStream());
-
-        int exitCode = process.waitFor();
+        String input = "";
+        String error = "";
+        java.io.InputStream inputStream = null;
+        if (isReadCommandOutput()) {
+            inputStream = process.getInputStream();
+        }
+        java.io.InputStream errorStream = null;
+        if (isReadCommandError()) {
+            errorStream = process.getErrorStream();
+        }
+        while (process.isAlive()) {
+            if (isReadCommandOutput()) {
+                input += InputStream.readAll(inputStream);
+            }
+            if (isReadCommandError()) {
+                error += InputStream.readAll(errorStream);
+            }
+            if (!process.isAlive()) {
+                process.waitFor(getWaitFor(), TimeUnit.MILLISECONDS);
+            }
+        }
+        if (isReadCommandOutput()) {
+            input += InputStream.readAll(inputStream);
+        }
+        if (isReadCommandError()) {
+            error += InputStream.readAll(errorStream);
+        }
+        int exitCode = process.exitValue();
         return new OSCommand(input, error, exitCode);
     }
 
