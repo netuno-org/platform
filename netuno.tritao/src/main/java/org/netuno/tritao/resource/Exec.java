@@ -165,15 +165,40 @@ public class Exec extends ResourceBaseValues {
                             language=LanguageDoc.EN,
                             description = "Script path with source in `core/` to execute."
                     )
+            }),
+            @ParameterDoc(name = "path", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "caminho",
+                            description = "Caminho do script com origem em `core/` a executar."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Script path with source in `core/` to execute."
+                    )
+            }),
+            @ParameterDoc(name = "preserveContext", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "preservarContexto",
+                            description = "Se deve manter o mesmo contexto de execução ou iniciar um novo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Whether to keep the same execution context or start a new one."
+                    )
             })
     }, returns = {})
-    public Values core(String path) throws ResourceException {
+    public Values core(String path, boolean preserveContext) throws ResourceException {
         path = Path.safeFileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(getProteu()) + "/" +  path);
         if (scriptPath != null) {
-            return getHili().runScriptSandbox(Config.getPathAppCore(getProteu()), path);
+            return getHili().runScriptSandbox(Config.getPathAppCore(getProteu()), path, preserveContext);
         }
         throw new ResourceException("Core script not found: "+ path);
+    }
+    public Values core(String path) throws ResourceException {
+        return core(path, true);
     }
 
     @MethodDoc(translations = {
@@ -205,15 +230,29 @@ public class Exec extends ResourceBaseValues {
                                     language=LanguageDoc.EN,
                                     description = "Script path originating from 'services/' to be executed."
                             )
-                    })
+                    }),
+            @ParameterDoc(name = "preserveContext", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "preservarContexto",
+                            description = "Se deve manter o mesmo contexto de execução ou iniciar um novo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Whether to keep the same execution context or start a new one."
+                    )
+            })
     }, returns = {})
-    public Values service(String path) throws ResourceException {
+    public Values service(String path, boolean preserveContext) throws ResourceException {
         path = Path.safeFileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + "/" +  path);
         if (scriptPath != null) {
-            return getHili().runScriptSandbox(Config.getPathAppServices(getProteu()), path);
+            return getHili().runScriptSandbox(Config.getPathAppServices(getProteu()), path, preserveContext);
         }
         throw new ResourceException("Service script not found: "+ path);
+    }
+    public Values service(String path) throws ResourceException {
+        return service(path, true);
     }
     
     @MethodDoc(translations = {
