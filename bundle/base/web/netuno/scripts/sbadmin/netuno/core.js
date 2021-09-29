@@ -46,7 +46,7 @@
 
   netuno.menu = function(menu) {
     var buildMenu, containers, containersHtml, navMenuHtml, navbar;
-    navMenuHtml = '<li><a netuno-navigation-dashboard href="#netuno_dashboard"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a></li>';
+    navMenuHtml = `<li><a netuno-navigation-dashboard href="#netuno_dashboard"><i class="fa fa-fw fa-dashboard"></i> ${netuno.lang['menu.dashboard']}</a></li>`;
     containersHtml = '';
     buildMenu = function(type, parentUId, items, level) {
       var expand, item, j, len, menuHtml;

@@ -38,7 +38,7 @@ netuno.callbacks =
     delete netuno.callbacks[key]
 
 netuno.menu = (menu)->
-  navMenuHtml = '<li><a netuno-navigation-dashboard href="#netuno_dashboard"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a></li>'
+  navMenuHtml = "<li><a netuno-navigation-dashboard href=\"#netuno_dashboard\"><i class=\"fa fa-fw fa-dashboard\"></i> #{ netuno.lang['menu.dashboard'] }</a></li>"
   containersHtml = ''
   buildMenu = (type, parentUId, items, level) ->
     menuHtml = '';
