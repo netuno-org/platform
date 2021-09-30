@@ -17,9 +17,7 @@
 
 package org.netuno.tritao.resource;
 
-import org.netuno.library.doc.LanguageDoc;
-import org.netuno.library.doc.LibraryDoc;
-import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.script.GraalRunner;
 import org.netuno.tritao.config.Hili;
@@ -33,14 +31,30 @@ import org.netuno.tritao.config.Hili;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Env",
-                introduction = "Recurso de consulta do ambiente de desenvolvimento.",
-                howToUse = { }
+                introduction = "Permite consultar o ambiente de desenvolvimento que é configurado no " +
+                        "ficheiro `config.js` que encontra-se na raíz do Netuno.\n" +
+                        "É utilizada a configuração da aplicação que tem o respectivo nome do ambiente.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "// Configurado em $NETUNO_HOME/config.js:\n" +
+                                        "config.env = 'development'"
+                        )
+                }
         ),
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "Env",
-                introduction = "Development environment consultation resource.",
-                howToUse = { }
+                introduction = "Allows you to consult the development environment that is configured " +
+                        "in the `config.js` file which is found in the root of Netuno.\n" +
+                        "The configuration of the application that has its environment name is used.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "// Configured in $NETUNO_HOME/config.js:\n" +
+                                        "config.env = 'development'"
+                        )
+                }
         )
 })
 public class Env extends ResourceBase {
@@ -54,15 +68,74 @@ public class Env extends ResourceBase {
         current = current();
     }
 
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome do ambiente que está configurado no Netuno.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_out.println(`Ambiente Atual: ${_env.current()}`)"
+                            ) }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Name of the environment that is configured in Netuno.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_out.println(`Current Environment: ${_env.current()}`)"
+                            ) })
+    }, parameters = {
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O nome do ambiente atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The name of the current environment."
+            )
+    })
     public String current() {
         return getProteu().getConfig().getString("_env");
     }
 
-    public boolean is(String env) {
-        return current().equalsIgnoreCase(env)
-                || current().toLowerCase().startsWith(env.toLowerCase())
-                || env.toLowerCase().startsWith(current().toLowerCase());
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Serve para verificar o ambiente atual, útil em condições `if`.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Serves to check the current environment, useful in `if` conditions.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "name",
+                    translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "nome",
+                                    description = "Compara se o nome do ambiente configurado em utilização é igual ao valor passado."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Compares whether the configured environment name in use is the same as the value passed."
+                            )
+                    })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Se o ambiente configurado têm o mesmo nome."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Whether the configured environment has the same name."
+            )
+    })
+    public boolean is(String name) {
+        return current().equalsIgnoreCase(name)
+                || current().toLowerCase().startsWith(name.toLowerCase())
+                || name.toLowerCase().startsWith(current().toLowerCase());
     }
 
     public boolean isGraal() {
