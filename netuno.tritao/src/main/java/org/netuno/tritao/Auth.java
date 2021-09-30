@@ -428,8 +428,8 @@ public class Auth extends WebMaster {
         String password = req.getString("password");
         if (header.has("Authorization") && header.getString("Authorization").toLowerCase().startsWith("basic ")) {
         	String authorization = header.getString("Authorization").substring("basic ".length());
-        	Crypto security = new Crypto(proteu, hili);
-        	authorization = security.base64Decode(authorization);
+            Convert convert = new Convert(proteu, hili);
+        	authorization = convert.fromBase64(authorization);
         	String[] authorizationParts = authorization.split(":");
         	if (authorizationParts.length == 2) {
         		username = authorizationParts[0];

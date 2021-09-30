@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.resource;
 
+import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
@@ -305,11 +306,42 @@ public class Crypto extends ResourceBase {
     public String hmac256Base64(byte[] key, byte[] content) throws NoSuchAlgorithmException, InvalidKeyException {
         return HMAC.encrypt256Base64(key, content);
     }
-    
+
     public String hmac256Base64(String key, String content) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         return HMAC.encrypt256Base64(key, content);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA256 (SHA-2) e converte a encriptação binária em hexadecimal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with SHA256 (SHA-2) and converts binary encryption to hexadecimal.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conteúdo encriptado em SHA256 (SHA2) e convertido em hexadecimal."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Content encrypted in SHA256 (SHA2) and converted to hexadecimal."
+            )
+    })
     public String sha256(byte[] data) {
     	return DigestUtils.sha256Hex(data);
     }
@@ -317,7 +349,38 @@ public class Crypto extends ResourceBase {
     public String sha256(String content) {
     	return DigestUtils.sha256Hex(content);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA256 (SHA-2) e retorna a encriptação binária.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with SHA256 (SHA-2) and returns binary encryption.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados binários do conteúdo encriptado em SHA256 (SHA-2)."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Binary data of the content encrypted in SHA256 (SHA-2)."
+            )
+    })
     public byte[] sha256AsBytes(byte[] data) {
     	return DigestUtils.sha256(data);
     }
@@ -325,7 +388,38 @@ public class Crypto extends ResourceBase {
     public byte[] sha256AsBytes(String content) {
     	return DigestUtils.sha256(content);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA384 (SHA-2) e converte a encriptação binária em hexadecimal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with SHA384 (SHA-2) and converts binary encryption to hexadecimal.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conteúdo encriptado em SHA384 (SHA2) e convertido em hexadecimal."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Content encrypted in SHA384 (SHA2) and converted to hexadecimal."
+            )
+    })
     public String sha384(byte[] data) {
     	return DigestUtils.sha384Hex(data);
     }
@@ -333,7 +427,38 @@ public class Crypto extends ResourceBase {
     public String sha384(String content) {
     	return DigestUtils.sha384Hex(content);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA384 (SHA-2) e retorna a encriptação binária.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with SHA384 (SHA-2) and returns binary encryption.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados binários do conteúdo encriptado em SHA384 (SHA-2)."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Binary data of the content encrypted in SHA384 (SHA-2)."
+            )
+    })
     public byte[] sha384AsBytes(byte[] data) {
     	return DigestUtils.sha384(data);
     }
@@ -341,7 +466,38 @@ public class Crypto extends ResourceBase {
     public byte[] sha384AsBytes(String content) {
     	return DigestUtils.sha384(content);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA512 (SHA-2) e converte a encriptação binária em hexadecimal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with SHA512 (SHA-2) and converts binary encryption to hexadecimal.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conteúdo encriptado em SHA512 (SHA2) e convertido em hexadecimal."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Content encrypted in SHA512 (SHA2) and converted to hexadecimal."
+            )
+    })
     public String sha512(byte[] data) {
     	return DigestUtils.sha512Hex(data);
     }
@@ -349,7 +505,38 @@ public class Crypto extends ResourceBase {
     public String sha512(String content) {
     	return DigestUtils.sha512Hex(content);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA512 (SHA-2) e retorna a encriptação binária.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with SHA512 (SHA-2) and returns binary encryption.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados binários do conteúdo encriptado em SHA512 (SHA-2)."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Binary data of the content encrypted in SHA512 (SHA-2)."
+            )
+    })
     public byte[] sha512AsBytes(byte[] data) {
     	return DigestUtils.sha512(data);
     }
@@ -358,8 +545,30 @@ public class Crypto extends ResourceBase {
     	return DigestUtils.sha512(content);
     }
 
-    public DES des(String keyWord) throws PsamataException {
-        return new DES(keyWord);
+    public byte[] desEncode(String key, String content) throws PsamataException {
+        return new DES(key).encode(content);
+    }
+
+    public byte[] desEncode(String key, String content, String charset) throws PsamataException {
+        return new DES(key, charset).encode(content);
+    }
+
+    public String desEncodeBase64(String key, String content, String charset) throws PsamataException {
+        Convert convert = resource(Convert.class);
+        return convert.toBase64(new DES(key, charset).encode(content));
+    }
+
+    public String desDecode(String key, byte[] data) throws PsamataException {
+        return new DES(key).decode(data);
+    }
+
+    public String desDecode(String key, byte[] data, String charset) throws PsamataException {
+        return new DES(key, charset).decode(data);
+    }
+
+    public String desDecodeBase64(String key, String data, String charset) throws PsamataException {
+        Convert convert = resource(Convert.class);
+        return new DES(key, charset).decode(convert.fromBase64AsBytes(data));
     }
 
     public String bcryptSalt() {
@@ -394,36 +603,21 @@ public class Crypto extends ResourceBase {
         return MD5.cryptBase64(content);
     }
 
-    public byte[] base64DecodeAsBytes(byte[] content) {
-        return Base64.getDecoder().decode(content);
+    public String cryptHash(String key, String salt) {
+        return Crypt.crypt(key, salt);
     }
 
-    public byte[] base64DecodeAsBytes(String content) {
-        return Base64.getDecoder().decode(content);
-    }
-    
-    public String base64Decode(byte[] content) {
-        return new String(Base64.getDecoder().decode(content));
-    }
-    
-    public String base64Decode(String content) {
-        return new String(Base64.getDecoder().decode(content));
+    public String cryptHash(String key) {
+        return Crypt.crypt(key);
     }
 
-    public byte[] base64EncodeAsBytes(byte[] content) {
-        return Base64.getEncoder().encode(content);
-    }
-    
-    public byte[] base64EncodeAsBytes(String content) {
-        return Base64.getEncoder().encode(content.getBytes());
+    public String cryptHash(byte[] key, String salt) {
+        return Crypt.crypt(key, salt);
     }
 
-    public String base64Encode(byte[] content) {
-        return Base64.getEncoder().encodeToString(content);
+    public String cryptHash(byte[] key) {
+        return Crypt.crypt(key);
     }
 
-    public String base64Encode(String content) {
-        return Base64.getEncoder().encodeToString(content.getBytes());
-    }
-    
+
 }

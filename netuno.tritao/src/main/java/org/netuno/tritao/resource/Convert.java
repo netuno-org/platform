@@ -17,10 +17,13 @@
 
 package org.netuno.tritao.resource;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.text.StringEscapeUtils;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.tritao.config.Hili;
+
+import java.util.Base64;
 import java.util.UUID;
 import org.netuno.psamata.io.File;
 
@@ -48,6 +51,215 @@ public class Convert extends ResourceBase {
     public Convert(Proteu proteu, Hili hili) {
         super(proteu, hili);
     }
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte os bytes em **hexadecimal** com letras minúsculas.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Convert bytes to **hexadecimal** with lowercase letters.",
+							howToUse = { }),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "bytes",
+							translations = {}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna os bytes recebidos em **hexadecimal** em minúsculas."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Return bytes received in **hexadecimal** in lowercase."
+					)
+			}
+	)
+	public String toHex(byte[] bytes) {
+		return Hex.encodeHexString(bytes);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte os bytes em **hexadecimal** com letras maiúsculas.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Convert bytes to **hexadecimal** with uppercase letters.",
+							howToUse = { }),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "bytes",
+							translations = {}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna os bytes recebidos em **hexadecimal** em minúsculas."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Return bytes received in **hexadecimal** in capital letters."
+					)
+			}
+	)
+	public String toHEX(byte[] bytes) {
+		return Hex.encodeHexString(bytes, false);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte o conteúdo em Base64 para o array de bytes original descodificado.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts the Base64 content to the original decoded byte array.",
+							howToUse = { }),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "content",
+							translations = {}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna os bytes descodificados que estavam em Base64."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns decoded bytes that were in Base64."
+					)
+			}
+	)
+	public byte[] fromBase64AsBytes(byte[] content) {
+		return Base64.getDecoder().decode(content);
+	}
+
+	public byte[] fromBase64AsBytes(String content) {
+		return Base64.getDecoder().decode(content);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte o conteúdo com Base64 em uma string descodificada.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts Base64 content to a decoded string.",
+							howToUse = { }),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "content",
+							translations = {}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna a string descodificada que estava em Base64."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns the decoded string that was in Base64."
+					)
+			}
+	)
+	public String fromBase64(byte[] content) {
+		return new String(Base64.getDecoder().decode(content));
+	}
+
+	public String fromBase64(String content) {
+		return new String(Base64.getDecoder().decode(content));
+	}
+
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte o conteúdo em codificação Base64.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Convert the content into Base64 encoding.",
+							howToUse = { }),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "content",
+							translations = {}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna os bytes codificados em Base64."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns Base64 encoded bytes."
+					)
+			}
+	)
+	public byte[] toBase64AsBytes(byte[] content) {
+		return Base64.getEncoder().encode(content);
+	}
+
+	public byte[] toBase64AsBytes(String content) {
+		return Base64.getEncoder().encode(content.getBytes());
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte o conteúdo em uma string codificada com Base64.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts the content to a Base64 encoded string.",
+							howToUse = { }),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "content",
+							translations = {}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna a string codificada em Base64."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns the Base64 encoded string."
+					)
+			}
+	)
+	public String toBase64(byte[] content) {
+		return Base64.getEncoder().encodeToString(content);
+	}
+
+	public String toBase64(String content) {
+		return Base64.getEncoder().encodeToString(content.getBytes());
+	}
 
     @MethodDoc(
     		translations = {

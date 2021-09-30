@@ -38,26 +38,44 @@ public class DES {
     /**
      * Triple Des Key Data.
      */
-    private final byte[] tripleDesKeyData;
+    private byte[] tripleDesKeyData;
     /**
      * Clipher.
      */
     private Cipher cipher;
 
+    private String key = "";
+    private String charset = "UTF-8"; // "ASCII"
+
     /**
      * DES.
-     * @param keyWord Key
+     * @param key Key
      * @throws PsamataException Exception
      */
-    public DES(final String keyWord) throws PsamataException {
+    public DES(final String key) throws PsamataException {
+        this.key = key;
+        init();
+    }
+    /**
+     * DES.
+     * @param key Key
+     * @throws PsamataException Exception
+     */
+    public DES(final String key, String charset) throws PsamataException {
+        this.key = key;
+        this.charset = charset;
+        init();
+    }
+
+    private void init() throws PsamataException {
         try {
-            tripleDesKeyData = keyWord.getBytes("ASCII");
+            tripleDesKeyData = key.getBytes(charset);
             cipher = createCipher();
         } catch (Exception e) {
             throw new PsamataException("Problem creating DES", e);
         }
-
     }
+
     /**
      * Get Cipher.
      * @return Cipher
