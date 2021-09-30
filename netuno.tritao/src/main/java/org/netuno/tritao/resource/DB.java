@@ -660,7 +660,6 @@ public class DB extends ResourceBase {
                                     + "            \"where\",\n"
                                     + "            _val.map()\n"
                                     + "                .set(\"email\", \"pessoa@e-mail.exemplo\")\n"
-                                    + "                 )\n"
                                     + "        )\n"
                                     + ")\n"
                                     + "_out.json(\n"
@@ -683,7 +682,6 @@ public class DB extends ResourceBase {
                                     + "            \"where\",\n"
                                     + "            _val.map()\n"
                                     + "                .set(\"email\", \"pessoa@e-mail.exemplo\")\n"
-                                    + "                 )\n"
                                     + "        )\n"
                                     + ")\n"
                                     + "_out.json(\n"
@@ -792,13 +790,11 @@ public class DB extends ResourceBase {
                 howToUse = {
                     @SourceCodeDoc(
                             type = SourceCodeTypeDoc.JavaScript,
-                            code = "const valorMaximoSeguro = _db.toFloat(_req.getString(\"valor_maximo\"))\n"
-                            + "\n"
-                            + "_out.json(\n"
+                            code = "_out.json(\n"
                             + "    _db.query(`\n"
                             + "        select * from produto\n"
-                            + "        where preco < ${valorMaximoSeguro}\n"
-                            + "    `)\n"
+                            + "        where preco < ?\n"
+                            + "    `, _req.getString(\"preco_maximo\"))\n"
                             + ")"
                     )}),
         @MethodTranslationDoc(
@@ -807,17 +803,34 @@ public class DB extends ResourceBase {
                 howToUse = {
                     @SourceCodeDoc(
                             type = SourceCodeTypeDoc.JavaScript,
-                            code = "const safeMaxAmount = _db.toFloat(_req.getString(\"max_amount\"))\n"
-                            + "\n"
-                            + "_out.json(\n"
+                            code = "_out.json(\n"
                             + "    _db.query(`\n"
                             + "        select * from product\n"
-                            + "        where price < ${safeMaxAmount}\n"
-                            + "    `)\n"
+                            + "        where price < ?\n"
+                            + "    `, _req.getString(\"max_price\"))\n"
                             + ")"
                     )}),},
             parameters = {
-                @ParameterDoc(name = "query", translations = {})
+                    @ParameterDoc(name = "query", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Comando que será executado na base de dados para obter registos."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Command that will be executed on the database to get records."
+                            )
+                    }),
+                    @ParameterDoc(name = "params", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Lista de parâmetros de valores que serão injetados no comando (_query_) de base de dados."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "List of parameter values that will be injected into the database query."
+                            )
+                    })
             },
             returns = {
                 @ReturnTranslationDoc(
@@ -846,6 +859,54 @@ public class DB extends ResourceBase {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Execute uma query SQL diretamente na base de dados e obtém apenas o primeiro registo. Muita cuidado com SQL Injection.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const produtoEncontrado = _db.queryFirst(`\n"
+                                            + "    select * from produto\n"
+                                            + "    where nome like '%${_db.sanitize(_req.getString('termo'))}%'\n"
+                                            + "`)\n"
+                                            + "_log.info('O primeiro produto encontrado:', produtoEncontrado)"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Run an SQL query directly on the database and get only the first record. Be very careful with SQL Injection.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const productFound = _db.queryFirst(`\n"
+                                            + "    select * from product\n"
+                                            + "    where name like '%${_db.sanitize(_req.getString('term'))}%'\n"
+                                            + "`)\n"
+                                            + "_log.info('The first product found:', productFound)"
+                            )}),},
+            parameters = {
+                    @ParameterDoc(name = "query", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Comando que será executado na base de dados para obter o registo."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Command that will be executed on the database to get the record."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "O primeiro registo de dados obtido com a query direta à base de dados."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The first data record obtained with the direct database query."
+                    )
+            }
+    )
     public Values queryFirst(String query) throws ResourceException {
         List<Values> results = query(query);
         if (results.size() == 0) {
@@ -854,6 +915,64 @@ public class DB extends ResourceBase {
         return results.get(0);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Execute uma query SQL diretamente na base de dados e obtém apenas o primeiro registo. Muita cuidado com SQL Injection.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const produtoEncontrado = _db.queryFirst(`\n"
+                                            + "    select * from produto\n"
+                                            + "    where nome like ?\n"
+                                            + "`, `%${_db.sanitize(_req.getString('termo'))}%`)\n"
+                                            + "_log.info('O primeiro produto encontrado:', produtoEncontrado)"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Run an SQL query directly on the database and get only the first record. Be very careful with SQL Injection.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const productFound = _db.queryFirst(`\n"
+                                            + "    select * from product\n"
+                                            + "    where name like ?\n"
+                                            + "`, `%${_req.getString('term')}%`)\n"
+                                            + "_log.info('The first product found:', productFound)"
+                            )}),},
+            parameters = {
+                    @ParameterDoc(name = "query", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Comando que será executado na base de dados para obter o registo."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Command that will be executed on the database to get the record."
+                            )
+                    }),
+                    @ParameterDoc(name = "params", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Lista de parâmetros de valores que serão injetados no comando (_query_) de base de dados."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "List of parameter values that will be injected into the database query."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "O primeiro registo de dados obtido com a query direta à base de dados."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The first data record obtained with the direct database query."
+                    )
+            }
+    )
     public Values queryFirst(String query, List params) throws ResourceException {
         return queryFirst(query, params.toArray());
     }
