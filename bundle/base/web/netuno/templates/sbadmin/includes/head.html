@@ -88,6 +88,13 @@
             "menu.reports": "_{&lang=netuno.menu.reports}",
             "com.select.clean": "_{&lang=netuno.com.select.clean}"
         };
+        netuno.ws = {
+            endpoints: {
+                #foreach($endpoint in $_app.config().getValues("ws", $_val.map()).getValues("endpoints", $_val.list()))
+                "$endpoint.getString('name')": "$endpoint.getString('public')"
+                #end
+            }
+        };
     </script>
 </head>
 <body>
