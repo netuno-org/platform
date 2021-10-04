@@ -43,7 +43,6 @@ import org.netuno.tritao.resource.event.EventExecutor;
  * Execution of the services scripts.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@Resource(name = "service")
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language= LanguageDoc.PT,

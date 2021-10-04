@@ -25,7 +25,6 @@ import org.netuno.tritao.resource.Resource;
  * Manages the dynamic build of OpenAPI Schema.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@Resource(name = "dataSchema")
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language= LanguageDoc.PT,
