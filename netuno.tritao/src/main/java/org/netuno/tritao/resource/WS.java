@@ -633,65 +633,30 @@ public class WS extends ResourceBase {
         throw new ResourceException("Service "+ urlService +" broadcast failed with status "+ response.statusCode +".");
     }
     
-    public void broadcastAsService(String endpointName, String service, Values content) throws IOException {
+    public void broadcastAsService(String endpointName, Values message) throws IOException {
+        if (!message.has("method")) {
+            message.set("method", "GET");
+        }
+        if (!message.has("status")) {
+            message.set("status", 200);
+        }
         broadcast(
                 endpointName,
-                new Values()
-                        .set("service", service)
-                        .set("type", "json")
-                        .set("content", content)
+                message
         );
     }
     
-    public void broadcastAsService(String endpointName, String service, String content) throws IOException {
+    public void broadcastAsService(String endpointName, String path, Values message) throws IOException {
+        if (!message.has("method")) {
+            message.set("method", "GET");
+        }
+        if (!message.has("status")) {
+            message.set("status", 200);
+        }
+        message.set("path", path);
         broadcast(
                 endpointName,
-                new Values()
-                        .set("service", service)
-                        .set("type", "json")
-                        .set("content", content)
-        );
-    }
-    
-    public void broadcastAsService(String endpointName, String path, String service, Values content) throws IOException {
-        broadcast(
-                endpointName,
-                new Values()
-                        .set("path", path)
-                        .set("service", service)
-                        .set("type", "json")
-                        .set("content", content)
-        );
-    }
-    
-    public void broadcastAsService(String endpointName, String path, String service, String content) throws IOException {
-        broadcast(
-                endpointName,
-                new Values()
-                        .set("path", path)
-                        .set("service", service)
-                        .set("type", "text")
-                        .set("content", content)
-        );
-    }
-    
-    public void broadcast(String endpointName, String path, Values content) throws IOException {
-        broadcast(
-                endpointName,
-                new Values()
-                        .set("path", path)
-                        .set("type", "json")
-                        .set("content", content)
-        );
-    }
-    
-    public void broadcast(String endpointName, String path, String content) throws IOException {
-        broadcast(
-                endpointName,
-                new Values()
-                        .set("path", path)
-                        .set("type", "text")
-                        .set("content", content)
+                message
         );
     }
     
