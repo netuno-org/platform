@@ -28,6 +28,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
+import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.server.ServerConfig;
 
@@ -257,5 +258,57 @@ public class Server extends ResourceBase {
             }, 
             interval 
         );
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Imprime uma mensagem diretamente no terminal do servidor do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Prints a message directly to the Netuno server terminal.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada no terminal do servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be displayed on the server terminal."
+                    )
+            })
+    }, returns = { })
+    public void print(String output) {
+        System.out.print(output);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Imprime uma linha com uma mensagem diretamente no terminal do servidor do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Prints a line with a message directly to the Netuno server terminal.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada no terminal do servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be displayed on the server terminal."
+                    )
+            })
+    }, returns = { })
+    public void println(String output) {
+        System.out.println(output);
     }
 }

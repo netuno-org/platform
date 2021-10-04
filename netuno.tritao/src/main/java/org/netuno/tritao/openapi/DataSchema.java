@@ -19,11 +19,13 @@ package org.netuno.tritao.openapi;
 
 import org.netuno.library.doc.*;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.resource.Resource;
 
 /**
  * Manages the dynamic build of OpenAPI Schema.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
+@Resource(name = "dataSchema")
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language= LanguageDoc.PT,

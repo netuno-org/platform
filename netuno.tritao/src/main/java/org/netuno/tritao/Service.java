@@ -20,6 +20,7 @@ package org.netuno.tritao;
 import com.vdurmont.emoji.EmojiParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
@@ -34,13 +35,29 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.netuno.tritao.openapi.Schema;
+import org.netuno.tritao.resource.Resource;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.event.EventExecutor;
 
 /**
- * Script Services
+ * Execution of the services scripts.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
+@Resource(name = "service")
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language= LanguageDoc.PT,
+                title = "Service",
+                introduction = "Gere a execução dos scripts de serviços em `server/services`.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language= LanguageDoc.EN,
+                title = "Service",
+                introduction = "Manages the execution of the services scripts in `server/services`.",
+                howToUse = { }
+        )
+})
 public class Service {
     
     public static final String[] METHODS = new String[] {
@@ -77,18 +94,6 @@ public class Service {
 
     public List<String> getMethods() {
         return methods;
-    }
-
-    public SMTPTransport newSMTPTransport() {
-        return new SMTPTransport();
-    }
-
-    public void print(String output) {
-        System.out.println(output);
-    }
-
-    public void println(String output) {
-        System.out.println(Config.getApp(proteu) + " # " + output);
     }
 
     public String getMethod() {
@@ -139,6 +144,7 @@ public class Service {
         return this.allowed == false;
     }
 
+    @IgnoreDoc
     public static void _main(Proteu proteu, Hili hili) throws Exception {
         Service service = new Service(proteu, hili);
         proteu.getConfig().set("_service:not-found:default-error", true);

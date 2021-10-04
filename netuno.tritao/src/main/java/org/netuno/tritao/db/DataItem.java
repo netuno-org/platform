@@ -24,11 +24,13 @@ import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.resource.Resource;
 
 /**
  * Data Item loaded in the database operations and useful with actions.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
+@Resource(name = "dataItem")
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language=LanguageDoc.PT,
