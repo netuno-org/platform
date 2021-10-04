@@ -87,7 +87,7 @@ import org.netuno.psamata.net.Remote;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @CommandLine.Command(name = "server", helpCommand = true, description = "Initialize the server")
-public class Server {
+public class Server implements MainArg {
     private static Logger logger = LogManager.getLogger(Server.class);
 
     @CommandLine.Option(names = { "-m", "name" }, paramLabel = "local", description = "Force to use this application.")
@@ -407,7 +407,7 @@ public class Server {
                 e.printStackTrace();
                 if (e instanceof IOException
                         && e.getMessage() != null
-                        && e.getMessage().startsWith("Failed to bind to /")) {
+                        && e.getMessage().startsWith("Failed to bind to ")) {
                     System.out.println();
                     System.out.println();
                     System.out.println(OS.consoleOutput("    @|red The port "+ port +" is already in use, please try using another port, like: |@"));

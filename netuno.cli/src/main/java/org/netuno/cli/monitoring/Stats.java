@@ -30,6 +30,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.cli.MainArg;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
@@ -48,7 +49,7 @@ import picocli.CommandLine;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @CommandLine.Command(name = "stats", helpCommand = true, description = "Monitoring statistics.")
-public class Stats {
+public class Stats implements MainArg {
     
     private static Logger logger = LogManager.getLogger(Stats.class);
     

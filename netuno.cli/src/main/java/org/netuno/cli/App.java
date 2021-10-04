@@ -36,7 +36,7 @@ import java.util.Scanner;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @CommandLine.Command(name = "app", helpCommand = true, description = "Create or rebuild an application")
-public class App {
+public class App implements MainArg {
 
     enum Path {
         CONFIG {

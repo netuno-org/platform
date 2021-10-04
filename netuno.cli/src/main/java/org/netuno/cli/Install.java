@@ -49,7 +49,7 @@ import org.apache.logging.log4j.Logger;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @CommandLine.Command(name = "install", helpCommand = true, description = "Install latest Netuno version")
-public class Install {
+public class Install implements MainArg {
     private static Logger logger = LogManager.getLogger(Install.class);
 
     private static String graalVMVersion = "21.2.0";

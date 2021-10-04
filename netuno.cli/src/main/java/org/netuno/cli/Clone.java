@@ -46,7 +46,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @CommandLine.Command(name = "clone", helpCommand = true, description = "Clone an application")
-public class Clone {
+public class Clone implements MainArg {
     private static Logger logger = LogManager.getLogger(Clone.class);
     
     @CommandLine.Option(names = { "-s", "source" }, paramLabel = "demo", description = "The origin application to be cloned.")

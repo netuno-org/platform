@@ -101,157 +101,163 @@ public final class Main implements Runnable {
     public static void main(final String[] args) throws Exception {
         StatusLogger.getLogger().setLevel(Level.OFF);
 
-        AnsiConsole.systemInstall();
-
-        System.setProperty("idea.use.native.fs.for.win", "false");
-        System.setProperty("idea.io.use.nio2", "true");
-
-        // Disable DNS Cache
-        java.security.Security.setProperty("networkaddress.cache.ttl" , "0");
-        
-        /*System.out.println(GraalRunner.isGraal());
-
-        Thread script1 = new Thread(() -> {
-            while (true) {
-                new GraalRunner("js").eval("console.log('thread 1')");
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        Thread script2 = new Thread(() -> {
-            while (true) {
-                GraalRunner graalRunner = new GraalRunner("js");
-                String ai = graalRunner.set("test", "oi")
-                        .eval("console.log('thread 2'+ test); var ai = 'aaaa';")
-                .getString("ai");
-                System.out.println(ai);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        script2.start();
-        script1.start();
-         */
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|cyan    ooooo      ooo oooooooooooo ooooooooooooo ooooo     ooo ooooo      ooo   .oooooo.      |@"));
-        System.out.println(OS.consoleOutput("@|cyan    `888b.     `8' `888'     `8 8'   888   `8 `888'     `8' `888b.     `8'  d8P'  `Y8b     |@"));
-        System.out.println(OS.consoleOutput("@|cyan     8 `88b.    8   888              888       888       8   8 `88b.    8  888      888    |@"));
-        System.out.println(OS.consoleOutput("@|cyan     8   `88b.  8   888oooo8         888       888       8   8   `88b.  8  888      888    |@"));
-        System.out.println(OS.consoleOutput("@|cyan     8     `88b.8   888    \"         888       888       8   8     `88b.8  888      888    |@"));
-        System.out.println(OS.consoleOutput("@|cyan     8       `888   888       o      888       `88.    .8'   8       `888  `88b    d88'    |@"));
-        System.out.println(OS.consoleOutput("@|cyan    o8o        `8  o888ooooood8     o888o        `YbodP'    o8o        `8   `Y8bood8P'     |@"));
-        System.out.println();
-        System.out.println();
-        System.out.println("   © "+ Year.now().getValue() +" netuno.org // v"+ Config.VERSION +":"+ buildNumber());
-        System.out.println();
-        System.out.println();
-
+        CommandLine.ParseResult commandLineParseResult = null;
+        List<CommandLine> commandLineList = null;
         try {
-            Values data = Values.fromJSON(new Remote().get("https://github.com/netuno-org/platform/releases/download/latest/netuno.json").toString());
-            int compareVersion = buildNumber().compareTo(data.getString("version"));
-            if (compareVersion < 0) {
-                if (data.getString("type").equals("critical")) {
-                    System.out.println(OS.consoleOutput("@|red    Critical upgrade required! |@"));
-                }
-                System.out.println();
-                System.out.println("   "+ OS.consoleOutput("@|green New version released! |@") +" You can upgrade with this command:");
-                System.out.println();
-                System.err.println(OS.consoleCommand("update"));
-                System.out.println();
-                System.out.println();
-                //Thread.sleep(1000);
-            }
-            if (data.hasKey("message")) {
-                Values message = data.getValues("message");
-                String content = message.getString("content");
-                String command = message.getString("command");
-                if (!content.isEmpty()) {
-                    System.out.println();
-                    System.out.println("   " + OS.consoleOutput(content));
-                }
-                if (!command.isEmpty()) {
-                    System.out.println();
-                    System.err.println(OS.consoleCommand(command));
-                }
-                if (!content.isEmpty() || !command.isEmpty()) {
-                    System.out.println();
-                    System.out.println();
-                }
-            }
-        } catch (Throwable t) {
-            logger.debug("Fail to check the latest version.", t);
-        }
+            AnsiConsole.systemInstall();
 
-        String path = ScriptRunner.searchScriptFile("config");
-        if (path != null) {
-            if (GraalRunner.isGraal() && path.toLowerCase().endsWith(".js")) {
-                String script = org.netuno.psamata.io.InputStream.readFromFile(path);
-                new GraalRunner("js")
-                        .set("js", "config", new Config())
-                        .eval("js", script);
-            }
-        }
+            System.setProperty("idea.use.native.fs.for.win", "false");
+            System.setProperty("idea.io.use.nio2", "true");
 
-        Main main = new Main();
-        CommandLine commandLine = new CommandLine(main);
-        commandLine.addSubcommand("server", new Server());
-        commandLine.addSubcommand("app", new App());
-        //commandLine.addSubcommand("license", new License());
-        commandLine.addSubcommand("install", new Install());
-        commandLine.addSubcommand("clone", new Clone());
-        commandLine.addSubcommand("stats", new Stats());
+            // Disable DNS Cache
+            java.security.Security.setProperty("networkaddress.cache.ttl", "0");
 
-        List<CommandLine> parsed = commandLine.parse(args);
+            /*System.out.println(GraalRunner.isGraal());
 
-        if (main.isUsageHelpRequested() || commandLine.isUsageHelpRequested()) {
-            commandLine.usage(System.out, CommandLine.Help.Ansi.ON);
-            for (String key : commandLine.getSubcommands().keySet()) {
-                CommandLine subcommand = commandLine.getSubcommands().get(key);
-                System.out.println();
-                subcommand.usage(System.out, CommandLine.Help.Ansi.ON);
-            }
+            Thread script1 = new Thread(() -> {
+                while (true) {
+                    new GraalRunner("js").eval("console.log('thread 1')");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            Thread script2 = new Thread(() -> {
+                while (true) {
+                    GraalRunner graalRunner = new GraalRunner("js");
+                    String ai = graalRunner.set("test", "oi")
+                            .eval("console.log('thread 2'+ test); var ai = 'aaaa';")
+                    .getString("ai");
+                    System.out.println(ai);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            script2.start();
+            script1.start();
+             */
             System.out.println();
-            return;
-        }
-        if (main.isVersionInfoRequested() || commandLine.isVersionHelpRequested()) {
-            return;
-        }
-        
-        /*if (!License.load()
-            && parsed.size() >= 2
-            && parsed.get(1).getCommand().getClass() == Server.class) {
-            new License().run(true);
-        } else {
-            System.out.println(OS.consoleOutput("@|white    License " + License.getTypeText() + "  //  " + License.getMail() + " |@"));
             System.out.println();
-        }*/
+            System.out.println();
+            System.out.println();
+            System.out.println(OS.consoleOutput("@|cyan    ooooo      ooo oooooooooooo ooooooooooooo ooooo     ooo ooooo      ooo   .oooooo.      |@"));
+            System.out.println(OS.consoleOutput("@|cyan    `888b.     `8' `888'     `8 8'   888   `8 `888'     `8' `888b.     `8'  d8P'  `Y8b     |@"));
+            System.out.println(OS.consoleOutput("@|cyan     8 `88b.    8   888              888       888       8   8 `88b.    8  888      888    |@"));
+            System.out.println(OS.consoleOutput("@|cyan     8   `88b.  8   888oooo8         888       888       8   8   `88b.  8  888      888    |@"));
+            System.out.println(OS.consoleOutput("@|cyan     8     `88b.8   888    \"         888       888       8   8     `88b.8  888      888    |@"));
+            System.out.println(OS.consoleOutput("@|cyan     8       `888   888       o      888       `88.    .8'   8       `888  `88b    d88'    |@"));
+            System.out.println(OS.consoleOutput("@|cyan    o8o        `8  o888ooooood8     o888o        `YbodP'    o8o        `8   `Y8bood8P'     |@"));
+            System.out.println();
+            System.out.println();
+            System.out.println("   © " + Year.now().getValue() + " netuno.org // v" + Config.VERSION + ":" + buildNumber());
+            System.out.println();
+            System.out.println();
 
-        if (parsed.size() >= 2) {
-            if (parsed.get(1).getCommand().getClass() == Server.class) {
-                ((Server)parsed.get(1).getCommand()).run();
-            } else if (parsed.get(1).getCommand().getClass() == App.class) {
-                ((App) parsed.get(1).getCommand()).run();
-            /*} else if (parsed.get(1).getCommand().getClass() == License.class) {
-                ((License) parsed.get(1).getCommand()).run();*/
-            } else if (parsed.get(1).getCommand().getClass() == Install.class) {
-                ((Install) parsed.get(1).getCommand()).run();
-            } else if (parsed.get(1).getCommand().getClass() == Clone.class) {
-                ((Clone) parsed.get(1).getCommand()).run();
-            } else if (parsed.get(1).getCommand().getClass() == Stats.class) {
-                ((Stats) parsed.get(1).getCommand()).run();
+            try {
+                Values data = Values.fromJSON(new Remote().get("https://github.com/netuno-org/platform/releases/download/latest/netuno.json").toString());
+                int compareVersion = buildNumber().compareTo(data.getString("version"));
+                if (compareVersion < 0) {
+                    if (data.getString("type").equals("critical")) {
+                        System.out.println(OS.consoleOutput("@|red    Critical upgrade required! |@"));
+                    }
+                    System.out.println();
+                    System.out.println("   " + OS.consoleOutput("@|green New version released! |@") + " You can upgrade with this command:");
+                    System.out.println();
+                    System.err.println(OS.consoleCommand("update"));
+                    System.out.println();
+                    System.out.println();
+                    //Thread.sleep(1000);
+                }
+                if (data.hasKey("message")) {
+                    Values message = data.getValues("message");
+                    String content = message.getString("content");
+                    String command = message.getString("command");
+                    if (!content.isEmpty()) {
+                        System.out.println();
+                        System.out.println("   " + OS.consoleOutput(content));
+                    }
+                    if (!command.isEmpty()) {
+                        System.out.println();
+                        System.err.println(OS.consoleCommand(command));
+                    }
+                    if (!content.isEmpty() || !command.isEmpty()) {
+                        System.out.println();
+                        System.out.println();
+                    }
+                }
+            } catch (Throwable t) {
+                logger.debug("Fail to check the latest version.", t);
             }
-        }
 
-        AnsiConsole.systemUninstall();
+            String path = ScriptRunner.searchScriptFile("config");
+            if (path != null) {
+                if (GraalRunner.isGraal() && path.toLowerCase().endsWith(".js")) {
+                    String script = org.netuno.psamata.io.InputStream.readFromFile(path);
+                    new GraalRunner("js")
+                            .set("js", "config", new Config())
+                            .eval("js", script);
+                }
+            }
+
+            Main main = new Main();
+            CommandLine commandLine = new CommandLine(main);
+            commandLine.addSubcommand("server", new Server());
+            commandLine.addSubcommand("app", new App());
+            //commandLine.addSubcommand("license", new License());
+            commandLine.addSubcommand("install", new Install());
+            commandLine.addSubcommand("clone", new Clone());
+            commandLine.addSubcommand("stats", new Stats());
+
+            commandLineParseResult = commandLine.parseArgs(args);
+            commandLineList = commandLineParseResult.asCommandLineList();
+
+            if (main.isUsageHelpRequested() || commandLine.isUsageHelpRequested()) {
+                commandLine.usage(System.out, CommandLine.Help.Ansi.ON);
+                for (String key : commandLine.getSubcommands().keySet()) {
+                    CommandLine subcommand = commandLine.getSubcommands().get(key);
+                    System.out.println();
+                    subcommand.usage(System.out, CommandLine.Help.Ansi.ON);
+                }
+                System.out.println();
+                return;
+            }
+            if (main.isVersionInfoRequested() || commandLine.isVersionHelpRequested()) {
+                return;
+            }
+
+            /*if (!License.load()
+                && parsed.size() >= 2
+                && parsed.get(1).getCommand().getClass() == Server.class) {
+                new License().run(true);
+            } else {
+                System.out.println(OS.consoleOutput("@|white    License " + License.getTypeText() + "  //  " + License.getMail() + " |@"));
+                System.out.println();
+            }*/
+
+            if (commandLineList != null && commandLineList.size() >= 2) {
+                Object firstCommand = commandLineList.get(1).getCommand();
+                ((MainArg) firstCommand).run();
+            }
+        } catch (CommandLine.UnmatchedArgumentException e) {
+            commandLineList = null;
+        } finally {
+            if (commandLineList == null || commandLineList.size() < 2) {
+                System.out.println(OS.consoleOutput("@|red    The command-line argument is invalid. |@"));
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|yellow    Please you can use the help command below for more information: |@"));
+                System.out.println();
+                System.err.println(OS.consoleNetunoCommand("help"));
+                System.out.println();
+                System.out.println();
+                return;
+            }
+            AnsiConsole.systemUninstall();
+        }
     }
 
     /**

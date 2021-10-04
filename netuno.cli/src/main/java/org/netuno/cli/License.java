@@ -35,7 +35,7 @@ import java.util.Scanner;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @CommandLine.Command(name = "license", helpCommand = true, description = "Manage the license")
-public class License {
+public class License implements MainArg {
 
     private static Logger logger = LogManager.getLogger(License.class);
 
