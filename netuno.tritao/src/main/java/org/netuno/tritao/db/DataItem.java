@@ -33,12 +33,25 @@ import org.netuno.psamata.Values;
         @LibraryTranslationDoc(
                 language=LanguageDoc.PT,
                 title = "DataItem",
-                introduction = "Transição de dados e de controlo de status das operações das actions.",
+                introduction = "Transição de dados e de controlo das operações das actions, utilizado nos scripts em `server/actions`.",
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,
                                 code = "if (_dataItem.isUpdate()) {\n" +
-                                        "    _log.info('ID que está sendo alterado'+ _dataItem.id);\n" +
+                                        "    _log.info('ID do registo alterado: '+ _dataItem.id);\n" +
+                                        "}"
+                        )
+                }
+        ),
+        @LibraryTranslationDoc(
+                language=LanguageDoc.EN,
+                title = "DataItem",
+                introduction = "Data transition and control of actions operations, used in scripts in `server/actions`.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "if (_dataItem.isUpdate()) {\n" +
+                                        "    _log.info('Changed record ID: '+ _dataItem.id);\n" +
                                         "}"
                         )
                 }
