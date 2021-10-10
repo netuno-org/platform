@@ -91,7 +91,7 @@
         netuno.ws = {
             endpoints: {
                 #foreach($endpoint in $_app.config().getValues("ws", $_val.map()).getValues("endpoints", $_val.list()))
-                "$endpoint.getString('name')": "$endpoint.getString('public')"
+                "$endpoint.getString('name')": "$endpoint.getString('public')",
                 #end
             }
         };
