@@ -611,7 +611,7 @@ public class WS extends ResourceBase {
                 synchronized (item) {
                     Values sessionEndpoint = (Values)item;
                     if (endpointName.equals(sessionEndpoint.getValues("config").getString("name"))
-                            && (path.isEmpty() || path.equals(sessionEndpoint.getString("path")))) {
+                            && (path.isEmpty() || sessionEndpoint.getString("path").startsWith(path))) {
                         Session session = sessionEndpoint.get("session", Session.class);
                         if (session != null) {
                             try {
@@ -674,7 +674,7 @@ public class WS extends ResourceBase {
             synchronized (item) {
                 Values sessionEndpoint = (Values)item;
                 if (endpointName.equals(sessionEndpoint.getValues("config").getString("name"))
-                        && (path.isEmpty() || path.equals(sessionEndpoint.getString("path")))) {
+                        && (path.isEmpty() || sessionEndpoint.getString("path").startsWith(path))) {
                     Session session = sessionEndpoint.get("session", Session.class);
                     if (session != null) {
                         try {
@@ -698,7 +698,7 @@ public class WS extends ResourceBase {
             synchronized (item) {
                 Values sessionEndpoint = (Values)item;
                 if (endpointName.equals(sessionEndpoint.getValues("config").getString("name"))
-                        && (path.isEmpty() || path.equals(sessionEndpoint.getString("path")))) {
+                        && (path.isEmpty() || sessionEndpoint.getString("path").startsWith(path))) {
                     Session session = sessionEndpoint.get("session", Session.class);
                     if (session != null) {
                         try {
