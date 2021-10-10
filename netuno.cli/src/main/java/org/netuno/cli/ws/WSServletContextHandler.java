@@ -125,7 +125,7 @@ public class WSServletContextHandler extends ServletContextHandler {
             // Configure defaults for container
             wsContainer.setAsyncSendTimeout(config.getLong("sendTimeout", 60000));
             wsContainer.setDefaultMaxSessionIdleTimeout(config.getLong("idleTimeout", 300000));
-            wsContainer.setDefaultMaxTextMessageBufferSize(config.getInt("maxText", 65536));
+            wsContainer.setDefaultMaxTextMessageBufferSize(config.getInt("maxText", 1048576));
             // Add WebSocket endpoint to javax.websocket layer
             wsContainer.addEndpoint(WSEndpoint.class);
         });
