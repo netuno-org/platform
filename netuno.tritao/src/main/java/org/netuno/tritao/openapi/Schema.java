@@ -229,6 +229,9 @@ public class Schema extends WebMaster {
                         } else if (type.equalsIgnoreCase("timestamp")) {
                             parentValues.set("type", "string");
                             parentValues.set("pattern", "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})(?:([ T][0-9]{2}:[0-9]{2}:[0-9]{2}(?:([.,][0-9]{1,3})?Z?))?)$");
+                        } else if (type.equalsIgnoreCase("path")) {
+                            parentValues.set("type", "string");
+                            parentValues.set("pattern", "^\\/[a-zA-Z0-9-_\\/.]*$");
                         }
                     }
                 }
