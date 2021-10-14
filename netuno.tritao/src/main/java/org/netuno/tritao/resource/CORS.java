@@ -427,6 +427,9 @@ public class CORS extends ResourceBase {
                 }
                 Values origins = entry.getValues("origins", new Values());
                 for (String origin : origins.list(String.class)) {
+                    if (origin.equals("*")) {
+                        origin = getProteu().getRequestHeader().getString("Origin");
+                    }
                     if (origin.equals(getProteu().getRequestHeader().getString("Origin"))) {
                         getProteu().getConfig().set("_cors:entry", entry);
                         Values header = new Values()
