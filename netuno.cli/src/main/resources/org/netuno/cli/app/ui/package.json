@@ -29,7 +29,8 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "@netuno/service-client": "^1.0.8",
+    "@netuno/service-client": "^1.0.10",
+    "@netuno/ws-client": "^1.0.8",
     "antd": "^4.1.0",
     "chart.js": "^2.9.3",
     "react-chartjs-2": "^2.9.0"
