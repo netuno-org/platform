@@ -209,9 +209,7 @@ public class Cron extends ResourceBase {
     public void config() throws ResourceException {
         Values jobs = getProteu().getConfig().getValues("_cron:jobs");
         String secret = getProteu().getConfig().getString("_cron:secret");
-        if (jobs == null) {
-            logger.error("Cron jobs has wrong configurations.");
-        } else {
+        if (jobs != null) {
             if (jobs.size() > 0 && secret.isEmpty()) {
                 logger.error("Cron jobs without the main secret.");
             }
