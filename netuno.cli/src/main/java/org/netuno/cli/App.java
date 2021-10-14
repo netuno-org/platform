@@ -17,6 +17,7 @@
 
 package org.netuno.cli;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.RunCommand;
 import org.netuno.psamata.Values;
@@ -1027,7 +1028,12 @@ public class App implements MainArg {
                 return false;
             }
             ProcessBuilder builder = new ProcessBuilder();
-            builder.command(new String[]{"sh", "-c", "git clone "+ urlGitHub});
+            String cmd = "git clone " + urlGitHub;
+            if (OS.isWindows()) {
+                builder.command("cmd.exe", "/c", cmd);
+            } else {
+                builder.command("sh", "-c", cmd);
+            }
             builder.directory(new File(Config.getAppsHome()));
             Process process = builder.start();
             int exitCode = process.waitFor();
