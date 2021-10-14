@@ -23,12 +23,15 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.crypto.RandomString;
+import org.netuno.psamata.net.Remote;
 import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Create the applications.
@@ -37,7 +40,7 @@ import java.util.Scanner;
  */
 @CommandLine.Command(name = "app", helpCommand = true, description = "Create or rebuild an application")
 public class App implements MainArg {
-
+    public static final String APP_NAME_REGEX = "[a-z0-9_]+";
     enum Path {
         CONFIG {
             @Override
@@ -398,10 +401,24 @@ public class App implements MainArg {
     @CommandLine.Option(names = { "-S", "silent" }, paramLabel = "Avoid inputs", description = "Without inputs and confirmations.")
     protected boolean silent = false;
 
-    public void run() throws IOException {
+    @CommandLine.Option(names = { "-c", "config" }, paramLabel = "Configure the App", description = "Configure the app with the default configuration.")
+    protected String config = "";
+
+    @CommandLine.Option(names = { "-g", "github" }, paramLabel = "GitHub App Install", description = "Install application from a GitHub repository.")
+    protected String github = "";
+
+    public void run() throws Exception {
         Install.graalCheckAndSetup();
         System.err.println();
         System.err.println();
+        if (!config.isEmpty()) {
+            config(config);
+            System.exit(0);
+        }
+        if (!github.isEmpty()) {
+            installFromGitHub(github);
+            System.exit(0);
+        }
         while (true) {
             if (name.length() == 0) {
                 System.out.print(OS.consoleOutput("@|yellow App name:|@ "));
@@ -664,9 +681,9 @@ public class App implements MainArg {
 
         makeDirs(name);
 
-        String config = Path.resourceContent(Path.SERVER_CORE, "_config.js");
+        String serverCoreConfig = Path.resourceContent(Path.SERVER_CORE, "_config.js");
         
-        Path.appFile(appPath, Path.SERVER_CORE, "_config.js", config);
+        Path.appFile(appPath, Path.SERVER_CORE, "_config.js", serverCoreConfig);
 
         Path.copyApp(appPath, Path.CONFIG, "_development.js");
         Path.copyApp(appPath, Path.CONFIG, "_production.js");
@@ -842,8 +859,8 @@ public class App implements MainArg {
                     new Values()
                         .set("enabled", true)
                         .set("path", Path.WEBSITE.toString())
-                        .set("env", new Values().add("PORT=9002"))
-                        .set("command", "yarn start")
+                        //.set("env", new Values().add("PORT=9002"))
+                        .set("command", "npm run start")
             );
         }
         configJSON.set("commands", commands);
@@ -851,16 +868,9 @@ public class App implements MainArg {
         Values cors = new Values().add(
                 new Values()
                     .set("enabled", true)
-                    .set("origin", "http://"+ name.replace("_", "-") +".local.netu.no:9001")
+                    .set("origin", "*")
         );
-        if (website.equals("Y")) {
-            cors.add(
-                    new Values()
-                    .set("enabled", true)
-                    .set("origin", "http://"+ name.replace("_", "-") +".local.netu.no:9002")
-            );
-        }
-        //configJSON.set("cors", cors);
+        configJSON.set("cors", cors);
         
         /*configJSON.set("jwt", new Values()
                 .set("enabled", false)
@@ -872,26 +882,9 @@ public class App implements MainArg {
         OutputStream.writeToFile(configJSON.toJSON(4), Path.app(appPath, Path.CONFIG) + File.separator + "_development.json", false);
         
         System.out.println();
-        
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|green Application created! |@"));
-        System.out.println();
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|white New app home: |@"));
-        System.out.println();
-        System.err.println(OS.consoleOutput("    >    @|cyan apps/" + name + " |@"));
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|white Start the server using your new app: |@"));
-        System.out.println();
-        System.err.println(OS.consoleNetunoCommand("server app="+ name));
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|white Then when the server is running, try open in your browser: |@"));
-        System.out.println();
-        System.err.println(OS.consoleOutput("    >    @|cyan http://|@@|green " + name.replace("_", "-") + "|@@|cyan .local.netu.no:" + Config.getPort() + "/ |@"));
-        System.out.println();
-        System.out.println();
+
+        printAppSuccessCreated(name);
+
         System.exit(0);
     }
 
@@ -972,7 +965,7 @@ public class App implements MainArg {
     }
 
     public static boolean checkAppName(String name) {
-        return name.matches("^[a-z0-9_]+$");
+        return name.matches("^"+ APP_NAME_REGEX + "$");
     }
 
     public static String getAppPath(String appName) {
@@ -1007,5 +1000,99 @@ public class App implements MainArg {
             }
         }
         return url;
+    }
+
+    public static boolean installFromGitHub(String github) throws IOException, InterruptedException {
+        String urlGitHub = "https://github.com/"+ github +".git";
+        System.out.println();
+        System.out.println(OS.consoleOutput("@|green     _____ _ _   _   _       _         |@"));
+        System.out.println(OS.consoleOutput("@|green    |  __ (_) | | | | |     | |        |@"));
+        System.out.println(OS.consoleOutput("@|green    | |  \\/_| |_| |_| |_   _| |__      |@"));
+        System.out.println(OS.consoleOutput("@|green    | | __| | __|  _  | | | | '_ \\     |@"));
+        System.out.println(OS.consoleOutput("@|green    | |_\\ \\ | |_| | | | |_| | |_) |    |@"));
+        System.out.println(OS.consoleOutput("@|green     \\____/_|\\__\\_| |_/\\__,_|_.__/     |@"));
+        System.out.println();
+        System.out.println();
+        System.out.println(OS.consoleOutput("    App install: @|green "+ urlGitHub +" |@"));
+        System.out.println();
+        System.out.println();
+        Pattern patternName = Pattern.compile("^[a-z0-9-_]+\\/("+ APP_NAME_REGEX +")$");
+        Matcher matcherName = patternName.matcher(github);
+        if (matcherName.matches()) {
+            String app = matcherName.group(1);
+            if (new File(getAppPath(app)).exists()) {
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|red The "+ app +" application already exists inside the apps folder. |@"));
+                System.out.println();
+                return false;
+            }
+            ProcessBuilder builder = new ProcessBuilder();
+            builder.command(new String[]{"sh", "-c", "git clone "+ urlGitHub});
+            builder.directory(new File(Config.getAppsHome()));
+            Process process = builder.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|yellow Please execute the command inside the apps folder: |@"));
+                System.out.println(OS.consoleOutput("\t@|red > git clone "+ urlGitHub +" |@ "));
+                System.out.println();
+                return false;
+            }
+            return config(app);
+        } else {
+            System.out.println(OS.consoleOutput("@|red Invalid GitHub path. |@"));
+        }
+        return false;
+    }
+
+    public static boolean config(String app) throws IOException {
+        System.out.println();
+        File fileNetuno = new File(getAppPath(app), ".netuno.json");
+        if (fileNetuno.exists()) {
+            Values netuno = Values.fromJSON(InputStream.readFromFile(fileNetuno));
+            if (netuno.getString("type").equalsIgnoreCase("app")) {
+                Values netunoConfigs = netuno.getValues("config");
+                makeDirs(app);
+                for (String key : netunoConfigs.keys()) {
+                    File fileConfig = new File(new File(getAppPath(app), "config"), "_"+ key +".json");
+                    if (!fileConfig.exists()) {
+                        Values configBase = netunoConfigs.getValues(key);
+                        if (configBase != null) {
+                            OutputStream.writeToFile(configBase.toJSON(4), fileConfig, false);
+                        } else {
+                            System.out.println(OS.consoleOutput("@|yellow The "+ app +" application has empty config to environment "+ key +". |@"));
+                        }
+                    } else {
+                        System.out.println(OS.consoleOutput("@|yellow Config file _"+ key +".json already exists. |@"));
+                    }
+                }
+            } else {
+                System.out.println(OS.consoleOutput("@|yellow The "+ app +" application has the wrong type, and it must be the 'app' type. |@"));
+            }
+        }
+        printAppSuccessCreated(app);
+        return true;
+    }
+
+    private static void printAppSuccessCreated(String app) {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println(OS.consoleOutput("@|green Application "+ app +" created! |@"));
+        System.out.println();
+        System.out.println();
+        System.out.println(OS.consoleOutput("@|white New app home: |@"));
+        System.out.println();
+        System.err.println(OS.consoleOutput("    >    @|cyan apps/" + app + " |@"));
+        System.out.println();
+        System.out.println(OS.consoleOutput("@|white Start the server using your new app: |@"));
+        System.out.println();
+        System.err.println(OS.consoleNetunoCommand("server app="+ app));
+        System.out.println();
+        System.out.println(OS.consoleOutput("@|white Then when the server is running, try open in your browser: |@"));
+        System.out.println();
+        System.err.println(OS.consoleOutput("    >    @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + Config.getPort() + "/ |@"));
+        System.out.println();
+        System.out.println();
     }
 }
