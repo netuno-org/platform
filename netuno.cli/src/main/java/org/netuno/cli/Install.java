@@ -52,7 +52,7 @@ import org.apache.logging.log4j.Logger;
 public class Install implements MainArg {
     private static Logger logger = LogManager.getLogger(Install.class);
 
-    private static String graalVMVersion = "21.2.0";
+    private static String graalVMVersion = "21.3.0";
     
     @CommandLine.Option(names = { "-p", "path" }, paramLabel = "path", description = "Path to install.")
     protected String path = ".";
@@ -568,16 +568,16 @@ public class Install implements MainArg {
             FileUtils.deleteDirectory(graalVMFolder);
         }
         if (installGraalVM == 0) {
-            String graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-windows-amd64-" + graalVMVersion + ".zip";
+            String graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java17-windows-amd64-" + graalVMVersion + ".zip";
             String graalVMFileName = "graalvm.zip";
             if (SystemUtils.IS_OS_MAC) {
-                graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-darwin-amd64-" + graalVMVersion + ".tar.gz";
+                graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java17-darwin-amd64-" + graalVMVersion + ".tar.gz";
                 graalVMFileName = "graalvm.tar.gz";
             } else if (SystemUtils.IS_OS_LINUX) {
                 if (SystemUtils.OS_ARCH.equals("amd64")) {
-                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-linux-amd64-" + graalVMVersion + ".tar.gz";
+                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java17-linux-amd64-" + graalVMVersion + ".tar.gz";
                 } else if (SystemUtils.OS_ARCH.equals("aarch64")) {
-                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java11-linux-aarch64-" + graalVMVersion + ".tar.gz";
+                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java17-linux-aarch64-" + graalVMVersion + ".tar.gz";
                 } else {
                     System.out.println();
                     System.out.println(OS.consoleOutput("@|red    GraalVM not support this architecture. |@"));
