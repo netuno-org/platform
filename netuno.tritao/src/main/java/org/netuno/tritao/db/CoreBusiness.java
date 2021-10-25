@@ -2344,9 +2344,13 @@ public class CoreBusiness extends Base {
          */
         Values itemLog = new Values();
         boolean uidAlreadyLoaded = false;
-        if (insert && !values.hasKey("uid")) {
+        if (insert) {
             uidAlreadyLoaded = true;
-            update = update.concat(" ").concat(getBuilder().escape("uid")).concat(" = '").concat(UUID.randomUUID().toString()).concat("',");
+            if (values.hasKey("uid") && !values.getString("uid").isEmpty()) {
+                update = update.concat(" ").concat(getBuilder().escape("uid")).concat(" = '").concat(DB.sqlInjection(values.getString("uid"))).concat("',");
+            } else {
+                update = update.concat(" ").concat(getBuilder().escape("uid")).concat(" = '").concat(UUID.randomUUID().toString()).concat("',");
+            }
         }
         for (int _x = 0; _x < rsDesignXY.size(); _x++) {
             Values rowTritaoDesignXY = rsDesignXY.get(_x);
