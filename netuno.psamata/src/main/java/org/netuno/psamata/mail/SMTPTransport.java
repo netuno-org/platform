@@ -753,7 +753,7 @@ class AttachmentDataSource implements DataSource {
 
     public final InputStream getInputStream() throws IOException {
         if (data == null) {
-            throw new IOException("No bytes.");
+            throw new IOException("The "+ name +" attachment ("+ type +") has no bytes.");
         }
         return new ByteArrayInputStream(data);
     }
