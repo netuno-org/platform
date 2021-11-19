@@ -102,6 +102,10 @@ public class Error extends ResourceBase {
     	return false;
     }
 
+    public ErrorException create(String message) {
+        return new ErrorException(getProteu(), getHili(), message);
+    }
+
     public java.lang.Error createError(String message) {
         return new java.lang.Error(message);
     }
@@ -136,74 +140,74 @@ public class Error extends ResourceBase {
     }
 
     public void trace(String message) {
-        throw new ErrorException(message).setLogTrace(true);
+        throw new ErrorException(getProteu(), getHili(), message).setLogTrace(true);
     }
 
     public void trace(String message, Throwable cause) {
-        throw new ErrorException(message, cause).setLogTrace(true);
+        throw new ErrorException(getProteu(), getHili(), message, cause).setLogTrace(true);
     }
 
     public void trace(String message, Object cause) {
-        throw new ErrorException(message, new Exception(cause.toString())).setLogTrace(true);
+        throw new ErrorException(getProteu(), getHili(), message, new Exception(cause.toString())).setLogTrace(true);
     }
 
     public void debug(String message) {
-        throw new ErrorException(message).setLogDebug(true);
+        throw new ErrorException(getProteu(), getHili(), message).setLogDebug(true);
     }
 
     public void debug(String message, Throwable cause) {
-        throw new ErrorException(message, cause).setLogDebug(true);
+        throw new ErrorException(getProteu(), getHili(), message, cause).setLogDebug(true);
     }
 
     public void debug(String message, Object cause) {
-        throw new ErrorException(message, new Exception(cause.toString())).setLogDebug(true);
+        throw new ErrorException(getProteu(), getHili(), message, new Exception(cause.toString())).setLogDebug(true);
     }
 
     public void info(String message) {
-        throw new ErrorException(message).setLogInfo(true);
+        throw new ErrorException(getProteu(), getHili(), message).setLogInfo(true);
     }
 
     public void info(String message, Throwable cause) {
-        throw new ErrorException(message, cause).setLogInfo(true);
+        throw new ErrorException(getProteu(), getHili(), message, cause).setLogInfo(true);
     }
 
     public void info(String message, Object cause) {
-        throw new ErrorException(message, new Exception(cause.toString())).setLogInfo(true);
+        throw new ErrorException(getProteu(), getHili(), message, new Exception(cause.toString())).setLogInfo(true);
     }
 
     public void warn(String message) {
-        throw new ErrorException(message).setLogWarn(true);
+        throw new ErrorException(getProteu(), getHili(), message).setLogWarn(true);
     }
 
     public void warn(String message, Throwable cause) {
-        throw new ErrorException(message, cause).setLogWarn(true);
+        throw new ErrorException(getProteu(), getHili(), message, cause).setLogWarn(true);
     }
 
     public void warn(String message, Object cause) {
-        throw new ErrorException(message, new Exception(cause.toString())).setLogWarn(true);
+        throw new ErrorException(getProteu(), getHili(), message, new Exception(cause.toString())).setLogWarn(true);
     }
 
     public void error(String message) {
-        throw new ErrorException(message).setLogError(true);
+        throw new ErrorException(getProteu(), getHili(), message).setLogError(true);
     }
 
     public void error(String message, Throwable cause) {
-        throw new ErrorException(message, cause).setLogError(true);
+        throw new ErrorException(getProteu(), getHili(), message, cause).setLogError(true);
     }
 
     public void error(String message, Object cause) {
-        throw new ErrorException(message, new Exception(cause.toString())).setLogError(true);
+        throw new ErrorException(getProteu(), getHili(), message, new Exception(cause.toString())).setLogError(true);
     }
 
     public void fatal(String message) {
-        throw new ErrorException(message).setLogFatal(true);
+        throw new ErrorException(getProteu(), getHili(), message).setLogFatal(true);
     }
 
     public void fatal(String message, Throwable cause) {
-        throw new ErrorException(message, cause).setLogFatal(true);
+        throw new ErrorException(getProteu(), getHili(), message, cause).setLogFatal(true);
     }
 
     public void fatal(String message, Object cause) {
-        throw new ErrorException(message, new Exception(cause.toString())).setLogFatal(true);
+        throw new ErrorException(getProteu(), getHili(), message, new Exception(cause.toString())).setLogFatal(true);
     }
 }

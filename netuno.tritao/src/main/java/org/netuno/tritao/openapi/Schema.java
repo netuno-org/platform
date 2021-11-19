@@ -97,8 +97,16 @@ public class Schema extends WebMaster {
                     if (validateSchemaInProblems.isEmpty()) {
                         return true;
                     }
-                    logger.warn("\n\n#\n# "+ EmojiParser.parseToUnicode(":crossed_swords:") +" Invalid request to service " + service.getPath() + "\n#\n"
-                            + validateSchemaInProblems + "\n#\n");
+                    logger.warn("\n"
+                            + "\n#"
+                            + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(getProteu())
+                            + "\n#"
+                            + "\n# "+ EmojiParser.parseToUnicode(":crossed_swords:") +" Invalid request to service " + service.getPath() + ""
+                            + "\n#"
+                            + "\n"
+                            + validateSchemaInProblems
+                            + "\n#" +
+                            "\n");
                     return false;
                 }
             } catch (Exception e) {
@@ -163,7 +171,13 @@ public class Schema extends WebMaster {
                     if (validateSchemaOutProblems.isEmpty()) {
                         return true;
                     }
-                    logger.warn("\n\n#\n# Invalid output " + getProteu().getResponseHeaderStatus().getCode() + " to service " + service.getPath() + "\n#\n"
+                    logger.warn("\n"
+                            + "\n#"
+                            + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(getProteu())
+                            + "\n#"
+                            + "\n# Invalid output " + getProteu().getResponseHeaderStatus().getCode() + " to service " + service.getPath() + ""
+                            + "\n#"
+                            + "\n"
                             + validateSchemaOutProblems + "\n#\n");
                     return false;
                 }
@@ -182,14 +196,19 @@ public class Schema extends WebMaster {
         } else {
             logger.warn("Error in service schema validation.", e);
         }
-        logger.warn(
-                "\n\n#\n# Request " + getProteu().getResponseHeaderStatus().getCode() + " to service " + service.getPath()
-                        + "\n#\n# Error in schema "
-                        + pathSchema.toString().substring(Config.getPathAppServices(getProteu()).length())
-                        + "\n#\n#     "
-                        + e.getMessage().replace("\n", "\n#     ")
-                        + "\n#\n"
-        );
+        logger.warn("\n"
+                + "\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(getProteu())
+                + "\n#"
+                + "\n# Request " + getProteu().getResponseHeaderStatus().getCode() + " to service " + service.getPath()
+                + "\n#"
+                + "\n# Error in schema "
+                + pathSchema.toString().substring(Config.getPathAppServices(getProteu()).length())
+                + "\n#"
+                + "\n#     "
+                + e.getMessage().replace("\n", "\n#     ")
+                + "\n#"
+                + "\n");
     }
 
     private ByteArrayInputStream loadSchemaAsInputStream(Path pathSchema) throws IOException {
@@ -417,12 +436,16 @@ public class Schema extends WebMaster {
                                                                 logger.fatal("OpenAPI " + servicesPath + "/" + pathOutJSON.getFileName() + " failed.", e);
                                                             } else {
                                                                 logger.trace("OpenAPI " + servicesPath + "/" + pathOutJSON.getFileName() + " failed.", e);
-                                                                logger.warn(
-                                                                        "\n\n#\n# OpenAPI " + servicesPath + "/" + pathOutJSON.getFileName() + " failed: "
-                                                                                + "\n#\n#     "
-                                                                                + e.getMessage().replace("\n", "\n#     ")
-                                                                                + "\n#\n"
-                                                                );
+                                                                logger.warn("\n"
+                                                                        + "\n#"
+                                                                        + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(getProteu())
+                                                                        + "\n#"
+                                                                        + "\n# OpenAPI " + servicesPath + "/" + pathOutJSON.getFileName() + " failed: "
+                                                                        + "\n#"
+                                                                        + "\n#     "
+                                                                        + e.getMessage().replace("\n", "\n#     ")
+                                                                        + "\n#"
+                                                                        + "\n");
                                                             }
                                                         }
                                                     }
@@ -439,12 +462,16 @@ public class Schema extends WebMaster {
                                         logger.fatal("OpenAPI " + servicesPath + "/" + serviceFullName + " failed.", e);
                                     } else {
                                         logger.trace("OpenAPI " + servicesPath + "/" + serviceFullName + " failed.", e);
-                                        logger.warn(
-                                                "\n\n#\n# OpenAPI " + servicesPath + "/" + serviceFullName + " failed: "
-                                                        + "\n#\n#     "
-                                                        + e.getMessage().replace("\n", "\n#     ")
-                                                        + "\n#\n"
-                                        );
+                                        logger.warn("\n"
+                                                + "\n#"
+                                                + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(getProteu())
+                                                + "\n#"
+                                                + "\n# OpenAPI " + servicesPath + "/" + serviceFullName + " failed: "
+                                                + "\n#"
+                                                + "\n#     "
+                                                + e.getMessage().replace("\n", "\n#     ")
+                                                + "\n#"
+                                                + "\n");
                                     }
                                 }
                             }
@@ -457,12 +484,16 @@ public class Schema extends WebMaster {
                 logger.fatal("OpenAPI " + path + " failed.", e);
             } else {
                 logger.trace("OpenAPI " + path + " failed.", e);
-                logger.warn(
-                        "\n\n#\n# OpenAPI " + path + " failed: "
-                                + "\n#\n#     "
-                                + e.getMessage().replace("\n", "\n#     ")
-                                + "\n#\n"
-                );
+                logger.warn("\n"
+                        + "\n#"
+                        + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(getProteu())
+                        + "\n#"
+                        + "\n# OpenAPI " + path + " failed: "
+                        + "\n#"
+                        + "\n#     "
+                        + e.getMessage().replace("\n", "\n#     ")
+                        + "\n#"
+                        + "\n");
             }
         }
     }

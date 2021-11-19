@@ -269,6 +269,8 @@ public class Service {
                 proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
                 logger.warn("\n"
                         + "\n#"
+                        + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
+                        + "\n#"
                         + "\n# " + EmojiParser.parseToUnicode(":compass:") + " Service not found for " + proteu.getRequestHeader().getString("Method").toUpperCase() + " method: "
                         + "\n#"
                         + "\n# " + Config.getPathAppServices(proteu)

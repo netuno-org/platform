@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
@@ -319,11 +320,10 @@ public class TemplateBuilder {
                 output = value;
                 logger.fatal("\n\n"
                         + "#\n"
+                        + "# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu) +"\n"
+                        + "#\n"
                         + "# PROTEU LANG NOT LOADED\n"
                         + "#\n"
-                        + "# In your APP/server/scripts/_config.js\n"
-                        + "#\n"
-                        + "_proteu.getConfig().set(\"_lang\", _proteu.getConfig().get(\"_lang_en_US\"));\n"
                         + "\n"
                 );
             } else {

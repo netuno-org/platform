@@ -2322,7 +2322,7 @@ public class Remote extends org.netuno.psamata.net.Remote {
         try {
             return new RemoteResponse(proteu, super.submit(method, url, qs, contentType, data));
         } catch (Throwable t) {
-            throw new ErrorException("Remote " + name + " requesting " + method.toUpperCase() + " " + url + " failed", t);
+            throw new ErrorException(proteu, hili, "Remote " + name + " requesting " + method.toUpperCase() + " " + url + " failed", t);
         }
     }
     
@@ -2330,7 +2330,7 @@ public class Remote extends org.netuno.psamata.net.Remote {
         try {
             return new RemoteResponse(proteu, super.submit(method, url, qs, contentType, data));
         } catch (Throwable t) {
-            throw new ErrorException("Remote " + name + " requesting " + method.toUpperCase() + " " + url + " failed", t);
+            throw new ErrorException(proteu, hili, "Remote " + name + " requesting " + method.toUpperCase() + " " + url + " failed", t);
         }
     }
 

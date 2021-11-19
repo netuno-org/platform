@@ -278,7 +278,7 @@ public class RabbitMQ extends ResourceBase {
                 try {
                     factory.setUri(serverConfig.getString("uri"));
                 } catch (Exception e) {
-                    ErrorException error = new ErrorException(rabbitMQ.getInitErrorHelper() +" > config.uri: ["+ serverConfig.getString("uri") +"] is invalid.", e);
+                    ErrorException error = new ErrorException(getProteu(), getHili(), rabbitMQ.getInitErrorHelper() +" > config.uri: ["+ serverConfig.getString("uri") +"] is invalid.", e);
                     logger.fatal(error.toString());
                     throw error;
                 }
@@ -372,7 +372,7 @@ public class RabbitMQ extends ResourceBase {
                         rabbitConnection = rabbitMQ.connectionFactory.newConnection(connectionConfig.getString("name"));
                     }
                 } catch (Exception e) {
-                    ErrorException error = new ErrorException(rabbitMQ.getInitErrorHelper() +" not connect.", e);
+                    ErrorException error = new ErrorException(getProteu(), getHili(), rabbitMQ.getInitErrorHelper() +" not connect.", e);
                     logger.fatal(error.toString());
                     throw error;
                 }
@@ -423,7 +423,7 @@ public class RabbitMQ extends ResourceBase {
                                                     .set("channel", rabbitChannel)
                                     );
                     } catch (Exception e) {
-                        ErrorException error = new ErrorException(rabbitMQ.getInitErrorHelper() +" channel failed.", e);
+                        ErrorException error = new ErrorException(getProteu(), getHili(), rabbitMQ.getInitErrorHelper() +" channel failed.", e);
                         logger.fatal(error.toString());
                         throw error;
                     }

@@ -17,7 +17,11 @@
 
 package org.netuno.tritao.resource.util;
 
+import com.vdurmont.emoji.EmojiParser;
+import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuError;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.config.Hili;
 
 /**
  * Generic Errors
@@ -25,20 +29,33 @@ import org.netuno.proteu.ProteuError;
  */
 public class ErrorException extends ProteuError {
 
-    public ErrorException() {
+    public ErrorException(Proteu proteu, Hili hili) {
         super();
     }
 
-    public ErrorException(String message) {
-        super("\n#\n# "+ message.replace("\n", "\n# ") +"\n#\n");
+    public ErrorException(Proteu proteu, Hili hili, String message) {
+        super("\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
+                + "\n#"
+                + "\n# "+ message.replace("\n", "\n# ")
+                + "\n#"
+                + "\n");
     }
 
-    public ErrorException(String message, Throwable cause) {
-        super("\n#\n# "+ message +":\n#   "+ cause.getMessage().replace("\n", "\n#     ") +"\n#\n", cause);
+    public ErrorException(Proteu proteu, Hili hili, String message, Throwable cause) {
+        super("\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
+                + "\n#"
+                + "\n# "+ message +":"
+                + "\n#   "+ cause.getMessage().replace("\n", "\n#     ") +""
+                + "\n#"
+                + "\n", cause);
     }
 
-    public ErrorException(Throwable cause) {
-        super(cause);
+    public ErrorException(Proteu proteu, Hili hili, Throwable cause) {
+        super("\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
+                + "\n#", cause);
     }
 
 }
