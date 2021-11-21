@@ -205,6 +205,7 @@ public class Form {
         data.set("uid.value", table != null ? table.getString("uid") : "");
         data.set("name.value", table != null ? table.getString("name") : "");
         data.set("displayname.value", table != null ? table.getString("displayname") : "");
+        data.set("description.value", table != null ? table.getString("description") : "");
 
         data.set("showid.checked", table != null && table.getBoolean("show_id") ? " checked" : (table == null ? "checked" : ""));
         data.set("controluser.checked", table != null && table.getBoolean("control_user") ? " checked" : "");
@@ -216,6 +217,8 @@ public class Form {
         data.set("export_id.checked", table != null && table.getBoolean("export_id") ? " checked" : "");
         data.set("export_uid.checked", table != null && table.getBoolean("export_uid") ? " checked" : (table == null ? "checked" : ""));
         data.set("export_lastchange.checked", table != null && table.getBoolean("export_lastchange") ? " checked" : "");
+
+        data.set("reorder.value", table != null ? table.getInt("reorder") : "0");
 
         List<Values> parentTables = Config.getDataBaseBuilder(proteu).selectTable();
         String parentItems = "";

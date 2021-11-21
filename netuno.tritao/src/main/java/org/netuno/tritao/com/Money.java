@@ -66,7 +66,7 @@ public class Money extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             
             // Money 1
             getProteu().getOutput().print("<input type=\"text\" name=\"" + getDesignData().getString("name") + "_netuno_1\" value=\"" + (value == null ? "" : ((value.indexOf(".") == -1) ? value : value.substring(0, value.indexOf(".")))) + "\"");
@@ -89,6 +89,7 @@ public class Money extends ComponentBase {
                 }
             }
             getProteu().getOutput().print("<input type=\"text\" name=\"" + getDesignData().getString("name") + "_netuno_2\" value=\"" + cents + "\" size=\"1\" maxlength=\"2\" />");
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (IOException e) {
             throw new Error(e);
         }

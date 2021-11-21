@@ -75,7 +75,7 @@ public class Time extends ComponentBase {
 
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (this.isModeEdit() && value.isEmpty()
                 && getConfiguration().getParameter("DEFAULT_CURRENT").getValue() != null
                 && getConfiguration().getParameter("DEFAULT_CURRENT").getValueAsBoolean()) {
@@ -84,6 +84,7 @@ public class Time extends ComponentBase {
             getDesignData().set("com.time.value", simple(value));
             getDesignData().set("com.time.validation", getDesignData().getBoolean("notnull") ? "required" : "");
             TemplateBuilder.output(getProteu(), getHili(), "com/render/time", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

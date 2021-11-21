@@ -116,6 +116,7 @@ public class Setup extends Base {
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("displayname").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
+                    table.newColumn().setName("description").setType(Column.Type.TEXT),
                     table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("group_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("js").setType(Column.Type.TEXT),
@@ -132,6 +133,7 @@ public class Setup extends Base {
                     table.newColumn().setName("export_lastchange").setType(Column.Type.BOOLEAN).setDefault(true),
                     table.newColumn().setName("big").setType(Column.Type.BOOLEAN).setDefault(),
                     table.newColumn().setName("parent_id").setType(Column.Type.INT).setDefault(),
+                    table.newColumn().setName("reorder").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("firebase").setType(Column.Type.VARCHAR).setDefault()
             );
             index.create("netuno_table", "group_id");
@@ -148,6 +150,7 @@ public class Setup extends Base {
                     table.newColumn().setName("table_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("displayname").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
+                    table.newColumn().setName("description").setType(Column.Type.TEXT),
                     table.newColumn().setName("x").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("y").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("type").setType(Column.Type.VARCHAR).setMaxLength(50).setNotNull(true).setDefault(),

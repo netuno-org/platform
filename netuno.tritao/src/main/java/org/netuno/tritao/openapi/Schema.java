@@ -504,7 +504,7 @@ public class Schema extends WebMaster {
         if (Files.exists(fileInfo)) {
             openapi = Values.fromJSON(InputStream.readFromFile(fileInfo));
         } else {
-            throw new HiliError("OpenAPI information file does not exist in:\n" + fileInfo.toString()).setLogFatal(true);
+            throw new HiliError(getProteu(), getHili(), "OpenAPI information file does not exist in:\n" + fileInfo.toString()).setLogFatal(true);
         }
         Values appConfigOpenAPI = getProteu().getConfig().getValues("_app:config").getValues("openapi", new Values());
         Values base = new Values().set("openapi", "3.0.0");

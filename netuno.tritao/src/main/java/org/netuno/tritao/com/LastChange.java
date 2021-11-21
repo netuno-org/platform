@@ -71,13 +71,14 @@ public class LastChange extends ComponentBase {
     
     public Component render() {
     	try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             loadDesignData();
             if (super.getMode() == Mode.SearchForm) {
                 TemplateBuilder.output(getProteu(), getHili(), "com/render/lastchange", getDesignData());
             } else {
             	TemplateBuilder.output(getProteu(), getHili(), "com/showvalue/lastchange", getDesignData());
             }
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

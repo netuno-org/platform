@@ -31,7 +31,6 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.db.Builder;
-import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.util.Link;
 import org.netuno.tritao.util.LinkDataShow;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -150,7 +149,7 @@ public class MultiSelect extends ComponentBase {
     public Component render() {
         try {
             if (isModeEdit() && getMode() == Mode.EditExists) {
-                new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+                new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
                 getDesignData().set("com.multiselect.value", value);
                 getDesignData().set("com.multiselect.items", items);
                 getDesignData().set("com.multiselect.referenceId", getValuesId());
@@ -161,6 +160,7 @@ public class MultiSelect extends ComponentBase {
                     getDesignData().set("com.multiselect.service", getConfiguration().getParameter("SERVICE").getValue());
                 }
                 TemplateBuilder.output(getProteu(), getHili(), "com/render/multiselect", getDesignData());
+                new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             }
         } catch (Exception e) {
             throw new Error(e);

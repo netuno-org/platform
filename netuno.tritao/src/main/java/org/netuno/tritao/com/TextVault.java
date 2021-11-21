@@ -66,11 +66,12 @@ public class TextVault extends ComponentBase {
 
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.textvault.value", getMode() == Component.Mode.SearchForm ? "" : value);
             getDesignData().set("com.textvault.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "");
             getDesignData().set("com.textvault.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
             TemplateBuilder.output(getProteu(), getHili(), "com/render/textvault", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

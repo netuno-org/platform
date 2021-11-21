@@ -443,7 +443,7 @@ public class Hili {
                                     return null;
                                 }
                             } else {
-                                HiliError error = new HiliError("Import script not found "+ importScriptPath + " in "+ scriptName);
+                                HiliError error = new HiliError(proteu, this, "Import script not found "+ importScriptPath + " in "+ scriptName);
                                 onError(path, scriptName, script, error.getMessage(), -1, -1, error);
                                 return null;
                             }
@@ -617,7 +617,7 @@ public class Hili {
                     "\n\n    " +
                     detail;
             logger.debug(message, t);
-            HiliError error = new HiliError(message);
+            HiliError error = new HiliError(proteu, this, message);
             if (t instanceof IOException) {
                 logger.trace(error);
                 logger.error(error.getMessage());
@@ -764,7 +764,9 @@ public class Hili {
             }
             logger.fatal("\n" +
                     "\n#" +
-                    "\n# ERROR" +
+                    "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu) +
+                    "\n#" +
+                    "\n# "+ EmojiParser.parseToUnicode(":boom:") +" ERROR" +
                     "\n#" +
                     "\n# " + path +
                     "\n# " + scriptName + " > " + errorLineNumber + ":" + errorColumnNumber +
@@ -824,7 +826,7 @@ public class Hili {
         try {
             lang.addExtra(new LangResource(name, path, locale));
         } catch (MalformedURLException e) {
-            HiliError error = new HiliError("Language Recource "+ name +" ("+ locale.toString() +") "+ path + (e.getLocalizedMessage() != null ? ": "+ e.getLocalizedMessage() : ""), e);
+            HiliError error = new HiliError(proteu, this, "Language Recource "+ name +" ("+ locale.toString() +") "+ path + (e.getLocalizedMessage() != null ? ": "+ e.getLocalizedMessage() : ""), e);
             error.setLogError(true);
             throw error;
         } catch (MissingResourceException e) {

@@ -52,11 +52,12 @@ public class Color extends ComponentBase {
 
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.color.value", getMode() == Component.Mode.SearchForm ? "" : value);
             getDesignData().set("com.color.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             getDesignData().set("com.color.validation", getValidation(getDesignData()));
             TemplateBuilder.output(getProteu(), getHili(), "com/render/color", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

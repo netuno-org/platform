@@ -58,10 +58,11 @@ public class FileSystem extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.filesystem.value", value);
             getDesignData().set("com.filesystem.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             TemplateBuilder.output(getProteu(), getHili(), "com/render/filesystem", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

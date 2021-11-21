@@ -73,7 +73,7 @@ public class Date extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (this.isModeEdit() && value.isEmpty()
                     && getConfiguration().getParameter("DEFAULT_CURRENT").getValue() != null
                     && getConfiguration().getParameter("DEFAULT_CURRENT").getValueAsBoolean()) {
@@ -82,6 +82,7 @@ public class Date extends ComponentBase {
             getDesignData().set("com.date.value", value);
             getDesignData().set("com.date.validation", getDesignData().getBoolean("notnull") ? "required" : "");
             TemplateBuilder.output(getProteu(), getHili(), "com/render/date", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

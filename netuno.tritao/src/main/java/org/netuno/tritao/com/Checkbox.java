@@ -68,13 +68,14 @@ public class Checkbox extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (getMode() == Mode.SearchForm || getMode() == Mode.EditNew) {
             	getDesignData().set("com.checkbox.checked", getConfiguration().getParameter("DEFAULT").getValue() == "true" ? " checked " : "");
             } else {
             	getDesignData().set("com.checkbox.checked", (value != null && (value.equals("1") || value.toLowerCase().equals("true")) ? " checked " : ""));
             }
             TemplateBuilder.output(getProteu(), getHili(), "com/render/checkbox", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

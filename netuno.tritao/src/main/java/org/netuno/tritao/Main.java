@@ -32,7 +32,7 @@ import java.util.List;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.Lang;
 import org.netuno.tritao.resource.Template;
-import org.netuno.tritao.util.DataLabel;
+import org.netuno.tritao.util.Translation;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
 
@@ -117,7 +117,7 @@ public class Main extends WebMaster {
             jsonObject.put("uid", rowTable.getString("uid"));
             jsonObject.put("name", rowTable.getString("name"));
             jsonObject.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(
-                    DataLabel.form(lang, rowTable)
+                    Translation.formTitle(lang, rowTable)
             ));
             jsonObject.put("items", jsonArrayChilds);
             jsonArray.add(jsonObject);

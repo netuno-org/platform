@@ -52,13 +52,14 @@ public class TextArea extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.textarea.value", value);
             getDesignData().set("com.textarea.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
             getDesignData().set("com.textarea.cols", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "cols");
             getDesignData().set("com.textarea.rows", !getDesignData().getString("height").equals("0") ? getDesignData().getString("height") : "rows");
             getDesignData().set("com.textarea.validation", getValidation(getDesignData()));
             TemplateBuilder.output(getProteu(), getHili(), "com/render/textarea", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

@@ -64,13 +64,14 @@ public class TextMD extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.textmd.value", value);
             getDesignData().set("com.textmd.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
             getDesignData().set("com.textmd.cols", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "cols");
             getDesignData().set("com.textmd.rows", !getDesignData().getString("height").equals("0") ? getDesignData().getString("height") : "rows");
             getDesignData().set("com.textmd.validation", getValidation(getDesignData()));
             TemplateBuilder.output(getProteu(), getHili(), "com/render/textmd", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

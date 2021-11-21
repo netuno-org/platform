@@ -88,7 +88,7 @@ public class User extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.select.value", value);
             getDesignData().set("com.select.validation", getValidation(getDesignData()));
             getDesignData().set("com.select.service", "User"+ org.netuno.proteu.Config.getExtension() +"?service=json"+
@@ -98,6 +98,7 @@ public class User extends ComponentBase {
                 "&users="+ getConfiguration().getParameter("USERS").getValue() +
                 "&allow_user_logged="+ getConfiguration().getParameter("ALLOW_USER_LOGGED").getValue());
             TemplateBuilder.output(getProteu(), getHili(), "com/render/select", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

@@ -21,11 +21,11 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.Configuration;
-import org.netuno.tritao.com.DisplayName;
+import org.netuno.tritao.com.Label;
 import org.netuno.tritao.config.Hili;
 
 import java.util.List;
-import org.netuno.library.doc.IgnoreDoc;
+
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
@@ -60,7 +60,7 @@ public class Component extends ResourceBase {
     }
 
     public void renderDisplayName() {
-        new DisplayName(getProteu(), getHili(), component.getDesignData(), component.getTableData(), component.getMode()).render();
+        new Label(getProteu(), getHili(), component.getDesignData(), component.getTableData(), component.getMode()).render();
     }
 
     public final boolean isRenderSearchForm() {

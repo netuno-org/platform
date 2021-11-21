@@ -51,7 +51,7 @@ public class UID extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (getMode() == Mode.EditNew || getMode() == Mode.EditRestoreNew) {
             	value = java.util.UUID.randomUUID().toString();
             }
@@ -61,6 +61,7 @@ public class UID extends ComponentBase {
             } else {
             	TemplateBuilder.output(getProteu(), getHili(), "com/render/uid_edit", getDesignData());
             }
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

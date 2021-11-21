@@ -232,6 +232,7 @@
     var container, form;
     container = $(`\#${containerId}`);
     form = $(`#${formId}`);
+    form.ajaxForm().submit();
     if (validation === false || form.validate().valid()) {
       if (validation === false) {
         form.validate().cancelSubmit = true;
@@ -309,7 +310,13 @@
 
   netuno.addContentLoad(function(container) {
     netuno.loadDevLinks(container);
-    return netuno.loadCodeEditor(container);
+    netuno.loadCodeEditor(container);
+    return container.find("select").select2({
+      theme: "bootstrap",
+      placeholder: "",
+      maximumSelectionSize: 6,
+      allowClear: true
+    });
   });
 
   netuno.addPageLoad(function() {

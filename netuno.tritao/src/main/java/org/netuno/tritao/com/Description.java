@@ -21,21 +21,21 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.com.Component.Mode;
 import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.util.DataLabel;
+import org.netuno.tritao.util.Translation;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
  * Display Name - Form Field Label Component
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class DisplayName {
+public class Description {
     private Proteu proteu;
     private Hili hili;
     private Values designData;
     private Values tableData;
-    private Component.Mode mode;
-	
-    public DisplayName(Proteu proteu, Hili hili, Values designData, Values tableData, Component.Mode mode) {
+    private Mode mode;
+
+    public Description(Proteu proteu, Hili hili, Values designData, Values tableData, Mode mode) {
         this.proteu = proteu;
         this.hili = hili;
         this.designData = designData;
@@ -45,11 +45,10 @@ public class DisplayName {
 	
     public void render() {
         try {
-            Values data = new Values().set("displayname", DataLabel.formField(proteu, hili, tableData, designData));
-            if (this.mode != Mode.SearchForm && this.mode != Mode.SearchResult && designData.getBoolean("notnull")) {
-                TemplateBuilder.output(proteu, hili, "com/render/displayname_required", data);
-            } else {
-                TemplateBuilder.output(proteu, hili, "com/render/displayname", data);
+            String description = Translation.formFieldDescription(proteu, hili, tableData, designData);
+            if (!description.isEmpty()) {
+                Values data = new Values().set("description", Translation.formFieldDescription(proteu, hili, tableData, designData));
+                TemplateBuilder.output(proteu, hili, "com/render/description", data);
             }
         } catch (Exception e) {
             throw new Error(e);

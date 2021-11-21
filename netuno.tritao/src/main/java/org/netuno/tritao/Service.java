@@ -214,7 +214,7 @@ public class Service {
             if (e instanceof HiliError) {
                 throw e;
             } else {
-                throw new HiliError(e).setLogFatal(true);
+                throw new HiliError(proteu, hili, e).setLogFatal(true);
             }
             /*
 			logger.trace(e);

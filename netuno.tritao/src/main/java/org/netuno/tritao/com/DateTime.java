@@ -21,7 +21,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
@@ -67,7 +66,7 @@ public class DateTime extends ComponentBase {
     
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (this.isModeEdit() && value.isEmpty()
                     && getConfiguration().getParameter("DEFAULT_CURRENT").getValue() != null
                     && getConfiguration().getParameter("DEFAULT_CURRENT").getValueAsBoolean()) {
@@ -86,6 +85,7 @@ public class DateTime extends ComponentBase {
             }
             getDesignData().set("com.datetime.validation", getDesignData().getBoolean("notnull") ? "required" : "");
             TemplateBuilder.output(getProteu(), getHili(), "com/render/datetime", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

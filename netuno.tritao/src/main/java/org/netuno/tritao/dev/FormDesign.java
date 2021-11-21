@@ -149,6 +149,7 @@ public class FormDesign {
         	data.set("uid.value", field != null ? field.getString("uid") : "");
         	data.set("name.value", field != null ? field.getString("name") : "");
         	data.set("displayname.value", field != null ? field.getString("displayname") : "");
+            data.set("description.value", field != null ? field.getString("description") : "");
         	data.set("primarykey.checked", field != null && field.getBoolean("primarykey") ? " checked" : "");
         	data.set("notnull.checked", field != null && field.getBoolean("notnull") ? " checked" : "");
         	data.set("whenresult.checked", field == null || (field != null && field.getBoolean("whenresult")) ? " checked" : "");

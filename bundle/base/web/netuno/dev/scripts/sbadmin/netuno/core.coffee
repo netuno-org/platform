@@ -178,6 +178,7 @@ netuno.loadDevLinks = (container)->
 netuno.submitDev = (containerId, formId, validation, callback) ->
   container =  $("\##{ containerId }")
   form = $("##{ formId }")
+  form.ajaxForm().submit()
   if validation is false or form.validate().valid()
     if validation is false
       form.validate().cancelSubmit = true;
@@ -239,6 +240,12 @@ netuno.loadCodeEditor = (container) ->
 netuno.addContentLoad (container)->
   netuno.loadDevLinks(container)
   netuno.loadCodeEditor(container)
+  container.find("select").select2(
+    theme: "bootstrap"
+    placeholder: ""
+    maximumSelectionSize: 6
+    allowClear: true
+  )
 
 netuno.addPageLoad ()->
   netuno.loadDevLinks($("body"))

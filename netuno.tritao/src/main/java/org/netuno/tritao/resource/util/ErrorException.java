@@ -29,10 +29,6 @@ import org.netuno.tritao.config.Hili;
  */
 public class ErrorException extends ProteuError {
 
-    public ErrorException(Proteu proteu, Hili hili) {
-        super();
-    }
-
     public ErrorException(Proteu proteu, Hili hili, String message) {
         super("\n#"
                 + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
@@ -55,7 +51,8 @@ public class ErrorException extends ProteuError {
     public ErrorException(Proteu proteu, Hili hili, Throwable cause) {
         super("\n#"
                 + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
-                + "\n#", cause);
+                + "\n#"
+                + "\n", cause);
     }
 
 }

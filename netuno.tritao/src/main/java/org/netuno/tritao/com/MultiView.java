@@ -91,7 +91,7 @@ public class MultiView  extends ComponentBase {
     public Component render() {
         try {
             if (isModeEdit()) {
-                new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+                new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             	getDesignData().set("com.multiselect.value", value);
             	getDesignData().set("com.multiselect.referenceId", getValuesId());
 
@@ -104,6 +104,7 @@ public class MultiView  extends ComponentBase {
             	}
             	
                 TemplateBuilder.output(getProteu(), getHili(), "com/render/multiview_end", getDesignData());
+                new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             }
         } catch (Exception e) {
             throw new Error(e);

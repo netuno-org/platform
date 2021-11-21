@@ -69,6 +69,10 @@
             <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_name" name="name" value="_{&data=name.value}"
               size="40" validation="required sqlname">
           </div>
+          <div class="form-group">
+            <label for="fieldFormDesign__{data=table.name}_description">_{&lang=netuno.dev.formdesign.label.description}</label>
+            <textarea class="form-control" name="description" id="fieldFormDesign__{data=table.name}_description" rows="2">_{&data=description.value}</textarea>
+          </div>
         </div>
         <div class="col-md-6">
           <div class="row">
@@ -148,7 +152,6 @@
           </div>
         </div>
       </div>
-
       #if($_firebase.active())
       <div class="form-group">
         <label for="fieldFormDesign__{data=table.name}_firebase">Firebase</label>

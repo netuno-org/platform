@@ -18,12 +18,7 @@
 package org.netuno.tritao.db;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -997,6 +992,7 @@ public class CoreBusiness extends Base {
                             + (data.getString("uid").isEmpty() ? UUID.randomUUID().toString() : data.getString("uid")) + "'");
             values.set("name", "'" + DB.sqlInjection(data.getString("name")) + "'");
             values.set("displayname", "'" + DB.sqlInjection(data.getString("displayname")) + "'");
+            values.set("description", "'" + DB.sqlInjection(data.getString("description")) + "'");
             values.set("parent_id",
                     rsParentTable != null && rsParentTable.size() == 1 ? rsParentTable.get(0).getString("id")
                             : (data.getInt("parent_id") > 0 ? data.getInt("parent_id") + "" : "0")
@@ -1014,6 +1010,7 @@ public class CoreBusiness extends Base {
             values.set("export_uid", data.getBoolean("export_uid"));
             values.set("export_lastchange", data.getBoolean("export_lastchange"));
             values.set("report", data.getBoolean("report"));
+            values.set("reorder", data.getInt("reorder") > 0 ? data.getInt("reorder")  : 0);
             values.set("firebase", "'" + DB.sqlInjection(data.getString("firebase")) + "'");
             insertInto("netuno_table", values);
 
@@ -1061,8 +1058,8 @@ public class CoreBusiness extends Base {
             }
             Values values = new Values();
             values.set("name", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "'");
-            values.set("displayname",
-                            "'" + DB.sqlInjection(getProteu().getRequestAll().getString("displayname")) + "'");
+            values.set("displayname", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("displayname")) + "'");
+            values.set("description", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("description")) + "'");
             values.set("parent_id",
                             rsParentTable != null && rsParentTable.size() == 1 ? rsParentTable.get(0).getString("id") : "0");
             values.set("user_id", user != null ? user.getString("id") : "0");
@@ -1078,7 +1075,7 @@ public class CoreBusiness extends Base {
             values.set("export_uid", getProteu().getRequestAll().getBoolean("export_uid"));
             values.set("export_lastchange", getProteu().getRequestAll().getBoolean("export_lastchange"));
             values.set("report", getProteu().getRequestAll().getBoolean("report"));
-
+            values.set("reorder", getProteu().getRequestAll().getInt("reorder") > 0 ? getProteu().getRequestAll().getInt("reorder") : 0);
             values.set("firebase", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("firebase")) + "'");
 
             getManager().execute("update netuno_table set " + values.toString(", ", " = ") + " where id = "
@@ -1270,6 +1267,7 @@ public class CoreBusiness extends Base {
                 values.set("table_id", DB.sqlInjectionInt(data.getString("table_id")));
                 values.set("name", "'" + DB.sqlInjection(data.getString("name")) + "'");
                 values.set("displayname", "'" + DB.sqlInjection(data.getString("displayname")) + "'");
+                values.set("description", "'" + DB.sqlInjection(data.getString("description")) + "'");
                 values.set("x", DB.sqlInjectionInt(data.getString("x")));
                 values.set("y", DB.sqlInjectionInt(data.getString("y")));
                 values.set("type", "'" + DB.sqlInjection(data.getString("type")) + "'");
@@ -1419,8 +1417,8 @@ public class CoreBusiness extends Base {
 
                 Values values = new Values();
                 values.set("name", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "'");
-                values.set("displayname",
-                                "'" + DB.sqlInjection(getProteu().getRequestAll().getString("displayname")) + "'");
+                values.set("displayname", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("displayname")) + "'");
+                values.set("description", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("description")) + "'");
                 values.set("x", DB.sqlInjectionInt(getProteu().getRequestAll().getString("x")));
                 values.set("y", DB.sqlInjectionInt(getProteu().getRequestAll().getString("y")));
                 values.set(getBuilder().escape("type"),
@@ -1695,7 +1693,7 @@ public class CoreBusiness extends Base {
         }
         where += conditionToRestrictTables(getProteu().getRequestAll().getBoolean("report"));
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
-        String order = " order by displayname ";
+        String order = " order by reorder, displayname ";
         String sql = "select " + select + " from " + from + where + order;
         return getManager().query(sql);
     }
@@ -1709,7 +1707,7 @@ public class CoreBusiness extends Base {
                 where += " and parent_id = " + DB.sqlInjectionInt(parent_id);
         }
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
-        String order = " order by displayname ";
+        String order = " order by reorder, displayname ";
         String sql = "select " + select + " from " + from + where + order;
         return getManager().query(sql);
     }
@@ -1721,7 +1719,7 @@ public class CoreBusiness extends Base {
         where += conditionToRestrictTables(getProteu().getRequestAll().getBoolean("report"));
         where += " and parent_id not in (select id from netuno_table where id = nt.parent_id) ";
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
-        String order = " order by displayname ";
+        String order = " order by reorder, displayname ";
         String sql = "select " + select + " from " + from + where + order;
         return getManager().query(sql);
     }
@@ -2748,6 +2746,12 @@ public class CoreBusiness extends Base {
                 }
             }
         }
+        relations.sort(Comparator.comparing(
+                table -> table.getString("displayname")
+        ));
+        relations.sort(Comparator.comparing(
+                table -> table.getInt("reorder")
+        ));
         return relations;
     }
 

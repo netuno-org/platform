@@ -21,14 +21,14 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.com.Active;
 import org.netuno.tritao.com.Component;
-import org.netuno.tritao.com.DisplayName;
+import org.netuno.tritao.com.Label;
 import org.netuno.tritao.config.Config;
 import java.util.List;
 
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.db.DataSelected;
 import org.netuno.tritao.db.DataItem;
-import org.netuno.tritao.util.DataLabel;
+import org.netuno.tritao.util.Translation;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
 
@@ -213,7 +213,7 @@ public class Edit {
                     restore = true;
                 } else if (dataItem.getStatus() == DataItem.Status.Relations) {
                     restore = true;
-                    rowTable.set("relation.table.displayname", DataLabel.form(proteu, hili, dataItem.getRelationTable()));
+                    rowTable.set("relation.table.displayname", Translation.formTitle(proteu, hili, dataItem.getRelationTable()));
                     TemplateBuilder.output(proteu, hili, "edit/notification/delete_error_relations", rowTable);
                 } else {
                     restore = true;
@@ -258,6 +258,9 @@ public class Edit {
                 )) {
                 canDelete = true;
             }
+
+            rowTable.set("displayname", Translation.formTitle(proteu, hili, rowTable));
+            rowTable.set("description", Translation.formDescription(proteu, hili, rowTable));
 
             TemplateBuilder.output(proteu, hili, "edit/head", rowTable);
             TemplateBuilder.outputApp(proteu, hili, "edit/".concat(tableName).concat("_head"), rowTable);
@@ -346,7 +349,7 @@ public class Edit {
                 }
                 com.setValues(valuesPrefix, values);
                 if (!Rule.hasDesignFieldEditAccess(proteu, hili, rowTritaoDesignXY)) {
-                    new DisplayName(proteu, hili, com.getDesignData(), com.getTableData(), com.getMode()).render();
+                    new Label(proteu, hili, com.getDesignData(), com.getTableData(), com.getMode()).render();
                     proteu.getOutput().print(com.getHtmlValue());
                 } else {
                     com.render();
@@ -439,7 +442,7 @@ public class Edit {
             if (relations.size() > 0) {
                 TemplateBuilder.output(proteu, hili, "edit/relations/head", rowTable);
                 for (Values relation : relations) {
-                    relation.set("displayname", DataLabel.form(proteu, hili, relation));
+                    relation.set("displayname", Translation.formTitle(proteu, hili, relation));
                     TemplateBuilder.output(proteu, hili, "edit/relations/button", relation);
                 }
                 TemplateBuilder.output(proteu, hili, "edit/relations/foot", rowTable);

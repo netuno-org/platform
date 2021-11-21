@@ -92,7 +92,7 @@ public class File extends ComponentBase {
 
     public Component render() {
         try {
-            new DisplayName(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.file.value", value == null ? "" : value);
             if (value != null) {
                 String tableName = getTableData().getString("name");
@@ -118,6 +118,7 @@ public class File extends ComponentBase {
                 }
             }
             TemplateBuilder.output(getProteu(), getHili(), "com/render/file", getDesignData());
+            new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
             throw new Error(e);
         }

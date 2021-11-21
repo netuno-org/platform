@@ -63,6 +63,10 @@ body {
     padding-left: 35px;
 }
 
+.netuno-form-edit-new-title {
+    margin-top: 20px;
+}
+
 .netuno-form-buttons {
     margin-top: 20px;
 }
@@ -270,6 +274,10 @@ body {
 
 .modal .breadcrumb {
     display: none;
+}
+
+.search-content {
+    margin-top: 20px;
 }
 
 .search-content .btn-search,
