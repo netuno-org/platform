@@ -1,6 +1,6 @@
-# Netuno Platform
+# Netuno Platform: [Get Started](https://doc.netuno.org/docs/en/installation/)
 
-## To install, follow the [Get Started](https://doc.netuno.org/docs/en/installation/)
+### To install, follow the [Get Started](https://doc.netuno.org/docs/en/installation/).
 
 Quickly build applications adapted to your business logic.
 
