@@ -610,7 +610,7 @@ public class Hili {
                 //PolyglotException e = (PolyglotException)t;
                 //detail += "\n    "+  e.toString();
             }
-            String message = " "+ EmojiParser.parseToUnicode(":boom:") +" SCRIPT RUNTIME ERROR" +
+            String message = EmojiParser.parseToUnicode(":boom:") +" SCRIPT RUNTIME ERROR" +
                     "\n" +
                     "\n" + EmojiParser.parseToUnicode(":open_file_folder:") +" "+ path +
                     "\n" + EmojiParser.parseToUnicode(":stop_sign:") +" "+ scriptPath.substring(path.length()) + (lineNumber > 0 ? ":"+ lineNumber : "") +

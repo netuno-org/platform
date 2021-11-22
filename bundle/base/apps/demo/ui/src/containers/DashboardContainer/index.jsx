@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import _service from '@netuno/service-client';
+
 import message from 'antd/lib/message';
 import Spin from 'antd/lib/spin';
 
@@ -27,17 +29,17 @@ class DashboardContainer extends Component {
 
     loadWorkers() {
         this.setState({ workers: [], loading: true });
-        netuno.service({
+        _service({
             url: this.props.intl.locale.indexOf('pt') == 0 ? '/services/trabalhadores' : '/services/workers',
-            success: (data) => {
+            success: (response) => {
                 this.setState({
-                    workers: data.json,
+                    workers: response.json,
                     loading: false
                 });
             },
-            fail: (data) => {
+            fail: (e) => {
                 this.setState({ loading: false });
-                console.log(data);
+                console.error('Workers service failed.', e);
                 message.error(this.props.intl.formatMessage({ id: `${messages}.loading_error` }));
             }
         });

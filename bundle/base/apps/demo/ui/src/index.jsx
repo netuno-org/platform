@@ -1,7 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+import _service from '@netuno/service-client';
+
 import App from "./App.jsx";
+
+_service.config({
+    prefix: netuno.config.urlServices
+});
 
 const dashboardDiv = document.getElementById("app-dashboard");
 
