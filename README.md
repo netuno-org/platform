@@ -48,6 +48,8 @@ Netuno is written in Java and runs in GraalVM to facilitate web application deve
 
 ## Setup
 
+To install the Netuno Platform, please, follow the [Get Started](https://doc.netuno.org/docs/en/installation/).
+
 Allow permission to execute:
 
 `chmod +x setup.sh`
