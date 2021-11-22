@@ -48,7 +48,11 @@ Netuno is written in Java and runs in GraalVM to facilitate web application deve
 
 ## Setup
 
-To install the Netuno Platform, please, follow the [Get Started](https://doc.netuno.org/docs/en/installation/).
+To install the Netuno Platform, please, follow the:
+
+### [Get Started](https://doc.netuno.org/docs/en/installation/).
+
+Continue with the steps below if you want to compile from scratch and change the Netuno Platform, then start cloning this repository.
 
 Allow permission to execute:
 
