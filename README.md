@@ -1,5 +1,7 @@
 # Netuno Platform
 
+# Install: [Get Started](https://doc.netuno.org/docs/en/installation/)
+
 Quickly build applications adapted to your business logic.
 
 In here you can find the source of all the Netuno core capabilities, such as CLI and Web Server.
@@ -34,8 +36,6 @@ Netuno is written in Java and runs in GraalVM to facilitate web application deve
 > 😎 While you are programming you won't need to restart the server to compile the newly updated code.
 >
 > All log outputs such as server-side, client-side (NPM `run watch`) and other outputs are integrated in the same console. By having this feature you'll only need to look to one console thus easing your work.
-
-# Install: [Get Started](https://doc.netuno.org/docs/en/installation/)
 
 ## Build Requirements
 
