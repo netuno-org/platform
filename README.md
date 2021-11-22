@@ -35,6 +35,8 @@ Netuno is written in Java and runs in GraalVM to facilitate web application deve
 >
 > All log outputs such as server-side, client-side (NPM `run watch`) and other outputs are integrated in the same console. By having this feature you'll only need to look to one console thus easing your work.
 
+# Install: [Get Started](https://doc.netuno.org/docs/en/installation/)
+
 ## Build Requirements
 
 - Linux or macOS;
