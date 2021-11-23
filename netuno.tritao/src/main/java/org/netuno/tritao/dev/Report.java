@@ -103,10 +103,13 @@ public class Report {
     	data.set("uid.value", table != null ? table.getString("uid") : "");
         data.set("name.value", table != null ? table.getString("name") : "");
         data.set("displayname.value", table != null ? table.getString("displayname") : "");
+        data.set("description.value", table != null ? table.getString("description") : "");
 
         data.set("controluser.checked", table != null && table.getBoolean("control_user") ? " checked" : "");
         data.set("controlgroup.checked", table != null && table.getBoolean("control_group") ? " checked" : "");
         data.set("controlactive.checked", table != null && table.getBoolean("control_active") ? " checked" : "");
+
+        data.set("reorder.value", table != null ? table.getInt("reorder") : "0");
 
         List<Values> parentTables = Config.getDataBaseBuilder(proteu).selectTable();
         String parentItems = "";

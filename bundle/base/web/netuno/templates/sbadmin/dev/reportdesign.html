@@ -68,6 +68,10 @@
             <label for="fieldReportDesign__{data=table.name}_name">* _{&lang=netuno.dev.reportdesign.label.name}</label>
             <input class="form-control" type="text" id="fieldReportDesign__{data=table.name}_name" name="name" value="_{&data=name.value}" size="40" validation="required sqlname">
           </div>
+          <div class="form-group">
+            <label for="fieldReportDesign__{data=table.name}_description">_{&lang=netuno.dev.reportdesign.label.description}</label>
+            <textarea class="form-control" name="description" id="fieldReportDesign__{data=table.name}_description" rows="2">_{&data=description.value}</textarea>
+          </div>
         </div>
         <div class="col-md-6">
           <div class="row">
@@ -231,6 +235,22 @@
   </div>
 </div>
 
+<div class="modal fade" id="componentConfig_{request=netuno_table_uid}LinkModalSelect" tabindex="-1" role="dialog" data-table-uid="_{data=table.uid}" data-report>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{data=parameter.displayname}</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" style="float: left" data-netuno-back>_{&lang=netuno.form.button.back}</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.close}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   (function (netuno, $) {
     $('#fieldReportDesign__{data=table.name}_displayName').on('keyup', function () {
@@ -273,13 +293,16 @@
       }
     });
     $('#buttonReportDesign__{data=table.name}_copy').on("click", function () {
-      netuno.linkDev.show({
-        itemSelected: function(item) {
-          $('#fieldReportDesign__{data=table.name}_execute').val('copy');
-          $('#fieldReportDesign__{data=table.name}_copy').val(item.attr('data-field-uid'));
-          $('#fieldReportDesign__{data=table.name}_uid').val('');
-          netuno.submitDev('netuno_form_design__{data=table.name}', 'reportDesign__{data=table.uid}', false);
-        }
+      $('#fieldReportDesign__{data=table.name}_execute').val('new');
+      $('#fieldReportDesign__{data=table.name}_uid').val('');
+      netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false, function () {
+        $('#fieldReportDesign__{data=table.name}_execute').val('');
+        netuno.componentConfig.link.select('_{request=netuno_table_uid}', function (field, uid) {
+            $('#fieldReportDesign__{data=table.name}_execute').val('copy');
+            $('#fieldReportDesign__{data=table.name}_copy').val(uid);
+            $('#fieldReportDesign__{data=table.name}_uid').val('');
+            netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false);
+        });
       });
     });
     netuno.loadValidationDev('reportDesign__{data=table.uid}');

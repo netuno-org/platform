@@ -1,4 +1,4 @@
-/* #if($_firebase.active() && $data.getBoolean("firebase.changed")) */
+#if($_firebase.active() && $data.getBoolean("firebase.changed"))
 <div id="modalManagementForm_firebaseChanged" class="modal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -20,7 +20,7 @@
         $('#modalManagementForm_firebaseChanged').modal('show');
     })(typeof jQuery == 'undefined' ? parent.jQuery : jQuery);
 </script>
-/* #end */
+#end
 <script>
 	(function (toastr) {
 		toastr["success"]("_{&lang=netuno.dev.form.msg.saved~request=displayname}", "_{&lang=netuno.dev.form.title}");

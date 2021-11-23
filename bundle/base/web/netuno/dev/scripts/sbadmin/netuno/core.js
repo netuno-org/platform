@@ -232,7 +232,9 @@
     var container, form;
     container = $(`\#${containerId}`);
     form = $(`#${formId}`);
-    form.ajaxForm().submit();
+    if (form.validate().valid() === false) {
+      form.ajaxForm().submit();
+    }
     if (validation === false || form.validate().valid()) {
       if (validation === false) {
         form.validate().cancelSubmit = true;
@@ -350,16 +352,18 @@
     link: {
       popup: null,
       callbackItem: null,
+      report: false,
       select: function(netunoTableUid, callbackItem) {
         var tableUid;
         netuno.componentConfig.link.callbackItem = callbackItem;
         netuno.componentConfig.link.popup = $(`#componentConfig${netunoTableUid}LinkModalSelect`);
+        netuno.componentConfig.link.report = netuno.componentConfig.link.popup.attr('data-report') === '';
         tableUid = netuno.componentConfig.link.popup.attr('data-table-uid');
         if (typeof tableUid === 'undefined' || tableUid === null) {
           tableUid = '';
         }
         netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-mode', 'select').removeAttr('data-table-uid').removeAttr('data-parameter-key');
-        netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=select`, netuno.componentConfig.link.contentLoaded);
+        netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=select&report=${netuno.componentConfig.link.report}`, netuno.componentConfig.link.contentLoaded);
         netuno.componentConfig.link.popup.find("[data-netuno-back]").hide();
         return netuno.componentConfig.link.popup.modal("show");
       },
@@ -372,7 +376,7 @@
           tableUid = '';
         }
         netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-mode', 'add').attr('data-table-uid', netunoTableUid).attr('data-parameter-key', parameterKey);
-        netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=add&netuno_table_uid=${netunoTableUid}&parameter_key=${parameterKey}&table_uid=${tableUid}`, netuno.componentConfig.link.contentLoaded);
+        netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=add&netuno_table_uid=${netunoTableUid}&parameter_key=${parameterKey}&table_uid=${tableUid}&report=${netuno.componentConfig.link.report}`, netuno.componentConfig.link.contentLoaded);
         return netuno.componentConfig.link.popup.modal("show");
       },
       remove: function(netunoTableUid, parameterKey, callbackItem) {
@@ -384,7 +388,7 @@
           tableUid = '';
         }
         netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-mode', 'remove').attr('data-table-uid', netunoTableUid).attr('data-parameter-key', parameterKey);
-        netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=remove&netuno_table_uid=${netunoTableUid}&parameter_key=${parameterKey}&table_uid=${tableUid}`, netuno.componentConfig.link.contentLoaded);
+        netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=remove&netuno_table_uid=${netunoTableUid}&parameter_key=${parameterKey}&table_uid=${tableUid}&report=${netuno.componentConfig.link.report}`, netuno.componentConfig.link.contentLoaded);
         return netuno.componentConfig.link.popup.modal("show");
       },
       contentLoaded: function() {
@@ -402,7 +406,7 @@
           netuno.componentConfig.link.popup.find("[data-netuno-back]").off('click').on('click', function() {
             var back;
             back = $(this);
-            return netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=${back.attr('data-mode')}&netuno_table_uid=${back.attr('data-table-uid')}&parameter_key=${back.attr('data-parameter-key')}`, netuno.componentConfig.link.contentLoaded);
+            return netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=${back.attr('data-mode')}&netuno_table_uid=${back.attr('data-table-uid')}&parameter_key=${back.attr('data-parameter-key')}&report=${netuno.componentConfig.link.report}`, netuno.componentConfig.link.contentLoaded);
           }).show();
           return $('.component_config_link_popup_field_item').on('click', function(e) {
             var item;
@@ -414,7 +418,7 @@
         }
       },
       openTable: function(mode, netunoTableUid, parameterKey, tableUid) {
-        return netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=${mode}&netuno_table_uid=${netunoTableUid}&parameter_key=${parameterKey}&table_uid=${tableUid}`, netuno.componentConfig.link.contentLoaded);
+        return netuno.componentConfig.link.popup.find(".modal-body").empty().load(`${netuno.config.urlAdmin}dev/Link${netuno.config.extension}?mode=${mode}&netuno_table_uid=${netunoTableUid}&parameter_key=${parameterKey}&table_uid=${tableUid}&report=${netuno.componentConfig.link.report}`, netuno.componentConfig.link.contentLoaded);
       },
       loadField: function(mode, netunoTableUid, parameterKey, tableUid, table, fieldUid, field) {
         var value;

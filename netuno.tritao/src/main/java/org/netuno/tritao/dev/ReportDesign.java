@@ -134,18 +134,22 @@ public class ReportDesign extends FormDesign {
             }
             List<Values> fields = Config.getDataBaseBuilder(proteu).selectTableDesign(table.getString("id"), "");
             String fieldItems = "";
+            int nextLine = 0;
             for (Values fieldItem : fields) {
+                nextLine = Math.max(nextLine, fieldItem.getInt("y"));
                 data.set("field.item.id", fieldItem.getString("id"));
                 data.set("field.item.uid", fieldItem.getString("uid"));
                 data.set("field.item.selected", field != null && fieldItem.getString("id").equals(field.getString("id")) ? " selected" : "");
                 data.set("field.item.name", fieldItem.getString("name"));
                 fieldItems = fieldItems.concat(TemplateBuilder.getOutput(proteu, hili, "dev/reportdesign_field_item", data));
             }
+            nextLine++;
             data.set("field.items", fieldItems);
             data.set("id.value", field != null ? field.getInt("id") : -1);
             data.set("uid.value", field != null ? field.getString("uid") : "");
             data.set("name.value", field != null ? field.getString("name") : "");
             data.set("displayname.value", field != null ? field.getString("displayname") : "");
+            data.set("description.value", field != null ? field.getString("description") : "");
             data.set("notnull.checked", field != null && field.getBoolean("notnull") ? " checked" : "");
 
             String typeItems = "";
@@ -159,8 +163,8 @@ public class ReportDesign extends FormDesign {
             }
             data.set("type.items", typeItems);
 
-            data.set("x.value", field != null ? field.getString("x") : "0");
-            data.set("y.value", field != null ? field.getString("y") : "0");
+            data.set("x.value", field != null ? field.getString("x") : "1");
+            data.set("y.value", field != null ? field.getString("y") : nextLine +"");
 
             data.set("width.value", field != null ? field.getString("width") : "0");
             data.set("height.value", field != null ? field.getString("height") : "0");

@@ -178,7 +178,8 @@ netuno.loadDevLinks = (container)->
 netuno.submitDev = (containerId, formId, validation, callback) ->
   container =  $("\##{ containerId }")
   form = $("##{ formId }")
-  form.ajaxForm().submit()
+  if form.validate().valid() is false
+    form.ajaxForm().submit()
   if validation is false or form.validate().valid()
     if validation is false
       form.validate().cancelSubmit = true;
@@ -274,14 +275,16 @@ netuno.componentConfig = {
   link: {
     popup: null,
     callbackItem: null,
+    report: false
     select: (netunoTableUid, callbackItem)->
       netuno.componentConfig.link.callbackItem = callbackItem
       netuno.componentConfig.link.popup = $("#componentConfig#{ netunoTableUid }LinkModalSelect")
+      netuno.componentConfig.link.report = netuno.componentConfig.link.popup.attr('data-report') == ''
       tableUid = netuno.componentConfig.link.popup.attr('data-table-uid')
       if typeof tableUid == 'undefined' or tableUid == null
         tableUid = ''
       netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-mode', 'select').removeAttr('data-table-uid').removeAttr('data-parameter-key')
-      netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=select", netuno.componentConfig.link.contentLoaded)
+      netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=select&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
       netuno.componentConfig.link.popup.find("[data-netuno-back]").hide()
       netuno.componentConfig.link.popup.modal("show")
     ,
@@ -292,7 +295,7 @@ netuno.componentConfig = {
       if typeof tableUid == 'undefined' or tableUid == null
         tableUid = ''
       netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-mode', 'add').attr('data-table-uid', netunoTableUid).attr('data-parameter-key', parameterKey)
-      netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=add&netuno_table_uid=#{ netunoTableUid }&parameter_key=#{ parameterKey }&table_uid=#{ tableUid }", netuno.componentConfig.link.contentLoaded)
+      netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=add&netuno_table_uid=#{ netunoTableUid }&parameter_key=#{ parameterKey }&table_uid=#{ tableUid }&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
       netuno.componentConfig.link.popup.modal("show")
     ,
     remove: (netunoTableUid, parameterKey, callbackItem)->
@@ -302,7 +305,7 @@ netuno.componentConfig = {
       if typeof tableUid == 'undefined' or tableUid == null
         tableUid = ''
       netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-mode', 'remove').attr('data-table-uid', netunoTableUid).attr('data-parameter-key', parameterKey)
-      netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=remove&netuno_table_uid=#{ netunoTableUid }&parameter_key=#{ parameterKey }&table_uid=#{ tableUid }", netuno.componentConfig.link.contentLoaded)
+      netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=remove&netuno_table_uid=#{ netunoTableUid }&parameter_key=#{ parameterKey }&table_uid=#{ tableUid }&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
       netuno.componentConfig.link.popup.modal("show")
     ,
     contentLoaded: ()->
@@ -316,7 +319,7 @@ netuno.componentConfig = {
       if $('.component_config_link_popup_field_item').length
         netuno.componentConfig.link.popup.find("[data-netuno-back]").off('click').on('click', ()->
           back = $(this);
-          netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=#{ back.attr('data-mode') }&netuno_table_uid=#{ back.attr('data-table-uid') }&parameter_key=#{ back.attr('data-parameter-key') }", netuno.componentConfig.link.contentLoaded)
+          netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=#{ back.attr('data-mode') }&netuno_table_uid=#{ back.attr('data-table-uid') }&parameter_key=#{ back.attr('data-parameter-key') }&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
         ).show()
         $('.component_config_link_popup_field_item').on 'click', (e)->
           e.preventDefault();
@@ -325,7 +328,7 @@ netuno.componentConfig = {
           netuno.componentConfig.link.loadField(item.attr('data-mode'), item.attr('data-netuno-table-uid'), item.attr('data-parameter-key'), item.attr('data-table-uid'), item.attr('data-table-name'), item.attr('data-field-uid'), item.attr('data-field-name'))
     ,
     openTable: (mode, netunoTableUid, parameterKey, tableUid)->
-      netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=#{ mode }&netuno_table_uid=#{ netunoTableUid }&parameter_key=#{ parameterKey }&table_uid=#{ tableUid }", netuno.componentConfig.link.contentLoaded)
+      netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=#{ mode }&netuno_table_uid=#{ netunoTableUid }&parameter_key=#{ parameterKey }&table_uid=#{ tableUid }&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
     ,
     loadField: (mode, netunoTableUid, parameterKey, tableUid, table, fieldUid, field)->
       netuno.componentConfig.link.popup.attr('data-table-uid', tableUid)

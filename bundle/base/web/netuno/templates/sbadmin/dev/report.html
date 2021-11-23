@@ -23,7 +23,7 @@
   <div class="row netuno_form">
     <div class="col-lg-8">
       <div class="form-group">
-        <label>_{&lang=netuno.dev.report.label.edit_existing}</label>
+        <h2>_{&lang=netuno.dev.report.label.edit_existing}</h2>
         <p>
           <select class="form-control" id="managementReport_uid" name="uid" onchange="netuno.submitDev('management_report', 'managementReport', false);">
             <option value="">_{&lang=netuno.dev.report.label.creating_new}</option>
@@ -41,6 +41,13 @@
   <hr>
   <div class="row netuno_form">
     <div class="col-lg-12">
+        #if($data.getString("uid.value").isEmpty())
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>_{&lang=netuno.dev.report.label.add}</h2><br>
+            </div>
+        </div>
+        #end
       <div class="row">
         <div class="col-sm-8">
           <div class="form-group">
@@ -50,6 +57,10 @@
           <div class="form-group">
             <label for="managementReport_name">* _{&lang=netuno.dev.report.label.name}</label>
             <input class="form-control" type="text" id="managementReport_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
+          </div>
+          <div class="form-group">
+            <label for="managementReport_description">_{&lang=netuno.dev.report.label.description}</label>
+            <textarea class="form-control" name="description" id="managementReport_description" rows="2">_{&data=description.value}</textarea>
           </div>
         </div>
         <div class="col-sm-4">
@@ -83,36 +94,46 @@
           </div>
         </div>
       </div>
-      <div class="form-group">
-        <label for="managementReport_parent">_{&lang=netuno.dev.report.label.parent}</label>
-        <select name="parent_id" id="managementReport_parent">
-          <option value="0"></option>
-          _{data=parent.items}
-        </select>
-      </div>
       <div class="row">
-        <div class="col-sm-6">
-          <div class="form-group">
-            <label for="managementReport_user">* _{&lang=netuno.dev.report.label.user}</label>
-            <select class="form-control" name="user_uid" id="managementReport_user">
-              <option value="0"_{data=user.all.selected}>_{&lang=netuno.dev.report.label.user.all}</option>
-              <option value="-1"_{data=user.administrator.selected}>_{&lang=netuno.dev.report.label.user.administrator}</option>
-              <option value="-2"_{data=user.developer.selected}>_{&lang=netuno.dev.report.label.user.developer}</option>
-              _{data=user.options}
-            </select>
+          <div class="col-lg-8">
+              <div class="form-group">
+                  <label for="managementReport_parent">_{&lang=netuno.dev.report.label.parent}</label>
+                  <select class="form-control" name="parent_id" id="managementReport_parent">
+                      <option value="0"></option>
+                      _{data=parent.items}
+                  </select>
+              </div>
+              <div class="row">
+                  <div class="col-sm-4">
+                      <div class="form-group">
+                          <label for="managementForm__reorder">_{&lang=netuno.dev.form.label.reorder}</label>
+                          <input type="text" class="form-control" id="managementForm__reorder" name="reorder" value="_{data=reorder.value}" size="10" maxlength="10" validation="number">
+                      </div>
+                  </div>
+                  <div class="col-sm-4">
+                      <div class="form-group">
+                          <label for="managementReport_user">* _{&lang=netuno.dev.report.label.user}</label>
+                          <select class="form-control" name="user_uid" id="managementReport_user">
+                              <option value="0"_{data=user.all.selected}>_{&lang=netuno.dev.report.label.user.all}</option>
+                              <option value="-1"_{data=user.administrator.selected}>_{&lang=netuno.dev.report.label.user.administrator}</option>
+                              <option value="-2"_{data=user.developer.selected}>_{&lang=netuno.dev.report.label.user.developer}</option>
+                              _{data=user.options}
+                          </select>
+                      </div>
+                  </div>
+                  <div class="col-sm-4">
+                      <div class="form-group">
+                          <label for="managementReport_group">* _{&lang=netuno.dev.report.label.group}</label>
+                          <select class="form-control" name="group_uid" id="managementReport_group">
+                              <option value="0"_{data=group.all.selected}>_{&lang=netuno.dev.report.label.group.all}</option>
+                              <option value="-1"_{data=group.administrator.selected}>_{&lang=netuno.dev.report.label.group.administrator}</option>
+                              <option value="-2"_{data=group.developer.selected}>_{&lang=netuno.dev.report.label.group.developer}</option>
+                              _{data=group.options}
+                          </select>
+                      </div>
+                  </div>
+              </div>
           </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="form-group">
-            <label for="managementReport_group">* _{&lang=netuno.dev.report.label.group}</label>
-            <select class="form-control" name="group_uid" id="managementReport_group">
-              <option value="0"_{data=group.all.selected}>_{&lang=netuno.dev.report.label.group.all}</option>
-              <option value="-1"_{data=group.administrator.selected}>_{&lang=netuno.dev.report.label.group.administrator}</option>
-              <option value="-2"_{data=group.developer.selected}>_{&lang=netuno.dev.report.label.group.developer}</option>
-              _{data=group.options}
-            </select>
-          </div>
-        </div>
       </div>
     </div>
   </div>
