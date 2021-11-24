@@ -59,10 +59,6 @@
             <input class="form-control" type="text" id="managementForm_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
           </div>
           <div class="form-group">
-            <label for="managementForm_description">_{&lang=netuno.dev.form.label.description}</label>
-            <textarea class="form-control" name="description" id="managementForm_description" rows="2">_{&data=description.value}</textarea>
-          </div>
-          <div class="form-group">
             <label for="managementForm_parent">_{&lang=netuno.dev.form.label.parent}</label>
             <select class="form-control" name="parent_uid" id="managementForm_parent">
               <option value=""></option>
@@ -147,6 +143,10 @@
           </span>
         </button>
         <div class="collapse" id="managementForm_collapseMore">
+          <div class="form-group">
+            <label for="managementForm_description">_{&lang=netuno.dev.form.label.description}</label>
+            <textarea class="form-control" name="description" id="managementForm_description" rows="2">_{&data=description.value}</textarea>
+          </div>
           <h2>_{&lang=netuno.dev.form.label.export.title}</h2>
           <div class="row">
             <div class="col-xs-4">
@@ -349,5 +349,8 @@
         }, "json");
     });
     netuno.loadValidationDev('managementForm');
+    $("#managementForm_description").summernote({
+        height: 80
+    });
   })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
 </script>

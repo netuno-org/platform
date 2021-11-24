@@ -56,6 +56,10 @@
     border: 1px solid #f1f1f1;
 }
 
+.note-group-select-from-files {
+  display: none;
+}
+
 .CodeMirror {
     border: 1px solid #f1f1f1;
 }
