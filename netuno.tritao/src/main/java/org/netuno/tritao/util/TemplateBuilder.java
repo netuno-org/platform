@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
@@ -48,7 +49,7 @@ public class TemplateBuilder {
 
     private static Map<String, ImmutablePair<Long, String>> cachedTemplates = new ConcurrentHashMap<>();
 
-    private static final Pattern pattern = Pattern.compile("_\\{(\\&{0,1}[a-zA-Z0-9_\\-]+)\\=([a-zA-Z0-9_\\.\\-\\|\\/\\~\\=\\&]+)\\}");
+    private static final Pattern pattern = Pattern.compile("_\\{(\\?{0,1}\\&{0,1}[a-zA-Z0-9_\\-]+)\\=([a-zA-Z0-9_\\.\\-\\|\\/\\~\\=\\&]+)\\}");
 
     synchronized public static String getContent(Proteu proteu, String path) throws IOException {
         String extension = FilenameUtils.getExtension(path);
@@ -203,9 +204,14 @@ public class TemplateBuilder {
     private static String getValue(Proteu proteu, Hili hili, String baseDir, Lang lang, String key, String value, Values data) throws IOException, ScriptException {
         String output = "";
         boolean htmlEncode = false;
+        boolean htmlEncodeSpecialChars = false;
         if (key.startsWith("&")) {
             htmlEncode = true;
             key = key.substring(1);
+        }
+        if (key.startsWith("?&")) {
+            htmlEncodeSpecialChars = true;
+            key = key.substring(2);
         }
         if (key.equalsIgnoreCase("data") && data != null) {
             if (value.indexOf("|") > 0) {
@@ -348,7 +354,17 @@ public class TemplateBuilder {
             }
         }
         if (htmlEncode) {
-            output = org.apache.commons.text.StringEscapeUtils.escapeHtml4(output);
+            output = StringEscapeUtils.escapeHtml4(output);
+        }
+        if (htmlEncodeSpecialChars) {
+            Pattern patternSpecialChars = Pattern.compile("([^\\x00-\\x7F])");
+            Matcher matcherSpecialChars = patternSpecialChars.matcher(output);
+            while (matcherSpecialChars.find()) {
+                output = output.replace(
+                        matcherSpecialChars.group(1),
+                        StringEscapeUtils.escapeHtml4(matcherSpecialChars.group(1))
+                );
+            }
         }
         return output;
     }

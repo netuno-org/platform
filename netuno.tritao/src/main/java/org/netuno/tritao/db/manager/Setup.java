@@ -403,6 +403,24 @@ public class Setup extends Base {
                         table.newColumn().setName("show_id").setType(Column.Type.BOOLEAN).setDefault(true)
                 );
             }
+            if (!checkExists.column("netuno_table", "reorder")) {
+                table.create(
+                        "netuno_table",
+                        table.newColumn().setName("reorder").setType(Column.Type.INT).setNotNull(true).setDefault()
+                );
+            }
+            if (!checkExists.column("netuno_table", "description")) {
+                table.create(
+                        "netuno_table",
+                        table.newColumn().setName("description").setType(Column.Type.TEXT)
+                );
+            }
+            if (!checkExists.column("netuno_design", "description")) {
+                table.create(
+                        "netuno_design",
+                        table.newColumn().setName("description").setType(Column.Type.TEXT)
+                );
+            }
             List<Values> formTables = getManager().query("select * from netuno_table where report = "+ getBuilder().booleanFalse());
             for (Values formTable : formTables) {
                 if (!checkExists.column(formTable.getString("name"), "uid")) {
