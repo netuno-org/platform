@@ -432,6 +432,12 @@ public class Install implements MainArg {
                 System.out.println(OS.consoleOutput("@|white Create a new application: |@ "));
                 System.out.println(OS.consoleNetunoCommand("app"));
 
+                if (SystemUtils.IS_OS_MAC) {
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|white On MAC OS X, you need to disable the quarantine, please run: |@ "));
+                    System.out.println(OS.consoleOutput("@|yellow \tsudo xattr -r -d com.apple.quarantine . |@ "));
+                }
+
                 if (netunoJarNew.exists()) {
                     netunoJarNew.renameTo(netunoJar);
                 }
