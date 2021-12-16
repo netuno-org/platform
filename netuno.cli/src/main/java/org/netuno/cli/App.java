@@ -799,6 +799,7 @@ public class App implements MainArg {
         Path.copyApp(appPath, Path.UI, ".gitignore");
 
         Path.copyApp(appPath, null, ".gitignore");
+        Path.copyApp(appPath, null, ".editor.config");
 
         Values configJSON = new Values();
         configJSON.set("name", name);
