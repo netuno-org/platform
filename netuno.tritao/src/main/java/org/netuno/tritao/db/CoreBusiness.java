@@ -1415,6 +1415,31 @@ public class CoreBusiness extends Base {
                                 getProteu().getRequestAll().getString("type"));
                 com.getConfiguration().load(getComponentPropertiesFromRequestAll());
 
+                Values viewUser = null;
+                if (getProteu().getRequestAll().has("view_user") && !getProteu().getRequestAll().getString("view_user").isEmpty()) {
+                    viewUser = getItemById("netuno_user", getProteu().getRequestAll().getString("view_user"));
+                } else if (!getProteu().getRequestAll().getString("view_user_uid").isEmpty()) {
+                    viewUser = getItemByUId("netuno_user", getProteu().getRequestAll().getString("view_user_uid"));
+                }
+                Values viewGroup = null;
+                if (getProteu().getRequestAll().has("view_group") && !getProteu().getRequestAll().getString("view_group").isEmpty()) {
+                    viewGroup = getItemById("netuno_group", getProteu().getRequestAll().getString("view_group"));
+                } else if (!getProteu().getRequestAll().getString("view_group_uid").isEmpty()) {
+                    viewGroup = getItemByUId("netuno_group", getProteu().getRequestAll().getString("view_group_uid"));
+                }
+                Values editUser = null;
+                if (getProteu().getRequestAll().has("edit_user") && !getProteu().getRequestAll().getString("edit_user").isEmpty()) {
+                    viewUser = getItemById("netuno_user", getProteu().getRequestAll().getString("edit_user"));
+                } else if (!getProteu().getRequestAll().getString("edit_user_uid").isEmpty()) {
+                    editUser = getItemByUId("netuno_user", getProteu().getRequestAll().getString("edit_user_uid"));
+                }
+                Values editGroup = null;
+                if (getProteu().getRequestAll().has("edit_group") && !getProteu().getRequestAll().getString("edit_group").isEmpty()) {
+                    viewGroup = getItemById("netuno_group", getProteu().getRequestAll().getString("edit_group"));
+                } else if (!getProteu().getRequestAll().getString("edit_group_uid").isEmpty()) {
+                    editGroup = getItemByUId("netuno_group", getProteu().getRequestAll().getString("edit_group_uid"));
+                }
+
                 Values values = new Values();
                 values.set("name", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "'");
                 values.set("displayname", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("displayname")) + "'");
@@ -1439,10 +1464,12 @@ public class CoreBusiness extends Base {
                 values.set("whenview", getProteu().getRequestAll().getBoolean("whenview"));
                 values.set("whennew", getProteu().getRequestAll().getBoolean("whennew"));
                 values.set("whenexport", getProteu().getRequestAll().getBoolean("whenexport"));
-                values.set("view_user_id", DB.sqlInjectionInt(getProteu().getRequestAll().getString("view_user")));
-                values.set("view_group_id", DB.sqlInjectionInt(getProteu().getRequestAll().getString("view_group")));
-                values.set("edit_user_id", DB.sqlInjectionInt(getProteu().getRequestAll().getString("edit_user")));
-                values.set("edit_group_id", DB.sqlInjectionInt(getProteu().getRequestAll().getString("edit_group")));
+                
+                values.set("view_user_id", viewUser != null ? viewUser.getString("id") : "0");
+                values.set("view_group_id", viewGroup != null ? viewGroup.getString("id") : "0");
+                values.set("edit_user_id", editUser != null ? editUser.getString("id") : "0");
+                values.set("edit_group_id", editGroup != null ? editGroup.getString("id") : "0");
+
                 values.set("properties", "'" + DB.sqlInjection(com.getConfiguration().toString()) + "'");
 
                 values.set("firebase", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("firebase")) + "'");

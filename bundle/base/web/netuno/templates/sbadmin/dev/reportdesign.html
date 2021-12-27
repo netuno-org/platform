@@ -181,10 +181,8 @@
             <div class="col-md-6 col-xs-6">
               <div class="form-group">
                 <label for="fieldReportDesign__{data=table.name}_userView">_{&lang=netuno.dev.reportdesign.label.user.view}</label>
-                <select class="form-control" name="view_user" id="fieldReportDesign__{data=table.name}_userView">
-                  <option value="0"_{data=view.user.all.selected}>_{&lang=netuno.dev.reportdesign.label.user.all}</option>
-                  <option value="-1"_{data=view.user.administrator.selected}>_{&lang=netuno.dev.reportdesign.label.user.administrator}</option>
-                  <option value="-2"_{data=view.user.developer.selected}>_{&lang=netuno.dev.reportdesign.label.user.developer}</option>
+                <select class="form-control" name="view_user_uid" id="fieldReportDesign__{data=table.name}_userView">
+                  <option value="0" _{data=view.user.all.selected}>_{&lang=netuno.dev.reportdesign.label.user.all}</option>
                   _{data=view.user.options}
                 </select>
               </div>
@@ -192,10 +190,8 @@
             <div class="col-md-6 col-xs-6">
               <div class="form-group">
                 <label for="fieldReportDesign__{data=table.name}_groupView">_{&lang=netuno.dev.reportdesign.label.group.view}</label>
-                <select class="form-control" name="view_group" id="fieldReportDesign__{data=table.name}_groupView">
-                  <option value="0"_{data=view.group.all.selected}>_{&lang=netuno.dev.reportdesign.label.group.all}</option>
-                  <option value="-1"_{data=view.group.administrator.selected}>_{&lang=netuno.dev.reportdesign.label.group.administrator}</option>
-                  <option value="-2"_{data=view.group.developer.selected}>_{&lang=netuno.dev.reportdesign.label.group.developer}</option>
+                <select class="form-control" name="view_group_uid" id="fieldReportDesign__{data=table.name}_groupView">
+                  <option value="0" _{data=view.group.all.selected}>_{&lang=netuno.dev.reportdesign.label.group.all}</option>
                   _{data=view.group.options}
                 </select>
               </div>

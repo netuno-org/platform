@@ -179,7 +179,6 @@ public class ReportDesign extends FormDesign {
             data.set("rowspan.value", field != null ? field.getString("rowspan") : "0");
 
             loadPermissions(proteu, hili, field, data, "view.user", "view_user", "view.group", "view_group");
-            loadPermissions(proteu, hili, field, data, "edit.user", "edit_user", "edit.group", "edit_group");
 
             TemplateBuilder.output(proteu, hili, "dev/reportdesign", data);
         }
