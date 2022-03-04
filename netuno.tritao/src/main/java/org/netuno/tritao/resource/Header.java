@@ -42,7 +42,48 @@ import org.netuno.tritao.config.Hili;
                         + "cabeçalho do pedido do browser, ou seja, obter qualquer informação que venha no header do HTTP.\n"
                         + "\n"
                         + "Mas também pode definir parâmetros de resposta no Header, por exemplo definir a reposta do código "
-                        + "de status HTTP ou o Content-Type, entre outros.",
+                        + "de status HTTP ou o Content-Type, entre outros."
+                        + "\n"
+                        + "Principais funções:\n"
+                        + "- [response](#response)\n"
+                        + "- [status](#status)\n"
+                        + "- [baseURL](#baseurl)\n"
+                        + "- [uri](#uri)\n"
+                        + "- [url](#url)\n"
+                        + "- [rawHost](#rawhost)\n"
+                        + "- [host](#host)\n"
+                        + "- [port](#port)\n"
+                        + "- [scheme](#scheme)\n"
+                        + "- [contentType](#contenttype)\n"
+                        + "- [contentTypePDF](#contenttypepdf)\n"
+                        + "- [contentTypeJSON](#contenttypejson)\n"
+                        + "- [contentTypeHTML](#contenttypehtml)\n"
+                        + "- [contentTypePlain](#contenttypeplain)\n"
+                        + "- [contentTypePNG](#contenttypepng)\n"
+                        + "- [contentTypeJPG](#contenttypejpg)\n"
+                        + "- [contentTypeCSS](#contenttypecss)\n"
+                        + "- [contentTypeOctetStream](#contenttypeoctetstream)\n"
+                        + "- [acceptJSON](#acceptjson)\n"
+                        + "- [isAcceptJSON](#isacceptjson)\n"
+                        + "- [cache](#cache)\n"
+                        + "- [noCache](#nocache)\n"
+                        + "- [downloadFile](#downloadfile)\n"
+                        + "- [isDelete](#isdelete)\n"
+                        + "- [isGet](#isget)\n"
+                        + "- [isHead](#ishead)\n"
+                        + "- [isOptions](#isoptions)\n"
+                        + "- [isPost](#ispost)\n"
+                        + "- [isPut](#isput)\n"
+                        + "- [isTrace](#istrace)\n"
+                        + "- [isCopy](#iscopy)\n"
+                        + "- [isLink](#islink)\n"
+                        + "- [isUnlink](#isunlink)\n"
+                        + "- [isPatch](#ispatch)\n"
+                        + "- [isPurge](#ispurge)\n"
+                        + "- [isLock](#islock)\n"
+                        + "- [isUnlock](#isunlock)\n"
+                        + "- [isPropFind](#ispropfind)\n"
+                        + "- [isView](#isview)\n",
                 howToUse = { }
         ),
         @LibraryTranslationDoc(
@@ -54,7 +95,48 @@ import org.netuno.tritao.config.Hili;
                         + "that is, obtain any information that comes in the HTTP header."
                         + "\n"
                         + "But you can also define response parameters in the Header, for example define the response of the "
-                        + "HTTP status code or the Content-Type, among others.",
+                        + "HTTP status code or the Content-Type, among others."
+                        + "\n"
+                        + "Main functions:\n"
+                        + "- [response](#response)\n"
+                        + "- [status](#status)\n"
+                        + "- [baseURL](#baseurl)\n"
+                        + "- [uri](#uri)\n"
+                        + "- [url](#url)\n"
+                        + "- [rawHost](#rawhost)\n"
+                        + "- [host](#host)\n"
+                        + "- [port](#port)\n"
+                        + "- [scheme](#scheme)\n"
+                        + "- [contentType](#contenttype)\n"
+                        + "- [contentTypePDF](#contenttypepdf)\n"
+                        + "- [contentTypeJSON](#contenttypejson)\n"
+                        + "- [contentTypeHTML](#contenttypehtml)\n"
+                        + "- [contentTypePlain](#contenttypeplain)\n"
+                        + "- [contentTypePNG](#contenttypepng)\n"
+                        + "- [contentTypeJPG](#contenttypejpg)\n"
+                        + "- [contentTypeCSS](#contenttypecss)\n"
+                        + "- [contentTypeOctetStream](#contenttypeoctetstream)\n"
+                        + "- [acceptJSON](#acceptjson)\n"
+                        + "- [isAcceptJSON](#isacceptjson)\n"
+                        + "- [cache](#cache)\n"
+                        + "- [noCache](#nocache)\n"
+                        + "- [downloadFile](#downloadfile)\n"
+                        + "- [isDelete](#isdelete)\n"
+                        + "- [isGet](#isget)\n"
+                        + "- [isHead](#ishead)\n"
+                        + "- [isOptions](#isoptions)\n"
+                        + "- [isPost](#ispost)\n"
+                        + "- [isPut](#isput)\n"
+                        + "- [isTrace](#istrace)\n"
+                        + "- [isCopy](#iscopy)\n"
+                        + "- [isLink](#islink)\n"
+                        + "- [isUnlink](#isunlink)\n"
+                        + "- [isPatch](#ispatch)\n"
+                        + "- [isPurge](#ispurge)\n"
+                        + "- [isLock](#islock)\n"
+                        + "- [isUnlock](#isunlock)\n"
+                        + "- [isPropFind](#ispropfind)\n"
+                        + "- [isView](#isview)\n",
                 howToUse = { }
         )
 })
@@ -274,7 +356,7 @@ public class Header extends ResourceBaseValues {
         return getProteu().getRequestHeader().getString("Method").equalsIgnoreCase("unlock");
     }
 
-    public boolean isPropfind() {
+    public boolean isPropFind() {
         return getProteu().getRequestHeader().getString("Method").equalsIgnoreCase("propfind");
     }
 
