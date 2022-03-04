@@ -101,7 +101,7 @@ public class File {
     /**
      * File.
      * @param filePath Path
-     * @param filePhysicPath Physic Path
+     * @param filePhysicalPath Physic Path
      * @param fileContentType Content Type
      */
     public File(final String filePath, final String filePhysicalPath, final String fileContentType) {
@@ -464,17 +464,11 @@ public class File {
             }
             ByteArrayOutputStream bytesBackup = new ByteArrayOutputStream();
             org.apache.commons.io.IOUtils.copy(bytes, bytesBackup);
+            bytes.close();
             byte[] bytesArray = bytesBackup.toByteArray();
             bytes = new ByteArrayInputStream(bytesArray);
             FileOutputStream out = new FileOutputStream(pathToWriteFile);
-            byte[] bytesBuffer = new byte[1024];
-            while (true) {
-            	int bytesReaded = bytes.read(bytesBuffer);
-            	out.write(bytesBuffer);
-            	if (bytesReaded != bytesBuffer.length) {
-                    break;
-            	}
-            }
+            new Buffer().copy(bytes, out);
             bytes.close();
             out.close();
             bytes = new ByteArrayInputStream(bytesArray);
