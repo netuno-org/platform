@@ -870,7 +870,7 @@ public class App implements MainArg {
         Values cors = new Values().add(
                 new Values()
                     .set("enabled", true)
-                    .set("origin", "*")
+                    .set("origins", new Values().add("*"))
         );
         configJSON.set("cors", cors);
         
