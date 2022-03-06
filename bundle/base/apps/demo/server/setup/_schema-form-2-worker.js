@@ -1,13 +1,13 @@
 /**
-  *
-  *  CODE GENERATED AUTOMATICALLY
-  *
-  *  THIS FILE SHOULD NOT BE EDITED BY HAND
-  *
-  */
+ *
+ *  CODE GENERATED AUTOMATICALLY
+ *
+ *  THIS FILE SHOULD NOT BE EDITED BY HAND
+ *
+ */
 
 _form.createIfNotExists(
-	_val.init()
+  _val.init()
 	.set("big", false)
 	.set("control_active", true)
 	.set("control_group", false)
@@ -26,8 +26,8 @@ _form.createIfNotExists(
 	.set("uid", "a2f8fbdc-fa85-404d-a4ec-6a84717fa349")
 )
 _form.createComponentIfNotExists(
-	"a2f8fbdc-fa85-404d-a4ec-6a84717fa349",
-	_val.init()
+  "a2f8fbdc-fa85-404d-a4ec-6a84717fa349",
+  _val.init()
 	.set("colspan", 0)
 	.set("displayname", "Name")
 	.set("firebase", "")

@@ -35,30 +35,30 @@ _{include=_|includes/head}
   </div>
 </div>
 <script>
-  netuno.addPageLoad(function() {
-    var ajaxSwitch = $("input[type=checkbox]");
-    ajaxSwitch.bootstrapSwitch({
-      size: "small",
-      onText: "<i class=\"fa fa-check\"></i>",
-      offText: "<i class=\"fa fa-close\"></i>"
-    });
-    var form = $('form');
-    form.find('button').on('click', function () {
-      form.off('submit'); // Without this code form will not submit
-      if (ajaxSwitch.is(":checked")) {
-        form.ajaxForm({
-          iframe: false,
-          type: 'post',
-          success: function (response) {
-            $('#ajaxSavedAlert')
-              .show()
-              .find('span').text(response.filePath);
-          }
-        }).submit();
-      } else {
-        form.submit();
-      }
-    });
-  });
+ netuno.addPageLoad(function() {
+   var ajaxSwitch = $("input[type=checkbox]");
+   ajaxSwitch.bootstrapSwitch({
+     size: "small",
+     onText: "<i class=\"fa fa-check\"></i>",
+     offText: "<i class=\"fa fa-close\"></i>"
+   });
+   var form = $('form');
+   form.find('button').on('click', function () {
+     form.off('submit'); // Without this code form will not submit
+     if (ajaxSwitch.is(":checked")) {
+       form.ajaxForm({
+         iframe: false,
+         type: 'post',
+         success: function (response) {
+           $('#ajaxSavedAlert')
+             .show()
+             .find('span').text(response.filePath);
+         }
+       }).submit();
+     } else {
+       form.submit();
+     }
+   });
+ });
 </script>
 _{include=_|includes/foot}

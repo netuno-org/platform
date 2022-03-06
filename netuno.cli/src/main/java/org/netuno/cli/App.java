@@ -785,12 +785,12 @@ public class App implements MainArg {
         */
         Path.copyApp(appPath, Path.STORAGE_FILESYSTEM_SERVER, "info.txt");
 
-        Path.copyApp(appPath, Path.UI_SRC_CONTAINERS_DASHBOARDCONTAINER, "index.jsx");
+        Path.copyApp(appPath, Path.UI_SRC_CONTAINERS_DASHBOARDCONTAINER, "index.js");
         Path.copyApp(appPath, Path.UI_SRC_CONTAINERS_DASHBOARDCONTAINER, "index.less");
-        Path.copyApp(appPath, Path.UI_SRC_COMPONENTS_MYBUTTON, "index.jsx");
+        Path.copyApp(appPath, Path.UI_SRC_COMPONENTS_MYBUTTON, "index.js");
         Path.copyApp(appPath, Path.UI_SRC_STYLES, "main.less");
 
-        Path.copyApp(appPath, Path.UI_SRC, "index.jsx");
+        Path.copyApp(appPath, Path.UI_SRC, "index.js");
 
         Path.copyApp(appPath, Path.UI, ".babelrc");
         Path.copyApp(appPath, Path.UI, "package.json");

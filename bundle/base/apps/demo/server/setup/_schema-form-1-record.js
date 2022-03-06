@@ -7,7 +7,7 @@
   */
 
 _form.createIfNotExists(
-	_val.init()
+  _val.init()
 	.set("big", false)
 	.set("control_active", true)
 	.set("control_group", false)
@@ -26,8 +26,8 @@ _form.createIfNotExists(
 	.set("uid", "9d7424df-1e30-4c87-abbb-5ae7560a298c")
 )
 _form.createComponentIfNotExists(
-	"9d7424df-1e30-4c87-abbb-5ae7560a298c",
-	_val.init()
+  "9d7424df-1e30-4c87-abbb-5ae7560a298c",
+  _val.init()
 	.set("colspan", 0)
 	.set("displayname", "End")
 	.set("firebase", "")
@@ -42,7 +42,7 @@ _form.createComponentIfNotExists(
 	.set("rowspan", 0)
 	.set("tdheight", "0")
 	.set("tdwidth", "0")
-	.set("type", "datetime")
+    .set("type", "datetime")
 	.set("uid", "42469bb8-ce22-4949-a199-6c22ef4f831a")
 	.set("user_id", 0)
 	.set("whenedit", true)
@@ -56,8 +56,8 @@ _form.createComponentIfNotExists(
 	.set("y", 5)
 )
 _form.createComponentIfNotExists(
-	"9d7424df-1e30-4c87-abbb-5ae7560a298c",
-	_val.init()
+  "9d7424df-1e30-4c87-abbb-5ae7560a298c",
+  _val.init()
 	.set("colspan", 0)
 	.set("displayname", "Start")
 	.set("firebase", "")
@@ -86,8 +86,8 @@ _form.createComponentIfNotExists(
 	.set("y", 3)
 )
 _form.createComponentIfNotExists(
-	"9d7424df-1e30-4c87-abbb-5ae7560a298c",
-	_val.init()
+  "9d7424df-1e30-4c87-abbb-5ae7560a298c",
+  _val.init()
 	.set("colspan", 0)
 	.set("displayname", "Worker")
 	.set("firebase", "")
