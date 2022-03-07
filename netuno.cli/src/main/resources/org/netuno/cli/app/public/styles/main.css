@@ -5,9 +5,9 @@ HERE YOUR CUSTOM CSS
 **/
 
 .navbar, .navbar-inverse {
-    background-color: #5b5ce1 !important;
+  background-color: #5b5ce1 !important;
 }
 
 .dev .navbar, .dev .navbar-inverse {
-    background-color: #333333 !important;
+  background-color: #333333 !important;
 }

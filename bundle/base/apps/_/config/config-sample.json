@@ -1,56 +1,56 @@
 {
-    "name": "_",
-    "language": "pt_PT",
-    "locale": "pt_PT",
-    "settings": {
-        "public": {}
-    },
-    "db": {
-        "default": {
-            "password": "",
-            "engine": "h2",
-            "port": "",
-            "host": "",
-            "name": "_",
-            "username": ""
-        }
-    },
-    "firebase": {
-        "app_name": "",
-        "database_url": "",
-        "key_file": "",
-        "listener_secret": ""
-    },
-    "cron": {
-        "secret": "Cron$ample713",
-        "jobs": [
-            {
-                "name": "sample",
-                "config": "0 1 1 1 1 ?",
-                "url": "/services/jobs/sample.netuno",
-                "params": {
-                    "id": 1
-                }
-            }
-        ]
-    },
-    "smtp": {
-        "default": {
-            "host": "localhost...",
-            "port": 465,
-            "ssl": true,
-            "username": "user...",
-            "password": "pass..."
-        }
-    },
-    "setup": {
-        "enabled": true,
-        "schema": {
-            "auto_create": true,
-            "execution": true
-        },
-        "scripts": {
-            "execution": true
-        }
+  "name": "_",
+  "language": "pt_PT",
+  "locale": "pt_PT",
+  "settings": {
+    "public": {}
+  },
+  "db": {
+    "default": {
+      "password": "",
+      "engine": "h2",
+      "port": "",
+      "host": "",
+      "name": "_",
+      "username": ""
     }
+  },
+  "firebase": {
+    "app_name": "",
+    "database_url": "",
+    "key_file": "",
+    "listener_secret": ""
+  },
+  "cron": {
+    "secret": "Cron$ample713",
+    "jobs": [
+      {
+        "name": "sample",
+        "config": "0 1 1 1 1 ?",
+        "url": "/services/jobs/sample.netuno",
+        "params": {
+          "id": 1
+        }
+      }
+    ]
+  },
+  "smtp": {
+    "default": {
+      "host": "localhost...",
+      "port": 465,
+      "ssl": true,
+      "username": "user...",
+      "password": "pass..."
+    }
+  },
+  "setup": {
+    "enabled": true,
+    "schema": {
+      "auto_create": true,
+      "execution": true
+    },
+    "scripts": {
+      "execution": true
+    }
+  }
 }
