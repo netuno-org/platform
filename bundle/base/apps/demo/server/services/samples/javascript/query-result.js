@@ -7,6 +7,14 @@
  *
  */
 
+let tableName = 'worker'
+let columnName = 'name'
+
+if (_db.config().getString('name') == 'demo_pt') {
+  tableName = 'trabalhador'
+  columnName = 'nome'
+}
+
 _out.json(
-  _db.query("SELECT uid, nome FROM trabalhador WHERE active = true")
+  _db.query(`SELECT uid, ${columnName} FROM ${tableName} WHERE active = true`)
 )

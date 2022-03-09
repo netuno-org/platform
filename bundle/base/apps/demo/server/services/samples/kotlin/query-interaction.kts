@@ -7,22 +7,30 @@
  *
  */
 
+var tableName = "worker"
+var columnName = "name"
+
+if (_db.config().getString("name") == "demo_pt") {
+  tableName = "trabalhador"
+  columnName = "nome"
+}
+
 val rows = _db.query(
-  "SELECT * FROM trabalhador "+
-  "WHERE id > ?::int AND active = true "+
-  "ORDER BY nome",
-  listOf(
-    _req.getInt("id")
-  )
+  """SELECT *
+  FROM $tableName
+  WHERE id > ?::int AND active = true
+  ORDER BY $columnName""",
+  _req.getInt("id")
 )
 
-val list = _val.init()
+val list = _val.list()
 
 rows.forEach {
-  val item = _val.init()
-  item.set("id", it.getInt("id"))
-  item.set("nome", it.getString("nome"))
-  list.push(item)
+  list.add(
+    _val.map()
+      .set("id", it.getInt("id"))
+      .set("name", it.getString(columnName))
+  )
 }
 
 _out.json(list)

@@ -7,22 +7,31 @@
  *
  */
 
-var rows = _db.query(
-  "SELECT * FROM trabalhador "+
-  "WHERE id > ?::int AND active = true "+
-  "ORDER BY nome",
-  _val.init()
-      .add(_req.getInt("id"))
+let tableName = 'worker'
+let columnName = 'name'
+
+if (_db.config().getString('name') == 'demo_pt') {
+  tableName = 'trabalhador'
+  columnName = 'nome'
+}
+
+const dbRows = _db.query(
+  `SELECT *
+  FROM ${tableName} 
+  WHERE id > ?::int AND active = true 
+  ORDER BY ${columnName}`,
+  _req.getInt("id")
 )
 
-var list = _val.init()
+const list = _val.list()
 
-for (var i = 0; i < rows.size(); i++) {
-  var row = rows.get(i)
-  var item = _val.init()
-      .set("id", row.getInt("id"))
-      .set("nome", row.getString("nome"))
-  list.push(item)
+for (const dbRow of dbRows) {
+  var item = 
+  list.add(
+    _val.map()
+      .set("id", dbRow.getInt("id"))
+      .set("name", dbRow.getString(columnName))
+  )
 }
 
 _out.json(list)

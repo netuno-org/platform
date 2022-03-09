@@ -8,6 +8,14 @@
  *
  */
 
+var tableName = "worker"
+var columnName = "name"
+
+if (_db.config().getString("name") == "demo_pt") {
+  tableName = "trabalhador"
+  columnName = "nome"
+}
+
 /**
  *
  *  INSERT
@@ -17,16 +25,16 @@
 _out.println("<h4>Insert</h4>")
 
 val id = _db.insert(
-    "trabalhador",
+    tableName,
     hashMapOf(
-        "nome" to "Artur Tadeu"
+        columnName to "Artur Tadeu"
     )
 )
 
 _out.println("<p>Id: $id</p>")
 _out.println("<pre>")
 _out.println(
-    _db.get("trabalhador", id).toJSON()
+    _db.get(tableName, id).toJSON()
 )
 _out.println("</pre>")
 
@@ -39,15 +47,15 @@ _out.println("</pre>")
 _out.println("<h4>Update</h4>")
 
 val rows = _db.update(
-    "trabalhador", id, hashMapOf(
-        "nome" to "Afonso Tadeu"
+    tableName, id, hashMapOf(
+        columnName to "Afonso Tadeu"
     )
 )
 
 _out.println("<p>Id: $id</p>")
 _out.println("<pre>")
 _out.println(
-    _db.get("trabalhador", id).toJSON()
+    _db.get(tableName, id).toJSON()
 )
 _out.println("</pre>")
 
@@ -60,7 +68,7 @@ _out.println("</pre>")
 if (rows == 1) {
     _out.println("<h4>Delete</h4>")
 
-    _db.delete("trabalhador", id)
+    _db.delete(tableName, id)
 
     _out.println("<p>Id: $id</p>")
 }
@@ -74,12 +82,12 @@ if (rows == 1) {
 _out.println("<h4>Insert List</h4>")
 
 val ids = _db.insertMany(
-    "trabalhador", listOf(
+    tableName, listOf(
         hashMapOf(
-            "nome" to "Petra Carvalho"
+            columnName to "Petra Carvalho"
         ),
         hashMapOf(
-            "nome" to "Vanessa Zafim"
+            columnName to "Vanessa Zafim"
         )
     )
 ).toList()
@@ -105,12 +113,12 @@ val records = mutableListOf<Any>()
 ids.forEach {
     records.add(hashMapOf(
         "id" to it,
-        "nome" to "Trabalhador $it"
+        columnName to "Worker $it"
     ))
 }
 
 val updates = _db.updateMany(
-    "trabalhador", records
+    tableName, records
 ).toList()
 
 _out.println("<ul>")
@@ -129,7 +137,7 @@ _out.println("</ul>")
 _out.println("<h4>Delete List</h4>")
 
 val deletes = _db.deleteMany(
-    "trabalhador", records
+    tableName, records
 ).toList()
 
 _out.println("<ul>")

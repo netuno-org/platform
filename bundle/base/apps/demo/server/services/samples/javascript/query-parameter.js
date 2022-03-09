@@ -7,13 +7,21 @@
  *
  */
 
+let tableName = 'worker'
+let columnName = 'name'
+
+if (_db.config().getString('name') == 'demo_pt') {
+  tableName = 'trabalhador'
+  columnName = 'nome'
+}
+
 _out.json(
   _db.query(
-    "SELECT * FROM trabalhador "+
-    "WHERE id = ?::int AND nome like '%' || ?::varchar || '%' "+
-    "ORDER BY nome",
-    _val.init()
-        .add(_req.getInt("id"))
-        .add(_req.getString("name"))
+    `SELECT uid, ${columnName} as "name"
+    FROM ${tableName}
+    WHERE id = ?::int AND ${columnName} like '%' || ?::varchar || '%'
+    ORDER BY ${columnName}`,
+    _req.getInt("id"),
+    _req.getString("name")
   )
 )

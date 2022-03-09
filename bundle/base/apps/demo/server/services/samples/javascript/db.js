@@ -9,25 +9,34 @@
  *
  */
 
+let tableName = 'worker'
+let columnName = 'name'
+
+if (_db.config().getString('name') == 'demo_pt') {
+  tableName = 'trabalhador'
+  columnName = 'nome'
+}
+
 /**
  *
  *  INSERT
  *
  */
 
-_out.println("<h4>Insert</h4>")
+_out.println(`<h4>Insert</h4>`)
 
-var id = _db.insert(
-    "trabalhador",
-    _val.init().set("nome", "Artur Tadeu")
+const id = _db.insert(
+  tableName,
+  _val.map()
+    .set(columnName, 'Artur Tadeu')
 )
 
-_out.println("<p>Id: "+ id +"</p>")
-_out.println("<pre>")
+_out.println(`<p>Id: ${id}</p>`)
+_out.println(`<pre>`)
 _out.println(
-    _db.get("trabalhador", id).toJSON()
+  _db.get(tableName, id).toJSON()
 )
-_out.println("</pre>")
+_out.println(`</pre>`)
 
 /**
  *
@@ -35,19 +44,21 @@ _out.println("</pre>")
  *
  */
 
-_out.println("<h4>Update</h4>")
+_out.println(`<h4>Update</h4>`)
 
-var rowsUpdated = _db.update(
-    "trabalhador", id,
-    _val.init().set("nome", "Afonso Tadeu")
+const rowsUpdated = _db.update(
+  tableName,
+  id,
+  _val.map()
+    .set(columnName, 'Afonso Tadeu')
 )
 
-_out.println("<p>Id: "+ id +"</p>")
-_out.println("<pre>")
+_out.println(`<p>Id: ${id}</p>`)
+_out.println(`<pre>`)
 _out.println(
-    _db.get("trabalhador", id).toJSON()
+  _db.get(tableName, id).toJSON()
 )
-_out.println("</pre>")
+_out.println(`</pre>`)
 
 /**
  *
@@ -56,11 +67,11 @@ _out.println("</pre>")
  */
 
 if (rowsUpdated == 1) {
-    _out.println("<h4>Delete</h4>")
+  _out.println(`<h4>Delete</h4>`)
 
-    _db.delete("trabalhador", id)
+  _db.delete(tableName, id)
 
-    _out.println("<p>Id: "+ id +"</p>")
+  _out.println(`<p>Id: ${id}</p>`)
 }
 
 /**
@@ -69,27 +80,27 @@ if (rowsUpdated == 1) {
  *
  */
 
-_out.println("<h4>Insert List</h4>")
+_out.println(`<h4>Insert List</h4>`)
 
 var ids = _db.insertMany(
-    "trabalhador",
-    _val.init()
-        .add(
-            _val.init()
-                .set("nome", "Petra Carvalho")
-        )
-        .add(
-            _val.init()
-                .set("nome", "Vanessa Zafim")
-        )
+  tableName,
+  _val.list()
+    .add(
+      _val.map()
+        .set(columnName, 'Petra Carvalho')
+    )
+    .add(
+      _val.map()
+        .set(columnName, 'Vanessa Zafim')
+    )
 )
 
-_out.println("<ul>")
-for (var i = 0; i < ids.length; i++) {
-    var id = ids[i]
-    _out.print("<li>"+ id +"</li>")
+_out.println(`<ul>`)
+for (let i = 0; i < ids.length; i++) {
+  const id = ids[i]
+  _out.print(`<li>${id}</li>`)
 }
-_out.println("</ul>")
+_out.println(`</ul>`)
 
 /**
  *
@@ -97,29 +108,29 @@ _out.println("</ul>")
  *
  */
 
-_out.println("<h4>Update List</h4>")
+_out.println(`<h4>Update List</h4>`)
 
-var records = _val.init()
+const records = _val.init()
 
-for (var i = 0; i < ids.length; i++) {
-    var id = ids[i]
-    records.push(
-        _val.init()
-            .set("id", id)
-            .set("nome", "Trabalhador "+ id)
-    )
+for (let i = 0; i < ids.length; i++) {
+  const id = ids[i]
+  records.push(
+    _val.map()
+      .set("id", id)
+      .set(columnName, `Worker ${id}`)
+  )
 }
 
-var updates = _db.updateMany(
-    "trabalhador", records
+const updates = _db.updateMany(
+  tableName, records
 )
 
-_out.println("<ul>")
-for (var i = 0; i < updates.length; i++) {
-    var result = updates[i]
-    _out.print("<li>"+ result +"</li>")
+_out.println(`<ul>`)
+for (let i = 0; i < updates.length; i++) {
+  const result = updates[i]
+  _out.print(`<li>${result}</li>`)
 }
-_out.println("</ul>")
+_out.println(`</ul>`)
 
 
 /**
@@ -128,15 +139,15 @@ _out.println("</ul>")
  *
  */
 
-_out.println("<h4>Delete List</h4>")
+_out.println(`<h4>Delete List</h4>`)
 
-var deletes = _db.deleteMany(
-    "trabalhador", records
+const deletes = _db.deleteMany(
+  tableName, records
 )
 
-_out.println("<ul>")
-for (var i = 0; i < deletes.length; i++) {
-    var result = deletes[i]
-    _out.print("<li>"+ result +"</li>")
+_out.println(`<ul>`)
+for (let i = 0; i < deletes.length; i++) {
+  const result = deletes[i]
+  _out.print(`<li>${result}</li>`)
 }
-_out.println("</ul>")
+_out.println(`</ul>`)

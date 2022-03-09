@@ -7,22 +7,30 @@
  *
  */
 
-rows = _db.query(
-        "SELECT * FROM trabalhador "+
-                "WHERE id > ?::int AND active = true "+
-                "ORDER BY nome",
-        [
-                _req.getInt("id")
-        ]
+def tableName = "worker"
+def columnName = "name"
+
+if (_db.config().getString("name") == "demo_pt") {
+    tableName = "trabalhador"
+    columnName = "nome"
+}
+
+def dbRows = _db.query("""\
+    SELECT *
+    FROM ${tableName}
+    WHERE id > ?::int AND active = true
+    ORDER BY ${columnName}""",
+    _req.getInt("id")
 )
 
-list = _val.init()
+def list = _val.list()
 
-rows.each {
-    item = _val.init()
-    item.set("id", it.getInt("id"))
-    item.set("nome", it.getString("nome"))
-    list.push(item)
+for (dbRow in dbRows) {
+    list.add(
+        _val.map()
+            .set("id", dbRow.getInt("id"))
+            .set("name", dbRow.getString(columnName))
+    )
 }
 
 _out.json(list)

@@ -5,22 +5,29 @@
 #  PT: EXECUTA UMA QUERY COM PARÂMETROS E INTERAGE PARA RESULTAR COMO JSON
 #
 
-rows = _db.query(
-    "SELECT * FROM trabalhador "+
-    "WHERE id > ?::int AND active = true "+
-    "ORDER BY nome",
-    listOf(
-        _req.getInt("id")
-    )
+tableName = "worker"
+columnName = "name"
+
+if _db.config().getString("name") == "demo_pt":
+    tableName = "trabalhador"
+    columnName = "nome"
+
+dbRows = _db.query(
+    """SELECT *
+    FROM {table}
+    WHERE id > ?::int AND active = true
+    ORDER BY {column}"""
+    .format(table=tableName, column=columnName),
+    _req.getInt("id")
 )
 
-list = _val.init()
+list = _val.list()
 
-rows.forEach {
-    val item = _val.init()
-    item.set("id", it.getInt("id"))
-    item.set("nome", it.getString("nome"))
-    list.push(item)
-}
+for dbRow in dbRows:
+    list.add(
+        _val.map()
+            .set("id", dbRow.getInt("id"))
+            .set("name", dbRow.getString("name"))
+    )
 
 _out.json(list)
