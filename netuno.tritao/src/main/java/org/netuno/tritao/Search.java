@@ -683,6 +683,6 @@ public class Search {
         	list.add(item);
     	}
     	root.set("rows", list);
-    	proteu.getOutput().print(root.toJSON(4));
+    	proteu.getOutput().print(root.toJSON(2));
     }
 }

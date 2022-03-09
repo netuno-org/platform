@@ -92,7 +92,7 @@ public class Logger extends ResourceBase {
     private String message(String type, String message, Object o) {
         String content = "";
         if (o instanceof Values) {
-            content = Arrays.stream(((Values)o).toJSON(4).split("\\n")).collect(Collectors.joining("\n# "));
+            content = Arrays.stream(((Values)o).toJSON(2).split("\\n")).collect(Collectors.joining("\n# "));
         } else {
             content = o.toString();
         }

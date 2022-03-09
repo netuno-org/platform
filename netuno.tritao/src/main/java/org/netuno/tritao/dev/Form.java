@@ -134,9 +134,9 @@ public class Form {
             sb.append("\n");
             for (Values databaseItem : databaseData) {
                 sb.append("_db.insertIfNotExists(\n");
-                sb.append("    \"" + tableName + "\",\n");
-                sb.append("    _val.init()\n");
-                sb.append("        .set(\"uid\", \"" + databaseItem.getString("uid") + "\")\n");
+                sb.append("  \"" + tableName + "\",\n");
+                sb.append("  _val.init()\n");
+                sb.append("    .set(\"uid\", \"" + databaseItem.getString("uid") + "\")\n");
                 for (int i = 0; i < rsDesignXY.size(); i++) {
                     Values designXY = rsDesignXY.get(i);
                     Component com = Config.getNewComponent(proteu, hili, designXY.getString("type"));
@@ -152,28 +152,28 @@ public class Form {
                         if (componentData.getType() == Type.Integer && componentData.hasLink()) {
                             Values item = Config.getDataBaseBuilder(proteu).getItemById(Link.getTableName(componentData.getLink()), databaseItem.getString(key));
                             if (item != null) {
-                                sb.append("        .set(\"" + key + "\", \"" + item.getString("uid") + "\")\n");
+                                sb.append("    .set(\"" + key + "\", \"" + item.getString("uid") + "\")\n");
                             } else {
-                                sb.append("        .set(\"" + key + "\", null)\n");
+                                sb.append("    .set(\"" + key + "\", null)\n");
                             }
                         } else if (componentData.getType() == Type.Boolean) {
-                            sb.append("        .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getString(key)) + ")\n");
+                            sb.append("    .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getString(key)) + ")\n");
                         } else if (componentData.getType() == Type.Integer) {
-                            sb.append("        .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getInt(key)) + ")\n");
+                            sb.append("    .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getInt(key)) + ")\n");
                         } else if (componentData.getType() == Type.Decimal) {
-                            sb.append("        .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getFloat(key)) + ")\n");
+                            sb.append("    .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getFloat(key)) + ")\n");
                         } else if (componentData.getType() == Type.Uid) {
-                            sb.append("        .set(\"" + key + "\", \"" + (value == null ? "null" : databaseItem.getString(key)) + "\")\n");
+                            sb.append("    .set(\"" + key + "\", \"" + (value == null ? "null" : databaseItem.getString(key)) + "\")\n");
                         } else if (componentData.getType() == Type.Varchar) {
-                            sb.append("        .set(\"" + key + "\", \"" + (value == null ? "null" : StringEscapeUtils.escapeJava(databaseItem.getString(key))) + "\")\n");
+                            sb.append("    .set(\"" + key + "\", \"" + (value == null ? "null" : StringEscapeUtils.escapeJava(databaseItem.getString(key))) + "\")\n");
                         } else if (componentData.getType() == Type.Text) {
-                            sb.append("        .set(\"" + key + "\", \"" + (value == null ? "null" : StringEscapeUtils.escapeJava(databaseItem.getString(key))) + "\")\n");
+                            sb.append("    .set(\"" + key + "\", \"" + (value == null ? "null" : StringEscapeUtils.escapeJava(databaseItem.getString(key))) + "\")\n");
                         } else if (componentData.getType() == Type.Date && !databaseItem.getString(key).isEmpty()) {
-                            sb.append("        .set(\"" + key + "\", _db.date(\"" + databaseItem.getString(key) + "\"))\n");
+                            sb.append("    .set(\"" + key + "\", _db.date(\"" + databaseItem.getString(key) + "\"))\n");
                         } else if (componentData.getType() == Type.DateTime && !databaseItem.getString(key).isEmpty()) {
-                            sb.append("        .set(\"" + key + "\", _db.timestamp(\"" + databaseItem.getString(key) + "\"))\n");
+                            sb.append("    .set(\"" + key + "\", _db.timestamp(\"" + databaseItem.getString(key) + "\"))\n");
                         } else if (componentData.getType() == Type.Time && !databaseItem.getString(key).isEmpty()) {
-                            sb.append("        .set(\"" + key + "\", _db.time(\"" + databaseItem.getString(key) + "\"))\n");
+                            sb.append("    .set(\"" + key + "\", _db.time(\"" + databaseItem.getString(key) + "\"))\n");
                         }
                     }
                 }

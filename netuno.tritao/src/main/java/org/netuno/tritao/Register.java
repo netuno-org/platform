@@ -99,7 +99,7 @@ public class Register extends WebMaster {
                             logger.debug(e);
                         }
                     } else {
-                        logger.fatal("The license could not be generated, server response: \n"+ json.toJSON(4));
+                        logger.fatal("The license could not be generated, server response: \n"+ json.toJSON(2));
                         result.set("error", true)
                                 .set("message", "license-not-generated");
                     }

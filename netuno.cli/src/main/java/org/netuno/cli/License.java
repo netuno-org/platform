@@ -196,7 +196,7 @@ public class License implements MainArg {
             license.set("type", getType());
             license.set("key", getKey());
             license.set("license", getLicense());
-            OutputStream.writeToFile(license.toJSON(4), fileLicense, false);
+            OutputStream.writeToFile(license.toJSON(2), fileLicense, false);
             return true;
         } catch (IOException e) {
             logger.fatal("Writing the license file "+ FILE_NAME, e);

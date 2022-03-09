@@ -744,7 +744,7 @@ public class App extends ResourceBase {
                                             "_app.file(\"public/data.json\").output().writeAndClose(\n"+
                                             "    _val.map()\n"+
                                             "        .set(\"resultado\", true)\n"+
-                                            "        .toJSON(4)\n"+
+                                            "        .toJSON(2)\n"+
                                             ")\n"+
                                             "// Carrega o ficheiro JSON dentro da app em public/data.json:\n"+
                                             "const jsonFicheiro = _app.file(\"public/data.json\")\n"+
@@ -769,7 +769,7 @@ public class App extends ResourceBase {
                                             "_app.file(\"public/data.json\").output().writeAndClose(\n"+
                                             "    _val.map()\n"+
                                             "        .set(\"result\", true)\n"+
-                                            "        .toJSON(4)\n"+
+                                            "        .toJSON(2)\n"+
                                             ")\n"+
                                             "// Load the JSON file into the app at public/data.json:\n"+
                                             "const jsonFile = _app.file(\"public/data.json\")\n"+

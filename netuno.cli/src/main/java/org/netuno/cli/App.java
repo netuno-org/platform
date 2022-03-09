@@ -680,7 +680,7 @@ public class App implements MainArg {
 
         String appPath = getAppPath(name);
 
-        makeDirs(name);
+        makeDirs(name, true);
 
         String serverCoreConfig = Path.resourceContent(Path.SERVER_CORE, "_config.js");
         
@@ -847,7 +847,7 @@ public class App implements MainArg {
                 )
         );
         
-        OutputStream.writeToFile(configJSON.toJSON(4), Path.app(appPath, Path.CONFIG) + File.separator + "_production.json", false);
+        OutputStream.writeToFile(configJSON.toJSON(2), Path.app(appPath, Path.CONFIG) + File.separator + "_production.json", false);
         
         Values commands = new Values().add(
                 new Values()
@@ -881,7 +881,7 @@ public class App implements MainArg {
                 .set("algorithm", "HS512")
         );*/
 
-        OutputStream.writeToFile(configJSON.toJSON(4), Path.app(appPath, Path.CONFIG) + File.separator + "_development.json", false);
+        OutputStream.writeToFile(configJSON.toJSON(2), Path.app(appPath, Path.CONFIG) + File.separator + "_development.json", false);
         
         System.out.println();
 
@@ -891,6 +891,10 @@ public class App implements MainArg {
     }
 
     private static void makeDirs(String name) {
+        makeDirs(name, false);
+    }
+
+    private static void makeDirs(String name, boolean newApp) {
         String appPath = getPath(name);
 
         makePath(appPath);
@@ -934,13 +938,15 @@ public class App implements MainArg {
         makePath(Path.app(appPath, Path.STORAGE_FILESYSTEM_PUBLIC));
         makePath(Path.app(appPath, Path.STORAGE_FILESYSTEM_SERVER));
 
-        makePath(Path.app(appPath, Path.UI));
-        makePath(Path.app(appPath, Path.UI_SRC));
-        makePath(Path.app(appPath, Path.UI_SRC_COMPONENTS));
-        makePath(Path.app(appPath, Path.UI_SRC_COMPONENTS_MYBUTTON));
-        makePath(Path.app(appPath, Path.UI_SRC_CONTAINERS));
-        makePath(Path.app(appPath, Path.UI_SRC_CONTAINERS_DASHBOARDCONTAINER));
-        makePath(Path.app(appPath, Path.UI_SRC_STYLES));
+        if (newApp) {
+            makePath(Path.app(appPath, Path.UI));
+            makePath(Path.app(appPath, Path.UI_SRC));
+            makePath(Path.app(appPath, Path.UI_SRC_COMPONENTS));
+            makePath(Path.app(appPath, Path.UI_SRC_COMPONENTS_MYBUTTON));
+            makePath(Path.app(appPath, Path.UI_SRC_CONTAINERS));
+            makePath(Path.app(appPath, Path.UI_SRC_CONTAINERS_DASHBOARDCONTAINER));
+            makePath(Path.app(appPath, Path.UI_SRC_STYLES));
+        }
 
         //makePath(Path.app(appPath, Path.STORAGE_FILESYSTEM_SERVER_SAMPLES));
         //makePath(Path.app(appPath, Path.STORAGE_FILESYSTEM_SERVER_SAMPLES_EXPORTEXCEL));
@@ -1065,7 +1071,7 @@ public class App implements MainArg {
                     if (!fileConfig.exists()) {
                         Values configBase = netunoConfigs.getValues(key);
                         if (configBase != null) {
-                            OutputStream.writeToFile(configBase.toJSON(4), fileConfig, false);
+                            OutputStream.writeToFile(configBase.toJSON(2), fileConfig, false);
                         } else {
                             System.out.println(OS.consoleOutput("@|yellow The "+ app +" application has empty config to environment "+ key +". |@"));
                         }

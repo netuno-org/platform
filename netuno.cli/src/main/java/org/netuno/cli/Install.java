@@ -140,7 +140,7 @@ public class Install implements MainArg {
         if (checksum) {
             localChecksum(new File(path), checksumLocal, new File(path));
             org.netuno.psamata.io.OutputStream.writeToFile(
-                    checksumLocal.toJSON(4),
+                    checksumLocal.toJSON(2),
                     checksumFile,
                     false
             );
@@ -332,7 +332,7 @@ public class Install implements MainArg {
                     if (!checksumBundle.isEmpty()) {
                         System.out.println();
                         org.netuno.psamata.io.OutputStream.writeToFile(
-                                checksumBundle.toJSON(4),
+                                checksumBundle.toJSON(2),
                                 checksumFile,
                                 false
                         );

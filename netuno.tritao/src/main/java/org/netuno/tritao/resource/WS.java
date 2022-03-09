@@ -496,9 +496,9 @@ public class WS extends ResourceBase {
                     } catch (Throwable e) {
                         if (e instanceof java.nio.channels.ClosedChannelException
                                 || e.getClass().getSimpleName().equals("WebSocketException")) {
-                            throw new ResourceException(" Sending a message to closed session "+ session.getId() +":\n"+ data.toJSON(4));
+                            throw new ResourceException(" Sending a message to closed session "+ session.getId() +":\n"+ data.toJSON(2));
                         } else {
-                            throw new ResourceException(" Sending a message to session "+ session.getId() +" failed:\n"+ data.toJSON(4), e);
+                            throw new ResourceException(" Sending a message to session "+ session.getId() +" failed:\n"+ data.toJSON(2), e);
                         }
                     }
                 }
@@ -619,9 +619,9 @@ public class WS extends ResourceBase {
                             } catch (Throwable e) {
                                 if (e instanceof java.nio.channels.ClosedChannelException
                                         || e.getClass().getSimpleName().equals("WebSocketException")) {
-                                    logger.warn("App "+ app +" broadcast to closed session "+ session.getId() +":\n"+ data.toJSON(4));
+                                    logger.warn("App "+ app +" broadcast to closed session "+ session.getId() +":\n"+ data.toJSON(2));
                                 } else {
-                                    logger.warn("App "+ app +" broadcast to session "+ session.getId() +" failed:\n"+ data.toJSON(4), e);
+                                    logger.warn("App "+ app +" broadcast to session "+ session.getId() +" failed:\n"+ data.toJSON(2), e);
                                 }
                             }
                         }
@@ -682,9 +682,9 @@ public class WS extends ResourceBase {
                         } catch (Throwable e) {
                             if (e instanceof java.nio.channels.ClosedChannelException
                                     || e.getClass().getSimpleName().equals("WebSocketException")) {
-                                logger.warn("App "+ app +" broadcast to closed session "+ session.getId() +":\n"+ data.toJSON(4));
+                                logger.warn("App "+ app +" broadcast to closed session "+ session.getId() +":\n"+ data.toJSON(2));
                             } else {
-                                logger.warn("App "+ app +" broadcast to session "+ session.getId() +" failed:\n"+ data.toJSON(4), e);
+                                logger.warn("App "+ app +" broadcast to session "+ session.getId() +" failed:\n"+ data.toJSON(2), e);
                             }
                         }
                     }

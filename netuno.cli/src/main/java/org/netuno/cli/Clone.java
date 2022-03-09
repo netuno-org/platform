@@ -218,7 +218,7 @@ public class Clone implements MainArg {
                             config
                     );
 
-                    org.netuno.psamata.io.OutputStream.writeToFile(config.toJSON(4), file, false);
+                    org.netuno.psamata.io.OutputStream.writeToFile(config.toJSON(2), file, false);
                 }
 
                 cloneData.set("from", fromAppName)
