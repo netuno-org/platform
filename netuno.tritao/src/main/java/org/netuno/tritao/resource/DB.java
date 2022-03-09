@@ -200,7 +200,7 @@ public class DB extends ResourceBase {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
                 description = "Obtém o nome da configuração de conexão à base de dados que está a ser utilizada.\n"
-                + "Os detalhes da conexão deverão estar definidas no documento configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../tutorials/multiple-databases).",
+                + "Os detalhes da conexão deve estar definida no documento configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../tutorials/multiple-databases).",
                 howToUse = {
                     @SourceCodeDoc(
                             type = SourceCodeTypeDoc.JavaScript,
@@ -214,8 +214,8 @@ public class DB extends ResourceBase {
                     )}),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Starts a new DB resource for the connection name that is passed.\n"
-                + "The connection details must be defined in the application's environment configuration document, more information in the [Multiple Databases](../../tutorials/multiple-databases) tutorial.",
+                description = "Gets the name of the database connection configuration being used.\n"
+                + "The connection details must be defined in the application environment configuration document, more information in the [Multiple Databases](../../tutorials/multiple-databases) tutorial.",
                 howToUse = {
                     @SourceCodeDoc(
                             type = SourceCodeTypeDoc.JavaScript,
@@ -240,6 +240,60 @@ public class DB extends ResourceBase {
     )
     public String getKey() {
         return key;
+    }
+
+    public String key() {
+        return getKey();
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém a configuração de conexão à base de dados que está a ser utilizada.\n"
+                            + "Os detalhes da conexão está definida no documento de configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../tutorials/multiple-databases).",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_header.contentTypePlain()\n"
+                                            + "\n"
+                                            + "const db_PADRAO_Config = _db.getConfig()\n"
+                                            + "_out.print(`A conexão da db PADRÃO é: ${db_PADRAO_Config.toJSON()}\\n`)\n"
+                                            + "\n"
+                                            + "const db_OUTRA_Config = _db.init(\"countries\").getConfig()\n"
+                                            + "_out.print(`A OUTRA conexão da db é: ${db_OUTRA_Config.toJSON()}\\n`)\n"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the connection configuration to the database being used.\n"
+                            + "The connection details are defined in the application environment configuration document, more information in the [Multiple Databases](../../tutorials/multiple-databases) tutorial.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_header.contentTypePlain()\n"
+                                            + "\n"
+                                            + "const db_DEFAULT_Config = _db.getConfig()\n"
+                                            + "_out.print(`The DEFAULT DB connection is: ${db_DEFAULT_Config.toJSON()}\\n`)\n"
+                                            + "\n"
+                                            + "const db_OTHER_Config = _db.init(\"countries\").getConfig()\n"
+                                            + "_out.print(`The OTHER DB connection is: ${db_OTHER_Config.toJSON()}\\n`)\n"
+                            )}),},
+            parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Configuração da conexão à base de dados que está a ser utilizada."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Configuration of the connection to the database being used."
+                    )}
+    )
+    public Values getConfig() {
+        return resource(App.class).config().getValues("db", new Values()).getValues(getKey(), null);
+    }
+
+    public Values config() {
+        return getConfig();
     }
 
     @MethodDoc(translations = {
@@ -852,6 +906,9 @@ public class DB extends ResourceBase {
     }
 
     public List<Values> query(String query, Object... params) throws ResourceException {
+        if (params.length == 1 && Values.isList(params[0])) {  // Jython Compatibility
+            params = new Values(params[0]).toArray();
+        }
         try {
             return ops().query(query, params);
         } catch (SQLException e) {
@@ -982,6 +1039,9 @@ public class DB extends ResourceBase {
     }
 
     public Values queryFirst(String query, Object... params) throws ResourceException {
+        if (params.length == 1 && Values.isList(params[0])) {  // Jython Compatibility
+            params = new Values(params[0]).toArray();
+        }
         List<Values> results = query(query, params);
         if (results.size() == 0) {
             return null;
@@ -1284,6 +1344,9 @@ public class DB extends ResourceBase {
             )
     })
     public int execute(String command, Object... params) throws ResourceException {
+        if (params.length == 1 && Values.isList(params[0])) {  // Jython Compatibility
+            params = new Values(params[0]).toArray();
+        }
         try {
             return ops().execute(command, params);
         } catch (SQLException e) {
@@ -1483,6 +1546,9 @@ public class DB extends ResourceBase {
     }
 
     public int[] insertMany(String table, Object... dataItems) throws ResourceException {
+        if (dataItems.length == 1 && Values.isList(dataItems[0])) {  // Jython Compatibility
+            dataItems = new Values(dataItems[0]).toArray();
+        }
         int[] ids = new int[dataItems.length];
         for (int i = 0; i < ids.length; i++) {
             ids[i] = insert(table, new Values(dataItems[i]));
@@ -1645,6 +1711,9 @@ public class DB extends ResourceBase {
     }
 
     public int[] updateMany(String table, Object... dataItems) throws ResourceException {
+        if (dataItems.length == 1 && Values.isList(dataItems[0])) { // Jython Compatibility
+            dataItems = new Values(dataItems[0]).toArray();
+        }
         int[] results = new int[dataItems.length];
         for (int i = 0; i < results.length; i++) {
             results[i] = update(table, new Values(dataItems[i]));
@@ -1947,6 +2016,9 @@ public class DB extends ResourceBase {
     }
 
     public int[] deleteMany(String table, Object... dataItems) throws ResourceException {
+        if (dataItems.length == 1 && Values.isList(dataItems[0])) {  // Jython Compatibility
+            dataItems = new Values(dataItems[0]).toArray();
+        }
         int[] results = new int[dataItems.length];
         for (int i = 0; i < results.length; i++) {
             if (dataItems[i] instanceof Integer) {
