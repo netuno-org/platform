@@ -2983,7 +2983,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             if (isEmpty()) {
                 forceList();
             }
-            for(int i = 0; i < Array.getLength(object); i++){
+            for (int i = 0; i < Array.getLength(object); i++) {
                 Object o = Array.get(object, i);
                 if (isMergeable(o)) {
                     add(new Values(o));

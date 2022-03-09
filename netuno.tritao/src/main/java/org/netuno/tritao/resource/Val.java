@@ -23,6 +23,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -156,6 +157,10 @@ public class Val extends ResourceBase {
 
     public Values init(Iterable i) {
         return new Values(i);
+    }
+
+    public Values init(Object o) {
+        return new Values(o);
     }
 
     @MethodDoc(translations = {
@@ -326,6 +331,9 @@ public class Val extends ResourceBase {
     	if (o instanceof List) {
     		return (List)o;
     	}
+        if (o.getClass().isArray()) {
+            return resource(Convert.class).arrayToList(o);
+        }
     	return null;
     }
 
@@ -370,6 +378,9 @@ public class Val extends ResourceBase {
     	if (o instanceof List) {
     		return (List)o;
     	}
+        if (o.getClass().isArray()) {
+            return resource(Convert.class).arrayToList(o);
+        }
     	return null;
     }
 

@@ -23,7 +23,10 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.tritao.config.Hili;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 import org.netuno.psamata.io.File;
 
@@ -1031,4 +1034,49 @@ public class Convert extends ResourceBase {
         return new File(fileName, contentType, new java.io.ByteArrayInputStream(bytes))
                 .ensureJail(org.netuno.tritao.config.Config.getPathAppBase(getProteu()));
     }
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte um array de tipos primitivos para uma lista (coleção).",
+							howToUse = {}),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts an array of primitive types to a list (collection).",
+							howToUse = {})
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "array",
+							translations = {
+									@ParameterTranslationDoc(
+											language = LanguageDoc.PT,
+											description = "Array que será convertido em uma lista (coleção)."
+									),
+									@ParameterTranslationDoc(
+											language = LanguageDoc.EN,
+											description = "Array that will be converted into a list (collection)."
+									)
+							}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Nova lista com todos os elementos do array."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "New list with all array elements."
+					)
+			}
+	)
+	public List arrayToList(Object array) {
+		ArrayList list = new ArrayList();
+		for (int i = 0; i < Array.getLength(array); i++) {
+			list.add(Array.get(array, i));
+		}
+		return list;
+	}
 }
