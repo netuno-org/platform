@@ -144,7 +144,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.db.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.db.intro` })}
                     name="db"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
               </ul>
