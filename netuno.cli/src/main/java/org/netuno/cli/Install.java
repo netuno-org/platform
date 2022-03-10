@@ -52,7 +52,7 @@ import org.apache.logging.log4j.Logger;
 public class Install implements MainArg {
     private static Logger logger = LogManager.getLogger(Install.class);
 
-    private static String graalVMVersion = "21.3.0";
+    private static String graalVMVersion = "22.0.0.2";
     
     @CommandLine.Option(names = { "-p", "path" }, paramLabel = "path", description = "Path to install.")
     protected String path = ".";
