@@ -23,6 +23,7 @@ import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.tritao.config.Hili;
 
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.Instant;
 import java.time.chrono.ChronoLocalDate;
@@ -30,12 +31,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DecimalStyle;
 import java.time.temporal.*;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
+import org.netuno.tritao.resource.util.ResourceException;
 
 /**
  * Time - Resource
@@ -54,6 +54,51 @@ public class Time extends ResourceBase {
 
     public Time(Proteu proteu, Hili hili) {
         super(proteu, hili);
+    }
+
+    public SimpleDateFormat simpleDateFormat(String format) {
+        return new SimpleDateFormat(format);
+    }
+
+    public GregorianCalendar gregorianCalendar() {
+        return new java.util.GregorianCalendar();
+    }
+
+    public GregorianCalendar gregorianCalendar(TimeZone zone) {
+        return new GregorianCalendar(zone);
+    }
+
+    public GregorianCalendar gregorianCalendar(Locale aLocale) {
+        return new GregorianCalendar(aLocale);
+    }
+
+    public GregorianCalendar gregorianCalendar(TimeZone zone, Locale aLocale) {
+        return new GregorianCalendar(zone, aLocale);
+    }
+
+    public GregorianCalendar gregorianCalendar(int year, int month, int dayOfMonth) {
+        return new GregorianCalendar(year, month, dayOfMonth);
+    }
+
+    public GregorianCalendar gregorianCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute) {
+        return new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
+    }
+
+    public GregorianCalendar gregorianCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second) {
+        return new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute, second);
+    }
+
+    public int gregorianCalendarConstant(String name) throws ResourceException {
+        name = name.toLowerCase().replace('-', '_');
+        try {
+            int value = (Integer)GregorianCalendar
+                    .class
+                    .getDeclaredField(name.toUpperCase())
+                    .get(Integer.class);
+            return value;
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+            throw new ResourceException("time.gregorianCalendarConstant(" + name + ")", e);
+        }
     }
 
     @MethodDoc(translations = {
@@ -81,7 +126,6 @@ public class Time extends ResourceBase {
     public Date date() {
         return new Date();
     }
-
 
     public Date dateFrom(Instant instant) {
         return Date.from(instant);
