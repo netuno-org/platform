@@ -643,10 +643,11 @@ class CheckServerStartedRunnable implements Runnable {
                                                 System.out.println();
                                                 ProcessBuilder builder = new ProcessBuilder();
                                                 // ../../../../graalvm/bin/npm
+                                                String installCommand = command.getString("install", executable +" install");
                                                 if (OS.isWindows()) {
-                                                    builder.command("cmd.exe", "/c", executable +" install");
+                                                    builder.command("cmd.exe", "/c", installCommand);
                                                 } else {
-                                                    builder.command("sh", "-c", executable +" install");
+                                                    builder.command("sh", "-c", installCommand);
                                                 }
                                                 builder.directory(folder);
                                                 Process process = builder.start();
