@@ -473,7 +473,7 @@ public class File {
             out.close();
             bytes = new ByteArrayInputStream(bytesArray);
         } else {
-            (new java.io.File(physicalPath)).renameTo(new java.io.File(pathToWriteFile));
+            FileUtils.copy(new java.io.File(physicalPath), new java.io.File(pathToWriteFile));
             physicalPath = pathToWriteFile;
         }
     }
