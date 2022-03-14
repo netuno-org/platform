@@ -1154,7 +1154,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      */
     public final java.sql.Date getSQLDate(final String key, final java.sql.Date defaultValue) {
         try {
-            Object value = this.getString(key);
+            Object value = this.get(key);
             if (value instanceof java.sql.Date) {
                 return (java.sql.Date)value;
             }
@@ -1189,7 +1189,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      */
     public final java.sql.Timestamp getSQLTimestamp(final String key, final java.sql.Timestamp defaultValue) {
         try {
-            Object value = this.getString(key);
+            Object value = this.get(key);
             if (value instanceof java.sql.Timestamp) {
                 return (java.sql.Timestamp)value;
             }
@@ -1224,7 +1224,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      */
     public final java.sql.Time getSQLTime(final String key, final java.sql.Time defaultValue) {
         try {
-            Object value = this.getString(key);
+            Object value = this.get(key);
             if (value instanceof java.sql.Time) {
                 return (java.sql.Time)value;
             }
