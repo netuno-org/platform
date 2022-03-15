@@ -380,6 +380,18 @@ public class Install implements MainArg {
                             System.out.println(OS.consoleOutput("\t@|red > chmod +x update.sh && cp update.sh update |@ "));
                         }
                     }
+                    if (new File(path, "latest.sh").exists() && !new File(path, "latest").exists()) {
+                        ProcessBuilder builder = new ProcessBuilder();
+                        builder.command(new String[]{"sh", "-c", "chmod +x latest.sh && cp latest.sh latest"});
+                        builder.directory(new File(path));
+                        Process process = builder.start();
+                        int exitCode = process.waitFor();
+                        if (exitCode != 0) {
+                            System.out.println();
+                            System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
+                            System.out.println(OS.consoleOutput("\t@|red > chmod +x latest.sh && cp latest.sh latest |@ "));
+                        }
+                    }
                     if (new File(path, "bin-unix").isDirectory()) {
                     	ProcessBuilder builder = new ProcessBuilder();
                         builder.command(new String[]{"sh", "-c", "chmod +x bin-unix/*.sh"});
