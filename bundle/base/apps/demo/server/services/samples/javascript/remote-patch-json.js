@@ -14,10 +14,7 @@
 var client = _remote.init()
 
 var response = client.asJSON().patch(
-    "http://httpbin.org/patch", 
-    _val.init()
-        .set("name", "morpheus")
-        .set("job", "leader")
+    "http://httpbin.org/patch"
 )
 
 _out.json(response)
