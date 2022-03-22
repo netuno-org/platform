@@ -51,7 +51,6 @@ BuildVersion=`unzip -p netuno.cli/target/netuno-cli-*-jar-with-dependencies.jar 
 cp bundle/dist/netuno.zip bundle/dist/netuno-v7-`echo $BuildVersion | sed -E 's/[\\.]/_/g'`.zip
 
 cd bundle
-
 printf '{"version":"%s","type":"%s"}\n' "$BuildVersion" "$VersionType" > dist/netuno.json
 
 echo

@@ -39,12 +39,10 @@ Netuno is written in Java and runs in GraalVM to facilitate web application deve
 
 ## Build Requirements
 
-- Linux or macOS;
+- Linux, macOS and Windows;
 - Maven
 - NodeJS
 - Java 11
-
-> Build scripts are currently not available for Windows, so we recommend a Linux/macOS based environment.
 
 ## Setup
 
@@ -54,21 +52,87 @@ To install the Netuno Platform, please, follow the:
 
 Continue with the steps below if you want to compile from scratch and change the Netuno Platform, then start cloning this repository.
 
+## Linux or Mac
+
 Allow permission to execute:
 
-`chmod +x setup.sh`
+```sh
+ $ chmod +x setup.sh
+```
 
 Run the setup script:
+```sh
+ $ ./setup.sh
+```
 
-`./setup.sh`
+
+## Windows
+
+You need to run PowerShell as an administrator, then follow the steps.
+
+```ps1
+ $ .\setup.ps1
+```
+
+After running this command will open the one menu.
+```ps1
+================ NETUNO ================
+1: INSTALL PROGUARD.
+2: INSTALL MAVEN.
+3: SETTING PROJECT.
+Q: PRESS Q TO QUIT.
+Please make a selection:
+```
+Now you need to run option 1 to install ProGuard.
+
+```ps1
+Installing ProGuard.....
+ProGuard installed
+```
+After installing ProGuard you need to select option 2 for installing **Maven** and **reboot the computer**.
+
+```ps1
+Installing Apache Maven 3.8.5 ...
+
+... SOME OTHER LOGS ...
+
+Apache Maven 3.8.5 installed
+REBOOT THE COMPUTER
+Press Enter to continue...:
+```
+
+Now select option 3 to make some final settings.
+```ps1
+... SOME OTHER LOGS ... 
+
+Setting SymbolicLink ...
+
+Press Enter to continue...:
+```
 
 ## Bundle
 
-`cd bundle`
+### Windows Commands
 
-`./publish.sh`
+```ps1
+ $ cd bundle
+```
+
+```ps1
+ $ ./publish.ps1
+```
+
+### Linux or Mac Commands
+```sh
+ $ cd bundle
+```
+
+```ps1
+ $ ./publish.sh
+```
 
 The published Netuno version will be generated in `bundle/dist/netuno*` which is based on the final output generated in `bundle/out/netuno`.
+
 
 ## Run/Debug With IntelliJ IDEA Community Edition
 
