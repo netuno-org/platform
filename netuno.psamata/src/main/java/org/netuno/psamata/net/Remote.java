@@ -22,27 +22,29 @@ import org.json.XML;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.codec.binary.Base64;
 
 import javax.net.ssl.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.util.*;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
+
 
 /*
 
@@ -544,7 +546,7 @@ public class Remote {
                 finalData = _data.toJSON();
             }
         }
-        return submit(method, url, _qs, contentType, finalData, data);
+        return submitJava11(method, url, _qs, contentType, finalData, data);
     }
     
     public Response submit(String method, String url, Map data) {
@@ -552,11 +554,132 @@ public class Remote {
     }
 
     public Response submit(String method, String url, Values qs, String contentType, String data) {
-        return submit(method, url, qs, contentType, data, null);
+        return submitJava11(method, url, qs, contentType, data, null);
     }
     
     public Response submit(String method, String url, Map qs, String contentType, String data) {
         return submit(method, url, new Values(qs), contentType, data);
+    }
+
+    private Response submitJava11(String method, String url, Values qs, String contentType, String dataReady, Values data) {
+        String queryString = qs.toString("&", "=", new Values().set("urlEncode", true));
+        String fullUrl = urlPrefix;
+        if (!fullUrl.isEmpty() && !url.isEmpty()
+                && !fullUrl.endsWith("/") && !url.startsWith("/")) {
+            fullUrl += "/";
+        }
+        fullUrl += url + (queryString.isEmpty() ? "" : "?" + queryString);
+        try {
+            // https://mkyong.com/java/java-11-httpclient-examples/
+            // https://zetcode.com/java/httpclient/
+
+            String boundary = "---" + System.currentTimeMillis() + UUID.randomUUID().toString().replace("-", "");
+
+            HttpClient client = HttpClient.newBuilder()
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .connectTimeout(Duration.ofMillis(connectTimeout))
+                    .followRedirects(isFollowRedirects() ? HttpClient.Redirect.ALWAYS : HttpClient.Redirect.NORMAL)
+                    .build();
+
+            HttpRequest.Builder builder = HttpRequest.newBuilder()
+                    .uri(URI.create(fullUrl));
+            boolean isRequestBodyString = dataReady != null && !dataReady.isEmpty() && !contentType.equals(contentTypeMultipartFormData);
+            if (isRequestBodyString) {
+                builder.header("Content-Type", contentType + "; charset=" + getCharset());
+            } else if (data != null && !data.isEmpty() && contentType.equals(contentTypeMultipartFormData)) {
+                builder.header("Content-Type", contentType + "; boundary=" + boundary);
+            }
+            if (!getAuthorization().isEmpty()) {
+                builder.header("Authorization", authorization);
+            }
+
+            for (String key : getHeader().keys()) {
+                builder.header(key, getHeader().getString(key));
+            }
+
+            if (isRequestBodyString) {
+                builder.method(method.toUpperCase(), HttpRequest.BodyPublishers.ofString(dataReady));
+            } else if (data != null && !data.isEmpty() && contentType.equals(contentTypeMultipartFormData)) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, getCharset()), true);
+                for (String key : data.keys()) {
+                    Object value = data.get(key);
+                    multipartFormDataAppend(outputStream, writer, boundary, key, value);
+                }
+                if (data.keys().size() > 0) {
+                    writer.append("--" + boundary + "--").append(LINE_FEED);
+                }
+                writer.close();
+                builder.method(method, HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()));
+            }
+
+            HttpRequest request = builder.build();
+
+            String charset = "";
+
+            Response response = new Response();
+
+            InputStream clientResponseBody = null;
+            try {
+                HttpResponse<InputStream> clientRequestResponse = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+                statusCode = clientRequestResponse.statusCode();
+                response.setStatusCode(statusCode);
+
+                Values responseHeader = new Values();
+                HttpHeaders headers = clientRequestResponse.headers();
+                headers.map().forEach((key, value) -> {
+                    responseHeader.set(key, value);
+                });
+
+                if (statusCode == 301 && isFollowRedirects() && responseHeader.hasKey("Location")) {
+                    return submit(method, responseHeader.getString("Location"), qs, contentType, dataReady, data);
+                }
+                String responseContentType = responseHeader
+                        .getString("Content-Type")
+                        .toLowerCase()
+                        .replace(" ", "");
+                Values responseContentTypeValues = new Values(responseContentType, ";", "=");
+                if (responseContentTypeValues.has("charset")) {
+                    charset = responseContentTypeValues.getString("charset");
+                }
+
+                clientResponseBody = clientRequestResponse.body();
+            } catch (Exception e) {
+                e.toString();
+            }
+            try {
+                if (clientResponseBody != null) {
+                    response.setBytes(org.netuno.psamata.io.InputStream.readAllBytes(clientResponseBody));
+                    if (!binary) {
+                        String content = null;
+                        if (charset.isEmpty()) {
+                            content = new String(response.getBytes());
+                        } else {
+                            content = new String(response.getBytes(), charset);
+                        }
+                        response.setContent(content);
+                    }
+                    clientResponseBody.close();
+                }
+            } catch (Exception e) {
+                e.toString();
+            }
+            return response;
+        } catch (Throwable t) {
+            String dataContent = "";
+            if ((isForm() || isText() || isJSON()) && !data.isEmpty()) {
+                dataContent = data.toJSON();
+                if (dataContent.length() > 150) {
+                    dataContent = dataContent.substring(0, 150) + "...";
+                }
+            }
+            throw new Error(
+                    t.getMessage() +"\n"+ method.toUpperCase() +" "+ fullUrl
+                            + (!data.isEmpty() ?
+                            "\n>> "+ dataContent : ""),
+                    t);
+        }
     }
 
     private Response submit(String method, String url, Values qs, String contentType, String dataReady, Values data) {
@@ -568,8 +691,9 @@ public class Remote {
         }
         fullUrl += url + (queryString.isEmpty() ? "" : "?" + queryString);
         try {
-            URL _url = new URL(fullUrl);
             String boundary = "---" + System.currentTimeMillis() + UUID.randomUUID().toString().replace("-", "");
+
+            URL _url = new URL(fullUrl);
             Response response = new Response();
             response.setMethod(method);
             response.setURL(fullUrl);
@@ -688,6 +812,51 @@ public class Remote {
                             + (!data.isEmpty() ?
                                     "\n>> "+ dataContent : ""),
                     t);
+        }
+    }
+
+    private void multipartFormDataAppendJava11(OutputStream outputStream, PrintWriter writer, String boundary, String key, Object value) throws IOException {
+        if (value instanceof Values) {
+            Values values = (Values) value;
+            if (values.isList()) {
+                for (Object object : values) {
+                    multipartFormDataAppendJava11(outputStream, writer, boundary, key, object);
+                }
+            } else {
+                for (String subKey : values.keys()) {
+                    multipartFormDataAppendJava11(outputStream, writer, boundary, key + subKey, values.get(subKey));
+                }
+            }
+        } else if (value instanceof File) {
+            File file = (File) value;
+            String fileName = file.getName();
+            writer.append("--" + boundary).append(LINE_FEED);
+            writer.append("Content-Disposition: form-data; name=\"" + key
+                            + "\"; filename=\"" + fileName + "\"")
+                    .append(LINE_FEED);
+            writer.append("Content-Type: "
+                            + URLConnection.guessContentTypeFromName(fileName))
+                    .append(LINE_FEED);
+            writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
+            writer.append(LINE_FEED);
+            writer.flush();
+            InputStream inputStream = file.getInputStream();
+            byte[] buffer = new byte[4 * 1024];
+            int bytesRead = -1;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            outputStream.flush();
+            inputStream.close();
+            writer.append(LINE_FEED);
+            writer.flush();
+        } else {
+            writer.append("--" + boundary).append(LINE_FEED);
+            writer.append("Content-Disposition: form-data; name=\"" + key + "\"").append(LINE_FEED);
+            writer.append("Content-Type: text/plain; charset=" + getCharset()).append(LINE_FEED);
+            writer.append(LINE_FEED);
+            writer.append(value.toString()).append(LINE_FEED);
+            writer.flush();
         }
     }
 
