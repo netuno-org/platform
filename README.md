@@ -73,6 +73,7 @@ You need to run PowerShell as an administrator, then follow the steps.
 ```ps1
  $ .\setup.ps1
 ```
+select option y if need to confirm something. 
 
 After running this command will open the one menu.
 ```ps1
@@ -127,7 +128,7 @@ Press Enter to continue...:
  $ cd bundle
 ```
 
-```ps1
+```sh
  $ ./publish.sh
 ```
 

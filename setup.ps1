@@ -1,3 +1,4 @@
+Set-ExecutionPolicy RemoteSigned
 function Show-Menu {
     Clear-Host
     Write-Host "================ NETUNO ================"
