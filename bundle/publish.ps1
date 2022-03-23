@@ -10,7 +10,8 @@ if ($isCritical -eq 'c') {
 }
 
 
-rm -r dist
+Remove-Item "dist" -Force -ErrorAction Ignore 
+
 
 cd ..
 
