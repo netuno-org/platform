@@ -175,8 +175,10 @@ do
     
             Write-Host ""
             Write-Host " Cleaning cache files..." -ForegroundColor red
+
             Remove-Item "maven.zip" -Recurse -Confirm:$false -Force -ErrorAction Ignore
             Get-ChildItem -Path "$netunoDir" -Directory "apache-*" | Remove-Item -Force -ErrorAction Ignore -Confirm:$false
+            
             Write-Host " Cleaning Complete." -ForegroundColor green
     
             Write-Host ""

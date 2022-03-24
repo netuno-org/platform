@@ -73,43 +73,26 @@ You need to run PowerShell as an administrator, then follow the steps.
 ```ps1
  $ .\setup.ps1
 ```
-select option y if need to confirm something.
+`Select option y if need to confirm something.`
 
 After running this command will open the one menu.
-```ps1
-================ NETUNO ================
-1: INSTALL PROGUARD.
-2: INSTALL MAVEN.
-3: SETTING PROJECT.
-Q: PRESS Q TO QUIT.
-Please make a selection:
-```
-Now you need to run option 1 to install ProGuard.
 
-```ps1
-Installing ProGuard.....
-ProGuard installed
-```
-After installing ProGuard you need to select option 2 for installing **Maven** and **reboot the computer**.
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/menu.png" width="300" style="border-radius: 10px;"/>
 
-```ps1
-Installing Apache Maven 3.8.5 ...
+Now you need to run option 1 to install Java JDK 11 and configure to use in JAVA_HOME.
 
-... SOME OTHER LOGS ...
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/java-install.png" width="300" style="border-radius: 10px;"/>
 
-Apache Maven 3.8.5 installed
-REBOOT THE COMPUTER
-Press Enter to continue...:
-```
+After install Java JDK 11 select option 2 to install Maven.
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/maven-install.png" width="300" style="border-radius: 10px;"/>
 
-Now select option 3 to make some final settings.
-```ps1
-... SOME OTHER LOGS ... 
+Now you need to run option 3 to install ProGuard.
 
-Setting SymbolicLink ...
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/proguard-install.png" width="300" style="border-radius: 10px;"/>
 
-Press Enter to continue...:
-```
+After installing ProGuard, Java and Maven you need to **reboot computer**.
+Select option 4 and at the end also select option 5.
+
 
 ## Bundle
 
