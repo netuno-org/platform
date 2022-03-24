@@ -84,6 +84,7 @@ Now you need to run option 1 to install Java JDK 11 and configure to use in JAVA
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/java-install.png" width="300" style="border-radius: 10px;"/>
 
 After install Java JDK 11 select option 2 to install Maven.
+
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/maven-install.png" width="300" style="border-radius: 10px;"/>
 
 Now you need to run option 3 to install ProGuard.
