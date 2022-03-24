@@ -111,63 +111,63 @@ public class Logger extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **FATAL** no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **FATAL** in the log file and in the terminal of Netuno.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma mensagem do tipo **FATAL** no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        })
+                    description = "Print a message of type **FATAL** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            })
     }, returns = { })
     public void fatal(String message) {
         logger.fatal(message("FATAL", message));
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **FATAL** no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **FATAL** in the log file and in the terminal of Netuno.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc( //descricao
                     language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma mensagem do tipo **FATAL** no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        }),
-        @ParameterDoc(name = "throwable", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "auxiliar",
-                    description = "Objeto alternativo para incluir na mensagem de log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Alternative object to include in the log message."
-            )
-        })
+                    description = "Print a message of type **FATAL** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
+    }, parameters = { //atrubutos
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem", //nome quadrados
+                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            }),
+            @ParameterDoc(name = "throwable", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "auxiliar",
+                            description = "Objeto alternativo para incluir na mensagem de log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative object to include in the log message."
+                    )
+            })
     }, returns = { })
     public void fatal(String message, Object throwable) {
         if (throwable instanceof Throwable) {
@@ -178,63 +178,63 @@ public class Logger extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **ERRO** (_ERROR_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **ERROR** in the log file and in the terminal of Netuno.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma mensagem do tipo **ERRO** (_ERROR_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        })
+                    description = "Print a message of type **ERROR** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            })
     }, returns = { })
     public void error(String message) {
         logger.error(message("ERROR", message));
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **ERRO** (_ERROR_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **ERROR** in the log file and in the terminal of Netuno.",
-                howToUse = { })
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Imprime uma mensagem do tipo **ERRO** (_ERROR_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Print a message of type **ERROR** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
     }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        }),
-        @ParameterDoc(name = "throwable", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "auxiliar",
-                    description = "Objeto alternativo para incluir na mensagem de log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Alternative object to include in the log message."
-            )
-        })
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            }),
+            @ParameterDoc(name = "throwable", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "auxiliar",
+                            description = "Objeto alternativo para incluir na mensagem de log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative object to include in the log message."
+                    )
+            })
     }, returns = { })
     public void error(String message, Object throwable) {
         if (throwable instanceof Throwable) {
@@ -245,63 +245,63 @@ public class Logger extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **AVISO** (_WARNING_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **WARNING** in the log file and in the terminal of Netuno.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma mensagem do tipo **AVISO** (_WARNING_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        })
+                    description = "Print a message of type **WARNING** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            })
     }, returns = { })
     public void warn(String message) {
         logger.warn(message("WARN", message));
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **AVISO** (_WARNING_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **WARNING** in the log file and in the terminal of Netuno.",
-                howToUse = { })
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Imprime uma mensagem do tipo **AVISO** (_WARNING_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Print a message of type **WARNING** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
     }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        }),
-        @ParameterDoc(name = "throwable", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "auxiliar",
-                    description = "Objeto alternativo para incluir na mensagem de log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Alternative object to include in the log message."
-            )
-        })
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            }),
+            @ParameterDoc(name = "throwable", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "auxiliar",
+                            description = "Objeto alternativo para incluir na mensagem de log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative object to include in the log message."
+                    )
+            })
     }, returns = { })
     public void warn(String message, Object throwable) {
         if (throwable instanceof Throwable) {
@@ -312,63 +312,63 @@ public class Logger extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **INFORMAÇÃO** (_INFORMATION_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **INFORMATION** in the log file and in the terminal of Netuno.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma mensagem do tipo **INFORMAÇÃO** (_INFORMATION_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        })
+                    description = "Print a message of type **INFORMATION** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            })
     }, returns = { })
     public void info(String message) {
         logger.info(message("INFO", message));
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **INFORMAÇÃO** (_INFORMATION_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **INFORMATION** in the log file and in the terminal of Netuno.",
-                howToUse = { })
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Imprime uma mensagem do tipo **INFORMAÇÃO** (_INFORMATION_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Print a message of type **INFORMATION** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
     }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        }),
-        @ParameterDoc(name = "throwable", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "auxiliar",
-                    description = "Objeto alternativo para incluir na mensagem de log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Alternative object to include in the log message."
-            )
-        })
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            }),
+            @ParameterDoc(name = "throwable", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "auxiliar",
+                            description = "Objeto alternativo para incluir na mensagem de log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative object to include in the log message."
+                    )
+            })
     }, returns = { })
     public void info(String message, Object throwable) {
         if (throwable instanceof Throwable) {
@@ -379,63 +379,63 @@ public class Logger extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **VESTÍGIO** (_TRACE_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **TRACE** in the log file and in the terminal of Netuno.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma mensagem do tipo **VESTÍGIO** (_TRACE_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        })
+                    description = "Print a message of type **TRACE** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            })
     }, returns = { })
     public void trace(String message) {
         logger.trace(message("TRACE", message));
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **VESTÍGIO** (_TRACE_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **TRACE** in the log file and in the terminal of Netuno.",
-                howToUse = { })
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Imprime uma mensagem do tipo **VESTÍGIO** (_TRACE_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Print a message of type **TRACE** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
     }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        }),
-        @ParameterDoc(name = "throwable", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "auxiliar",
-                    description = "Objeto alternativo para incluir na mensagem de log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Alternative object to include in the log message."
-            )
-        })
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            }),
+            @ParameterDoc(name = "throwable", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "auxiliar",
+                            description = "Objeto alternativo para incluir na mensagem de log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative object to include in the log message."
+                    )
+            })
     }, returns = { })
     public void trace(String message, Object throwable) {
         if (throwable instanceof Throwable) {
@@ -446,63 +446,63 @@ public class Logger extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **DEPURAÇÃO** (_DEBUG_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **DEBUG** in the log file and in the terminal of Netuno.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma mensagem do tipo **DEPURAÇÃO** (_DEBUG_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        })
+                    description = "Print a message of type **DEBUG** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            })
     }, returns = { })
     public void debug(String message) {
         logger.debug(message("DEBUG", message));
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem do tipo **DEPURAÇÃO** (_DEBUG_) no ficheiro de log e no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Print a message of type **DEBUG** in the log file and in the terminal of Netuno.",
-                howToUse = { })
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Imprime uma mensagem do tipo **DEPURAÇÃO** (_DEBUG_) no ficheiro de log e no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Print a message of type **DEBUG** in the log file and in the terminal of Netuno.",
+                    howToUse = { })
     }, parameters = {
-        @ParameterDoc(name = "message", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "mensagem",
-                    description = "Mensagem que será apresentada em log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Message that will be presented in log."
-            )
-        }),
-        @ParameterDoc(name = "throwable", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "auxiliar",
-                    description = "Objeto alternativo para incluir na mensagem de log."
-            ),
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Alternative object to include in the log message."
-            )
-        })
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in log."
+                    )
+            }),
+            @ParameterDoc(name = "throwable", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "auxiliar",
+                            description = "Objeto alternativo para incluir na mensagem de log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative object to include in the log message."
+                    )
+            })
     }, returns = { })
     public void debug(String message, Object throwable) {
         if (throwable instanceof Throwable) {
@@ -511,29 +511,29 @@ public class Logger extends ResourceBase {
             logger.debug(message("DEBUG", message, throwable));
         }
     }
-    
+
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma mensagem direta sem nenhuma contextualização no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Prints a direct message without any context in the Netuno terminal.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "content", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "conteudo",
-                    description = "Conteúdo que será apresentado."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma mensagem direta sem nenhuma contextualização no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    name = "content",
-                    description = "Content that will be displayed."
-            )
-        })
+                    description = "Prints a direct message without any context in the Netuno terminal.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo que será apresentado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            name = "content",
+                            description = "Content that will be displayed."
+                    )
+            })
     }, returns = { })
     public void print(int i) {
         System.out.print(i);
@@ -563,27 +563,27 @@ public class Logger extends ResourceBase {
         System.out.print(o);
     }
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Imprime uma linha com a mensagem direta sem nenhuma contextualização no terminal do Netuno.",
-                howToUse = { }),
-        @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Prints a line with the direct message without any context in the Netuno terminal.",
-                howToUse = { })
-    }, parameters = {
-        @ParameterDoc(name = "content", translations = {
-            @ParameterTranslationDoc(
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "conteudo",
-                    description = "Conteúdo que será apresentado."
-            ),
-            @ParameterTranslationDoc(
+                    description = "Imprime uma linha com a mensagem direta sem nenhuma contextualização no terminal do Netuno.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    name = "content",
-                    description = "Content that will be displayed."
-            )
-        })
+                    description = "Prints a line with the direct message without any context in the Netuno terminal.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo que será apresentado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            name = "content",
+                            description = "Content that will be displayed."
+                    )
+            })
     }, returns = { })
     public void println(int i) {
         System.out.println(i);
