@@ -26,6 +26,7 @@ import org.netuno.tritao.resource.util.ErrorException;
 /**
  * Error - Resource
  * @author Eduardo Fonseca Velasques - @eduveks
+ * @author Érica Ferreira
  */
 @Resource(name = "error")
 @LibraryDoc(translations = {
@@ -105,24 +106,21 @@ public class Error extends ResourceBase {
         return new ErrorException(getProteu(), getHili(), message);
     }
 
-    /*
-     ************************************************INICIO
-     */
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Cria um erro com uma mensagem de descrição.", //descricao
+                    description = "Cria um erro com uma mensagem de descrição.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Creates an error with an description message",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "message", translations = { //nome en
+            @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem",  //nome pt
-                            description = "Mensagem que será apresentada em log."  //descricao
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -134,25 +132,21 @@ public class Error extends ResourceBase {
         return new java.lang.Error(message);
     }
 
-
-    /*
-     ************************************************INICIO
-     */
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Cria uma exceção com uma mensagem de descrição.\".", //descricao
+                    description = "Cria uma exceção com uma mensagem de descrição.\".",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Creates a exception with an description message",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "message", translations = { //nome en
+            @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem",  //nome pt
-                            description = "Mensagem que será apresentada em log."  //descricao
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -167,18 +161,18 @@ public class Error extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Cria um throwable com uma mensagem de descrição.", //descricao
+                    description = "Cria um throwable com uma mensagem de descrição.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Creates a throwable with an description message",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "message", translations = { //nome en
+            @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem",  //nome pt
-                            description = "Mensagem que será apresentada em log."  //descricao
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -204,18 +198,18 @@ public class Error extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Imprime os valores que originaram o erro.", //descricao
+                    description = "Cria uma nova classe Values com os valores que originaram o erro.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Print the values that created the error",
+                    description = "Creates a new class Values that results from the error. ",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "retorno", translations = { //nome en
+            @ParameterDoc(name = "return", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "return",  //nome pt
-                            description = "Valores."  //descricao
+                            name = "retorno",
+                            description = "Valores."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -229,18 +223,18 @@ public class Error extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Imprime os valores que originaram o erro.", //descricao
+                    description = "Cria uma nova classe Values que originaram o erro.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Print the values that created the error",
+                    description = "Creates a new class Values that results from the error.",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "retorno", translations = { //nome en
+            @ParameterDoc(name = "retorno", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "return",  //nome pt
-                            description = "Valores."  //descricao
+                            name = "return",
+                            description = "Valores."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -255,18 +249,18 @@ public class Error extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna uma exceção e uma lista dos métodos que a causaram com uma mensagem de descrição.", //descricao
+                    description = "Retorna uma exceção e uma lista dos métodos que a causaram com uma mensagem de descrição.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Print a message with the description of the exception",
+                    description = "Returns an exception and a list of methods that caused them with an description mensagem.",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "message", translations = { //nome en
+            @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "messagem",  //nome pt
-                            description = "Mensagem que será apresentada em log."  //descricao
+                            name = "messagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -278,20 +272,20 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message).setLogTrace(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Retorna um throwable e uma lista dos métodos que a causaram com uma mensagem de descrição.",
                     howToUse = { }),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Print a message with the description of the exception and it's cause",
+                    description = "Returns an throwable and a list of methods that caused them with an description mensagem.",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -304,20 +298,20 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message, cause).setLogTrace(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Retorna um objeto e uma lista dos métodos que a causaram com uma mensagem de descrição.",
                     howToUse = { }),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Print a message with the description of the exception and it's cause",
+                    description = "Returns an object and a list of methods that caused them with an description mensagem.",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -340,20 +334,20 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message, new Exception(cause.toString())).setLogTrace(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Imprime uma mensagem com a descrição da excecção e a seu objeto.",
+                    description = "Retorna uma exceção e imprime uma mensagem com a descrição da excecção e a seu objeto.",
                     howToUse = { }),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Print a message with the description of the exception and it's object",
+                    description = "Return an exception and print a message with the description of the exception and it's object",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -378,18 +372,18 @@ public class Error extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Imprime uma mensagem com a descrição do debug.", //descricao
+                    description = "Imprime uma mensagem com a descrição do debug.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Print a message with the description of the debug",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "message", translations = { //nome en
+            @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "messagem",  //nome pt
-                            description = "Mensagem que será apresentada em log."  //descricao
+                            name = "messagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -402,7 +396,7 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message, cause).setLogDebug(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Imprime uma mensagem com a descrição do debug e a sua causa.",
                     howToUse = { }),
@@ -410,12 +404,12 @@ public class Error extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Print a message with the description of the debug and it's cause",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -438,7 +432,7 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message, new Exception(cause.toString())).setLogDebug(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Imprime uma mensagem com a descrição do debug e a seu objeto.",
                     howToUse = { }),
@@ -446,12 +440,12 @@ public class Error extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Print a message with the description of the debug and it's object",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -477,18 +471,18 @@ public class Error extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Imprime uma mensagem de informação.", //descricao
+                    description = "Imprime uma mensagem de informação.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Print a message of information",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "message", translations = { //nome en
+            @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem",  //nome pt
-                            description = "Mensagem que será apresentada em log."  //descricao
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -502,20 +496,20 @@ public class Error extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Imprime uma mensagem de informação e de uma throwable.",
+                    description = "Imprime uma mensagem de informação e uma throwable.",
                     howToUse = { }),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Print a message of information and a throable",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -540,18 +534,18 @@ public class Error extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Imprime uma mensagem de aviso.", //descricao
+                    description = "Imprime uma mensagem de aviso.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Print a message of warning",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "message", translations = { //nome en
+            @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem",  //nome pt
-                            description = "Mensagem que será apresentada em log."  //descricao
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -563,7 +557,7 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message).setLogWarn(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Imprime uma mensagem com a um descrição de um aviso e a sua throwable.",
                     howToUse = { }),
@@ -571,12 +565,12 @@ public class Error extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Print a message with the description of the warning and it's throwable",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -599,7 +593,7 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message, cause).setLogWarn(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Imprime uma mensagem com a um descrição de um aviso e o seu objeto.",
                     howToUse = { }),
@@ -607,12 +601,12 @@ public class Error extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Print a message with the description of the warning and it's object",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -637,18 +631,18 @@ public class Error extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Imprime uma mensagem de erro.", //descricao
+                    description = "Imprime uma mensagem de erro.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Print a message of erro",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "message", translations = { //nome en
+            @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem",  //nome pt
-                            description = "Mensagem que será apresentada em log."  //descricao
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -660,7 +654,7 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message).setLogError(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Imprime uma mensagem com a um descrição de um erro e o seu objeto.",
                     howToUse = { }),
@@ -668,12 +662,12 @@ public class Error extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Print a message with the description of the error and it's object",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -696,7 +690,7 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message, cause).setLogError(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Imprime uma mensagem com a descrição do erro e a sua causa.",
                     howToUse = { }),
@@ -704,12 +698,12 @@ public class Error extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Print a message with the description of the error and it's cause",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -757,7 +751,7 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message).setLogFatal(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Imprime uma mensagem do tipo **FATAL** no ficheiro de log e no terminal do Netuno.",
                     howToUse = { }),
@@ -765,12 +759,12 @@ public class Error extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Print a message of type **FATAL** in the log file and in the terminal of Netuno.",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
@@ -793,7 +787,7 @@ public class Error extends ResourceBase {
         throw new ErrorException(getProteu(), getHili(), message, cause).setLogFatal(true);
     }
     @MethodDoc(translations = {
-            @MethodTranslationDoc( //descricao
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Imprime uma mensagem do tipo **FATAL** no ficheiro de log e no terminal do Netuno.",
                     howToUse = { }),
@@ -801,12 +795,12 @@ public class Error extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Print a message of type **FATAL** in the log file and in the terminal of Netuno.",
                     howToUse = { })
-    }, parameters = { //atrubutos
+    }, parameters = {
             @ParameterDoc(name = "message", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
-                            name = "mensagem", //nome quadrados
-                            description = "Mensagem que será apresentada em log." //descricao quadrados
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
