@@ -819,7 +819,44 @@ public class App extends ResourceBase {
         }
         return file;
     }
-    
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Verifica se um determinado ficheiro existe.",
+							howToUse = {
+							}
+					),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Verify if a file exists.",
+							howToUse = {}
+					)
+			},
+			parameters = {
+					@ParameterDoc(name = "path", translations = {
+					@ParameterTranslationDoc(
+							language=LanguageDoc.PT,
+							name = "caminho",
+							description = "Caminho do ficheiro."
+					),
+					@ParameterTranslationDoc(
+							language=LanguageDoc.EN,
+							description = "Path of the file."
+					)
+			})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna uma verificação boolean da existência do ficheiro e localiza-o."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns a boolean verification of the existence of the file and tracks it."
+					)
+			}
+	)
     public boolean isFile(String path) {
         File file = new File(
                 Path.safeFileSystemPath(path),
@@ -827,7 +864,45 @@ public class App extends ResourceBase {
         );
         return file.exists() && file.isFile();
     }
-    
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Procura os ficheiros presentes na pasta do caminho inserido.",
+							howToUse = {
+							}
+					),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Tracks all the files present in the folder of the inserted path.",
+							howToUse = {
+							}
+					)
+			},
+			parameters = {
+					@ParameterDoc(name = "path", translations = {
+							@ParameterTranslationDoc(
+									language=LanguageDoc.PT,
+									name = "caminho",
+									description = "Caminho do ficheiro."
+							),
+							@ParameterTranslationDoc(
+									language=LanguageDoc.EN,
+									description = "Path of the file."
+							)
+					})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna os os ficheiros presentes na pasta do caminho inserido."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns all files present in the folder of the inserted path."
+					)
+			}
+	)
     public File folder(String path) {
         File file = new File(
                 Path.safeFileSystemPath(path),
@@ -841,7 +916,45 @@ public class App extends ResourceBase {
         }
         return file;
     }
-    
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Verifica se uma determinada pasta existe no caminho inserido.",
+							howToUse = {
+							}
+					),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Verify if exists a folder in the inserted path.",
+							howToUse = {
+							}
+					)
+			},
+			parameters = {
+					@ParameterDoc(name = "path", translations = {
+					@ParameterTranslationDoc(
+							language=LanguageDoc.PT,
+							name = "caminho",
+							description = "Caminho da pasta."
+					),
+					@ParameterTranslationDoc(
+							language=LanguageDoc.EN,
+							description = "Path of the folder."
+					)
+			})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna uma verificação boolean da existência do ficheiro e localiza a pasta onde se encontra."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns a boolean verification of the existence of the file and tracks it folder location."
+					)
+			}
+	)
     public boolean isFolder(String path) {
         File file = new File(
                 Path.safeFileSystemPath(path),

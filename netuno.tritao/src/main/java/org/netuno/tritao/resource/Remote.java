@@ -2663,7 +2663,7 @@ public class Remote extends org.netuno.psamata.net.Remote {
             return this;
         }
 
-        public RemoteResponse setError(String error) {
+        public RemoteResponse setError(Throwable error) {
             super.setError(error);
             return this;
         }

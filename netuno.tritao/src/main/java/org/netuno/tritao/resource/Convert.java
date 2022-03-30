@@ -68,9 +68,17 @@ public class Convert extends ResourceBase {
 			},
 			parameters = {
 					@ParameterDoc(
-							name = "bytes",
-							translations = {}
-					)
+							name = "bytes", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "bytes",
+									description = "Bytes para serem convertidos."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Bytes to be converted."
+							)
+					})
 			},
 			returns = {
 					@ReturnTranslationDoc(
@@ -100,9 +108,17 @@ public class Convert extends ResourceBase {
 			},
 			parameters = {
 					@ParameterDoc(
-							name = "bytes",
-							translations = {}
-					)
+							name = "bytes", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "bytes",
+									description = "Bytes para serem convertidos."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Bytes to be converted."
+							)
+					})
 			},
 			returns = {
 					@ReturnTranslationDoc(
@@ -132,9 +148,17 @@ public class Convert extends ResourceBase {
 			},
 			parameters = {
 					@ParameterDoc(
-							name = "content",
-							translations = {}
-					)
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
 			},
 			returns = {
 					@ReturnTranslationDoc(
@@ -168,9 +192,17 @@ public class Convert extends ResourceBase {
 			},
 			parameters = {
 					@ParameterDoc(
-							name = "content",
-							translations = {}
-					)
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
 			},
 			returns = {
 					@ReturnTranslationDoc(
@@ -196,6 +228,46 @@ public class Convert extends ResourceBase {
 			translations = {
 					@MethodTranslationDoc(
 							language = LanguageDoc.PT,
+							description = "Converte o conteúdo em uma string codificada com Base64.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts the content to a Base64 encoded string.",
+							howToUse = { }),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna a string codificada em Base64."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns the encoded string in Base64."
+					)
+			}
+	)
+	public byte[] toBase64AsBytes(byte[] content) {
+		return Base64.getEncoder().encode(content);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
 							description = "Converte o conteúdo em codificação Base64.",
 							howToUse = { }),
 					@MethodTranslationDoc(
@@ -205,9 +277,17 @@ public class Convert extends ResourceBase {
 			},
 			parameters = {
 					@ParameterDoc(
-							name = "content",
-							translations = {}
-					)
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language =LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
 			},
 			returns = {
 					@ReturnTranslationDoc(
@@ -220,10 +300,6 @@ public class Convert extends ResourceBase {
 					)
 			}
 	)
-	public byte[] toBase64AsBytes(byte[] content) {
-		return Base64.getEncoder().encode(content);
-	}
-
 	public byte[] toBase64AsBytes(String content) {
 		return Base64.getEncoder().encode(content.getBytes());
 	}
@@ -241,9 +317,17 @@ public class Convert extends ResourceBase {
 			},
 			parameters = {
 					@ParameterDoc(
-							name = "content",
-							translations = {}
-					)
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
 			},
 			returns = {
 					@ReturnTranslationDoc(
@@ -252,13 +336,49 @@ public class Convert extends ResourceBase {
 					),
 					@ReturnTranslationDoc(
 							language = LanguageDoc.EN,
-							description = "Returns the Base64 encoded string."
+							description = "Returns the encoded string in Base64."
 					)
 			}
 	)
 	public String toBase64(byte[] content) {
 		return Base64.getEncoder().encodeToString(content);
 	}
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte o conteúdo em uma string codificada com Base64.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts the content to a Base64 encoded string.",
+							howToUse = { }),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna a string codificada em Base64."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns the encoded string in Base64."
+					)
+			}
+	)
 
 	public String toBase64(String content) {
 		return Base64.getEncoder().encodeToString(content.getBytes());
@@ -287,10 +407,18 @@ public class Convert extends ResourceBase {
 		    },
     		parameters = {
     				@ParameterDoc(
-    						name = "value",
-    						translations = {}
-    				)
-    		},
+							name = "value", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "valor",
+									description = "Valor para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Value to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -337,10 +465,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "value",
-    						translations = {}
-    				)
-    		},
+							name = "value", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "valor",
+									description = "Valor para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Value to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -387,10 +523,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "value",
-    						translations = {}
-    				)
-    		},
+							name = "value", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "valor",
+									description = "Valor para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Value to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -441,10 +585,18 @@ public class Convert extends ResourceBase {
     		},
 			parameters = {
     				@ParameterDoc(
-    						name = "value",
-    						translations = {}
-    				)
-    		},
+							name = "value", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "valor",
+									description = "Valor para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Value to be converted."
+							)
+					})
+			},
             returns = {
 		            @ReturnTranslationDoc(
 		                    language = LanguageDoc.PT,
@@ -495,10 +647,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "value",
-    						translations = {}
-    				)
-    		},
+							name = "value", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "valor",
+									description = "Valor para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Value to be converted."
+							)
+					})
+			},
     		returns = {
 		            @ReturnTranslationDoc(
 		                    language = LanguageDoc.PT,
@@ -549,10 +709,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "value",
-    						translations = {}
-    				)
-    		},
+							name = "value", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "valor",
+									description = "Valor para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Value to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -603,10 +771,18 @@ public class Convert extends ResourceBase {
     		},
 			parameters = {
     				@ParameterDoc(
-    						name = "obj",
-    						translations = {}
-    				)
-    		},
+							name = "object", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "objeto",
+									description = "Objeto para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Object to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -649,10 +825,18 @@ public class Convert extends ResourceBase {
             },
 			parameters = {
     				@ParameterDoc(
-    						name = "obj",
-    						translations = {}
-    				)
-    		},
+							name = "object", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "objeto",
+									description = "Objeto para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Object to be converted."
+							)
+					})
+			},
     		returns = {
 	            @ReturnTranslationDoc(
 	                    language = LanguageDoc.PT,
@@ -701,10 +885,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "obj",
-    						translations = {}
-    				)
-    		},
+							name = "object", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "objeto",
+									description = "Objeto para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Object to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -753,10 +945,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "obj",
-    						translations = {}
-    				)
-    		},
+							name = "object", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "objeto",
+									description = "Objeto para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Object to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -797,10 +997,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "content",
-    						translations = {}
-    				)
-    		},
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdp para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -841,10 +1049,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "content",
-    						translations = {}
-    				)
-    		},
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
+			},
     		returns = {
 		            @ReturnTranslationDoc(
 		                    language = LanguageDoc.PT,
@@ -885,10 +1101,18 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "content",
-    						translations = {}
-    				)
-    		},
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
@@ -929,14 +1153,22 @@ public class Convert extends ResourceBase {
 		    },
 			parameters = {
     				@ParameterDoc(
-    						name = "content",
-    						translations = {}
-    				)
-    		},
+							name = "content", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "conteúdo",
+									description = "Conteúdo para ser convertido."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Content to be converted."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
-    	                    description = "Texto com códificação dos caracteres especiais em JSON tranformado para texto normal."
+    	                    description = "Texto com codificação dos caracteres especiais em JSON tranformado para texto normal."
     	            ),
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.EN,
@@ -1008,25 +1240,51 @@ public class Convert extends ResourceBase {
         parameters = {
             @ParameterDoc(
                 name = "fileName",
-                translations = {}
+                translations = {	@ParameterTranslationDoc(
+						language = LanguageDoc.PT,
+						name = "nome",
+						description = "Nome do ficheiro."
+				),
+						@ParameterTranslationDoc(
+								language = LanguageDoc.EN,
+								description = "Name of the file."
+						)}
             ),
             @ParameterDoc(
                 name = "contentType",
-                translations = {}
+                translations = {
+						@ParameterTranslationDoc(
+								language = LanguageDoc.PT,
+								name = "conteúdo",
+								description = "Tipo de conteúdo."
+						),
+						@ParameterTranslationDoc(
+								language = LanguageDoc.EN,
+								description = "Type of content."
+						)
+				}
             ),
             @ParameterDoc(
-                name = "bytes",
-                translations = {}
-            )
-        },
+					name = "bytes", translations = {
+					@ParameterTranslationDoc(
+							language = LanguageDoc.PT,
+							name = "bytes",
+							description = "Bytes que representam o conteúdo do ficheiro."
+					),
+					@ParameterTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Bytes that represent the file content."
+					)
+			})
+		},
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto do ficheiro iniciado."
+                description = "Objeto do ficheiro iniciado que permite a manipulação dos bytes como ficheiro."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Object of the started file."
+                description = "Object of the started file that allows the manipulation of bytes as a file."
             )
         }
     )
@@ -1052,7 +1310,7 @@ public class Convert extends ResourceBase {
 							translations = {
 									@ParameterTranslationDoc(
 											language = LanguageDoc.PT,
-											description = "Array que será convertido em uma lista (coleção)."
+											description = "Array que será convertido numa lista (coleção)."
 									),
 									@ParameterTranslationDoc(
 											language = LanguageDoc.EN,

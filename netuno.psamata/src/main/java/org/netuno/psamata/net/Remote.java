@@ -37,6 +37,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.*;
@@ -65,6 +66,17 @@ HttpRequest request = HttpRequest.newBuilder()
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class Remote {
+    private static TrustManager[] trustAllCerts = new TrustManager[]{
+            new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+            }
+    };
 
     public final String contentTypeForm = "application/x-www-form-urlencoded";
     public final String contentTypeJSON = "application/json";
@@ -575,8 +587,12 @@ public class Remote {
 
             String boundary = "---" + System.currentTimeMillis() + UUID.randomUUID().toString().replace("-", "");
 
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAllCerts, new SecureRandom());
+
             HttpClient client = HttpClient.newBuilder()
                     .version(HttpClient.Version.HTTP_1_1)
+                    //.sslContext(sslContext)
                     .connectTimeout(Duration.ofMillis(connectTimeout))
                     .followRedirects(isFollowRedirects() ? HttpClient.Redirect.ALWAYS : HttpClient.Redirect.NORMAL)
                     .build();
@@ -645,10 +661,6 @@ public class Remote {
                 }
 
                 clientResponseBody = clientRequestResponse.body();
-            } catch (Exception e) {
-                e.toString();
-            }
-            try {
                 if (clientResponseBody != null) {
                     response.setBytes(org.netuno.psamata.io.InputStream.readAllBytes(clientResponseBody));
                     if (!binary) {
@@ -662,8 +674,8 @@ public class Remote {
                     }
                     clientResponseBody.close();
                 }
-            } catch (Exception e) {
-                e.toString();
+            } catch (Throwable e) {
+                response.setError(e);
             }
             return response;
         } catch (Throwable t) {
@@ -791,7 +803,7 @@ public class Remote {
                 InputStream errorStream = connection.getErrorStream();
                 if (errorStream != null) {
                     String error = org.netuno.psamata.io.InputStream.readAll(errorStream, charset);
-                    response.setError(error);
+                    response.setError(new Exception(error));
                     errorStream.close();
                 }
             } catch (Exception e) {
@@ -1065,7 +1077,7 @@ public class Remote {
         public Values header = null;
         public Object content = null;
         public byte[] bytes = null;
-        public String error = null;
+        public Throwable error = null;
 
         public Response() {
 
@@ -1206,15 +1218,15 @@ public class Remote {
             return file;
         }
 
-        public String error() {
+        public Throwable error() {
             return getError();
         }
 
-        public String getError() {
+        public Throwable getError() {
             return error;
         }
 
-        public Response setError(String error) {
+        public Response setError(Throwable error) {
             this.error = error;
             return this;
         }
@@ -1261,7 +1273,7 @@ public class Remote {
         @Override
         public String toString() {
             if (error != null) {
-                return error;
+                return error.toString();
             }
             if (content != null) {
                 return content.toString();

@@ -45,8 +45,8 @@ import org.netuno.tritao.config.Hili;
                         "Este recurso utiliza o Log4J para a apresentação de log do tipo WARN, ERROR e FATAL.\n\n" +
                         "Para analisar mensagens de log do tipo TRACE, DEBUG ou INFO, precisa alterar o level " +
                         "dos logs nas configurações para o nível desejado, por exemplo para passar a apresentar " +
-                        "as mensagens de INFO basta alterar na configuração logs/log.xml onde está level=\"warn\" " +
-                        "basta alterar o valor warn para info, debug ou trace.",
+                        "as mensagens de INFO basta alterar na configuração `logs/log.xml` onde está `level=\"warn\"` " +
+                        "basta alterar o valor `warn` para `info`, `debug` ou `trace`.",
                 howToUse = { }
         ),
         @LibraryTranslationDoc(
@@ -56,8 +56,8 @@ import org.netuno.tritao.config.Hili;
                         "This resource uses Log4J to present the log type WARN, ERROR and FATAL.\n\n" +
                         "To analyze log messages of type TRACE, DEBUG or INFO, you need to change " +
                         "the level of the logs in the settings to the desired level, for example, to start " +
-                        "displaying the INFO messages, change the configuration in logs/log.xml where level=\"warn\" " +
-                        "just change the warn value to info, debug or trace.",
+                        "displaying the INFO messages, change the configuration in `logs/log.xml` where `level=\"warn\"` " +
+                        "just change the `warn` value to `info`, `debug` or `trace`.",
                 howToUse = { }
         )
 })
