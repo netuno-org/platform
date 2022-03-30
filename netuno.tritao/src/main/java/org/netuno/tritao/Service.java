@@ -38,6 +38,7 @@ import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.resource.Resource;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.event.EventExecutor;
+import org.netuno.tritao.util.TemplateBuilder;
 
 /**
  * Execution of the services scripts.
@@ -161,12 +162,17 @@ public class Service {
                     service.path = service.getPath() + "/" + method;
                 }
             }
+
             Schema schema = new Schema(service, proteu, hili);
-            if (service.path.equals("_openapi")) {
+            if (service.path.equals("_openapi.json")) {
                 service.generatingOpenAPIDefinition = true;
                 schema.run();
                 return;
+            } else if (service.path.equals("_openapi")) {
+                TemplateBuilder.outputWidget(proteu, hili, "openapi/build/index", null);
+                return;
             }
+
             if (!schema.validateSchemaIn()) {
                 proteu.responseHTTPError(Proteu.HTTPStatus.BadRequest400, hili);
                 return;

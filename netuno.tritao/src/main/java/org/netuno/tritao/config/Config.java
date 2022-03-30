@@ -292,14 +292,21 @@ public class Config {
         }
         return proteu.getConfig().getString("_path:app:images");
     }
-    
+
     public static String getUrlScripts(Proteu proteu) {
         if (!proteu.getConfig().hasKey("_url:scripts")) {
             return Config.getUrlStatic(proteu) +"/scripts/"+ getTheme(proteu);
         }
         return proteu.getConfig().getString("_url:scripts");
     }
-    
+
+    public static String getUrlWidgets(Proteu proteu) {
+        if (!proteu.getConfig().hasKey("_url:widgets")) {
+            return Config.getUrlStatic(proteu) +"/widgets/"+ getTheme(proteu);
+        }
+        return proteu.getConfig().getString("_url:widgets");
+    }
+
     public static String getUrlAppScripts(Proteu proteu) {
         if (!proteu.getConfig().hasKey("_url:app:scripts")) {
             return Config.getUrlAppPublic(proteu) +"/scripts";
@@ -530,6 +537,13 @@ public class Config {
             return getPathStatic(proteu) + File.separator +"templates"+ File.separator + getTheme(proteu);
         }
         return proteu.getConfig().getString("_path:templates");
+    }
+
+    public static String getPathWidgets(Proteu proteu) {
+        if (!proteu.getConfig().hasKey("_path:widgets")) {
+            return getPathStatic(proteu) + File.separator +"widgets"+ File.separator + getTheme(proteu);
+        }
+        return proteu.getConfig().getString("_path:widgets");
     }
     
     public static String getPathAppTemplates(Proteu proteu) {

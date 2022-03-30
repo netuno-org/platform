@@ -153,6 +153,23 @@ public class TemplateBuilder {
         proteu.getOutput().println(getOutputApp(proteu, hili, template, data));
     }
 
+    public static String getOutputWidget(Proteu proteu, Hili hili, String template) throws IOException, ScriptException {
+        return getOutputWidget(proteu, hili, template, null);
+    }
+
+    public static String getOutputWidget(Proteu proteu, Hili hili, String template, Values data) throws IOException, ScriptException {
+        return parseOutput(proteu, hili, Config.getPathWidgets(proteu),
+                getContent(proteu, Config.getPathWidgets(proteu) + "/" + template), data);
+    }
+
+    public static void outputWidget(Proteu proteu, Hili hili, String template) throws IOException, ScriptException {
+        proteu.getOutput().println(getOutputWidget(proteu, hili, template));
+    }
+
+    public static void outputWidget(Proteu proteu, Hili hili, String template, Values data) throws IOException, ScriptException {
+        proteu.getOutput().println(getOutputWidget(proteu, hili, template, data));
+    }
+
     public static String getReportOutput(Proteu proteu, Hili hili, String template) throws IOException, ScriptException {
         return getReportOutput(proteu, hili, template, null);
     }
@@ -267,6 +284,8 @@ public class TemplateBuilder {
                 output = Config.getUrlAppFileSystemPublic(proteu);
             } else if (value.equalsIgnoreCase("url-file-system-server")) {
                 output = Config.getUrlAppFileSystemServer(proteu);
+            } else if (value.equalsIgnoreCase("url-widgets")) {
+                output = Config.getUrlWidgets(proteu);
             } else if (value.equalsIgnoreCase("url-scripts")) {
                 output = Config.getUrlScripts(proteu);
             } else if (value.equalsIgnoreCase("url-app-scripts")) {
