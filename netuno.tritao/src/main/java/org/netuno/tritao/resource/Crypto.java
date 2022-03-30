@@ -81,26 +81,26 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "key", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "chave",
                             description = "Chave utilizada na encriptação."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Key used in encryption."
                     )
             }),
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo de dados encriptado com AES256."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Data content encrypted with AES256."
                     )
-            }) 
+            })
     }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
@@ -127,26 +127,26 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "key", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "chave",
                             description = "Chave secreta para a encriptação."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Secret key for encryption."
                     )
             }),
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo para ser encriptado com AES256."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Content to be encrypted with AES256."
                     )
-            }) 
+            })
     }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
@@ -160,7 +160,7 @@ public class Crypto extends ResourceBase {
     public String aes256Encrypt(String key, String content) throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException, InvalidParameterSpecException, UnsupportedEncodingException {
         return AES256.encrypt(key, content);
     }
-    
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -173,26 +173,26 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "key", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "chave",
                             description = "Chave secreta para a codificação."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Secret key for encryption."
                     )
             }),
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo para ser codificado com HMAC256."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Content to be encoded with HMAC256."
                     )
-            }) 
+            })
     }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
@@ -206,11 +206,12 @@ public class Crypto extends ResourceBase {
     public byte[] hmac256(byte[] key, byte[] content) throws NoSuchAlgorithmException, InvalidKeyException {
         return HMAC.encrypt256(key, content);
     }
-    
+
+    //repetido?
     public byte[] hmac256(String key, String content) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
         return HMAC.encrypt256(key, content);
     }
-    
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -223,26 +224,26 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "key", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "chave",
                             description = "Chave secreta para a codificação."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Secret key for encryption."
                     )
             }),
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo para ser codificado com HMAC256."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Content to be encoded with HMAC256."
                     )
-            }) 
+            })
     }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
@@ -256,11 +257,11 @@ public class Crypto extends ResourceBase {
     public String hmac256Hex(byte[] key, byte[] content) throws NoSuchAlgorithmException, InvalidKeyException {
         return HMAC.encrypt256Hex(key, content);
     }
-    
+
     public String hmac256Hex(String key, String content) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         return HMAC.encrypt256Hex(key, content);
     }
-    
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -273,26 +274,26 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "key", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "chave",
                             description = "Chave secreta para a codificação."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Secret key for encryption."
                     )
             }),
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo para ser codificado com HMAC256."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Content to be encoded with HMAC256."
                     )
-            }) 
+            })
     }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
@@ -323,12 +324,12 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo para ser encriptado."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Content to be encrypted."
                     )
             })
@@ -343,11 +344,11 @@ public class Crypto extends ResourceBase {
             )
     })
     public String sha256(byte[] data) {
-    	return DigestUtils.sha256Hex(data);
+        return DigestUtils.sha256Hex(data);
     }
-    
+
     public String sha256(String content) {
-    	return DigestUtils.sha256Hex(content);
+        return DigestUtils.sha256Hex(content);
     }
 
     @MethodDoc(translations = {
@@ -362,12 +363,12 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo para ser encriptado."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Content to be encrypted."
                     )
             })
@@ -382,11 +383,11 @@ public class Crypto extends ResourceBase {
             )
     })
     public byte[] sha256AsBytes(byte[] data) {
-    	return DigestUtils.sha256(data);
+        return DigestUtils.sha256(data);
     }
-    
+
     public byte[] sha256AsBytes(String content) {
-    	return DigestUtils.sha256(content);
+        return DigestUtils.sha256(content);
     }
 
     @MethodDoc(translations = {
@@ -401,12 +402,12 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo para ser encriptado."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Content to be encrypted."
                     )
             })
@@ -421,11 +422,11 @@ public class Crypto extends ResourceBase {
             )
     })
     public String sha384(byte[] data) {
-    	return DigestUtils.sha384Hex(data);
+        return DigestUtils.sha384Hex(data);
     }
-    
+
     public String sha384(String content) {
-    	return DigestUtils.sha384Hex(content);
+        return DigestUtils.sha384Hex(content);
     }
 
     @MethodDoc(translations = {
@@ -440,12 +441,12 @@ public class Crypto extends ResourceBase {
     }, parameters = {
             @ParameterDoc(name = "content", translations = {
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
+                            language = LanguageDoc.PT,
                             name = "conteudo",
                             description = "Conteúdo para ser encriptado."
                     ),
                     @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
+                            language = LanguageDoc.EN,
                             description = "Content to be encrypted."
                     )
             })
@@ -460,12 +461,10 @@ public class Crypto extends ResourceBase {
             )
     })
     public byte[] sha384AsBytes(byte[] data) {
-    	return DigestUtils.sha384(data);
+        return DigestUtils.sha384(data);
     }
-    
-    public byte[] sha384AsBytes(String content) {
-    	return DigestUtils.sha384(content);
-    }
+
+    public byte[] sha384AsBytes(String content) {return DigestUtils.sha384(content);}
 
     @MethodDoc(translations = {
             @MethodTranslationDoc(
@@ -540,7 +539,37 @@ public class Crypto extends ResourceBase {
     public byte[] sha512AsBytes(byte[] data) {
     	return DigestUtils.sha512(data);
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA512 (SHA-512).",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with SHA512 (SHA-512) and returns binary encryption.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados binários do conteúdo encriptado em SHA512 (SHA-2)."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Binary data of the content encrypted in SHA512 (SHA-2)."
+            )
+    })
     public byte[] sha512AsBytes(String content) {
     	return DigestUtils.sha512(content);
     }
@@ -557,7 +586,37 @@ public class Crypto extends ResourceBase {
         Convert convert = resource(Convert.class);
         return convert.toBase64(new DES(key, charset).encode(content));
     }
-
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA512 (SHA-2) e retorna a encriptação binária.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with Desdecode (Des).",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados binários do conteúdo encriptado em Desdecode (Des)."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Binary data of the content encrypted in Desdecode (Des)."
+            )
+    })
     public String desDecode(String key, byte[] data) throws PsamataException {
         return new DES(key).decode(data);
     }
@@ -565,16 +624,107 @@ public class Crypto extends ResourceBase {
     public String desDecode(String key, byte[] data, String charset) throws PsamataException {
         return new DES(key, charset).decode(data);
     }
-
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o SHA512 (SHA-2) e retorna a encriptação binária.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with Desdecode (Des) e convertido em base 64.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados binários do conteúdo encriptado em Desdecode (Des) e convertidos em base 64."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Binary data of the content encrypted in Desdecode (Des) and coverted in base 64."
+            )
+    })
     public String desDecodeBase64(String key, String data, String charset) throws PsamataException {
         Convert convert = resource(Convert.class);
         return new DES(key, charset).decode(convert.fromBase64AsBytes(data));
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o cryptHash.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with cryptHash.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados do conteúdo encriptado em cryptHash."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data of the content encrypted in cryptHash."
+            )
+    })
 
     public String bcryptSalt() {
         return BCrypt.gensalt();
     }
-
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados bcryptSalt.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with bcryptSalt.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados do conteúdo encriptado em bcryptSalt."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data of the content encrypted in bcryptSalt."
+            )
+    })
     public String bcryptSalt(int rounds) {
         return BCrypt.gensalt(rounds);
     }
@@ -591,22 +741,175 @@ public class Crypto extends ResourceBase {
         return BCrypt.checkpw(plaintext, hashed);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o MD5 e retorna a encriptação de 128 bit.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with MD5 and returns 128-bit encryption.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados do conteúdo encriptado em MD5."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data of the content encrypted in MD5."
+            )
+    })
     public byte[] md5(String content) throws PsamataException {
         return MD5.crypt(content);
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o MD5 e converte a encriptação em hexadecimal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with MD5 and converts the encryption to hexadecimal",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados do conteúdo encriptado em MD5 e convertido hexadecimal."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data of the content encrypted in MD5 and converted in hexadecimal format."
+            )
+    })
 
     public String md5Hex(String content) throws PsamataException {
         return MD5.cryptHex(content);
     }
-
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o cryptHash.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with cryptHash.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteudo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados do conteúdo encriptado em cryptHash."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data of the content encrypted in cryptHash."
+            )
+    })
     public String md5Base64(String content) throws PsamataException {
         return MD5.cryptBase64(content);
     }
-
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o cryptHash",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with cryptHash.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteúdo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados do conteúdo encriptado cryptHash."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data of the content encrypted cryptHash."
+            )
+    })
     public String cryptHash(String key, String salt) {
         return Crypt.crypt(key, salt);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os dados com o cryptHash",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes data with cryptHash.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "content", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "conteúdo",
+                            description = "Conteúdo para ser encriptado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Content to be encrypted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Dados do conteúdo encriptado cryptHash."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Data of the content encrypted cryptHash."
+            )
+    })
     public String cryptHash(String key) {
         return Crypt.crypt(key);
     }
