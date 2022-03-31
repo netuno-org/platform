@@ -855,6 +855,7 @@ public class App implements MainArg {
                     .set("path", Path.UI.toString())
                     //.set("env", new Values().add("PORT=9001"))
                     .set("command", "npm run watch")
+                    .set("install", "npm install --force")
         );
         if (website.equals("Y")) {
             commands.add(
@@ -863,6 +864,7 @@ public class App implements MainArg {
                         .set("path", Path.WEBSITE.toString())
                         //.set("env", new Values().add("PORT=9002"))
                         .set("command", "npm run start")
+                        .set("install", "npm install --force")
             );
         }
         configJSON.set("commands", commands);
