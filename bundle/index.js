@@ -164,15 +164,6 @@ var loadJars = (jarsFolder, jarsFolderIndex) => {
         //fs.moveSync(config.output.bundle +'/apps/demo/dbs/demo.trace.db', config.output.bundle +'/dbs/demo.trace.db')
         //fs.removeSync(config.output.bundle +'/apps/demo/dbs')
 
-
-        //TODO: ENCONTRA O FICHEIRO .DS_STORE E O APAGA
-        
-        // DELETE .DS_Store
-        // DELETE \.sass-cache$
-        // java -jar netuno.jar install checksum yes
-        // zip -qr '+ config.output.bundleName +'.zip '+ config.output.bundleName
-
-
         let files = [];
         const getFilesRecursively = (directory) => {
           const filesInDirectory = fs.readdirSync(directory);
@@ -215,7 +206,7 @@ var loadJars = (jarsFolder, jarsFolderIndex) => {
             try {
                 const zip = new AdmZip();
                 const outputFile = config.output.root + "/" +config.output.bundleName + ".zip";
-                zip.addLocalFolder(config.output.root + "/" + config.output.bundleName);
+                zip.addLocalFolder(config.output.root + "/");
                 zip.writeZip(outputFile);
                 console.log(`Created ${outputFile} successfully`);
             } catch (e) {
@@ -225,7 +216,6 @@ var loadJars = (jarsFolder, jarsFolderIndex) => {
         });
         
 /* -> OLD
-
         let cmd = 'find '+ config.output.bundleName +' -name ".DS_Store" | xargs trash-put';
         console.log('$ '+ cmd)
         exec(cmd, { cwd: config.output.root, maxBuffer: 1024 * 10000 }, (err, stdout, stderr) => {
