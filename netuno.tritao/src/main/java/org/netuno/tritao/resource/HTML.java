@@ -19,8 +19,10 @@ package org.netuno.tritao.resource;
 
 import java.io.IOException;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
@@ -96,6 +98,14 @@ public class HTML extends ResourceBase {
             throw new ResourceException("_html.parseURL("+ url +"):\n "+ e.getMessage(), e);
         }
     }
+
+    public Document parseURL(String url, int timeoutMillis) {
+        try {
+            return Jsoup.connect(url).timeout(timeoutMillis).get();
+        } catch (IOException e) {
+            throw new ResourceException("_html.parseURL("+ url +", "+ timeoutMillis +"):\n "+ e.getMessage(), e);
+        }
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -155,4 +165,47 @@ public class HTML extends ResourceBase {
         }
     }
 
+    public Document parseBodyFragment(String bodyHtml) {
+        return Jsoup.parseBodyFragment(bodyHtml);
+    }
+
+    public Document parseBodyFragment(String bodyHtml, String baseUri) {
+        return Jsoup.parseBodyFragment(bodyHtml, baseUri);
+    }
+
+    public Connection connect(String url) {
+        return Jsoup.connect(url);
+    }
+
+    public Connection newSession() {
+        return Jsoup.newSession();
+    }
+
+    public boolean isValid(String bodyHtml, Safelist safelist) {
+        return Jsoup.isValid(bodyHtml, safelist);
+    }
+
+    public String clean(String bodyHtml, Safelist safelist) {
+        return Jsoup.clean(bodyHtml, safelist);
+    }
+
+    public String clean(String bodyHtml, String baseUri, Safelist safelist) {
+        return Jsoup.clean(bodyHtml, baseUri, safelist);
+    }
+
+    public String clean(String bodyHtml, String baseUri, Safelist safelist, Document.OutputSettings outputSettings) {
+        return Jsoup.clean(bodyHtml, baseUri, safelist, outputSettings);
+    }
+
+    public Safelist safelist() {
+        return new Safelist();
+    }
+
+    public Safelist safelist(Safelist copy) {
+        return new Safelist(copy);
+    }
+
+    public Document.OutputSettings documentOutputSettings() {
+        return new Document.OutputSettings();
+    }
 }
