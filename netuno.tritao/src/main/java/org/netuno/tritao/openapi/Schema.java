@@ -309,8 +309,8 @@ public class Schema extends WebMaster {
     }
 
     public void pathsOpenAPI(String path, Values pathsOpenAPI) {
-        if (path.endsWith("_openapi")) {
-            path = path.substring(0, path.length() - "_openapi".length());
+        if (path.endsWith("_openapi.json")) {
+            path = path.substring(0, path.length() - "_openapi.json".length());
         }
         try {
             final String servicesPath = path;
