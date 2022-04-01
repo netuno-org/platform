@@ -515,6 +515,18 @@ public class Install implements MainArg {
         return md5;
     }
 
+    public static void consoleReinstallMessage() {
+        System.out.println();
+        System.out.println(OS.consoleOutput("@|green Please try to install again. |@ "));
+        System.out.println();
+        System.out.println(OS.consoleOutput("@|white For te current stable version: |@ "));
+        System.out.println(OS.consoleCommand("java -jar netuno.jar install"));
+        System.out.println();
+        System.out.println(OS.consoleOutput("@|white For the latest development version: |@ "));
+        System.out.println(OS.consoleCommand("java -jar netuno.jar install version=latest"));
+        System.out.println();
+    }
+
     public static void graalCheckAndSetup() {
         try {
             if (!graalCheck(".")) {
@@ -531,7 +543,8 @@ public class Install implements MainArg {
         } catch (Exception e) {
             logger.debug("GraalVM setup failed in the current path.", e);
             System.out.println(OS.consoleOutput("@|red GraalVM Setup failed: |@ "+ e.getMessage()));
-            System.out.println();
+            consoleReinstallMessage();
+            System.exit(0);
         }
     }
 
@@ -616,40 +629,47 @@ public class Install implements MainArg {
                     System.out.println();
                     System.out.println();
                     System.out.println(OS.consoleOutput("Downloading @|yellow " + graalVMURLFinal + "|@:"));
-                    Download download = new Download();
-                    download.http(graalVMURL, graalVMFile, new Download.DownloadEvent() {
-                        @Override
-                        public void onInit(Download.Stats stats) {
+                    try {
+                        Download download = new Download();
+                        download.http(graalVMURL, graalVMFile, new Download.DownloadEvent() {
+                            @Override
+                            public void onInit(Download.Stats stats) {
 
-                        }
-
-                        @Override
-                        public void onProgress(Download.Stats stats) {
-                            System.out.print("\r");
-                            System.out.print(OS.consoleOutput(
-                                            String.format(
-                                                    "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
-                                                            "        ",
-                                                    FileUtils.byteCountToDisplaySize(stats.getPosition()),
-                                                    FileUtils.byteCountToDisplaySize(stats.getLength()),
-                                                    stats.getSpeed() / 1024,
-                                                    stats.getTime() / 1000)
-                                    )
-                            );
-                        }
-
-                        @Override
-                        public void onComplete(Download.Stats stats) {
-                            System.out.println();
-                            System.out.println();
-                            if (graalVMFile.exists()) {
-                                graalVMFile.deleteOnExit();
-                                System.out.println(OS.consoleOutput("@|green GraalVM download was successfully completed.|@"));
-                            } else {
-                                System.out.println(OS.consoleOutput("@|red GraalVM download failed.|@"));
                             }
-                        }
-                    });
+
+                            @Override
+                            public void onProgress(Download.Stats stats) {
+                                System.out.print("\r");
+                                System.out.print(OS.consoleOutput(
+                                                String.format(
+                                                        "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
+                                                                "        ",
+                                                        FileUtils.byteCountToDisplaySize(stats.getPosition()),
+                                                        FileUtils.byteCountToDisplaySize(stats.getLength()),
+                                                        stats.getSpeed() / 1024,
+                                                        stats.getTime() / 1000)
+                                        )
+                                );
+                            }
+
+                            @Override
+                            public void onComplete(Download.Stats stats) {
+                                System.out.println();
+                                System.out.println();
+                                if (graalVMFile.exists()) {
+                                    graalVMFile.deleteOnExit();
+                                    System.out.println(OS.consoleOutput("@|green GraalVM download was successfully completed.|@"));
+                                } else {
+                                    System.out.println(OS.consoleOutput("@|red GraalVM download failed.|@"));
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        logger.debug("GraalVM Downloading: "+ graalVMURL, e);
+                        System.out.println(OS.consoleOutput("@|red GraalVM Download failed: |@ "+ e.getMessage()));
+                        consoleReinstallMessage();
+                        System.exit(0);
+                    }
                 }
 
                 System.out.println();
