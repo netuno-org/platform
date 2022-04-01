@@ -52,6 +52,26 @@ public class OS {
         }
     }
 
+    public static Ansi consoleGlobalCommand(String command) {
+        return consoleCommand(command, null);
+    }
+
+    public static Ansi consoleGlobalCommand(String command, String parameters) {
+        if (parameters == null) {
+            parameters = "";
+        }
+        if (!parameters.isEmpty()) {
+            parameters = " "+ parameters;
+        }
+        if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
+            return ansi().render(
+                    "    @|white > |@@|green    "+ command + parameters +"|@ "
+            );
+        } else {
+            return ansi().render("    >    "+ command + parameters);
+        }
+    }
+
     public static Ansi consoleOutput(String text) {
         if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
             return ansi().render(text);

@@ -134,6 +134,7 @@ public class Download {
         void onInit(Stats stats);
         void onProgress(Stats stats);
         void onComplete(Stats stats);
+        void onError(Exception e);
     }
 
     static {
@@ -180,38 +181,44 @@ public class Download {
         return http(url, file, null);
     }
     public Stats http(String url, File file, DownloadEvent event) throws IOException {
-        HttpURLConnection connection = getConnection(url);
-        int contentLength = connection.getContentLength();
-        Stats stats = new Stats();
-        stats.setLength(contentLength);
-        try (InputStream inputStream = connection.getInputStream()) {
-            if (event != null) {
-                event.onInit(stats);
-            }
-            FileOutputStream fos = new FileOutputStream(file);
-            long startTime = System.currentTimeMillis();
-            new Buffer((size) -> {
-                stats.setAmount(size);
-                stats.setPosition(stats.getPosition() + size);
-                stats.setPercent(((float) stats.getPosition() * 100.0f) / (float) stats.getLength());
-                stats.setTime(System.currentTimeMillis() - startTime);
-                if (stats.getTime() > 1000) {
-                    stats.setSpeed(stats.getPosition() / (stats.getTime() / 1000));
-                } else {
-                    stats.setSpeed(size);
-                }
+        try {
+            HttpURLConnection connection = getConnection(url);
+            int contentLength = connection.getContentLength();
+            Stats stats = new Stats();
+            stats.setLength(contentLength);
+            try (InputStream inputStream = connection.getInputStream()) {
                 if (event != null) {
-                    event.onProgress(stats);
+                    event.onInit(stats);
                 }
-                return;
-            }).copy(inputStream, fos);
-            fos.close();
-            if (event != null) {
-                event.onComplete(stats);
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    long startTime = System.currentTimeMillis();
+                    new Buffer((size) -> {
+                        stats.setAmount(size);
+                        stats.setPosition(stats.getPosition() + size);
+                        stats.setPercent(((float) stats.getPosition() * 100.0f) / (float) stats.getLength());
+                        stats.setTime(System.currentTimeMillis() - startTime);
+                        if (stats.getTime() > 1000) {
+                            stats.setSpeed(stats.getPosition() / (stats.getTime() / 1000));
+                        } else {
+                            stats.setSpeed(size);
+                        }
+                        if (event != null) {
+                            event.onProgress(stats);
+                        }
+                        return;
+                    }).copy(inputStream, fos);
+                } finally {
+                    if (event != null) {
+                        event.onComplete(stats);
+                    }
+                }
+            } finally {
+                connection.disconnect();
             }
-        } finally {
-            connection.disconnect();
+            return stats;
+        } catch (IOException e) {
+            event.onError(e);
+            throw e;
         }
-        return stats;
     }
 }

@@ -17,6 +17,9 @@
 
 package org.netuno.cli;
 
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -32,6 +35,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
@@ -188,26 +194,26 @@ public class Install implements MainArg {
 
                         Download download = new Download();
                         download.http(url, bundleFile, new Download.DownloadEvent() {
+                            ProgressBar pb = null;
                             @Override
                             public void onInit(Download.Stats stats) {
-                                System.out.println(OS.consoleOutput("Downloading @|yellow " + downloadURL + "|@:"));
+                                System.out.println(OS.consoleOutput(String.format(
+                                        "Downloading @|cyan %s|@ from @|yellow %s|@:",
+                                        FileUtils.byteCountToDisplaySize(stats.getLength()),
+                                        downloadURL
+                                )));
+                                System.out.println();
+                                pb = new ProgressBar("Netuno", stats.getLength() / 1024 / 1024);
                             }
 
                             @Override
                             public void onProgress(Download.Stats stats) {
-                                System.out.print("\r");
-                                System.out.print(OS.consoleOutput(String.format(
-                                        "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
-                                                "        ",
-                                        FileUtils.byteCountToDisplaySize(stats.getPosition()),
-                                        FileUtils.byteCountToDisplaySize(stats.getLength()),
-                                        stats.getSpeed() / 1024,
-                                        stats.getTime() / 1000)
-                                ));
+                                pb.stepTo(stats.getPosition() / 1024 / 1024);
                             }
 
                             @Override
                             public void onComplete(Download.Stats stats) {
+                                pb.close();
                                 System.out.println();
                                 if (bundleFile.exists()) {
                                     bundleFile.deleteOnExit();
@@ -216,6 +222,11 @@ public class Install implements MainArg {
                                 } else {
                                     System.out.print(OS.consoleOutput("@|red Netuno download failed.|@"));
                                 }
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                pb.close();
                             }
                         });
                     } catch (Exception e) {
@@ -520,10 +531,10 @@ public class Install implements MainArg {
         System.out.println(OS.consoleOutput("@|green Please try to install again. |@ "));
         System.out.println();
         System.out.println(OS.consoleOutput("@|white For te current stable version: |@ "));
-        System.out.println(OS.consoleCommand("java -jar netuno.jar install"));
+        System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install"));
         System.out.println();
         System.out.println(OS.consoleOutput("@|white For the latest development version: |@ "));
-        System.out.println(OS.consoleCommand("java -jar netuno.jar install version=latest"));
+        System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install version=latest"));
         System.out.println();
     }
 
@@ -535,7 +546,7 @@ public class Install implements MainArg {
                 System.out.println(OS.consoleOutput("@|red Setting up the GraalVM is required.|@ "));
                 graalSetup(".");
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|gree GraalVM has been successfully updated.|@ "));
+                System.out.println(OS.consoleOutput("@|green GraalVM has been successfully updated.|@ "));
                 System.out.println();
                 System.out.println();
                 System.exit(0);
@@ -628,32 +639,29 @@ public class Install implements MainArg {
                 if (!graalVMFile.exists()) {
                     System.out.println();
                     System.out.println();
-                    System.out.println(OS.consoleOutput("Downloading @|yellow " + graalVMURLFinal + "|@:"));
                     try {
                         Download download = new Download();
                         download.http(graalVMURL, graalVMFile, new Download.DownloadEvent() {
+                            ProgressBar pb = null;
                             @Override
                             public void onInit(Download.Stats stats) {
-
+                                System.out.println(OS.consoleOutput(String.format(
+                                        "Downloading @|cyan %s|@ from @|yellow %s|@:",
+                                        FileUtils.byteCountToDisplaySize(stats.getLength()),
+                                        graalVMURLFinal
+                                )));
+                                System.out.println();
+                                pb = new ProgressBar("GraalVM", stats.getLength() / 1024 / 1024);
                             }
 
                             @Override
                             public void onProgress(Download.Stats stats) {
-                                System.out.print("\r");
-                                System.out.print(OS.consoleOutput(
-                                                String.format(
-                                                        "\t@|cyan %s of %s|@ ~ @|magenta %.2f KB/s | %ds |@" +
-                                                                "        ",
-                                                        FileUtils.byteCountToDisplaySize(stats.getPosition()),
-                                                        FileUtils.byteCountToDisplaySize(stats.getLength()),
-                                                        stats.getSpeed() / 1024,
-                                                        stats.getTime() / 1000)
-                                        )
-                                );
+                                pb.stepTo(stats.getPosition() / 1024 / 1024);
                             }
 
                             @Override
                             public void onComplete(Download.Stats stats) {
+                                pb.close();
                                 System.out.println();
                                 System.out.println();
                                 if (graalVMFile.exists()) {
@@ -662,6 +670,11 @@ public class Install implements MainArg {
                                 } else {
                                     System.out.println(OS.consoleOutput("@|red GraalVM download failed.|@"));
                                 }
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                pb.close();
                             }
                         });
                     } catch (Exception e) {
