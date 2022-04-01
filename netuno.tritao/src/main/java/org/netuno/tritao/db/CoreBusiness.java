@@ -1035,6 +1035,29 @@ public class CoreBusiness extends Base {
             if (!getProteu().getRequestAll().getBoolean("report") && !oldName.equals(newName)) {
                 renameSequence(oldName + "_id", newName + "_id");
                 new Table(this).rename(oldName, newName);
+                List<Values> tableDesign = selectTableDesign("");
+                for (Values fieldDesign : tableDesign) {
+                    org.netuno.tritao.com.Configuration configuration = new org.netuno.tritao.com.Configuration();
+                    configuration.load(fieldDesign.getString("properties"));
+                    boolean needUpdate = false;
+                    for (String key : configuration.getParameters().keySet()) {
+                        org.netuno.tritao.com.Parameter parameter = configuration.getParameters().get(key);
+                        if (parameter.getType() == ParameterType.LINK
+                            && parameter.getValue().startsWith(oldName +":")) {
+                            needUpdate = true;
+                            parameter.setValue(
+                                    newName +":"+
+                                    parameter.getValue().substring((oldName +":").length())
+                            );
+                        }
+                    }
+                    if (needUpdate) {
+                        getManager().execute(
+                                "update netuno_design set properties = '" +
+                                        DB.sqlInjection(configuration.toString()) +
+                                        "' where id = " + fieldDesign.getString("id") + ";");
+                    }
+                }
             }
             List<Values> rsParentTable = null;
             if (getProteu().getRequestAll().getInt("parent_id") > 0) {
