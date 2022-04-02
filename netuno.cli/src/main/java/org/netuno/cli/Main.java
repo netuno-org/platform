@@ -159,7 +159,7 @@ public final class Main implements Runnable {
             System.out.println();
 
             try {
-                Values data = Values.fromJSON(new Remote().get("https://github.com/netuno-org/platform/releases/download/latest/netuno.json").toString());
+                Values data = Values.fromJSON(new Remote().get("https://github.com/netuno-org/platform/releases/download/stable/netuno.json").toString());
                 int compareVersion = buildNumber().compareTo(data.getString("version"));
                 if (compareVersion < 0) {
                     if (data.getString("type").equals("critical")) {
@@ -168,7 +168,7 @@ public final class Main implements Runnable {
                     System.out.println();
                     System.out.println("   " + OS.consoleOutput("@|green New version released! |@") + " You can upgrade with this command:");
                     System.out.println();
-                    System.err.println(OS.consoleCommand("update"));
+                    System.err.println(OS.consoleCommand("install-stable"));
                     System.out.println();
                     System.out.println();
                     //Thread.sleep(1000);

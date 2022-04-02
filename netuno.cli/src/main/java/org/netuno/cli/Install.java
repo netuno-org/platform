@@ -54,7 +54,7 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@CommandLine.Command(name = "install", helpCommand = true, description = "Install latest Netuno version")
+@CommandLine.Command(name = "install", helpCommand = true, description = "Installation of the Netuno platform.")
 public class Install implements MainArg {
     private static Logger logger = LogManager.getLogger(Install.class);
 
@@ -81,7 +81,7 @@ public class Install implements MainArg {
     @CommandLine.Option(names = { "-k", "keep" }, paramLabel = "keep", description = "Keeps the current Netuno version.")
     protected boolean keep = false;
 
-    @CommandLine.Option(names = { "-v", "version" }, paramLabel = "latest", description = "The version of Netuno that should be install, \"latest\" for the current version in development.")
+    @CommandLine.Option(names = { "-v", "version" }, paramLabel = "version", description = "The version of Netuno that should be install, \"testing\" for the current version in development.")
     protected String version = "";
 
     private final String checksumFileName = ".checksum.json";
@@ -181,14 +181,15 @@ public class Install implements MainArg {
                 if (!bundleFile.exists()) {
                     String url = "";
                     try {
-                        if (version.isEmpty()) {
-                            url = "https://github.com/netuno-org/platform/releases/download/latest/netuno.json";
+                        if (version.isEmpty() || version.equalsIgnoreCase("stable")) {
+                            url = "https://github.com/netuno-org/platform/releases/download/stable/netuno.json";
                             Values data = Values.fromJSON(new Remote().get(url).toString());
                             version = data.getString("version");
                         }
-                        String versionURL = (version.isEmpty() || version.equalsIgnoreCase("latest") ? "" : "v" + versionType + "-" + version.replace(".", "_"));
 
-                        url = "https://github.com/netuno-org/platform/releases/download/" + (versionURL.isEmpty() ? "latest" : versionURL) + "/" + bundleFileName + (versionURL.isEmpty() ? "" : "-" + versionURL) + ".zip";
+                        String versionURL = version.equalsIgnoreCase("testing") || version.equalsIgnoreCase("latest") ? "testing" : "v" + versionType + "-" + version.replace(".", "_");
+
+                        url = "https://github.com/netuno-org/platform/releases/download/" + (version.equalsIgnoreCase("testing") ? "testing" : versionURL) + "/" + bundleFileName + (version.equalsIgnoreCase("testing") ? "" : "-" + versionURL) + ".zip";
 
                         final String downloadURL = url;
 
@@ -379,28 +380,28 @@ public class Install implements MainArg {
                             System.out.println(OS.consoleOutput("\t@|red > chmod +x netuno.sh && cp netuno.sh netuno |@ "));
                         }
                     }
-                    if (new File(path, "update.sh").exists() && !new File(path, "update").exists()) {
+                    if (new File(path, "install-stable.sh").exists() && !new File(path, "install-stable").exists()) {
                         ProcessBuilder builder = new ProcessBuilder();
-                        builder.command(new String[]{"sh", "-c", "chmod +x update.sh && cp update.sh update"});
+                        builder.command(new String[]{"sh", "-c", "chmod +x install-stable.sh && cp install-stable.sh install-stable"});
                         builder.directory(new File(path));
                         Process process = builder.start();
                         int exitCode = process.waitFor();
                         if (exitCode != 0) {
                             System.out.println();
                             System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
-                            System.out.println(OS.consoleOutput("\t@|red > chmod +x update.sh && cp update.sh update |@ "));
+                            System.out.println(OS.consoleOutput("\t@|red > chmod +x install-stable.sh && cp install-stable.sh install-stable |@ "));
                         }
                     }
-                    if (new File(path, "latest.sh").exists() && !new File(path, "latest").exists()) {
+                    if (new File(path, "install-testing.sh").exists() && !new File(path, "install-testing").exists()) {
                         ProcessBuilder builder = new ProcessBuilder();
-                        builder.command(new String[]{"sh", "-c", "chmod +x latest.sh && cp latest.sh latest"});
+                        builder.command(new String[]{"sh", "-c", "chmod +x install-testing.sh && cp install-testing.sh install-testing"});
                         builder.directory(new File(path));
                         Process process = builder.start();
                         int exitCode = process.waitFor();
                         if (exitCode != 0) {
                             System.out.println();
                             System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
-                            System.out.println(OS.consoleOutput("\t@|red > chmod +x latest.sh && cp latest.sh latest |@ "));
+                            System.out.println(OS.consoleOutput("\t@|red > chmod +x install-testing.sh && cp install-testing.sh install-testing |@ "));
                         }
                     }
                     if (new File(path, "bin-unix").isDirectory()) {
@@ -533,8 +534,8 @@ public class Install implements MainArg {
         System.out.println(OS.consoleOutput("@|white For te current stable version: |@ "));
         System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install"));
         System.out.println();
-        System.out.println(OS.consoleOutput("@|white For the latest development version: |@ "));
-        System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install version=latest"));
+        System.out.println(OS.consoleOutput("@|white For the testing version: |@ "));
+        System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install version=testing"));
         System.out.println();
     }
 
