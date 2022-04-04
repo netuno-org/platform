@@ -68,7 +68,15 @@ Run the setup script:
 
 ## Windows
 
+
+
+
+
 You need to run PowerShell as an administrator, then follow the steps.
+
+```ps1
+ $ Set-ExecutionPolicy Unrestricted
+```
 
 ```ps1
  $ .\setup.ps1

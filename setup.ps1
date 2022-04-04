@@ -1,4 +1,4 @@
-Set-ExecutionPolicy RemoteSigned
+Set-ExecutionPolicy Unrestricted
 function show-netuno{
     Write-Host "
     _   _ ______ _______ _    _ _   _  ____  
@@ -114,7 +114,7 @@ do
         pause
     } '2' {
         $installJdk = "true";
-        if(Test-Path -Path "$netunoDir/java"){
+        if(Test-Path -Path "$netunoDir\maven"){
             
             Clear-Host
             show-netuno
