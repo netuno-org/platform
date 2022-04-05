@@ -19,9 +19,7 @@ package org.netuno.tritao.resource;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
-import org.netuno.library.doc.LanguageDoc;
-import org.netuno.library.doc.LibraryDoc;
-import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.LangResource;
 import org.netuno.psamata.Values;
@@ -38,6 +36,7 @@ import java.util.stream.Stream;
 /**
  * Language - Resource
  * @author Eduardo Fonseca Velasques - @eduveks
+ * @author Érica Ferreira
  */
 @Resource(name = "lang")
 @LibraryDoc(translations = {
@@ -66,7 +65,25 @@ public class Lang extends ResourceBase {
         super(proteu, hili);
         this.langResource = langResource;
     }
-
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Inicia o recurso Lang .",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Initiates the Lang resource.",
+                    howToUse = {})
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o lang por definição."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the default lang."
+            )
+    })
     public Lang init() throws ResourceException {
         if (getProteu().getConfig().has("_lang")
                 && getProteu().getConfig().get("_lang") != null) {
@@ -78,7 +95,49 @@ public class Lang extends ResourceBase {
     public Lang init(String locale) throws ResourceException {
         return init(locale, false);
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define a chave do locale de predefinição com um texto inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the default locale key with a inserted text.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "localeName", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave inserida."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Inserted key."
+                    )
+            }),
+            @ParameterDoc(name = "asDefault", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "porDefeito",
+                            description = "Definir se é para predefinição."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Sets if is default."
+                    )
 
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna a chave e o texto inseridos."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the key and the text inserted."
+            )
+    })
     public Lang init(String localeName, boolean asDefault) throws ResourceException {
         String configKey = "_lang:"+ localeName;
         if (!getProteu().getConfig().has(configKey)
@@ -134,11 +193,84 @@ public class Lang extends ResourceBase {
         }
         return new Lang(getProteu(), getHili(), langResource);
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define a chave do locale de predefinição com um texto inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the default locale key with a inserted text.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave inserida."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Inserted key."
+                    )
+            }),
+                    @ParameterDoc(name = "text", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "texto",
+                                    description = "Texto inserido."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Inserted text."
+                            )
+
+                    })
+            }, returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna a chave e o texto inseridos."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the key and the text inserted."
+                    )
+            })
 
     public final String getOrDefault(final String key, final String defaultText) {
         return langResource.getOrDefault(key, defaultText);
     }
-
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Pesquisa a chave.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Searchs for a key.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave a ser procurada."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Key to be searched."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna a chave correspondente."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the match key."
+            )
+    })
     public final String get(final String key) {
         return langResource.get(key);
     }
@@ -146,14 +278,47 @@ public class Lang extends ResourceBase {
     public final String get(final String key, final Object... formats) {
         return langResource.get(key, formats);
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o nome do locale.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the of the locale.",
+                    howToUse = {})
+    }, parameters = {},
+            returns = {})
 
     public final String getName() {
         return langResource.getName();
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o nome do locale.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the of the locale.",
+                    howToUse = {})
+    }, parameters = {},
+            returns = {})
+
     public final String name() {
         return getName();
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o nome do locale.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the of the locale.",
+                    howToUse = {})
+    }, parameters = {},
+            returns = {})
 
     public final Locale getLocale() {
         return langResource.getLocale();
@@ -162,11 +327,33 @@ public class Lang extends ResourceBase {
     public final Locale locale() {
         return getLocale();
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna todos os locale.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns all the locale.",
+                    howToUse = {})
+    }, parameters = {},
+            returns = {})
+
 
     public final String getCode() {
         return langResource.getLocale().toString();
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna todos os locale.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns all the locale.",
+                    howToUse = {})
+    }, parameters = {},
+            returns = {})
     public final String code() {
         return getCode();
     }

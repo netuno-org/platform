@@ -39,7 +39,7 @@ import org.netuno.library.doc.LibraryTranslationDoc;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "File",
-                introduction = "O objecto File é utilizado para interagir com ficheiros e pastas.",
+                introduction = "O objeto File é utilizado para interagir com ficheiros e pastas.",
                 howToUse = {}
         )
 })

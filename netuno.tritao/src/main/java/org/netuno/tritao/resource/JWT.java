@@ -24,9 +24,7 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.logging.log4j.LogManager;
-import org.netuno.library.doc.LanguageDoc;
-import org.netuno.library.doc.LibraryDoc;
-import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
@@ -42,6 +40,7 @@ import org.netuno.tritao.resource.event.AppEventType;
 /**
  * JWT (JSON Web Token) - Resource
  * @author Eduardo Fonseca Velasques - @eduveks
+ * @author Érica Ferreira
  */
 @Resource(name = "jwt")
 @LibraryDoc(translations = {
@@ -112,7 +111,27 @@ public class JWT extends ResourceBase {
     public JWT init(String secret, String algorithm) throws ResourceException {
         return new JWT(getProteu(), getHili(), secret, algorithm);
     }
-
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se um token está ativo.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Verify if a token is enable.",
+                    howToUse = {})
+    },
+            parameters = {},
+            returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna ativado."
+            ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns enabled."
+                    )}
+    )
     public boolean isEnabled() {
         Values config = getProteu().getConfig().asValues("_jwt");
         if (config != null) {
@@ -121,6 +140,19 @@ public class JWT extends ResourceBase {
         }
         return enabled;
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Seta o tempo de expiração do token para o que está distipulado nas configs.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the time of expiration of the token to the settings in configs.",
+                    howToUse = {})
+    },
+            parameters = {},
+            returns = {}
+    )
 
     public int accessExpires() {
         Values config = getProteu().getConfig().asValues("_jwt");
@@ -131,6 +163,20 @@ public class JWT extends ResourceBase {
         return accessExpires;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Atualiza o tempo de expiração do token para o que está distipulado nas configs.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Updates the time of expiration of the token to the settings in configs.",
+                    howToUse = {})
+    },
+            parameters = {},
+            returns = {}
+    )
+
     public int refreshExpires() {
         Values config = getProteu().getConfig().asValues("_jwt");
         if (config != null) {
@@ -139,6 +185,29 @@ public class JWT extends ResourceBase {
         }
         return refreshExpires;
     }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica da existência um token autenticado.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Verify if exists an authenticated token.",
+                    howToUse = {})
+    },
+            parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o token."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the token."
+                    )
+            }
+    )
 
     public String token() {
         if (getProteu().getConfig().hasKey("_jwt:token")
@@ -156,6 +225,40 @@ public class JWT extends ResourceBase {
         return "";
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Gera um token através do jwtBuilder.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Generates a token through jwtBuilder.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "Values", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "valores",
+                                    description = "Valores para o jwtBuilder."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Values for the jwtBuilder."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o que foi gerado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the generation."
+                    )
+            }
+    )
     public String token(Values data) {
         JwtBuilder jwtBuilder = Jwts.builder();
         jwtBuilder.claim("token_type", "Bearer");
@@ -172,11 +275,85 @@ public class JWT extends ResourceBase {
         }
         return jwtBuilder.signWith(signatureAlgorithm(algorithm), secret).compact();
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica o valor do body inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes the body value inserted.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "body", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "corpo",
+                                    description = "Valor do corpo."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Body value."
+                            )
+
+                    })
+            }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o valores codificado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the value enconded."
+            )
+    })
     public String encode(Values body) {
         return encode(new Values(), body);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os valores do header e do body inseridos.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes the values of the header and body inserted.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "header", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "cabeçalho",
+                                    description = "Valor do cabeçalho."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Header value."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "corpo",
+                                    description = "Valor do corpo."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Body value."
+                            )
+
+                    })
+            }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna os valores codificados."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the values enconded."
+            )
+    })
     public String encode(Values header, Values body) {
         JwtBuilder jwtBuilder = Jwts.builder();
         header.keys().forEach(key -> {
@@ -187,7 +364,48 @@ public class JWT extends ResourceBase {
         });
         return jwtBuilder.signWith(signatureAlgorithm(algorithm), secret).compact();
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Codifica os valores do header e do body inseridos.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Encodes the values of the header and body inserted.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "header", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "cabeçalho",
+                                    description = "Valor do cabeçalho."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Header value."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "corpo",
+                                    description = "Valor do corpo."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Body value."
+                            )
+
+                    })
+            }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna os valores codificados."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the values enconded."
+            )
+    })
     public Values decode(String token) {
         Jws<Claims> jwtParts = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
         JwsHeader jwtHeader = jwtParts.getHeader();
@@ -224,6 +442,28 @@ public class JWT extends ResourceBase {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica a existência de um token  .",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Verify if a token exists.",
+                    howToUse = {})
+    },
+            parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna a validação."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the validation."
+                    )
+            }
+    )
     public boolean check() {
         JWT jwt = new JWT(getProteu(), getHili());
         if (jwt.token() == null || jwt.token().isEmpty()) {
@@ -231,7 +471,41 @@ public class JWT extends ResourceBase {
         }
         return check(jwt.token());
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Este metódo faz a verifica o token inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "This method verify the token.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "token", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "token",
+                                    description = "Token para validar."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Token to be verify."
+                            )
+                    })
+            },
+            returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna a validação."
+            ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the validation."
+                    )}
+    )
+
     public boolean check(String token) {
     	Time time = new Time(getProteu(), getHili());
         Data dbManagerData = new Data(getProteu(), getHili());
@@ -258,6 +532,54 @@ public class JWT extends ResourceBase {
     public Values accessToken(Values contextData) {
         return accessToken(0, contextData);
     }
+
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Este metódo acessa ao token de um determinado utilizador e retorna o seu conteúdo.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "This method access to the token of a user and returns the content.",
+                    howToUse = {})
+    },
+            parameters = {
+
+                    @ParameterDoc(name = "userId", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "utilizadorId",
+                                    description = "Id do utilizador."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Id of user."
+                            )
+                    }),
+                    @ParameterDoc(name = "Values", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "valores",
+                                    description = "Valores do utilizador."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Values of the user."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o conteúdo do utilizador inserido."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the content of the user inserted."
+                    )
+            }
+    )
 
     public Values accessToken(int userId, Values contextData) {
         DB db = new DB(getProteu(), getHili());
@@ -304,6 +626,42 @@ public class JWT extends ResourceBase {
         return getProteu().getConfig().getValues("_jwt:auth:data");
     }
 
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Substitui um token antigo pelo o novo inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Replaces an old token for the new on inserted.",
+                    howToUse = {})
+    },
+            parameters = {
+            @ParameterDoc(name = "refreshToken", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "tokenAtualizado",
+                            description = "Token para substituir."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Replace token."
+                    )
+            })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o token atualizado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the updated token."
+                    )
+            }
+    )
+
     public Values refreshToken(String refreshToken) {
         Data dbManagerData = new Data(getProteu(), getHili());
         List<Values> dbOldTokens = dbManagerData.find(
@@ -330,6 +688,7 @@ public class JWT extends ResourceBase {
         return null;
     }
 
+
     public Values searchApp(Values data) {
         if (data.hasKey("key") && data.hasKey("secret")) {
 
@@ -349,6 +708,10 @@ public class JWT extends ResourceBase {
         return "";
     }
 
+    public Values registerWebOrigin(Values data) {
+        return new Values();
+    }
+
     public boolean isAppCode(String code) {
         return false;
     }
@@ -357,10 +720,41 @@ public class JWT extends ResourceBase {
         return new Values();
     }
 
-    public Values registerWebOrigin(Values data) {
-        return new Values();
-    }
 
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Converte o conteúdo inserido para o padrão do JWT.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Converts the string to the standard JWT algorithm.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "algorithm", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "algoritmo",
+                                    description = "Algoritmo inserido."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Inserted algorithm."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o conteúdo convertido para o algoritmo padrão do JWT."
+            ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the converted content to the default algorithm of JWT."
+                    )}
+    )
     private SignatureAlgorithm signatureAlgorithm(String algorithm) {
         try {
             return (SignatureAlgorithm)SignatureAlgorithm.class.getDeclaredField(algorithm.replace("-", "_").toUpperCase()).get(SignatureAlgorithm.class);

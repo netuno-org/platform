@@ -140,7 +140,61 @@ public class HTML extends ResourceBase {
     public Document parse(String content) {
         return Jsoup.parse(content);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza a interpretação do conteúdo dum ficheiro e retorna-o em HTML.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "It performs an interpretation of the content of a file and returns it in HTML.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "file", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "ficheiro",
+                            description = "Ficheiro que será processado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File to be processed."
+                    )
+            }),
+            @ParameterDoc(name = "baseUri", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "baseUri",
+                            description = "Url base para resolver links relativos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Base Url to resolve relative links."
+                    )
+            }),
+            @ParameterDoc(name = "charset", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "charset",
+                            description = "Código do tipo de codificação de caracteres. Exemplo:UTF-8."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Character encoding type code"
+                    )
+            })
+
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conteúdo do ficheiro em HTML."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "File content in HTML."
+            )
+    })
     public Document parse(File file, String charset, String baseUri) {
         try {
             return Jsoup.parse(file.getInputStream(), charset, baseUri);
@@ -148,7 +202,60 @@ public class HTML extends ResourceBase {
             throw new ResourceException("_html.parse("+ file.getPath() +"):\n "+ e.getMessage(), e);
         }
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza a interpretação dum conteúdo e retorna-o em HTML.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "It performs an interpretation of a content and returns it in HTML.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "storage", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "storage",
+                            description = "Caminho do ficheiro em storage que deverá ser processado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path of the file in storage that will be processed."
+                    )
+            }),
+            @ParameterDoc(name = "baseUri", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "baseUri",
+                            description = "Url base para resolver links relativos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Base Url to resolve relative links."
+                    )
+            }),
+            @ParameterDoc(name = "charset", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "charset",
+                            description = "Código do tipo de codificação de caracteres. Exemplo:UTF-8."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Character encoding type code."
+                    )
+            })
+
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conteúdo processado em HTML."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "File content processed in HTML."
+            )
+    })
     public Document parse(Storage storage, String charset, String baseUri) {
         try {
             return Jsoup.parse(storage.inputStream(), charset, baseUri);
@@ -156,7 +263,60 @@ public class HTML extends ResourceBase {
             throw new ResourceException("_html.parse("+ storage.path() +"):\n "+ e.getMessage(), e);
         }
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza a interpretação dum conteúdo e retorna-o em HTML.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "It performs an interpretation of a content and returns it in HTML.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "input", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "input",
+                            description = "Conteúdo de um ficheiro HTML a ser processado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Content of the HTML file to be processed."
+                    )
+            }),
+            @ParameterDoc(name = "baseUri", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "baseUri",
+                            description = "Url base para resolver links relativos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Base Url to resolve relative links."
+                    )
+            }),
+            @ParameterDoc(name = "charset", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "charset",
+                            description = "Código do tipo de codificação de caracteres. Exemplo:UTF-8."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Character encoding type code."
+                    )
+            })
+
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conteúdo processado em HTML."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "File content processed in HTML."
+            )
+    })
     public Document parse(java.io.InputStream in, String charset, String baseUri) {
         try {
             return Jsoup.parse(in, charset, baseUri);
