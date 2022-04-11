@@ -17,9 +17,7 @@
 
 package org.netuno.tritao.resource;
 
-import org.netuno.library.doc.LanguageDoc;
-import org.netuno.library.doc.LibraryDoc;
-import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.crypto.RandomString;
 import org.netuno.tritao.config.Hili;
@@ -51,9 +49,54 @@ public class Random extends ResourceBase {
         super(proteu, hili);
     }
 
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Gera toda a classe Random.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Generates the all Random class.",
+                    howToUse = {})
+    }, parameters = {
+
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna uma classe."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a class."
+            )
+    })
+
+
     public java.util.Random init() {
         return new java.util.Random();
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Gera aleatoriamente uma seed.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Generates a random seed.",
+                    howToUse = {})
+    }, parameters = {
+
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna uma seed."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a seed."
+            )
+    })
 
     public java.util.Random init(long seed) {
         return new java.util.Random(seed);
@@ -66,6 +109,27 @@ public class Random extends ResourceBase {
     public java.security.SecureRandom initSecure() {
         return new java.security.SecureRandom();
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Gera aleatoriamente um texto de 24 caracteres.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Generates a random text of 24 caracteres.",
+                    howToUse = {})
+    }, parameters = {
+
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna um texto de 24 caracteres aleatórios."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a 24 characters random string."
+            )
+    })
 
     public RandomString initString() {
         return new RandomString();
