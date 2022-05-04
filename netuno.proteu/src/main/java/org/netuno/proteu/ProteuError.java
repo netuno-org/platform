@@ -63,6 +63,10 @@ public class ProteuError extends Error {
         Throwable throwable = getCause();
         String beforeMessage = message;
         while (throwable != null) {
+            if (throwable instanceof ProteuError) {
+                message += ((ProteuError)throwable).getLogMessage() + "\n";
+                break;
+            }
             if (throwable.getMessage() != null) {
                 if (!beforeMessage.contains(throwable.getMessage())) {
                     if (!message.endsWith("\n")) {
@@ -73,6 +77,21 @@ public class ProteuError extends Error {
                 }
             }
             throwable = throwable.getCause();
+        }
+        if (logTrace && !logTraceMessage.isEmpty()) {
+            message = "\n# TRACE: "+ logTraceMessage +"\n" + message;
+        }
+        if (logInfo && !logInfoMessage.isEmpty()) {
+            message = "\n# INFO: "+ logInfoMessage +"\n" + message;
+        }
+        if (logWarn && !logWarnMessage.isEmpty()) {
+            message = "\n# WARN: "+ logWarnMessage +"\n" + message;
+        }
+        if (logError && !logErrorMessage.isEmpty()) {
+            message = "\n# ERROR: "+ logErrorMessage +"\n" + message;
+        }
+        if (logFatal && !logFatalMessage.isEmpty()) {
+            message = "\n# FATAL: "+ logFatalMessage +"\n" + message;
         }
         return message;
     }

@@ -602,6 +602,7 @@ public class Enterprise extends HttpServlet {
         if (Config.isReduceErrors()) {
             logger.trace(proteuError.getLogMessage());
         } else {
+            logger.trace(proteuError.getLogMessage(), proteuError);
             if (proteuError.isLogError()) {
                 logger.error(proteuError.getLogMessage());
             } else if (proteuError.isLogFatal()) {
