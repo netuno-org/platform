@@ -26,6 +26,7 @@ import org.netuno.cli.App;
 import org.netuno.cli.Config;
 import org.netuno.cli.Server;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.crypto.RandomString;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.net.Remote;
 
@@ -38,6 +39,8 @@ public class Monitor implements Runnable {
 
     private static Logger logger = LogManager.getLogger(Monitor.class);
 
+    private static String GLOBAL_SECRET = null;
+
     private static Monitor instance = null;
     
     private static boolean started = false;
@@ -49,7 +52,14 @@ public class Monitor implements Runnable {
     private Values entryBefore = Stats.performanceData();
     
     private Monitor(Server server) {
+        if (GLOBAL_SECRET == null) {
+            GLOBAL_SECRET = new RandomString().nextString();
+        }
         this.server = server;
+    }
+
+    public static String getGlobalSecret() {
+        return GLOBAL_SECRET;
     }
     
     public static void start(Server server) {
@@ -215,7 +225,7 @@ public class Monitor implements Runnable {
                                                 if (!alerts.isEmpty()) {
                                                     Values params = new Values()
                                                                 .set("app", appName)
-                                                                .set("secret", alert.getString("secret", appConfigMonitor.getString("secret")))
+                                                                .set("secret", alert.getString("secret", appConfigMonitor.getString("secret", GLOBAL_SECRET)))
                                                                 .set("alert", alert.getString("name"))
                                                                 .set("alerts", alerts)
                                                                 .merge(entry)

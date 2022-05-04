@@ -34,6 +34,7 @@ import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
+import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
@@ -59,6 +60,8 @@ import org.netuno.tritao.resource.util.ResourceException;
         )
 })
 public class Monitor extends ResourceBase {
+    private static String GLOBAL_SECRET = null;
+
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Monitor.class);
 
     public Monitor(Proteu proteu, Hili hili) {
@@ -83,9 +86,18 @@ public class Monitor extends ResourceBase {
             return;
         }
         if (!getProteu().getRequestAll().getString("alert").isEmpty() && !getProteu().getRequestAll().getString("secret").isEmpty()) {
+            if (GLOBAL_SECRET == null) {
+                try {
+                    GLOBAL_SECRET = Class.forName("org.netuno.cli.monitoring.Monitor")
+                            .getMethod("getGlobalSecret")
+                            .invoke(null).toString();
+                } catch (Exception e) {
+                    logger.fatal("Monitor failed to load the global secret.", e);
+                }
+            }
             Values monitor = getProteu().getConfig().getValues("_app:config").getValues("monitor", new Values());
             Values alerts = monitor.getValues("alerts", new Values());
-            String secret = monitor.getString("secret");
+            String secret = monitor.getString("secret", GLOBAL_SECRET);
             alerts = getProteu().getConfig().getValues("_monitor:alerts", alerts);
             Values alert = alerts.find("name", getProteu().getRequestAll().getString("alert"));
             Service service = Service.getInstance(getProteu());
