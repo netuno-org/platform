@@ -12,7 +12,6 @@ buildNumber.properties
 .mvn/timing.properties
 
 test/
-lib/
 sample/
 javadoc/
 
