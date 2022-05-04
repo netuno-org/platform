@@ -26,6 +26,7 @@ import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.library.doc.LanguageDoc;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
@@ -2319,6 +2320,12 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         }
         if (v.isMap() && v.forceList == false) {
             JSONObject jsonObject = new JSONObject();
+            try {
+                Field changeMap = JSONObject.class.getDeclaredField("map");
+                changeMap.setAccessible(true);
+                changeMap.set(jsonObject, new LinkedHashMap<>());
+                changeMap.setAccessible(false);
+            } catch (IllegalAccessException | NoSuchFieldException e) { }
             for (Object key : v.keys()) {
                 Object o = v.get(key);
                 if (htmlEscape && o instanceof String) {
