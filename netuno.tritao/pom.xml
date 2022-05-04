@@ -214,6 +214,19 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.bcel</groupId>
+            <artifactId>bcel</artifactId>
+            <version>6.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cajuscript</groupId>
+            <artifactId>cajuscript</artifactId>
+            <version>0.4</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/cajuscript-0.4.jar</systemPath>
+        </dependency>
+
+        <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>3.0.8</version>

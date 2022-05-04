@@ -25,6 +25,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.velocity.script.VelocityScriptEngineFactory;
+import org.cajuscript.CajuScriptEngineFactory;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory;
 import org.jruby.embed.jsr223.JRubyEngineFactory;
@@ -71,6 +72,7 @@ public class Hili {
     private boolean scriptRequestErrorExecuted = false;
 
     private ScriptEngine scriptEngineVelocity = null;
+    private ScriptEngine scriptEngineCaju = null;
     private ScriptEngine scriptEngineKotlin = null;
     private ScriptEngine scriptEngineGroovy = null;
     private ScriptEngine scriptEnginePython = null;
@@ -92,7 +94,10 @@ public class Hili {
     static {
         System.setProperty("idea.use.native.fs.for.win", "false");
         System.setProperty("idea.io.use.nio2", "true");
-        
+
+        CajuScriptEngineFactory cajuEngineFactory = new CajuScriptEngineFactory();
+        ScriptRunner.getScriptEngineManager().registerEngineName("caju", cajuEngineFactory);
+
         KotlinJsr223JvmLocalScriptEngineFactory kotlinEngineFactory = new KotlinJsr223JvmLocalScriptEngineFactory();
         ScriptRunner.getScriptEngineManager().registerEngineName("kotlin", kotlinEngineFactory);
 
@@ -104,6 +109,10 @@ public class Hili {
 
         JRubyEngineFactory rubyEngineFactory = new JRubyEngineFactory();
         ScriptRunner.getScriptEngineManager().registerEngineName("ruby", rubyEngineFactory);
+
+        ScriptRunner.getExtensions().addAll(
+                cajuEngineFactory.getExtensions()
+        );
 
         ScriptRunner.getExtensions().addAll(
                 groovyEngineFactory.getExtensions()
@@ -259,6 +268,13 @@ public class Hili {
             scriptEngineVelocity = ScriptRunner.getScriptEngineManager().getEngineByName("velocity");
         }
         return scriptEngineVelocity;
+    }
+
+    private synchronized ScriptEngine getCajuEngine() {
+        if (scriptEngineCaju == null) {
+            scriptEngineCaju = ScriptRunner.getScriptEngineManager().getEngineByName("caju");
+        }
+        return scriptEngineCaju;
     }
 
     private synchronized ScriptEngine getKotlinEngine() {
@@ -449,7 +465,14 @@ public class Hili {
                             }
                         }
                     }
-                    if (scriptPath.toLowerCase().endsWith(".kts")) {
+                    if (scriptPath.toLowerCase().endsWith(".cj")) {
+                        ScriptEngine engine = getCajuEngine();
+                        Bindings bindings = runScript(engine, path, scriptName, script, fromOnError);
+                        if (bindings == null) {
+                            return null;
+                        }
+                        return new Values(bindings);
+                    } else if (scriptPath.toLowerCase().endsWith(".kts")) {
                         if (true) {
                             ScriptEngine engine = getKotlinEngine();
                             Bindings bindings = runScript(engine, path, scriptName, script, fromOnError);
