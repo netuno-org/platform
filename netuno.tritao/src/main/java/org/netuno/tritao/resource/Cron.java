@@ -518,7 +518,7 @@ public class Cron extends ResourceBase {
                             howToUse = {
                                     @SourceCodeDoc(
                                             type = SourceCodeTypeDoc.JavaScript,
-                                            code = "_cron.delete(\"atualizaPrecos\")\n"
+                                            code = "_cron.interrupt(\"atualizaPrecos\")\n"
                                     ) }),
                     @MethodTranslationDoc(
                             language = LanguageDoc.EN,
@@ -636,7 +636,7 @@ public class Cron extends ResourceBase {
                             howToUse = {
                                     @SourceCodeDoc(
                                             type = SourceCodeTypeDoc.JavaScript,
-                                            code = "_cron.delete(\"atualizaPrecos\")\n"
+                                            code = "_cron.remove(\"atualizaPrecos\")\n"
                                     ) }),
                     @MethodTranslationDoc(
                             language = LanguageDoc.EN,
@@ -644,7 +644,7 @@ public class Cron extends ResourceBase {
                             howToUse = {
                                     @SourceCodeDoc(
                                             type = SourceCodeTypeDoc.JavaScript,
-                                            code = "_cron.delete(\"pricesUpdate\")\n"
+                                            code = "_cron.remove(\"pricesUpdate\")\n"
                                     ) })
             },
             parameters = {
