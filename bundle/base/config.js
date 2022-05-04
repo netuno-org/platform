@@ -97,7 +97,7 @@ config.downloadLogsAllowed = false;
  *  PT: Idioma padrão.
  *
  */
-config.language = 'pt_PT'
+config.language = 'en_GB'
 
 /**
  *
@@ -106,7 +106,7 @@ config.language = 'pt_PT'
  *  PT: Localização padrão.
  *
  */
-config.locale = 'pt_PT'
+config.locale = 'en_GB'
 
 /**
  *
@@ -160,3 +160,12 @@ config.codeServerAuth = "none"
  *
  */
 //  config.clone.secret = 'secret'
+
+/**
+ *
+ *  EN: Reduce errors omitting the full stack trace. 
+ *
+ *  PT: Erros reduzidos omitindo o rastreamento completo.
+ *
+ */
+config.reduceErrors = true
