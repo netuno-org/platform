@@ -380,7 +380,7 @@ public class Schema extends WebMaster {
                                                     parameter.set("name", key);
                                                     parameter.set("schema", schemaInProperty);
                                                     if (schemaInProperty.hasKey("description")) {
-                                                        parameter.set("description", schemaIn.getString("description"));
+                                                        parameter.set("description", schemaInProperty.getString("description"));
                                                         schemaInProperty.unset("description");
                                                     }
                                                     parameters.add(parameter);
