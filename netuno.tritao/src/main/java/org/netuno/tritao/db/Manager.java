@@ -243,10 +243,8 @@ public class Manager {
     }
 
     private class DBConnection {
-
         private String db = "";
         private java.sql.Connection connection = null;
-
         public DBConnection(String db, Connection connection) {
             this.db = db;
             this.connection = connection;

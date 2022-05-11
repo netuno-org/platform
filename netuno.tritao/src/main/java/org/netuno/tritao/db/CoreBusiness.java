@@ -230,6 +230,29 @@ public class CoreBusiness extends Base {
         return getManager().query(sql);
     }
 
+    public List<Values> selectUserByEmail(String email) {
+        String select = " *, (select netuno_group.name from netuno_group where netuno_group.id = netuno_user.group_id) as group_name ";
+        String from = " netuno_user ";
+        String where = "where 1 = 1 ";
+        if (!email.equals("") && !email.isEmpty() && !email.isBlank()) {
+            where += " and mail = '" + DB.sqlInjection(email)+"'";
+        }
+        String order = " order by name ";
+        String sql = "select " + select + " from " + from + where + order;
+        return getManager().query(sql);
+    }
+
+    public List<Values> selectUserByNonce(String nonce) {
+        String select = " *, (select netuno_group.name from netuno_group where netuno_group.id = netuno_user.group_id) as group_name ";
+        String from = " netuno_user ";
+        String where = "where 1 = 1 ";
+        if (!nonce.equals("") && !nonce.isEmpty() && !nonce.isBlank()) {
+            where += " and nonce = '" + DB.sqlInjection(nonce)+"'";
+        }
+        String order = " order by name ";
+        String sql = "select " + select + " from " + from + where + order;
+        return getManager().query(sql);
+    }
     public Values getUser(String user) {
         String select = " * ";
         String from = " netuno_user ";
@@ -296,7 +319,7 @@ public class CoreBusiness extends Base {
         return getManager().query(sql).get(0).getInt("counter");
     }
 
-    public boolean updateUser(String id, String name, String user, String pass, String mail, String group, String active) {
+    public boolean updateUser(String id, String name, String user, String pass, String mail, String group, String provider_id, String active) {
         Values data = new Values()
             .set("id", id)
             .set("name", name)
@@ -304,6 +327,7 @@ public class CoreBusiness extends Base {
             .set("pass", pass)
             .set("mail", mail)
             .set("group_id", group)
+            .set("provider_id", provider_id)
             .set("active", active);
         if (pass.isEmpty()) {
             data.unset("pass");
@@ -357,6 +381,12 @@ public class CoreBusiness extends Base {
         if (values.hasKey("group_id")) {
             update += ", group_id = " + DB.sqlInjectionInt(values.getString("group_id")) + "";
         }
+        if (values.hasKey("provider_id")) {
+            update += ", provider_id = " + DB.sqlInjectionInt(values.getString("provider_id")) + "";
+        }
+        if (values.hasKey("nonce")) {
+            update += ", nonce = '" + DB.sqlInjection(values.getString("nonce")) + "'";
+        }
         if (values.hasKey("active")) {
             update += ", active = " + getBuilder().booleanValue(values.getBoolean("active")) + "";
         }
@@ -375,13 +405,14 @@ public class CoreBusiness extends Base {
         return true;
     }
 
-    public int insertUser(String name, String user, String pass, String mail, String group, String active) {
+    public int insertUser(String name, String user, String pass, String mail, String group, String provider_id, String active) {
         Values data = new Values()
                 .set("name", name)
                 .set("user", user)
                 .set("pass", pass)
                 .set("mail", mail)
                 .set("group_id", group)
+                .set("provider_id", provider_id)
                 .set("active", active);
         if (pass.isEmpty()) {
             data.unset("pass");
@@ -432,6 +463,12 @@ public class CoreBusiness extends Base {
         if (values.hasKey("group_id")) {
             data.set("group_id", DB.sqlInjectionInt(values.getString("group_id")));
         }
+        if (values.hasKey("provider_id")) {
+            data.set("provider_id", DB.sqlInjectionInt(values.getString("provider_id")));
+        }
+        if (values.hasKey("nonce")) {
+            data.set("nonce", DB.sqlInjection(values.getString("nonce")));
+        }
         if (values.hasKey("active")) {
             data.set("active", values.getBoolean("active"));
         }
@@ -474,6 +511,99 @@ public class CoreBusiness extends Base {
         return true;
     }
 
+
+
+    public Values getProviderById(String id) {
+        if (id.isEmpty() || id.equals("0")) {
+            return null;
+        }
+        List<Values> rows = selectProvider(id);
+        if (rows.size() > 0) {
+            return rows.get(0);
+        }
+        return null;
+    }
+
+
+    public List<Values> selectProviderByName(String provider_name) {
+        String select = " * ";
+        String from = " netuno_providers ";
+        String where = "where name = '" + DB.sqlInjection(provider_name) + "'";
+
+        String order = " order by name ";
+        String sql = "select " + select + " from " + from + where + order;
+        return getManager().query(sql);
+    }
+
+    public List<Values> selectProvider(String provider_id) {
+        String select = " * ";
+        String from = " netuno_providers ";
+        String where = "where id = " + DB.sqlInjectionInt(provider_id);
+
+        String order = " order by name ";
+        String sql = "select " + select + " from " + from + where + order;
+        return getManager().query(sql);
+    }
+
+    public int insertProvider(String name, String code) {
+        Values data = new Values()
+                .set("name", name)
+                .set("code", code);
+        return insertProvider(data);
+    }
+    public boolean deleteAuth(String id) {
+        id = "" + DB.sqlInjectionInt(id);
+        Values dataRecord = getProviderById(id);
+        if (dataRecord == null) {
+            return false;
+        }
+
+        DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
+        dataItem.setTable("netuno_providers");
+        dataItem.setRecord(dataRecord);
+        dataItem.setStatus(DataItem.Status.Delete);
+        getManager().scriptRemove(getProteu(), getHili(), "netuno_providers", dataItem);
+        if (dataItem.isStatusAsError()) {
+            return false;
+        }
+        getManager().execute("delete from netuno_providers where id = " + id);
+        dataItem.setStatus(DataItem.Status.Deleted);
+        getManager().scriptRemoved(getProteu(), getHili(), "netuno_providers", dataItem);
+        return true;
+    }
+
+    public int insertProvider(Values values) {
+        if (values.hasKey("id") || values.getInt("id") > 0) {
+            return 0;
+        }
+
+        DataItem dataItem = new DataItem(getProteu(), "0", "");
+        dataItem.setTable("netuno_providers");
+        dataItem.setValues(values);
+        dataItem.setStatus(DataItem.Status.Insert);
+        getManager().scriptSave(getProteu(), getHili(), "netuno_providers", dataItem);
+
+        if (dataItem.isStatusAsError()) {
+            return 0;
+        }
+
+        Values data = new Values();
+        if (values.hasKey("name")) {
+            data.set("name", "'" + DB.sqlInjection(values.getString("name")) + "'");
+        }
+
+        if (values.hasKey("code")) {
+            data.set("code", "'" + DB.sqlInjection(values.getString("code")) + "'");
+        }
+
+        int id = insertInto("netuno_providers", data);
+        Values record = getProviderById("" + id);
+        dataItem.setRecord(getProviderById("" + id));
+        dataItem.setStatus(DataItem.Status.Inserted);
+        dataItem.setId(record.getString("id"));
+        getManager().scriptSaved(getProteu(), getHili(), "netuno_providers", dataItem);
+        return id;
+    }
     public List<Values> selectGroupOther(String id, String name) {
         String select = " * ";
         String from = " netuno_group ";

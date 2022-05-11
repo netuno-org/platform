@@ -185,12 +185,20 @@ public class MSSQL implements Builder {
         return coreBusiness.selectUserOther(id, name, user);
     }
 
+    public List<Values> selectUserByEmail(String email) {
+        return coreBusiness.selectUserByEmail(email);
+    }
+
+    public List<Values> selectUserByNonce(String nonce) {
+        return coreBusiness.selectUserByNonce(nonce);
+    }
+
     public int selectUsersCount() {
         return coreBusiness.selectUsersCount();
     }
 
-    public boolean updateUser(String id, String name, String user, String pass, String mail, String group, String active) {
-        return coreBusiness.updateUser(id, name, user, pass, mail, group, active);
+    public boolean updateUser(String id, String name, String user, String pass, String mail, String group, String provider_id, String active) {
+        return coreBusiness.updateUser(id, name, user, pass, mail, group, provider_id, active);
     }
 
     public boolean updateUser(Values values) {
@@ -201,8 +209,9 @@ public class MSSQL implements Builder {
         return coreBusiness.updateUser(id, values);
     }
 
-    public int insertUser(String name, String user, String pass, String mail, String group, String active) {
-        return coreBusiness.insertUser(name, user, pass, mail, group, active);
+
+    public int insertUser(String name, String user, String pass, String mail, String group, String provider_id, String active) {
+        return coreBusiness.insertUser(name, user, pass, mail, group, provider_id, active);
     }
 
     public int insertUser(Values values) {
@@ -213,6 +222,25 @@ public class MSSQL implements Builder {
         return coreBusiness.deleteUser(id);
     }
 
+    public List<Values> selectProviderByName(String provider_name) {
+        return coreBusiness.selectProviderByName(provider_name);
+    }
+
+    public List<Values> selectProvider(String provider_id) {
+        return coreBusiness.selectProvider(provider_id);
+    }
+
+    public Values getProviderById(String id) {
+        return coreBusiness.getProviderById(id);
+    }
+
+    public int insertProvider(String name, String code) {
+        return coreBusiness.insertProvider(name, code);
+    }
+
+    public boolean deleteProvider(String id) {
+        return coreBusiness.deleteAuth(id);
+    }
     public List<Values> selectGroupOther(String id, String name) {
         return coreBusiness.selectGroupOther(id, name);
     }

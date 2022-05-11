@@ -158,7 +158,6 @@ public class Config {
         }
         return (Manager)proteu.getConfig().get("_database:manager:"+ key);
     }
-
     public static Builder getDataBaseBuilder(Proteu proteu) {
         return getDataBaseBuilder(proteu, "default");
     }

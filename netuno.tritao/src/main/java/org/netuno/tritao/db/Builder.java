@@ -78,6 +78,9 @@ public interface Builder {
 
     List<Values> selectUser(String user_id);
 
+    List<Values> selectUserByEmail(String email);
+
+    List<Values> selectUserByNonce(String nonce);
     Values getUser(String user);
     Values getUserById(String id);
     Values getUserByUId(String uid);
@@ -88,18 +91,27 @@ public interface Builder {
 
     int selectUsersCount();
 
-    boolean updateUser(String id, String name, String user, String pass, String mail, String group, String active);
+    boolean updateUser(String id, String name, String user, String pass, String mail, String group, String provider_id, String active);
 
     boolean updateUser(Values values);
 
     boolean updateUser(String id, Values values);
 
-    int insertUser(String name, String user, String pass, String mail, String group, String active);
+    int insertUser(String name, String user, String pass, String mail, String group, String provider_id, String active);
 
     int insertUser(Values values);
 
     boolean deleteUser(String id);
 
+    List<Values> selectProviderByName(String provider_name);
+
+    List<Values> selectProvider(String provider_id);
+
+    Values getProviderById(String id);
+
+    int insertProvider(String name, String code);
+
+    boolean deleteProvider(String id);
     List<Values> selectGroupOther(String id, String name);
 
     List<Values> selectGroupSearch(String term);

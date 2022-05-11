@@ -23,8 +23,10 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.proteu._Web;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.providers.entities.UserDataProvider;
 import org.netuno.tritao.resource.*;
 import org.netuno.tritao.util.Rule;
 
@@ -35,6 +37,7 @@ import java.util.List;
  * Authentication Service
  * https://www.oauth.com/oauth2-servers/access-tokens/access-token-response/
  * @author Eduardo Fonseca Velasques - @eduveks
+ * @author Marcel Becheanu - @marcelgbecheanu
  */
 @_Web(url = "/org/netuno/tritao/Auth")
 public class Auth extends WebMaster {
@@ -249,7 +252,9 @@ public class Auth extends WebMaster {
             return false;
         }
     }
-    
+
+
+
     public static Values createContextData(Proteu proteu, Hili hili, Values user) {
         return createContextData(proteu, hili, user, Profile.ALL);
     }
@@ -377,8 +382,41 @@ public class Auth extends WebMaster {
                 return;
             }
         }
+
         Credentials credentials = getCredentials(getProteu(), getHili());
-        if (credentials != null) {
+        if (req.hasKey("nonce") && !req.getString("nonce").isBlank() && !req.getString("nonce").isEmpty() && req.hasKey("provider") && req.getInt("provider") > 0) {
+            List<Values> queryUsersByNonce = Config.getDataBaseBuilder(getProteu()).selectUserByNonce(req.getString("nonce"));
+            List<Values> providers = Config.getDataBaseBuilder(getProteu()).selectProvider(req.getString("provider"));
+
+            if (queryUsersByNonce.size() > 0 && providers.size() > 0) {
+                Values userAuth = queryUsersByNonce.get(0);
+                userAuth.set("nonce", "");
+                Config.getDataBaseBuilder(getProteu()).updateUser(userAuth);
+                if (userAuth.getInt("provider_id") == req.getInt("provider")) {
+                    if (signIn(getProteu(), getHili(), userAuth, Type.JWT, profile)) {
+                        header.status(Proteu.HTTPStatus.OK200);
+                        getProteu().outputJSON(
+                                getProteu().getConfig().getValues("_jwt:auth:data")
+                        );
+                        //callScript
+                        String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(getProteu()) + "/_auth_provider_end");
+                        if (scriptPath != null) {
+                            UserDataProvider userDataProvider = new UserDataProvider(userAuth.getInt("id"), userAuth.getString("name"), userAuth.getString("name"), "Google");
+                            try {
+                                getHili().bind("userDataProvider", userDataProvider);
+                                getHili().runScriptSandbox(Config.getPathAppCore(getProteu()), "_auth_provider_end");
+                            } finally {
+                                getHili().unbind("userDataProvider");
+                            }
+                        }
+
+                        return;
+                    }
+                }
+            }
+            header.status(Proteu.HTTPStatus.Forbidden403);
+            out.json(new Values().set("result", false));
+        } else if (credentials != null) {
             if (jwtRequest) {
                 if (signIn(getProteu(), getHili(), Type.JWT, profile)) {
                     header.status(Proteu.HTTPStatus.OK200);

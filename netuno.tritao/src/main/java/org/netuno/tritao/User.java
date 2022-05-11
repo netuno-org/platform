@@ -147,12 +147,14 @@ public class User {
     	boolean restore = false;
         if (proteu.getRequestAll().getString("execute").equals("save") && proteu.getRequestAll().getString("uid").isEmpty()) {
 			Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("group_uid"));
+			Values provider = Config.getDataBaseBuilder(proteu).getProviderById(proteu.getRequestAll().getString("provider_id"));
         	int id = Config.getDataBaseBuilder(proteu).insertUser(
         			proteu.getRequestAll().getString("name"), 
         			proteu.getRequestAll().getString("username"), 
         			proteu.getRequestAll().getString("password").isEmpty() ? "" : Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, proteu.getRequestAll().getString("username"), proteu.getRequestAll().getString("password")),
 					proteu.getRequestAll().getString("mail"),
 					group != null ? group.getString("id") : "0",
+					provider != null ? provider.getString("id") : "1",
         			proteu.getRequestAll().getString("active"));
             if (id > 0) {
 				Values user = Config.getDataBaseBuilder(proteu).getUserById(Integer.toString(id));
@@ -177,12 +179,15 @@ public class User {
 				if (!user.getString("id").equals(Auth.getUser(proteu, hili, Auth.Type.SESSION).getString("id"))) {
 					saveRules(proteu, hili, user);
 					Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("group_uid"));
+					Values provider = Config.getDataBaseBuilder(proteu).getProviderById(proteu.getRequestAll().getString("provider_id"));
+
 					if (Config.getDataBaseBuilder(proteu).updateUser(
 							user.getString("id"), proteu.getRequestAll().getString("name"),
 							proteu.getRequestAll().getString("username"),
 							proteu.getRequestAll().getString("password").isEmpty() ? "" : Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, proteu.getRequestAll().getString("username"), proteu.getRequestAll().getString("password")),
 							proteu.getRequestAll().getString("mail"),
 							group != null ? group.getString("id") : "0",
+							provider != null ? provider.getString("id") : "1",
 							proteu.getRequestAll().getString("active"))) {
 						TemplateBuilder.output(proteu, hili, "user/notification/saved", data);
 					} else {
