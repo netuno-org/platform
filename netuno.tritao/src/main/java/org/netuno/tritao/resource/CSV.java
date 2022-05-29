@@ -27,6 +27,7 @@ import org.netuno.tritao.config.Hili;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -315,7 +316,20 @@ public class CSV extends ResourceBase {
         return CSVParser.parse(content, format);
     }
 
+    public CSVPrinter printer(Writer writer, CSVFormat format) throws IOException {
+        return new CSVPrinter(writer, format);
+    }
+    public CSVPrinter printer(Writer writer) throws IOException {
+        CSVFormat format = format("default");
+        return new CSVPrinter(writer, format);
+    }
+
     public CSVPrinter printer(Storage storage, CSVFormat format) throws IOException {
+        BufferedWriter writer = Files.newBufferedWriter(Paths.get(storage.absolutePath()));
+        return new CSVPrinter(writer, format);
+    }
+    public CSVPrinter printer(Storage storage) throws IOException {
+        CSVFormat format = format("default");
         BufferedWriter writer = Files.newBufferedWriter(Paths.get(storage.absolutePath()));
         return new CSVPrinter(writer, format);
     }
