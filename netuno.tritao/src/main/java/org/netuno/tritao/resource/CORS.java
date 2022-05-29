@@ -434,7 +434,7 @@ public class CORS extends ResourceBase {
                         getProteu().getConfig().set("_cors:entry", entry);
                         Values header = new Values()
                         .set("Access-Control-Allow-Origin", origin)
-                        .set("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+                        .set("Access-Control-Allow-Methods", "GET,HEAD,PATCH,PUT,POST,DELETE,OPTIONS")
                         .set("Access-Control-Allow-Headers", "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization")
                         .set("Access-Control-Allow-Expose-Headers", "Content-Length,Content-Range")
                         .set("Access-Control-Allow-Credentials", true);
