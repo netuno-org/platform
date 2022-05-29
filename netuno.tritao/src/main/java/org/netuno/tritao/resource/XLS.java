@@ -1026,10 +1026,13 @@ public class XLS extends ResourceBase {
                 cell.setCellValue(values.getString("value"));
             } else if (val instanceof Boolean) {
                 cell.setCellValue(values.getBoolean("value"));
-            } else if (val instanceof Double) {
+            } else if (val instanceof Byte
+                    || val instanceof Short
+                    || val instanceof Integer
+                    || val instanceof Long
+                    || val instanceof Float
+                    || val instanceof Double) {
                 cell.setCellValue(values.getDouble("value"));
-            } else if (val instanceof Integer) {
-                cell.setCellValue(values.getInt("value"));
             } else if (val instanceof Date) {
                 cell.setCellValue(values.getDate("value"));
             } else if (val instanceof Calendar) {
