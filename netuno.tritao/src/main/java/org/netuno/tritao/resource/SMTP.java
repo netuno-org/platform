@@ -301,6 +301,9 @@ public class SMTP extends ResourceBase {
     public SMTPConfig getConfig() {
         return config;
     }
+    public SMTPConfig config() {
+        return getConfig();
+    }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -332,6 +335,9 @@ public class SMTP extends ResourceBase {
         this.config = config;
         return this;
     }
+    public SMTP config(SMTPConfig config) {
+        return setConfig(config);
+    }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -354,6 +360,9 @@ public class SMTP extends ResourceBase {
     })
     public boolean isEnabled() {
         return enabled;
+    }
+    public boolean enabled() {
+        return isEnabled();
     }
 
     @MethodDoc(translations = {
@@ -391,6 +400,9 @@ public class SMTP extends ResourceBase {
         this.enabled = enabled;
         return this;
     }
+    public SMTP enabled(boolean enabled) {
+        return setEnabled(enabled);
+    }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -413,6 +425,9 @@ public class SMTP extends ResourceBase {
     })
     public String getFrom() {
         return from;
+    }
+    public String from() {
+        return getFrom();
     }
 
     @MethodDoc(translations = {
@@ -450,6 +465,9 @@ public class SMTP extends ResourceBase {
         this.from = from;
         return this;
     }
+    public SMTP from(String from) {
+        return setFrom(from);
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -472,6 +490,9 @@ public class SMTP extends ResourceBase {
     })
     public String getTo() {
         return to;
+    }
+    public String to() {
+        return getTo();
     }
 
     @MethodDoc(translations = {
@@ -509,6 +530,9 @@ public class SMTP extends ResourceBase {
         this.to = to;
         return this;
     }
+    public SMTP to(String to) {
+        return setTo(to);
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -531,6 +555,9 @@ public class SMTP extends ResourceBase {
     })
     public String getBcc() {
         return bcc;
+    }
+    public String bcc() {
+        return getBcc();
     }
 
     @MethodDoc(translations = {
@@ -567,6 +594,9 @@ public class SMTP extends ResourceBase {
         this.bcc = bcc;
         return this;
     }
+    public SMTP bcc(String bcc) {
+        return setBcc(bcc);
+    }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -589,6 +619,9 @@ public class SMTP extends ResourceBase {
     })
     public String getCc() {
         return cc;
+    }
+    public String cc() {
+        return getCc();
     }
 
     @MethodDoc(translations = {
@@ -625,6 +658,9 @@ public class SMTP extends ResourceBase {
         this.cc = cc;
         return this;
     }
+    public SMTP cc(String cc) {
+        return setCc(cc);
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -647,6 +683,9 @@ public class SMTP extends ResourceBase {
     })
     public String getSubjectPrefix() {
         return subjectPrefix;
+    }
+    public String subjectPrefix() {
+        return getSubjectPrefix();
     }
 
     @MethodDoc(translations = {
@@ -684,6 +723,9 @@ public class SMTP extends ResourceBase {
         this.subjectPrefix = subjectPrefix;
         return this;
     }
+    public SMTP subjectPrefix(String subjectPrefix) {
+        return setSubjectPrefix(subjectPrefix);
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -706,6 +748,9 @@ public class SMTP extends ResourceBase {
     })
     public String getSubject() {
         return subject;
+    }
+    public String subject() {
+        return getSubject();
     }
 
     @MethodDoc(translations = {
@@ -743,6 +788,9 @@ public class SMTP extends ResourceBase {
         this.subject = subject;
         return this;
     }
+    public SMTP subject(String subject) {
+        return setSubject(subject);
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -765,6 +813,9 @@ public class SMTP extends ResourceBase {
     })
     public String getText() {
         return text;
+    }
+    public String text() {
+        return getText();
     }
 
     @MethodDoc(translations = {
@@ -802,6 +853,9 @@ public class SMTP extends ResourceBase {
         this.text = text;
         return this;
     }
+    public SMTP text(String text) {
+        return setText(text);
+    }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -824,6 +878,9 @@ public class SMTP extends ResourceBase {
     })
     public String getHTML() {
         return html;
+    }
+    public String html() {
+        return getHTML();
     }
 
     @MethodDoc(translations = {
@@ -860,6 +917,9 @@ public class SMTP extends ResourceBase {
         this.html = html;
         return this;
     }
+    public SMTP html(String html) {
+        return setHTML(html);
+    }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -882,6 +942,9 @@ public class SMTP extends ResourceBase {
     })
     public String getMultipartSubtype() {
         return multipartSubtype;
+    }
+    public String multipartSubtype() {
+        return getMultipartSubtype();
     }
 
     @MethodDoc(translations = {
@@ -918,6 +981,9 @@ public class SMTP extends ResourceBase {
     public SMTP setMultipartSubtype(String multipartSubtype) {
         this.multipartSubtype = multipartSubtype;
         return this;
+    }
+    public SMTP multipartSubtype(String html) {
+        return setMultipartSubtype(html);
     }
 
     @MethodDoc(translations = {
