@@ -48,3 +48,5 @@ protect/out/proguard/*
 
 install/
 
+src/main/resources/
+
