@@ -23,6 +23,8 @@ sample/
 
 node_modules/
 
+cajuscript-classes/
+
 netuno-bundle*
 
 netuno-latest.zip
