@@ -221,9 +221,9 @@
         <dependency>
             <groupId>cajuscript</groupId>
             <artifactId>cajuscript</artifactId>
-            <version>0.4</version>
+            <version>0.5</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/cajuscript-0.4.jar</systemPath>
+            <systemPath>${project.basedir}/lib/cajuscript-0.5.jar</systemPath>
         </dependency>
 
         <dependency>
