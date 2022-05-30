@@ -26,7 +26,6 @@ const dbRows = _db.query(
 const list = _val.list()
 
 for (const dbRow of dbRows) {
-  var item = 
   list.add(
     _val.map()
       .set("id", dbRow.getInt("id"))
