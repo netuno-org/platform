@@ -1,0 +1,37 @@
+{
+  "name": "ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "babel-loader": "^8.2.3",
+    "babel-plugin-import": "^1.13.3",
+    "css-loader": "^6.7.0",
+    "less": "^4.1.2",
+    "less-loader": "^10.2.0",
+    "prop-types": "^15.8.1",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@netuno/service-client": "^1.0.10",
+    "@netuno/ws-client": "^1.0.8",
+    "antd": "^4.18.9",
+    "chart.js": "^3.7.1",
+    "react-chartjs-2": "^4.0.1"
+  }
+}

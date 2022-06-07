@@ -75,7 +75,6 @@ public class GoogleCallBack extends WebMaster {
         values.set("mail", user.getString("email"));
         values.set("pass", new Random(proteu, hili).initString().next());
         values.set("group_id", settings.getInt("default_group"));
-        values.set("provider_id", provider_id);
         values.set("active", true);
 
         List<Values> userData = Config.getDataBaseBuilder(proteu).selectUserByEmail(user.getString("email"));

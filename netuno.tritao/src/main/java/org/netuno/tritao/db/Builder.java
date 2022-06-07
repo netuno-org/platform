@@ -18,6 +18,8 @@
 package org.netuno.tritao.db;
 
 import java.util.List;
+
+import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 
 /**
@@ -91,17 +93,23 @@ public interface Builder {
 
     int selectUsersCount();
 
-    boolean updateUser(String id, String name, String user, String pass, String mail, String group, String provider_id, String active);
+    boolean updateUser(String id, String name, String user, String pass, String mail, String group, String active);
 
     boolean updateUser(Values values);
 
     boolean updateUser(String id, Values values);
 
-    int insertUser(String name, String user, String pass, String mail, String group, String provider_id, String active);
+    int insertUser(String name, String user, String pass, String mail, String group, String active);
 
     int insertUser(Values values);
 
     boolean deleteUser(String id);
+
+
+    List<Values> isAssociate(Values values);
+    Values getAssociateById(String id);
+    int associate(Values values);
+    boolean disassociate(String id);
 
     List<Values> selectProviderByName(String provider_name);
 

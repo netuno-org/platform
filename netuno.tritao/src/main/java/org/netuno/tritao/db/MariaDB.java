@@ -196,8 +196,8 @@ public class MariaDB implements Builder {
         return coreBusiness.selectUsersCount();
     }
 
-    public boolean updateUser(String id, String name, String user, String pass, String mail, String group, String provider_id, String active) {
-        return coreBusiness.updateUser(id, name, user, pass, mail, group, provider_id, active);
+    public boolean updateUser(String id, String name, String user, String pass, String mail, String group, String active) {
+        return coreBusiness.updateUser(id, name, user, pass, mail, group, active);
     }
 
     public boolean updateUser(Values values) {
@@ -208,8 +208,8 @@ public class MariaDB implements Builder {
         return coreBusiness.updateUser(id, values);
     }
 
-    public int insertUser(String name, String user, String pass, String mail, String group, String provider_id, String active) {
-        return coreBusiness.insertUser(name, user, pass, mail, group, provider_id, active);
+    public int insertUser(String name, String user, String pass, String mail, String group, String active) {
+        return coreBusiness.insertUser(name, user, pass, mail, group, active);
     }
 
     public int insertUser(Values values) {
@@ -218,6 +218,22 @@ public class MariaDB implements Builder {
 
     public boolean deleteUser(String id) {
         return coreBusiness.deleteUser(id);
+    }
+
+    public List<Values> isAssociate(Values values){
+        return coreBusiness.isAssociate(values);
+    }
+
+    public Values getAssociateById(String id) {
+        return coreBusiness.getAssociateById(id);
+    }
+
+    public int associate(Values values){
+        return coreBusiness.associate(values);
+    }
+
+    public boolean disassociate(String id){
+        return coreBusiness.disassociate(id);
     }
 
     public List<Values> selectProviderByName(String provider_name) {

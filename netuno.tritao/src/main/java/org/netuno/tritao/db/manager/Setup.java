@@ -203,12 +203,8 @@ public class Setup extends Base {
             );
             sequence.create("netuno_providers_id");
 
-            if(getBuilder().selectProviderByName("local").size() == 0){
-                getBuilder().insertProvider("Local", "lc");
-            }
-
             if(getBuilder().selectProviderByName("google").size() == 0){
-                getBuilder().insertProvider("Google", "gl");
+                getBuilder().insertProvider("google", "gl");
             }
 
             table.create("netuno_user",
@@ -216,9 +212,7 @@ public class Setup extends Base {
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("nonce").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
-                    table.newColumn().setName("provider_id").setType(Column.Type.INT).setNotNull(true).setDefault(
-                        getBuilder().selectProviderByName("Local").get(0).getInt("id")
-                    ),
+                    table.newColumn().setName("nonce_generator").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
                     table.newColumn().setName("group_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("user").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("pass").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
@@ -230,11 +224,17 @@ public class Setup extends Base {
                     table.newColumn().setName("extra").setType(Column.Type.TEXT).setNotNull(false).setDefault()
             );
             index.create("netuno_user", "group_id");
-            index.create("netuno_user", "provider_id");
             sequence.create("netuno_user_id");
 
+                table.create("netuno_providers_user",
+                    table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
+                    table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("providers_id").setType(Column.Type.INT).setNotNull(true).setDefault()
+            );
 
-
+            sequence.create("netuno_providers_user_id");
+            index.create("netuno_providers_user", "user_id");
+            index.create("netuno_providers_user", "providers_id");
 
             table.create("netuno_group_rule",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
@@ -398,7 +398,7 @@ public class Setup extends Base {
                 groupDev = new Values().set("id", groupDevId);
             }
             if (getBuilder().getUser("dev") == null) {
-                getBuilder().insertUser("Developer", "dev", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "dev", "dev"), "", groupDev.getString("id"), getBuilder().selectProviderByName("Local").get(0).getInt("id")+"", getBuilder().booleanTrue());
+                getBuilder().insertUser("Developer", "dev", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "dev", "dev"), "", groupDev.getString("id"), getBuilder().booleanTrue());
             }
             Values groupAdmin = getBuilder().getGroupByNetuno("-1");
             if (groupAdmin == null) {
@@ -406,7 +406,7 @@ public class Setup extends Base {
                 groupAdmin = new Values().set("id", groupAdminId);
             }
             if (getBuilder().getUser("admin") == null) {
-                getBuilder().insertUser("Administrator", "admin", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "admin", "admin"), "", ""+ groupAdmin.getString("id"),getBuilder().selectProviderByName("Local").get(0).getInt("id")+"", getBuilder().booleanTrue());
+                getBuilder().insertUser("Administrator", "admin", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "admin", "admin"), "", ""+ groupAdmin.getString("id"), getBuilder().booleanTrue());
             }
             if (checkExists.column("netuno_design", "search")) {
                 getManager().execute(

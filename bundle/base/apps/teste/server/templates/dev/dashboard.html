@@ -1,0 +1,31 @@
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="with-form">
+      <h1 class="page-header">
+        _{&lang=netuno.main.dashboard.title}
+      </h1>
+      <p>_{&lang=netuno.main.dashboard.description}</p>
+    </div>
+    <div class="no-form">
+      <h1 class="page-header">
+        _{&lang=netuno.main.dashboard.welcome_netuno}
+      </h1>
+      <p>_{&lang=netuno.dev.main.you_not_form}</p>
+      <p>_{&lang=netuno.dev.main.you_can_start_by_clicking_top_bar}</p>
+      <br>
+      <img src="_{netuno-config=url-styles}/build-button-tutorial-dev.png" height="200">
+    </div>
+    #macro(listFormItems $items)
+    <ul>
+      #foreach($item in $items)
+      <li>
+        <a href="#" netuno-dev-form="$item.getString('name')">$item.getString('text')</a>
+        #listFormItems($item.get('items'))
+      </li>
+      #end
+    </ul>
+    #end
+    #listFormItems($data.get('menu').get('forms'))
+  </div>
+</div>
