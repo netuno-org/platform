@@ -360,13 +360,6 @@ public class Auth extends WebMaster {
         return false;
     }
 
-    /*
-    *
-    * Temos conta mas não associação
-    * Temos conta e associação.
-     * Não temos conta.
-    *
-    * */
     public static void AuthenticatorProviders(Proteu proteu, Hili hili, Req req, Header header, Out out) throws ProteuException, IOException {
         if(req.hasKey("secret") && req.hasKey("provider")){
             String secret = req.getString("secret"), provider = req.getString("provider");
@@ -396,7 +389,7 @@ public class Auth extends WebMaster {
                             header.status(Proteu.HTTPStatus.Forbidden403);
                             out.json(new Values().set("result", false).set("msg", "wrong_password"));
                             return;
-                        }else{
+                        } else {
                             if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
                                 header.status(Proteu.HTTPStatus.OK200);
                                 proteu.outputJSON(
@@ -405,13 +398,13 @@ public class Auth extends WebMaster {
                                 return;
                             }
                         }
-                    }else{
+                    } else {
                         header.status(Proteu.HTTPStatus.Forbidden403);
                         out.json(new Values().set("result", false));
                         return;
                     }
                 }
-            }else {
+            } else {
                 Values user = HandlerData.getUser(secret);
                 user.set("user", "");
                 user.set("pass", new Random(proteu, hili).initString().next());
@@ -433,6 +426,16 @@ public class Auth extends WebMaster {
                     logger.warn(ex.getMessage());
                     return;
                 }
+                if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
+                    header.status(Proteu.HTTPStatus.OK200);
+                    proteu.outputJSON(
+                            proteu.getConfig().getValues("_jwt:auth:data")
+                    );
+                    return;
+                }
+                header.status(Proteu.HTTPStatus.Forbidden403);
+                out.json(new Values().set("result", false));
+                return;
             }
 
         }

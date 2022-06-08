@@ -196,12 +196,12 @@ public class Setup extends Base {
             );
             sequence.create("netuno_group_id");
 
-            table.create("netuno_providers",
+            table.create("netuno_provider",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(true).setDefault()
             );
-            sequence.create("netuno_providers_id");
+            sequence.create("netuno_provider_id");
 
             if(getBuilder().selectProviderByName("google").size() == 0){
                 getBuilder().insertProvider("google", "gl");
@@ -226,15 +226,16 @@ public class Setup extends Base {
             index.create("netuno_user", "group_id");
             sequence.create("netuno_user_id");
 
-                table.create("netuno_providers_user",
+            table.create("netuno_provider_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
-                    table.newColumn().setName("providers_id").setType(Column.Type.INT).setNotNull(true).setDefault()
+                    table.newColumn().setName("provider_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(true).setDefault()
             );
 
-            sequence.create("netuno_providers_user_id");
-            index.create("netuno_providers_user", "user_id");
-            index.create("netuno_providers_user", "providers_id");
+            sequence.create("netuno_provider_user_id");
+            index.create("netuno_provider_user", "user_id");
+            index.create("netuno_provider_user", "provider_id");
 
             table.create("netuno_group_rule",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),

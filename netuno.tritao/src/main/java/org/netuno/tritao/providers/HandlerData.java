@@ -1,9 +1,6 @@
 package org.netuno.tritao.providers;
 
-import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
-
 import java.util.HashMap;
 
 public class HandlerData {
