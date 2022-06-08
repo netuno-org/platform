@@ -24,7 +24,6 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.mail.SMTPTransport;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
@@ -35,9 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.netuno.tritao.openapi.Schema;
-import org.netuno.tritao.providers.google.Google;
-import org.netuno.tritao.providers.google.GoogleCallBack;
-import org.netuno.tritao.resource.Resource;
+import org.netuno.tritao.providers.HandlerProviders;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.event.EventExecutor;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -175,20 +172,11 @@ public class Service {
                 return;
             }
 
-            if (proteu.getConfig().getValues("_app:config").has("provider") && proteu.getConfig().getValues("_app:config").getValues("provider").has("google")) {
-                Values googleSetting = proteu.getConfig().getValues("_app:config").getValues("provider").getValues("google");
-                if (googleSetting.getBoolean("enable")) {
-                    Google google = new Google(googleSetting.getString("id"), googleSetting.getString("secret"), googleSetting.getString("callback"));
-                    if (service.path.equals("google")) {
-                        proteu.redirect(google.getUrlAuthenticator());
-                        return;
-                    }
-                    if (service.path.equals("google/callback")) {
-                        GoogleCallBack googleCallBack = new GoogleCallBack(service, proteu, hili, google);
-                        googleCallBack.run();
-                        return;
-                    }
-                }
+            if(service.getPath().toLowerCase().contains("_provider")){
+                HandlerProviders providers = new HandlerProviders(service, proteu, hili);
+                providers.run();
+                return;
+
             }
 
             if (!schema.validateSchemaIn()) {

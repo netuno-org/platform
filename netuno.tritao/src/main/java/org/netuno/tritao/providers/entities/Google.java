@@ -20,7 +20,7 @@
  * @author Marcel Becheanu - @marcelgbecheanu
  */
 
-package org.netuno.tritao.providers.google;
+package org.netuno.tritao.providers.entities;
 
 import org.json.JSONObject;
 import java.io.InputStream;

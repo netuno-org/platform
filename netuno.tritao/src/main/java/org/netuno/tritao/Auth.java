@@ -26,7 +26,8 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.providers.entities.UserDataProvider;
+import org.netuno.tritao.db.Builder;
+import org.netuno.tritao.providers.HandlerData;
 import org.netuno.tritao.resource.*;
 import org.netuno.tritao.util.Rule;
 
@@ -359,6 +360,84 @@ public class Auth extends WebMaster {
         return false;
     }
 
+    /*
+    *
+    * Temos conta mas não associação
+    * Temos conta e associação.
+     * Não temos conta.
+    *
+    * */
+    public static void AuthenticatorProviders(Proteu proteu, Hili hili, Req req, Header header, Out out) throws ProteuException, IOException {
+        if(req.hasKey("secret") && req.hasKey("provider")){
+            String secret = req.getString("secret"), provider = req.getString("provider");
+            boolean hasAccount = !HandlerData.hasSecret(secret);
+            Builder DBManager = Config.getDataBaseBuilder(proteu);
+
+            if(hasAccount){
+                List<Values> users = DBManager.selectUserByNonce(secret);
+                if(users.size() > 0){
+                    Values user = users.get(0);
+                    if(user.getString("nonce").equals(secret) && user.getString("nonce_generator").equals(provider)){
+                        int providerId = DBManager.selectProviderByName(provider).get(0).getInt("id");
+                        boolean isAssociate = DBManager.isAssociate(new Values().set("user", user.getString("id")).set("provider", providerId)).size() > 0;
+                        if (!isAssociate) {
+                            if (req.hasKey("password")) {
+                                if (DBManager.selectUserLogin(user.getString("user"), req.getString("password")).size() > 0) {
+                                    DBManager.associate(new Values().set("user", user.getString("id")).set("provider", providerId));
+                                    if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
+                                        header.status(Proteu.HTTPStatus.OK200);
+                                        proteu.outputJSON(
+                                                proteu.getConfig().getValues("_jwt:auth:data")
+                                        );
+                                        return;
+                                    }
+                                }
+                            }
+                            header.status(Proteu.HTTPStatus.Forbidden403);
+                            out.json(new Values().set("result", false).set("msg", "wrong_password"));
+                            return;
+                        }else{
+                            if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
+                                header.status(Proteu.HTTPStatus.OK200);
+                                proteu.outputJSON(
+                                        proteu.getConfig().getValues("_jwt:auth:data")
+                                );
+                                return;
+                            }
+                        }
+                    }else{
+                        header.status(Proteu.HTTPStatus.Forbidden403);
+                        out.json(new Values().set("result", false));
+                        return;
+                    }
+                }
+            }else {
+                Values user = HandlerData.getUser(secret);
+                user.set("user", "");
+                user.set("pass", new Random(proteu, hili).initString().next());
+                user.set("group_id", ""); //terminar aqui
+                user.set("active", true);
+                try {
+                    String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(proteu) + "/_auth_provider_params");
+                    if (scriptPath != null) {
+                        try {
+                            hili.bind("userDataProvider", user);
+                            hili.runScriptSandbox(Config.getPathAppCore(proteu), "_auth_provider_params");
+                        } finally {
+                            hili.unbind("userDataProvider");
+                            DBManager.insertUser(user);
+                        }
+                    }
+                }
+                catch (Exception ex) {
+                    logger.warn(ex.getMessage());
+                    return;
+                }
+            }
+
+        }
+    }
+
     public void run() throws IOException, ProteuException {
         Header header = resource(Header.class);
         Out out = resource(Out.class);
@@ -384,38 +463,8 @@ public class Auth extends WebMaster {
         }
 
         Credentials credentials = getCredentials(getProteu(), getHili());
-        if (req.hasKey("nonce") && !req.getString("nonce").isBlank() && !req.getString("nonce").isEmpty() && req.hasKey("provider") && req.getInt("provider") > 0) {
-            List<Values> queryUsersByNonce = Config.getDataBaseBuilder(getProteu()).selectUserByNonce(req.getString("nonce"));
-            List<Values> providers = Config.getDataBaseBuilder(getProteu()).selectProvider(req.getString("provider"));
-
-            if (queryUsersByNonce.size() > 0 && providers.size() > 0) {
-                Values userAuth = queryUsersByNonce.get(0);
-                userAuth.set("nonce", "");
-                Config.getDataBaseBuilder(getProteu()).updateUser(userAuth);
-                if (userAuth.getInt("provider_id") == req.getInt("provider")) {
-                    if (signIn(getProteu(), getHili(), userAuth, Type.JWT, profile)) {
-                        header.status(Proteu.HTTPStatus.OK200);
-                        getProteu().outputJSON(
-                                getProteu().getConfig().getValues("_jwt:auth:data")
-                        );
-                        //callScript
-                        String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(getProteu()) + "/_auth_provider_end");
-                        if (scriptPath != null) {
-                            UserDataProvider userDataProvider = new UserDataProvider(userAuth.getInt("id"), userAuth.getString("name"), userAuth.getString("name"), "Google");
-                            try {
-                                getHili().bind("userDataProvider", userDataProvider);
-                                getHili().runScriptSandbox(Config.getPathAppCore(getProteu()), "_auth_provider_end");
-                            } finally {
-                                getHili().unbind("userDataProvider");
-                            }
-                        }
-
-                        return;
-                    }
-                }
-            }
-            header.status(Proteu.HTTPStatus.Forbidden403);
-            out.json(new Values().set("result", false));
+        if (req.hasKey("secret") && req.hasKey("provider")){
+            AuthenticatorProviders(getProteu(), getHili(), req, header, out);
         } else if (credentials != null) {
             if (jwtRequest) {
                 if (signIn(getProteu(), getHili(), Type.JWT, profile)) {
