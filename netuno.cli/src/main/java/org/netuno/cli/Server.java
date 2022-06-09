@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.websocket.Decoder;
 import javax.websocket.Encoder;
@@ -247,7 +248,27 @@ public class Server implements MainArg {
             // configuring to support annotation scanning in the webapp (through
             // PlusConfiguration) to choosing where the webapp will unpack itself.
             WebAppContext webapp = new WebAppContext(Config.getWebHome(), "/");
-            
+
+            List<String> allExtraJars = new ArrayList();
+            for (String extraLib : Config.getExtraLibs()) {
+                if (!Files.exists(Path.of(extraLib))) {
+                    continue;
+                }
+                try (Stream<Path> pathStream = Files.find(
+                        Paths.get(extraLib), Integer.MAX_VALUE,
+                        (filePath, fileAttr) ->
+                                fileAttr.isRegularFile() && filePath.toString().toLowerCase().endsWith(".jar")
+                )) {
+                    pathStream.forEach((f) ->
+                            allExtraJars.add(f.toString())
+                    );
+                }
+            }
+            webapp.setExtraClasspath(
+                    allExtraJars.stream()
+                            .collect(Collectors.joining(";"))
+            );
+
             if (Config.getSessionsFolder() != null && !Config.getSessionsFolder().isEmpty()) {
                 File sessionsFolder = new File(Config.getSessionsFolder());
                 sessionsFolder.mkdirs();

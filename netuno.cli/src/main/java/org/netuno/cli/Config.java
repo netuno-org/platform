@@ -32,8 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Manage global configurations.
@@ -46,12 +46,6 @@ public final class Config {
     public static final String VERSION = "7";
 
     public static final String OS = System.getProperty("os.name").toLowerCase();
-
-    static {
-        List<String> permittedLanguages = new ArrayList<>();
-        permittedLanguages.add("js");
-        setPermittedLanguages(permittedLanguages);
-    }
 
     /**
      * Configuration.
@@ -127,7 +121,9 @@ public final class Config {
      */
     public static int maxMemory = 10 * (1024 * 1024);
 
-    public static List<String> permittedLanguages = new ArrayList<>();
+    public static List<String> extraLibs = new ArrayList<>(Arrays.asList("lib"));
+
+    public static List<String> permittedLanguages = new ArrayList<>(Arrays.asList("js"));
 
     /**
      * Download Default Cache
@@ -335,6 +331,14 @@ public final class Config {
 
     public static void setMaxMemory(int maxMemory) {
         Config.maxMemory = maxMemory;
+    }
+
+    public static List<String> getExtraLibs() {
+        return Config.extraLibs;
+    }
+
+    public static void setExtraLibs(List<String> extraLibs) {
+        Config.extraLibs = extraLibs;
     }
 
     public static List<String> getPermittedLanguages() {
