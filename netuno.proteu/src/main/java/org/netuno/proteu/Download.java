@@ -28,6 +28,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.psamata.io.Buffer;
+import org.netuno.psamata.io.MimeTypes;
 
 /**
  * Download files.
@@ -145,11 +146,9 @@ public class Download {
                 String extension = FilenameUtils.getExtension(file.getName());
                 if (extension != null && !extension.isEmpty()) {
                     proteu.getResponseHeader().set("Content-Type", Config.getMimeTypes().search(extension, ","));
-                    for (String key : proteu.getMimeTypes().keys()) {
-                        if (extension.toLowerCase().equals(key.toLowerCase())) {
-                            proteu.getResponseHeader().set("Content-Type", proteu.getMimeTypes().getString(key));
-                            break;
-                        }
+                    String extensionMimeType = MimeTypes.getMimeTypeFromExtension(extension);
+                    if (!extensionMimeType.isEmpty()) {
+                        proteu.getResponseHeader().set("Content-Type", extensionMimeType);
                     }
                     if (proteu.getGZipExtensions().contains(extension)) {
                         proteu.getResponseHeader().set("Content-Encoding", "gzip");
