@@ -85,6 +85,10 @@ public class ComponentBase implements Component {
         return hili;
     }
 
+    protected<T> T resource(Class<T> resourceClass) {
+        return getHili().resource(resourceClass);
+    }
+
     @Override
     public Component setProteu(Proteu proteu) {
         this.proteu = proteu;
