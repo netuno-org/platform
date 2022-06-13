@@ -25,6 +25,7 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.library.doc.LanguageDoc;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
@@ -44,6 +45,7 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
+import org.netuno.psamata.io.MimeTypes;
 import org.netuno.psamata.script.GraalRunner;
 
 /**
@@ -1342,7 +1344,34 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      */
     public final org.netuno.psamata.io.File getFile(final String key) {
         try {
-            return (org.netuno.psamata.io.File)get(key);
+            Object value = get(key);
+            if (value instanceof org.netuno.psamata.io.File) {
+                return (org.netuno.psamata.io.File)value;
+            } else if (value instanceof String) {
+                String content = getString(key);
+                if (content.startsWith("data:")) {
+                    int colonPosition = content.indexOf(':');
+                    int semicolonPosition = content.indexOf(';');
+                    int commaPosition = content.indexOf(',');
+                    if (colonPosition > 0
+                            && semicolonPosition > colonPosition
+                            && commaPosition > semicolonPosition
+                            && commaPosition < content.length() - 1) {
+                        String mimeType = content.substring(colonPosition + 1, semicolonPosition);
+                        String encoding = content.substring(semicolonPosition + 1, commaPosition);
+                        if (encoding.equalsIgnoreCase("base64")) {
+                            String fileName = key +"."+ MimeTypes.getExtensionFromMimeType(mimeType);
+                            byte[] bytes = Base64.getDecoder().decode(content.substring(commaPosition + 1));
+                            org.netuno.psamata.io.File file = new org.netuno.psamata.io.File(fileName, mimeType, new ByteArrayInputStream(bytes));
+                            if (!jail.isEmpty()) {
+                                file.ensureJail(jail);
+                            }
+                            return file;
+                        }
+                    }
+                }
+            }
+            return null;
         } catch (Exception e) {
             return null;
         }
