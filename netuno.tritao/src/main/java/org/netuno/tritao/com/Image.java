@@ -31,6 +31,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.resource.Convert;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -181,14 +182,16 @@ public class Image extends ComponentBase {
 
     public Component onSave() {
         String requestName = getValuesPrefix().concat(getDesignData().getString("name"));
-        if (getValues().hasKey(requestName + ":value")
-                || (getValues().hasKey(requestName) && getValues().getFile(requestName) != null)) {
-            try {
-                org.netuno.psamata.io.File file = null;
+        if ((getValues().hasKey(requestName + ":value") || getValues().hasKey(requestName))
+                && !getValues().getString(requestName + ":null").equals("true")) {
+            org.netuno.psamata.io.File file = null;
+            if (getValues().getFile(requestName) != null) {
                 if (getValues().get(requestName) instanceof org.netuno.psamata.io.File) {
                     file = (org.netuno.psamata.io.File) getValues().get(requestName);
                 }
-                if (file != null && file.available() > 0 && !getValues().getString(requestName + ":null").equals("true")) {
+            }
+            if (file != null && file.available() > 0) {
+                try {
                     String tableName = getTableData().getString("name");
                     String fieldName = getDesignData().getString("name");
                     String oldValue = "";
@@ -249,9 +252,9 @@ public class Image extends ComponentBase {
                     getValues().set(requestName + ":value", fileName);
                     getValues().set(requestName + ":new", fileName);
                     getValues().set(requestName + ":path", fileFullName);
+                } catch (IOException e) {
+                    throw new Error(e);
                 }
-            } catch (IOException e) {
-                throw new Error(e);
             }
         }
         return this;
