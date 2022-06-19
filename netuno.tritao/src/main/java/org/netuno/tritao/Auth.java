@@ -27,7 +27,6 @@ import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.db.Builder;
-import org.netuno.tritao.providers.HandlerData;
 import org.netuno.tritao.resource.*;
 import org.netuno.tritao.util.Rule;
 
@@ -363,8 +362,8 @@ public class Auth extends WebMaster {
     public static void AuthenticatorProviders(Proteu proteu, Hili hili, Req req, Header header, Out out) throws ProteuException, IOException {
         if(req.hasKey("secret") && req.hasKey("provider")){
             String secret = req.getString("secret"), provider = req.getString("provider");
-            boolean hasAccount = !HandlerData.hasSecret(secret);
             Builder DBManager = Config.getDataBaseBuilder(proteu);
+            boolean hasAccount = DBManager.getUserDataProvider(secret).size() < 1;
 
             if(hasAccount){
                 List<Values> users = DBManager.selectUserByNonce(secret);
@@ -405,27 +404,12 @@ public class Auth extends WebMaster {
                     }
                 }
             } else {
-                Values user = HandlerData.getUser(secret);
-                user.set("user", "");
-                user.set("pass", new Random(proteu, hili).initString().next());
+                Values user = DBManager.getUserDataProvider(secret);
+
+                user.set("user", );
+                user.set("pass", );
                 user.set("group_id", ""); //terminar aqui
                 user.set("active", true);
-                try {
-                    String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(proteu) + "/_auth_provider_params");
-                    if (scriptPath != null) {
-                        try {
-                            hili.bind("userDataProvider", user);
-                            hili.runScriptSandbox(Config.getPathAppCore(proteu), "_auth_provider_params");
-                        } finally {
-                            hili.unbind("userDataProvider");
-                            DBManager.insertUser(user);
-                        }
-                    }
-                }
-                catch (Exception ex) {
-                    logger.warn(ex.getMessage());
-                    return;
-                }
                 if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
                     header.status(Proteu.HTTPStatus.OK200);
                     proteu.outputJSON(

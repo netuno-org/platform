@@ -1,5 +1,6 @@
 package org.netuno.tritao.providers;
 
+import jakarta.json.Json;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -59,12 +60,13 @@ public class HandlerProviders extends WebMaster {
                     Values userData = new Values();
                     userData.put("name", user.get("name"));
                     userData.put("email", user.get("email"));
-                    callBack("google", googleSetting.getString("redirect"), userData);
+                    userData.put("secret", user.get("id"));
+                    callBack("google", googleSetting.getString("redirect"), userData, user);
                 }
             }
         }
     }
-    public void callBack(String provider, String redirect, Values data){
+    public void callBack(String provider, String redirect, Values data, JSONObject providerData){
         if (!data.has("email")) {
             //TODO: RUN ERROR
             return;
@@ -74,18 +76,20 @@ public class HandlerProviders extends WebMaster {
         Builder DBManager = Config.getDataBaseBuilder(proteu);
         List<Values> users = DBManager.selectUserByEmail(data.getString("email"));
         if (users.size() == 0) {
-            //TODO: CHECK BY OLD TRY
-            HandlerData.addPendingRegister(secret, data);
-            getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&hasAccount=false&associate=false");
-        } else {
+            DBManager.clearOldUserDataProvider(data.getString("secret"));
+            DBManager.insertUserDataProvider(
+                    new Values().set("nonce", secret).set("data", providerData.toString())
+            );
+            getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=true");
+        } /*else {
             int idProvider = DBManager.selectProviderByName(provider).get(0).getInt("id");
             boolean isAssociate = DBManager.isAssociate(new Values().set("provider", idProvider).set("user", users.get(0).get("id"))).size() > 0;
             Values user = users.get(0);
             user.set("nonce", secret);
             user.set("nonce_generator", provider);
             DBManager.updateUser(user);
-            getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&hasAccount=true&associate="+isAssociate);
-        }
+            getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=false&associate="+isAssociate);
+        }*/
     }
 
 }

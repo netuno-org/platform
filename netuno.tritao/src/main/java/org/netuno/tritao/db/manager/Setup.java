@@ -237,6 +237,14 @@ public class Setup extends Base {
             index.create("netuno_provider_user", "user_id");
             index.create("netuno_provider_user", "provider_id");
 
+            table.create("netuno_provider_data",
+                    table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
+                    table.newColumn().setName("nonce").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
+                    table.newColumn().setName("data").setType(Column.Type.TEXT).setNotNull(true).setDefault()
+            );
+            sequence.create("netuno_provider_data_id");
+
+
             table.create("netuno_group_rule",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),

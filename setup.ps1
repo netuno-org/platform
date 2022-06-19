@@ -145,7 +145,7 @@ do
             Write-Host " Downloading..." -ForegroundColor red
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             $WebClient = New-Object System.Net.WebClient
-            $WebClient.DownloadFile("https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.zip", "$PSScriptRoot\maven.zip")
+            $WebClient.DownloadFile("https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip", "$PSScriptRoot\maven.zip")
             Write-Host " Download Complete." -ForegroundColor green
             
             Write-Host ""

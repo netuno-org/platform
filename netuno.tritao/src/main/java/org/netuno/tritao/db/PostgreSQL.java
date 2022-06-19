@@ -230,6 +230,26 @@ public class PostgreSQL implements Builder {
         return coreBusiness.deleteUser(id);
     }
 
+    public void clearOldUserDataProvider(String secret) {
+       coreBusiness.clearOldUserDataProvider(secret);
+    }
+
+    public int insertUserDataProvider(Values values) {
+        return coreBusiness.insertUserDataProvider(values);
+    }
+
+    public Values getUserDataProviderByID(String id) {
+        return coreBusiness.getUserDataProviderByID(id);
+    }
+
+    public Values getUserDataProvider(String nonce) {
+        return coreBusiness.getUserDataProvider(nonce);
+    }
+
+    public boolean deleteUserDataProvider(String id) {
+        return coreBusiness.deleteUserDataProvider(id);
+    }
+
     public List<Values> isAssociate(Values values){
         return coreBusiness.isAssociate(values);
     }

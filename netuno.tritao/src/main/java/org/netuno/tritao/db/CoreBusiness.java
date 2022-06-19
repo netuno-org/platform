@@ -508,6 +508,95 @@ public class CoreBusiness extends Base {
 
 
 
+    //DATA PROVIDER
+
+    //ADD DATA
+    public int insertUserDataProvider(Values values) {
+        DataItem dataItem = new DataItem(getProteu(), "0", "");
+        dataItem.setTable("netuno_provider_data");
+        dataItem.setValues(values);
+        dataItem.setStatus(DataItem.Status.Insert);
+        getManager().scriptSave(getProteu(), getHili(), "netuno_provider_data", dataItem);
+        if (dataItem.isStatusAsError()) {
+            return 0;
+        }
+        Values data = new Values();
+
+        if (values.hasKey("nonce")) {
+            data.set("nonce", "'" + DB.sqlInjection(values.getString("nonce")) + "'");
+        }
+
+        if (values.hasKey("data")) {
+            data.set("data", "'" + DB.sqlInjection(values.getString("data")) + "'");
+        }
+
+        int id = insertInto("netuno_provider_data", data);
+        Values record = getUserDataProviderByID("" + id);
+        dataItem.setRecord(getUserDataProviderByID("" + id));
+        dataItem.setStatus(DataItem.Status.Inserted);
+        dataItem.setId(record.getString("id"));
+        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider_data", dataItem);
+        return id;
+    }
+
+    public Values getUserDataProviderByID(String id) {
+        if (id.isEmpty() || id.equals("0")) {
+            return null;
+        }
+        String select = " * ";
+        String from = " netuno_provider_data ";
+        String where = "where 1 = 1 ";
+        if (!id.equals("")) {
+            where += " and id = '" + DB.sqlInjectionInt(id) + "'";
+        }
+        String sql = "select " + select + " from " + from + where;
+        List<Values> rows = getManager().query(sql);
+        if (rows.size() > 0) {
+            return rows.get(0);
+        }
+        return null;
+    }
+    public Values getUserDataProvider(String nonce) {
+        if (nonce.isEmpty() || nonce.equals("0")) {
+            return null;
+        }
+        String select = " * ";
+        String from = " netuno_provider_data ";
+        String where = "where 1 = 1 ";
+        if (!nonce.equals("")) {
+            where += " and nonce = '" + DB.sqlInjection(nonce) + "'";
+        }
+        String sql = "select " + select + " from " + from + where;
+        List<Values> rows = getManager().query(sql);
+        if (rows.size() > 0) {
+            return rows.get(0);
+        }
+        return null;
+    }
+    public void clearOldUserDataProvider(String secret){
+        getManager().execute("DELETE FROM netuno_provider_data where data LIKE '%" + secret + "%'");
+    }
+    public boolean deleteUserDataProvider(String id){
+        id = "" + DB.sqlInjectionInt(id);
+        Values dataRecord = getUserDataProviderByID(id);
+        if (dataRecord == null) {
+            return false;
+        }
+
+        DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
+        dataItem.setTable("netuno_provider_data");
+        dataItem.setRecord(dataRecord);
+        dataItem.setStatus(DataItem.Status.Delete);
+        getManager().scriptRemove(getProteu(), getHili(), "netuno_provider_data", dataItem);
+        if (dataItem.isStatusAsError()) {
+            return false;
+        }
+        getManager().execute("delete from netuno_provider_data where id = " + id);
+        dataItem.setStatus(DataItem.Status.Deleted);
+        getManager().scriptRemoved(getProteu(), getHili(), "netuno_provider_data", dataItem);
+        return true;
+    }
+
     public Values getProviderById(String id) {
         if (id.isEmpty() || id.equals("0")) {
             return null;
@@ -521,20 +610,21 @@ public class CoreBusiness extends Base {
 
     public List<Values> isAssociate(Values values){
         String select = " * ";
-        String from = " netuno_providers_user ";
+        String from = " netuno_provider_user ";
         String where = "where user_id = '" + DB.sqlInjectionInt(values.getString("user")) + "'";
         where += " AND providers_id = '" + DB.sqlInjectionInt(values.getString("provider")) + "'";
+        where += " AND code = '" + DB.sqlInjection(values.getString("code")) + "'";
+
         String sql = "select " + select + " from " + from + where;
         return getManager().query(sql);
     }
-
 
     public Values getAssociateById(String id) {
         if (id.isEmpty() || id.equals("0")) {
             return null;
         }
         String select = " * ";
-        String from = " netuno_providers_user ";
+        String from = " netuno_provider_user ";
         String where = "where 1 = 1 ";
         if (!id.isEmpty()) {
             where += " and id = '" + DB.sqlInjection(id) + "'";
@@ -548,12 +638,11 @@ public class CoreBusiness extends Base {
     }
 
     public int associate(Values values){
-
         DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_providers_user");
+        dataItem.setTable("netuno_provider_user");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_providers_user", dataItem);
+        getManager().scriptSave(getProteu(), getHili(), "netuno_provider_user", dataItem);
 
         if (dataItem.isStatusAsError()) {
             return 0;
@@ -568,12 +657,16 @@ public class CoreBusiness extends Base {
             data.set("providers_id", "'" + DB.sqlInjectionInt(values.getString("provider")) + "'");
         }
 
-        int id = insertInto("netuno_providers_user", data);
+        if (values.hasKey("code")) {
+            data.set("code", "'" + DB.sqlInjection(values.getString("code")) + "'");
+        }
+
+        int id = insertInto("netuno_provider_user", data);
         Values record = isAssociate(values).get(0);
         dataItem.setRecord(isAssociate(values).get(0));
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_providers_user", dataItem);
+        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider_user", dataItem);
         return id;
     }
 
@@ -585,16 +678,16 @@ public class CoreBusiness extends Base {
         }
 
         DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
-        dataItem.setTable("netuno_providers_user");
+        dataItem.setTable("netuno_provider_user");
         dataItem.setRecord(dataRecord);
         dataItem.setStatus(DataItem.Status.Delete);
-        getManager().scriptRemove(getProteu(), getHili(), "netuno_providers_user", dataItem);
+        getManager().scriptRemove(getProteu(), getHili(), "netuno_provider_user", dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
-        getManager().execute("delete from netuno_providers_user where id = " + id);
+        getManager().execute("delete from netuno_provider_user where id = " + id);
         dataItem.setStatus(DataItem.Status.Deleted);
-        getManager().scriptRemoved(getProteu(), getHili(), "netuno_providers_user", dataItem);
+        getManager().scriptRemoved(getProteu(), getHili(), "netuno_provider_user", dataItem);
         return true;
     }
 

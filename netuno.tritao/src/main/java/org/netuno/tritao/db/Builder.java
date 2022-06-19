@@ -105,10 +105,22 @@ public interface Builder {
 
     boolean deleteUser(String id);
 
+    void clearOldUserDataProvider(String secret);
+
+    int insertUserDataProvider(Values values);
+
+    Values getUserDataProviderByID(String id);
+
+    Values getUserDataProvider(String nonce);
+
+    boolean deleteUserDataProvider(String id);
 
     List<Values> isAssociate(Values values);
+
     Values getAssociateById(String id);
+
     int associate(Values values);
+
     boolean disassociate(String id);
 
     List<Values> selectProviderByName(String provider_name);
