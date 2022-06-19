@@ -645,8 +645,13 @@ public class Remote {
                 Values responseHeader = new Values();
                 HttpHeaders headers = clientRequestResponse.headers();
                 headers.map().forEach((key, value) -> {
-                    responseHeader.set(key, value);
+                    if (value.size() == 1) {
+                        responseHeader.set(key, value.get(0));
+                    } else if (value.size() > 1) {
+                        responseHeader.set(key, value);
+                    }
                 });
+                response.setHeader(responseHeader);
 
                 if (statusCode == 301 && isFollowRedirects() && responseHeader.hasKey("Location")) {
                     return submit(method, responseHeader.getString("Location"), qs, contentType, dataReady, data);
