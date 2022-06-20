@@ -612,7 +612,7 @@ public class CoreBusiness extends Base {
         String select = " * ";
         String from = " netuno_provider_user ";
         String where = "where user_id = '" + DB.sqlInjectionInt(values.getString("user")) + "'";
-        where += " AND providers_id = '" + DB.sqlInjectionInt(values.getString("provider")) + "'";
+        where += " AND provider_id = '" + DB.sqlInjectionInt(values.getString("provider")) + "'";
         where += " AND code = '" + DB.sqlInjection(values.getString("code")) + "'";
 
         String sql = "select " + select + " from " + from + where;
@@ -654,7 +654,7 @@ public class CoreBusiness extends Base {
         }
 
         if (values.hasKey("provider")) {
-            data.set("providers_id", "'" + DB.sqlInjectionInt(values.getString("provider")) + "'");
+            data.set("provider_id", "'" + DB.sqlInjectionInt(values.getString("provider")) + "'");
         }
 
         if (values.hasKey("code")) {
@@ -694,7 +694,7 @@ public class CoreBusiness extends Base {
 
     public List<Values> selectProviderByName(String provider_name) {
         String select = " * ";
-        String from = " netuno_providers ";
+        String from = " netuno_provider ";
         String where = "where name = '" + DB.sqlInjection(provider_name) + "'";
 
         String order = " order by name ";
@@ -704,7 +704,7 @@ public class CoreBusiness extends Base {
 
     public List<Values> selectProvider(String provider_id) {
         String select = " * ";
-        String from = " netuno_providers ";
+        String from = " netuno_provider ";
         String where = "where id = " + DB.sqlInjectionInt(provider_id);
 
         String order = " order by name ";
@@ -726,16 +726,16 @@ public class CoreBusiness extends Base {
         }
 
         DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
-        dataItem.setTable("netuno_providers");
+        dataItem.setTable("netuno_provider");
         dataItem.setRecord(dataRecord);
         dataItem.setStatus(DataItem.Status.Delete);
-        getManager().scriptRemove(getProteu(), getHili(), "netuno_providers", dataItem);
+        getManager().scriptRemove(getProteu(), getHili(), "netuno_provider", dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
-        getManager().execute("delete from netuno_providers where id = " + id);
+        getManager().execute("delete from netuno_provider where id = " + id);
         dataItem.setStatus(DataItem.Status.Deleted);
-        getManager().scriptRemoved(getProteu(), getHili(), "netuno_providers", dataItem);
+        getManager().scriptRemoved(getProteu(), getHili(), "netuno_provider", dataItem);
         return true;
     }
 
@@ -745,10 +745,10 @@ public class CoreBusiness extends Base {
         }
 
         DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_providers");
+        dataItem.setTable("netuno_provider");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_providers", dataItem);
+        getManager().scriptSave(getProteu(), getHili(), "netuno_provider", dataItem);
 
         if (dataItem.isStatusAsError()) {
             return 0;
@@ -763,12 +763,12 @@ public class CoreBusiness extends Base {
             data.set("code", "'" + DB.sqlInjection(values.getString("code")) + "'");
         }
 
-        int id = insertInto("netuno_providers", data);
+        int id = insertInto("netuno_provider", data);
         Values record = getProviderById("" + id);
         dataItem.setRecord(getProviderById("" + id));
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_providers", dataItem);
+        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider", dataItem);
         return id;
     }
     public List<Values> selectGroupOther(String id, String name) {

@@ -416,6 +416,12 @@ public class Auth extends WebMaster {
                 user.set("active", true);
                 int id = DBManager.insertUser(user);
                 Values values = DBManager.getUserById(id + "");
+                DBManager.associate(
+                        new Values()
+                                .set("user", id)
+                                .set("provider", DBManager.selectProviderByName(jsonData.getString("provider")).get(0).getString("id"))
+                                .set("code", jsonData.getString("secret"))
+                );
                 DBManager.clearOldUserDataProvider(jsonData.getString("id"));
                 if (signIn(proteu, hili, values, Type.JWT, Profile.ALL)) {
                     header.status(Proteu.HTTPStatus.OK200);

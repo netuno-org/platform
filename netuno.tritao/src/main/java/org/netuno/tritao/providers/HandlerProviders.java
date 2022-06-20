@@ -62,6 +62,7 @@ public class HandlerProviders extends WebMaster {
                     userData.put("name", user.get("name"));
                     userData.put("email", user.get("email"));
                     userData.put("picture", user.get("picture"));
+                    userData.put("provider", "google");
                     userData.put("secret", user.get("id"));
                     callBack("google", googleSetting.getString("redirect"), userData);
                 }
@@ -77,19 +78,27 @@ public class HandlerProviders extends WebMaster {
         String secret = UUID.randomUUID().toString();
         Builder DBManager = Config.getDataBaseBuilder(proteu);
         List<Values> users = DBManager.selectUserByEmail(data.getString("email"));
-        if (users.size() == 0) {
+        if (users.size() == 0) { // -> This part is finish
             DBManager.clearOldUserDataProvider(data.getString("secret"));
             DBManager.insertUserDataProvider(
                     new Values().set("nonce", secret).set("data", data.toJSON())
             );
             getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=true");
-        } else {
+        } else { // -> working here
             int idProvider = DBManager.selectProviderByName(provider).get(0).getInt("id");
-            boolean isAssociate = DBManager.isAssociate(new Values().set("provider", idProvider).set("user", users.get(0).get("id"))).size() > 0;
+            boolean isAssociate =
+                    DBManager.isAssociate(
+                        new Values()
+                                .set("provider", idProvider)
+                                .set("user", users.get(0).get("id"))
+                                .set("code", data.getString("secret"))
+                    ).size() > 0;
+
             Values user = users.get(0);
             user.set("nonce", secret);
             user.set("nonce_generator", provider);
             DBManager.updateUser(user);
+
             getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=false&associate="+isAssociate);
         }
     }
