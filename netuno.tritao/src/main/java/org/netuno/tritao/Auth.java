@@ -19,6 +19,7 @@ package org.netuno.tritao;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.proteu._Web;
@@ -404,12 +405,19 @@ public class Auth extends WebMaster {
                     }
                 }
             } else {
-                Values user = DBManager.getUserDataProvider(secret);
-
-                user.set("user", );
-                user.set("pass", );
-                user.set("group_id", ""); //terminar aqui
+                System.out.println("teste 123453222");
+                JSONObject jsonData = new JSONObject(DBManager.getUserDataProvider(secret).getString("data"));
+                Values user = new Values();
+                user.set("name", jsonData.getString("name"));
+                user.set("mail", jsonData.getString("email"));
+                user.set("user", req.getString("user"));
+                user.set("pass", req.getString("pass"));
+                user.set("group_id", ""); //TODO: terminar aqui
                 user.set("active", true);
+                DBManager.insertUser(user);
+                DBManager.clearOldUserDataProvider(jsonData.getString("id"));
+
+
                 if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
                     header.status(Proteu.HTTPStatus.OK200);
                     proteu.outputJSON(

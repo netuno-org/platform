@@ -58,15 +58,17 @@ public class HandlerProviders extends WebMaster {
                     }
                     JSONObject user = google.getUserDetails(accessTokens);
                     Values userData = new Values();
+                    userData.put("id", user.get("id"));
                     userData.put("name", user.get("name"));
                     userData.put("email", user.get("email"));
+                    userData.put("picture", user.get("picture"));
                     userData.put("secret", user.get("id"));
-                    callBack("google", googleSetting.getString("redirect"), userData, user);
+                    callBack("google", googleSetting.getString("redirect"), userData);
                 }
             }
         }
     }
-    public void callBack(String provider, String redirect, Values data, JSONObject providerData){
+    public void callBack(String provider, String redirect, Values data){
         if (!data.has("email")) {
             //TODO: RUN ERROR
             return;
@@ -78,7 +80,7 @@ public class HandlerProviders extends WebMaster {
         if (users.size() == 0) {
             DBManager.clearOldUserDataProvider(data.getString("secret"));
             DBManager.insertUserDataProvider(
-                    new Values().set("nonce", secret).set("data", providerData.toString())
+                    new Values().set("nonce", secret).set("data", data.toJSON())
             );
             getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=true");
         } /*else {
