@@ -77,15 +77,18 @@ public class HandlerProviders extends WebMaster {
 
         String secret = UUID.randomUUID().toString();
         Builder DBManager = Config.getDataBaseBuilder(proteu);
+
+        DBManager.clearOldUserDataProvider(data.getString("secret"));
+        DBManager.insertUserDataProvider(
+                new Values().set("nonce", secret).set("data", data.toJSON())
+        );
+
         List<Values> users = DBManager.selectUserByEmail(data.getString("email"));
-        if (users.size() == 0) { // -> This part is finish
-            DBManager.clearOldUserDataProvider(data.getString("secret"));
-            DBManager.insertUserDataProvider(
-                    new Values().set("nonce", secret).set("data", data.toJSON())
-            );
+        if (users.size() == 0) {
             getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=true");
-        } else { // -> working here
+        } else {
             int idProvider = DBManager.selectProviderByName(provider).get(0).getInt("id");
+
             boolean isAssociate =
                     DBManager.isAssociate(
                         new Values()

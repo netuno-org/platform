@@ -364,49 +364,92 @@ public class Auth extends WebMaster {
         if(req.hasKey("secret") && req.hasKey("provider")){
             String secret = req.getString("secret"), provider = req.getString("provider");
             Builder DBManager = Config.getDataBaseBuilder(proteu);
-            boolean hasAccount = DBManager.getUserDataProvider(secret).size() < 1;
 
-            if(hasAccount){
-                List<Values> users = DBManager.selectUserByNonce(secret);
-                if(users.size() > 0){
-                    Values user = users.get(0);
-                    if(user.getString("nonce").equals(secret) && user.getString("nonce_generator").equals(provider)){
-                        int providerId = DBManager.selectProviderByName(provider).get(0).getInt("id");
-                        boolean isAssociate = DBManager.isAssociate(new Values().set("user", user.getString("id")).set("provider", providerId)).size() > 0;
-                        if (!isAssociate) {
-                            if (req.hasKey("password")) {
-                                if (DBManager.selectUserLogin(user.getString("user"), req.getString("password")).size() > 0) {
-                                    DBManager.associate(new Values().set("user", user.getString("id")).set("provider", providerId));
-                                    if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
-                                        header.status(Proteu.HTTPStatus.OK200);
-                                        proteu.outputJSON(
-                                                proteu.getConfig().getValues("_jwt:auth:data")
-                                        );
-                                        return;
-                                    }
-                                }
-                            }
-                            header.status(Proteu.HTTPStatus.Forbidden403);
-                            out.json(new Values().set("result", false).set("msg", "wrong_password"));
+            Values userDataProvider = DBManager.getUserDataProvider(secret);
+            if (userDataProvider == null) {
+                header.status(Proteu.HTTPStatus.Forbidden403);
+                out.json(
+                        new Values()
+                                .set("result", false)
+                                .set("errors",
+                                        new Values()
+                                                .set("Secret", "is invalid.")
+                                )
+                );
+                return;
+            }
+
+            JSONObject jsonData = new JSONObject(userDataProvider.getString("data"));
+            List<Values> users = DBManager.selectUserByEmail(jsonData.getString("email"));
+
+            if (users.size() > 0) { // -> Processo de logar
+                Values user = users.get(0);
+                if (user.getString("nonce").equals(secret) && user.getString("nonce_generator").equals(provider)) {
+
+                    int providerId = DBManager.selectProviderByName(jsonData.getString("provider")).get(0).getInt("id");
+                    boolean isAssociated = DBManager.isAssociate(
+                            new Values()
+                                    .set("user", user.getString("id"))
+                                    .set("provider", providerId)
+                                    .set("code", jsonData.getString("secret"))
+                    ).size() > 0;
+
+                    if (isAssociated) {
+                        if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
+                            header.status(Proteu.HTTPStatus.OK200);
+                            proteu.outputJSON(
+                                    proteu.getConfig().getValues("_jwt:auth:data")
+                            );
                             return;
-                        } else {
-                            if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
-                                header.status(Proteu.HTTPStatus.OK200);
-                                proteu.outputJSON(
-                                        proteu.getConfig().getValues("_jwt:auth:data")
-                                );
-                                return;
-                            }
                         }
                     } else {
+                        if (req.hasKey("password")) {
+                            if (DBManager.selectUserLogin(user.getString("user"), req.getString("password")).size() > 0) {
+                                DBManager.associate(
+                                        new Values()
+                                                .set("user", user.getString("id"))
+                                                .set("provider", providerId)
+                                                .set("code", jsonData.getString("secret"))
+                                );
+                                if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
+                                    header.status(Proteu.HTTPStatus.OK200);
+                                    proteu.outputJSON(
+                                            proteu.getConfig().getValues("_jwt:auth:data")
+                                    );
+                                    return;
+                                }
+                            }
+                        }
                         header.status(Proteu.HTTPStatus.Forbidden403);
-                        out.json(new Values().set("result", false));
+                        out.json(
+                                new Values()
+                                        .set("result", false)
+                                        .set("errors",
+                                                new Values()
+                                                        .set("password", "wrong password.")
+                                        )
+                        );
                         return;
                     }
+                } else {
+                    header.status(Proteu.HTTPStatus.Forbidden403);
+                    out.json(new Values().set("result", false));
+                    return;
                 }
-            } else {
+            } else { // -> Processo de Criar a conta. - Finalisado.
+                if (DBManager.getUser(req.getString("user")).size() > 0) {
+                    header.status(Proteu.HTTPStatus.BadRequest400);
+                    out.json(
+                            new Values()
+                                    .set("result", false)
+                                    .set("errors",
+                                            new Values()
+                                                    .set("username", "already exist.")
+                                    )
+                    );
+                    return;
+                }
                 String group = proteu.getConfig().getValues("_app:config").getValues("provider").getString("default_group");
-                JSONObject jsonData = new JSONObject(DBManager.getUserDataProvider(secret).getString("data"));
                 Values user = new Values();
                 user.set("name", jsonData.getString("name"));
                 user.set("mail", jsonData.getString("email"));
@@ -434,7 +477,6 @@ public class Auth extends WebMaster {
                 out.json(new Values().set("result", false));
                 return;
             }
-
         }
     }
 
