@@ -382,10 +382,9 @@ public class Auth extends WebMaster {
             JSONObject jsonData = new JSONObject(userDataProvider.getString("data"));
             List<Values> users = DBManager.selectUserByEmail(jsonData.getString("email"));
 
-            if (users.size() > 0) { // -> Processo de logar
+            if (users.size() > 0) {
                 Values user = users.get(0);
                 if (user.getString("nonce").equals(secret) && user.getString("nonce_generator").equals(provider)) {
-
                     int providerId = DBManager.selectProviderByName(jsonData.getString("provider")).get(0).getInt("id");
                     boolean isAssociated = DBManager.isAssociate(
                             new Values()
@@ -393,8 +392,11 @@ public class Auth extends WebMaster {
                                     .set("provider", providerId)
                                     .set("code", jsonData.getString("secret"))
                     ).size() > 0;
-
                     if (isAssociated) {
+                        DBManager.clearOldUserDataProvider(jsonData.getString("id"));
+                        user.set("nonce", "");
+                        user.set("nonce_generator", "");
+                        DBManager.updateUser(user);
                         if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
                             header.status(Proteu.HTTPStatus.OK200);
                             proteu.outputJSON(
@@ -404,13 +406,18 @@ public class Auth extends WebMaster {
                         }
                     } else {
                         if (req.hasKey("password")) {
-                            if (DBManager.selectUserLogin(user.getString("user"), req.getString("password")).size() > 0) {
+                            String passwordEncrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), req.getString("password"));
+                            if (DBManager.selectUserLogin(user.getString("user"), passwordEncrypted).size() > 0) {
                                 DBManager.associate(
                                         new Values()
                                                 .set("user", user.getString("id"))
                                                 .set("provider", providerId)
                                                 .set("code", jsonData.getString("secret"))
                                 );
+                                DBManager.clearOldUserDataProvider(jsonData.getString("id"));
+                                user.set("nonce", "");
+                                user.set("nonce_generator", "");
+                                DBManager.updateUser(user);
                                 if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
                                     header.status(Proteu.HTTPStatus.OK200);
                                     proteu.outputJSON(
@@ -437,7 +444,7 @@ public class Auth extends WebMaster {
                     return;
                 }
             } else { // -> Processo de Criar a conta. - Finalisado.
-                if (DBManager.getUser(req.getString("user")).size() > 0) {
+                if (DBManager.getUser(req.getString("user")) != null) {
                     header.status(Proteu.HTTPStatus.BadRequest400);
                     out.json(
                             new Values()
@@ -450,13 +457,15 @@ public class Auth extends WebMaster {
                     return;
                 }
                 String group = proteu.getConfig().getValues("_app:config").getValues("provider").getString("default_group");
+                String passwordEncrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, req.getString("user"), req.getString("pass"));
                 Values user = new Values();
                 user.set("name", jsonData.getString("name"));
                 user.set("mail", jsonData.getString("email"));
                 user.set("user", req.getString("user"));
-                user.set("pass", req.getString("pass"));
+                user.set("pass", passwordEncrypted);
                 user.set("group_id", DBManager.selectGroupOther("", group).get(0).getInt("id"));
                 user.set("active", true);
+
                 int id = DBManager.insertUser(user);
                 Values values = DBManager.getUserById(id + "");
                 DBManager.associate(
