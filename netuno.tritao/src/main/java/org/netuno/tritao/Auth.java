@@ -405,20 +405,19 @@ public class Auth extends WebMaster {
                     }
                 }
             } else {
-                System.out.println("teste 123453222");
+                String group = proteu.getConfig().getValues("_app:config").getValues("provider").getString("default_group");
                 JSONObject jsonData = new JSONObject(DBManager.getUserDataProvider(secret).getString("data"));
                 Values user = new Values();
                 user.set("name", jsonData.getString("name"));
                 user.set("mail", jsonData.getString("email"));
                 user.set("user", req.getString("user"));
                 user.set("pass", req.getString("pass"));
-                user.set("group_id", ""); //TODO: terminar aqui
+                user.set("group_id", DBManager.selectGroupOther("", group).get(0).getInt("id"));
                 user.set("active", true);
-                DBManager.insertUser(user);
+                int id = DBManager.insertUser(user);
+                Values values = DBManager.getUserById(id + "");
                 DBManager.clearOldUserDataProvider(jsonData.getString("id"));
-
-
-                if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
+                if (signIn(proteu, hili, values, Type.JWT, Profile.ALL)) {
                     header.status(Proteu.HTTPStatus.OK200);
                     proteu.outputJSON(
                             proteu.getConfig().getValues("_jwt:auth:data")

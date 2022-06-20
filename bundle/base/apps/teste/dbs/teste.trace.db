@@ -124,3 +124,16 @@ DELETE FROM netuno_provider_data where data LIKE '%108997039933329853695%' [9000
 	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:882)
 	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1036)
 	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-06-20 02:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "DELETE FROM netuno_user=[*]4"; SQL statement:
+DELETE FROM netuno_user=4 [42000-200]
+2022-06-20 02:51:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "
+DELTE[*] FROM NETUNO_USER WHERE id = 5"; expected "DELETE, DROP, DECLARE, DEALLOCATE"; SQL statement:
+
+DELTE FROM NETUNO_USER WHERE id = 5 [42001-200]
+2022-06-20 02:51:54 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "
+DELTE[*] FROM NETUNO_USER WHERE id = 5"; expected "DELETE, DROP, DECLARE, DEALLOCATE"; SQL statement:
+
+DELTE FROM NETUNO_USER WHERE id = 5 [42001-200]

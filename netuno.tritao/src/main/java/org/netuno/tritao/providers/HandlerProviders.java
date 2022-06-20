@@ -83,7 +83,7 @@ public class HandlerProviders extends WebMaster {
                     new Values().set("nonce", secret).set("data", data.toJSON())
             );
             getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=true");
-        } /*else {
+        } else {
             int idProvider = DBManager.selectProviderByName(provider).get(0).getInt("id");
             boolean isAssociate = DBManager.isAssociate(new Values().set("provider", idProvider).set("user", users.get(0).get("id"))).size() > 0;
             Values user = users.get(0);
@@ -91,7 +91,7 @@ public class HandlerProviders extends WebMaster {
             user.set("nonce_generator", provider);
             DBManager.updateUser(user);
             getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=false&associate="+isAssociate);
-        }*/
+        }
     }
 
 }
