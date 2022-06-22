@@ -11,6 +11,7 @@ import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.db.Builder;
+import org.netuno.tritao.providers.entities.Discord;
 import org.netuno.tritao.providers.entities.Github;
 import org.netuno.tritao.providers.entities.Google;
 
@@ -20,7 +21,6 @@ import java.util.UUID;
 public class HandlerProviders extends WebMaster {
 
     private static Logger logger = LogManager.getLogger(HandlerProviders.class);
-
     private Proteu proteu;
     private Hili hili;
     public Service service = null;
@@ -78,12 +78,10 @@ public class HandlerProviders extends WebMaster {
                 Github github = new Github(settings.getString("id"), settings.getString("secret"), settings.getString("callback"));
                 if (settings.getBoolean("enable") == false) {
                     return;
-                }
-                else if (method == null) {
+                } else if (method == null) {
                     proteu.redirect(github.getUrlAuthenticator());
                     return;
-                }
-                else if (method.equalsIgnoreCase("callback")) {
+                } else if (method.equalsIgnoreCase("callback")) {
                     JSONObject accessTokens = github.getAccessTokens(proteu.getRequestAll().getString("code"));
                     if (accessTokens == null || !accessTokens.has("access_token")) {
                         logger.warn(" INVALID GOOGLE CODE -- 401");
@@ -100,7 +98,32 @@ public class HandlerProviders extends WebMaster {
                     userData.put("secret", user.get("id").toString());
                     callBack("github", settings.getString("redirect"), userData);
                 }
-
+            }
+            else if (provider.equalsIgnoreCase("discord")) {
+                Values settings = proteu.getConfig().getValues("_app:config").getValues("provider").getValues("discord");
+                Discord discord = new Discord(settings.getString("id"), settings.getString("secret"), settings.getString("callback"));
+                if (settings.getBoolean("enable") == false) {
+                    return;
+                } else if (method == null) {
+                    proteu.redirect(discord.getUrlAuthenticator());
+                    return;
+                } else if (method.equalsIgnoreCase("callback")) {
+                    JSONObject accessTokens = discord.getAccessTokens(proteu.getRequestAll().getString("code"));
+                    if (accessTokens == null || !accessTokens.has("access_token")) {
+                        logger.warn(" INVALID GOOGLE CODE -- 401");
+                        //TODO: RUN ERROR
+                        return;
+                    }
+                    JSONObject user = discord.getUserDetails(accessTokens);
+                    Values userData = new Values();
+                    userData.put("id", user.get("id").toString());
+                    userData.put("name", user.get("username"));
+                    userData.put("email", user.get("email"));
+                    userData.put("picture", user.get("avatar"));
+                    userData.put("provider", "discord");
+                    userData.put("secret", user.get("id").toString());
+                    callBack("discord", settings.getString("redirect"), userData);
+                }
             }
         }
     }

@@ -211,6 +211,10 @@ public class Setup extends Base {
                 getBuilder().insertProvider("github", "gh");
             }
 
+            if(getBuilder().selectProviderByName("discord").size() == 0){
+                getBuilder().insertProvider("discord", "ds");
+            }
+
             table.create("netuno_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
