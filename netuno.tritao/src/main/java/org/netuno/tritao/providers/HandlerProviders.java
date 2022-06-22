@@ -11,6 +11,7 @@ import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.db.Builder;
+import org.netuno.tritao.providers.entities.Github;
 import org.netuno.tritao.providers.entities.Google;
 
 import java.util.List;
@@ -47,9 +48,14 @@ public class HandlerProviders extends WebMaster {
             if (provider.equalsIgnoreCase("google")) {
                 Values googleSetting = proteu.getConfig().getValues("_app:config").getValues("provider").getValues("google");
                 Google google = new Google(googleSetting.getString("id"), googleSetting.getString("secret"), googleSetting.getString("callback"));
-                if (method == null) {
+                if (googleSetting.getBoolean("enable") == false) {
+                    return;
+                }
+                else if (method == null) {
                     proteu.redirect(google.getUrlAuthenticator());
-                }else if (method.equalsIgnoreCase("callback")) {
+                    return;
+                }
+                else if (method.equalsIgnoreCase("callback")) {
                     JSONObject accessTokens = google.getAccessTokens(proteu.getRequestAll().getString("code"));
                     if (accessTokens == null || !accessTokens.has("access_token")) {
                         logger.warn(" INVALID GOOGLE CODE -- 401");
@@ -58,14 +64,43 @@ public class HandlerProviders extends WebMaster {
                     }
                     JSONObject user = google.getUserDetails(accessTokens);
                     Values userData = new Values();
-                    userData.put("id", user.get("id"));
+                    userData.put("id", user.get("id").toString());
                     userData.put("name", user.get("name"));
                     userData.put("email", user.get("email"));
                     userData.put("picture", user.get("picture"));
                     userData.put("provider", "google");
-                    userData.put("secret", user.get("id"));
+                    userData.put("secret", user.get("id").toString());
                     callBack("google", googleSetting.getString("redirect"), userData);
                 }
+            }
+            else if (provider.equalsIgnoreCase("github")) {
+                Values settings = proteu.getConfig().getValues("_app:config").getValues("provider").getValues("github");
+                Github github = new Github(settings.getString("id"), settings.getString("secret"), settings.getString("callback"));
+                if (settings.getBoolean("enable") == false) {
+                    return;
+                }
+                else if (method == null) {
+                    proteu.redirect(github.getUrlAuthenticator());
+                    return;
+                }
+                else if (method.equalsIgnoreCase("callback")) {
+                    JSONObject accessTokens = github.getAccessTokens(proteu.getRequestAll().getString("code"));
+                    if (accessTokens == null || !accessTokens.has("access_token")) {
+                        logger.warn(" INVALID GOOGLE CODE -- 401");
+                        //TODO: RUN ERROR
+                        return;
+                    }
+                    JSONObject user = github.getUserDetails(accessTokens);
+                    Values userData = new Values();
+                    userData.put("id", user.get("id").toString());
+                    userData.put("name", user.get("name"));
+                    userData.put("email", user.get("email"));
+                    userData.put("picture", user.get("avatar_url"));
+                    userData.put("provider", "github");
+                    userData.put("secret", user.get("id").toString());
+                    callBack("github", settings.getString("redirect"), userData);
+                }
+
             }
         }
     }

@@ -91,3 +91,12 @@ Caused by: java.nio.channels.OverlappingFileLockException
 2022-06-21 00:44:16 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * NETUNO_PROVIDER_USER[*]"; SQL statement:
 SELECT * NETUNO_PROVIDER_USER [42000-200]
+2022-06-22 03:15:12 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "DELETE FROM netuno_provider_data
+select[*] * from netuno_provider_data"; SQL statement:
+DELETE FROM netuno_provider_data
+select * from netuno_provider_data [42000-200]
+2022-06-22 03:19:03 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FOM" not found; SQL statement:
+
+DELETE FOM NETUNO_PROVIDER_USER WHERE ID=4 [42102-200]

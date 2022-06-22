@@ -23,6 +23,8 @@
 package org.netuno.tritao.providers.entities;
 
 import org.json.JSONObject;
+import org.netuno.psamata.Values;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -38,7 +40,6 @@ public class Google {
     private String id = null;
     private String secret = null;
     private String callbackUrl = null;
-    private String scopes = "";
     public Google(String id, String secret, String callbackUrl){
         this.id = id;
         this.secret = secret;
@@ -47,7 +48,26 @@ public class Google {
     public String getUrlAuthenticator(){
             return "https://accounts.google.com/o/oauth2/auth?response_type=code&redirect_uri=" + callbackUrl + "&scope="+"https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile"+"&client_id=" + id;
     }
-    public JSONObject getAccessTokens(String code){
+
+    public JSONObject getAccessTokens(String code) throws Exception {
+        String url = "https://accounts.google.com/o/oauth2/token";
+        Values params = new Values();
+        params.set("code", code);
+        params.set("client_id", id);
+        params.set("client_secret", secret);
+        params.set("redirect_uri", callbackUrl);
+        params.set("grant_type", "authorization_code");
+        return Requests.makePost(url, params);
+    }
+
+    public JSONObject getUserDetails(JSONObject data) throws Exception {
+        String url = "https://www.googleapis.com/oauth2/v1/userinfo";
+        Values params = new Values();
+        params.set("access_token", data.get("access_token"));
+        return Requests.makeGet(url, params);
+    }
+
+    /*public JSONObject getAccessTokens(String code){
         try{
             URL url = new URL("https://accounts.google.com/o/oauth2/token" );
             URLConnection con = url.openConnection();
@@ -82,8 +102,8 @@ public class Google {
         }catch (Exception e){
             return null;
         }
-    }
-    public JSONObject getUserDetails(JSONObject data){
+    }*/
+   /* public JSONObject getUserDetails(JSONObject data){
         try{
             URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + data.get("access_token") );
             URLConnection con = url.openConnection();
@@ -98,5 +118,5 @@ public class Google {
         }catch (Exception e){
             return null;
         }
-    }
+    }*/
 }

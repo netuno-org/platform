@@ -207,6 +207,10 @@ public class Setup extends Base {
                 getBuilder().insertProvider("google", "gl");
             }
 
+            if(getBuilder().selectProviderByName("github").size() == 0){
+                getBuilder().insertProvider("github", "gh");
+            }
+
             table.create("netuno_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
