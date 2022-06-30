@@ -26,9 +26,8 @@ import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
-import org.netuno.library.doc.LanguageDoc;
-import org.netuno.library.doc.LibraryDoc;
-import org.netuno.library.doc.LibraryTranslationDoc;
+
+import org.netuno.library.doc.*;
 
 /**
  * Manage files or folders with jail path supported, with many useful 
@@ -68,6 +67,29 @@ public class File {
      * File.
      * @param filePath Path
      */
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Permite inserir o caminho para o ficheiro/pasta pretendido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Allows insert the path to the file/directory wanted",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "path", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminho",
+                            description = "Caminho para a pasta/diretorio."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path to the file/directory."
+                    )
+            })
+    }, returns = {})
     public File(final String filePath) {
         path = filePath;
         java.io.File ioFilePath = new java.io.File(path);
@@ -78,6 +100,39 @@ public class File {
      * @param filePath Path
      * @param jailPath Restrict file only inside this path
      */
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Permite inserir o caminho para o ficheiro/pasta pretendido validando se o mesmo é um subdiretório.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Allows the inserted path to the file/directory wanted and authenticates if its the same subfolder",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "filePath", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminhoFicheiro",
+                            description = "Caminho para a pasta/diretorio."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path to the file/directory."
+                    )}),
+                    @ParameterDoc(name = "jailPath", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "caminhoSubdiretorio",
+                                    description = "Caminho do subdiretorio."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Path of the subdirectory."
+                            )
+            })
+    }, returns = {})
     public File(final String filePath, final String jailPath) {
         path = Path.safePath(filePath);
         jail = jailPath;
@@ -92,6 +147,50 @@ public class File {
      * @param fileContentType Content Type
      * @param fileBytes Bytes
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Permite gerar um objeto com informações do ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Allows generates an object with the file information",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "filePath", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminhoFicheiro",
+                            description = "Caminho para o ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path to the file."
+                    )
+            }),
+            @ParameterDoc(name = "fileContentType", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "conteúdo",
+                            description = "Conteúdo do ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File content."
+                    )
+            }),
+            @ParameterDoc(name = "ByteArrayInputStream", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "VetorBytes",
+                            description = "Ficheiro em binário."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File in binary."
+                    )
+            })
+    }, returns = {})
     public File(final String filePath, final String fileContentType, final ByteArrayInputStream fileBytes) {
         path = Path.safePath(filePath);
         physicalPath = "";
@@ -104,12 +203,23 @@ public class File {
      * @param filePhysicalPath Physic Path
      * @param fileContentType Content Type
      */
+
     public File(final String filePath, final String filePhysicalPath, final String fileContentType) {
         path = Path.safePath(filePath);
         physicalPath = Path.safeFileSystemPath(filePhysicalPath);
         contentType = fileContentType;
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Efetua uma verificação se o ficheiro tem a sua localização limitada a um outro diretório .",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Does a authentication if the file has his location limited to another folder",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public boolean isJail() {
         return !jail.isEmpty();
     }
@@ -127,9 +237,41 @@ public class File {
      * Get Path.
      * @return Path
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o caminho do ficheiro/pasta.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the path of the file/directory",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {
+
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna uma verificação boolean da existência do ficheiro e localiza a pasta onde se encontra."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a boolean verification of the existence of the file and tracks it folder location."
+            )
+    })
     public final String path() {
         return path;
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o caminho.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the path",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final String getPath() {
         return path;
     }
@@ -137,9 +279,31 @@ public class File {
      * Get Name.
      * @return Name
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o nome do ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the name of a file",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final String name() {
         return getName(path);
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o nome do ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the name of a file",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final String getName() {
         return getName(path);
     }
@@ -147,6 +311,28 @@ public class File {
      * Get Name.
      * @return Name
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o nome do ficheiro do caminho inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the name of a file in the inserted path",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "path", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminho",
+                            description = "Caminho para a pasta/diretorio."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path to the file/directory."
+                    )
+            })
+    }, returns = {})
     public static String getName(String path) {
         String name = path;
         if (name.indexOf(":") > -1) {
@@ -175,6 +361,28 @@ public class File {
     /**
      * Rename.
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Renomeia um ficheiro com o novo nome inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Renames a file with the new name inserted",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "newName", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "novoNome",
+                            description = "Novo nome para renomear o ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "New name to rename the file."
+                    )}
+            )
+    }, returns = {})
     public boolean changeName(String newName) {
         newName = Normalizer.normalize(newName, Normalizer.Form.NFD);
         newName = newName.replaceAll("\\p{M}", "")
@@ -228,6 +436,41 @@ public class File {
     public static String sequenceName(String targetPath, String fileName) {
     	return getSequenceName(targetPath, fileName);
     }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o nome do ficheiro inserido com um número de sequência se o ficheiro já existir com o nome original.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the name of the inserted file with a sequence number if the file already exists with the original name",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "targetPath", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminhoDestino",
+                            description = "Caminho onde guardar o ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path to the file/directory."
+                    )}),
+                    @ParameterDoc(name = "fileName", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "nomeFicheiro",
+                                    description = "Nome do Ficheiro."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Name of the file."
+                            )
+                    }
+            )
+
+            }, returns = {})
     public static String getSequenceName(String targetPath, String fileName) {
         fileName = Path.safeFileName(fileName);
         String sequenceFileName = fileName;
@@ -249,17 +492,49 @@ public class File {
      * Physic Path.
      * @return Path
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Permite obter o caminho do ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Allows to get the path of the file.",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final String physicalPath() {
         return physicalPath;
     }
     public final String getPhysicalPath() {
         return physicalPath;
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Permite obter o caminho completo do ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Allows to get the complete path of the file.",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final String fullPath() {
     	return getFullPath();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o caminho completo até ao presente ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the full path until the present file",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final String getFullPath() {
         if (!physicalPath.isEmpty()) {
             return physicalPath;
@@ -273,7 +548,17 @@ public class File {
     public String baseName() {
     	return getBaseName();
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o nome base do presente ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the base name of the present file",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public String getBaseName() {
     	return FilenameUtils.getBaseName(fullPath());
     }
@@ -298,6 +583,7 @@ public class File {
      * Get Content Type.
      * @return Content Type
      */
+
     public final String contentType() {
         return contentType;
     }
@@ -344,6 +630,17 @@ public class File {
     public final java.io.InputStream inputStream() {
     	return getInputStream();
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o número estimado de bytes.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the number of estimated bytes",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final java.io.InputStream getInputStream() {
         if (!physicalPath.isEmpty()) {
             try {
@@ -404,6 +701,17 @@ public class File {
     public final byte[] bytes() {
     	return getBytes();
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o número estimado de bytes restantes para a leitura dum ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the number of estimated bytes left to read a file",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final byte[] getBytes() {
         if (physicalPath.length() == 0) {
             try {
@@ -438,6 +746,28 @@ public class File {
      * @param path Object with path to save file.
      * @throws IOException Exception
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Guarda o ficheiro no determinado caminho inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Saves the file in the inserted path",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "path", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminho",
+                            description = "Caminho do ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path of the file."
+                    )
+            })
+    }, returns = {})
     public final void save(Object path) throws IOException {
         save(path.toString());
     }
@@ -446,6 +776,28 @@ public class File {
      * @param pathToWriteFile Path to save file.
      * @throws IOException Exception
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Guarda o ficheiro no caminho inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Saves the file in the inserted path",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "path", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminho",
+                            description = "Caminho onde guarda o ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path where to save the file."
+                    )
+            })
+    }, returns = {})
     public final void save(String pathToWriteFile) throws IOException {
         if (!jail.isEmpty()) {
             if (pathToWriteFile.startsWith(jail)) {
@@ -480,12 +832,69 @@ public class File {
     /**
      * Copy.
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Copia o ficheiro para o caminho indicado.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Copies the file to the inserted path",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "destPath", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminhoDestino",
+                            description = "Caminho para onde copiar o ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path where to copy the file/directory."
+                    )})
+
+
+    }, returns = {})
     public boolean copy(String destPath) throws IOException {
         return copy(destPath, false);
     }
     /**
      * Copy.
      */
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Copia o ficheiro do caminho indicado com indicação de escrita por cima de um existente.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Copies the file of the inserted path with override option if exists a file",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "destPath", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminhoDestino",
+                            description = "Caminho para onde copiar o ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path where to copy the file/directory."
+                    )}),
+            @ParameterDoc(name = "override", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "reescrever",
+                            description = "Escreve por cima se já existir um ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Override if exists a file already."
+                    )}
+            )
+
+    }, returns = {})
     public boolean copy(String destPath, boolean override) throws IOException {
         if (!jail.isEmpty()) {
             destPath = Path.safeFileSystemPath(destPath);
@@ -504,7 +913,40 @@ public class File {
         }
         return false;
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Copia os ficheiros indicados pela extensão inserida para o caminho indicado.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Copies the files by the inserted extension to the inserted path.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "destPath", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "caminhoDestino",
+                            description = "Caminho para onde copiar o ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path where to copy the file/directory."
+                    )}),
+            @ParameterDoc(name = "extension", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "extensao",
+                            description = "Extensão do ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File extension."
+                    )}
+            )
+
+    }, returns = {})
     public boolean copyFiles(String destPath, String extension) throws IOException {
         if (!jail.isEmpty()) {
             destPath = Path.safeFileSystemPath(destPath);
@@ -528,6 +970,17 @@ public class File {
     /**
      * Delete.
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Apaga o ficheiro do caminho inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Deletes the file of the inserted file",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final boolean delete() {
         return FileUtils.delete(fullPath(), FileRecursionLevel.NONE, true, "");
     }
@@ -535,9 +988,31 @@ public class File {
     /**
      * Delete.
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Apaga um determinado ficheiro/diretorio e recursivamente todos os subs.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Deletes a file/directory and recursive all the subs",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final boolean deleteAll() {
         return FileUtils.delete(fullPath(), FileRecursionLevel.ALL, true, "");
     }
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Apaga um determinado ficheiro/diretorio pela extensão do ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Deletes a file/directory by the file extension",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final boolean deleteAll(String extension) {
         return FileUtils.delete(fullPath(), FileRecursionLevel.ALL, false, extension);
     }
@@ -545,10 +1020,43 @@ public class File {
     /**
      * Delete.
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Apaga um determinado ficheiro/diretório e recursivamente todos os subs.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Deletes a file/directory and recursive all the subs",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final boolean deleteFiles() {
         return FileUtils.delete(fullPath(), FileRecursionLevel.FIRST, false, "");
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Apaga ficheiros designados pela extensão inserida e recursivamente nas subpastas.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Deletes a file of a inserted extension and recursive all the subs",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "stringExtension", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "extensao",
+                            description = "Extensão do ficheiro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "String extension of the file."
+                    )})
+
+    }, returns = {})
     public final boolean deleteFiles(String extension) {
         return FileUtils.delete(fullPath(), FileRecursionLevel.FIRST, false, extension);
     }
@@ -556,6 +1064,29 @@ public class File {
     /**
      * Rename.
      */
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Renomeia o ficheiro do caminho inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Renames the file of the inserted file",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "destPath", translations = {
+            @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    name = "caminhoDestino",
+                    description = "Caminho para o ficheiro."
+            ),
+            @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Path to the file/directory."
+            )})
+    }, returns = {})
+
     public boolean renameTo(String destPath) {
         if (!jail.isEmpty()) {
             destPath = Path.safeFileSystemPath(destPath);
@@ -568,7 +1099,17 @@ public class File {
         java.io.File f = new java.io.File(fullPath());
         return f.renameTo(new java.io.File(destPath));
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma pasta no caminho atual.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a directory in the present path.",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public boolean mkdir() {
         java.io.File f = new java.io.File(fullPath());
         return f.mkdir();
@@ -578,7 +1119,17 @@ public class File {
         java.io.File f = new java.io.File(fullPath());
         return f.mkdirs();
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna um resultado booleano que verifica se o caminho indicado é uma pasta.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a boolean result that verify if the inserted path is a directory",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public boolean isDirectory() {
         if (!jail.isEmpty()) {
             path = Path.safeFileSystemPath(path);
@@ -586,7 +1137,17 @@ public class File {
         java.io.File f = new java.io.File(this.physicalPath());
         return f.isDirectory();
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna um resultado booleano que verifica se o caminho indicado é um ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a boolean result that verify if the inserted path is a file",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public boolean isFile() {
         if (!jail.isEmpty()) {
             path = Path.safeFileSystemPath(path);
@@ -598,6 +1159,17 @@ public class File {
     /**
      * Last modified.
      */
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna a hora que o ficheiro do caminho indicado foi modificado pela ultima vez.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the hour that the file of the inserted path was last modified",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public long lastModified() {
         if (!jail.isEmpty()) {
             path = Path.safeFileSystemPath(path);
@@ -605,7 +1177,17 @@ public class File {
         java.io.File f = new java.io.File(fullPath());
         return f.lastModified();
     }
-    
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna uma lista de todos os ficheiros e pastas presentes no caminho inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a list of all the files and directories on the inserted path",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public List<File> list() {
         if (!jail.isEmpty()) {
             path = Path.safeFileSystemPath(path);
@@ -630,6 +1212,18 @@ public class File {
      * Available.
      * @return File size.
      */
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o número estimado de bytes restantes para a leitura dum ficheiro.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the number of estimated bytes left to read a file",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public final int available() {
         if (physicalPath.length() == 0) {
             return bytes.available();
@@ -647,7 +1241,18 @@ public class File {
             }
         }
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna um resultado booleano que verifica se o caminho indicado existe.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a boolean result that verify if the inserted path exists",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
     public boolean exists() {
     	if (!jail.isEmpty()) {
             path = Path.safeFileSystemPath(path);

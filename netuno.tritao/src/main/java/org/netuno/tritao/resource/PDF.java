@@ -638,7 +638,7 @@ public class PDF extends ResourceBase {
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
-                            description = "Column widthof the table."
+                            description = "Column width of the table."
                     )
             })
     }, returns = {
