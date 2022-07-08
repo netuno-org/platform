@@ -16,6 +16,8 @@ You can follow to not lose the news, tips, and tutorials:
 - [Facebook](https://www.facebook.com/netuno.org/)
 - [Instagram](https://www.instagram.com/netuno_org/)
 
+[netuno.org](https://www.netuno.org/) is the official website.
+
 ![Overview](https://raw.githubusercontent.com/netuno-org/platform/main/docs/overview.png)
 
 Find more in [netuno.org](https://www.netuno.org/)
