@@ -8,7 +8,7 @@ In here you can find the source of all the Netuno core capabilities, such as CLI
 
 Join [Netuno’s Discord](https://discord.gg/4sfXG6YWFu) for help and to know more, you are welcome.
 
-You can follow and not lose the news, tips and tutorials:
+You can follow to not lose the news, tips, and tutorials:
 
 - [YouTube](https://www.youtube.com/channel/UCYY1Nz6T2NJtP29vba2fqkg)
 - [Twitter](https://twitter.com/netuno_org)
