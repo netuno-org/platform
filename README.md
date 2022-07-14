@@ -6,6 +6,18 @@ Quickly build applications adapted to your business logic.
 
 In here you can find the source of all the Netuno core capabilities, such as CLI and Web Server.
 
+Join [Netuno’s Discord](https://discord.gg/4sfXG6YWFu) for help and to know more, you are welcome.
+
+You can follow to not lose the news, tips, and tutorials:
+
+- [YouTube](https://www.youtube.com/channel/UCYY1Nz6T2NJtP29vba2fqkg)
+- [Twitter](https://twitter.com/netuno_org)
+- [LinkedIn](https://www.linkedin.com/company/netuno-org/)
+- [Facebook](https://www.facebook.com/netuno.org/)
+- [Instagram](https://www.instagram.com/netuno_org/)
+
+[Netuno.org](https://www.netuno.org/) is the official website.
+
 ![Overview](https://raw.githubusercontent.com/netuno-org/platform/main/docs/overview.png)
 
 Find more in [netuno.org](https://www.netuno.org/)
