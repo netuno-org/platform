@@ -29,7 +29,7 @@ rm -f proguard.zip
 #
 ###########################################
 
-cd netuno.bundle && npm install && cd ..
+cd bundle && npm install && cd ..
 
 ###########################################
 #
