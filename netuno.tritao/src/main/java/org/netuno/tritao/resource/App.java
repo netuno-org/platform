@@ -379,6 +379,44 @@ public class App extends ResourceBase {
     		translations = {
 		            @MethodTranslationDoc(
 		                    language = LanguageDoc.PT,
+		                    description = "Obtém o url da aplicação para a interface de administração.",
+		                    howToUse = {
+		                            @SourceCodeDoc(
+		                                    type = SourceCodeTypeDoc.JavaScript,
+		                                    code = "const urlServicos = _app.urlAdmin();"
+		                            )
+		                    }),
+		            @MethodTranslationDoc(
+		                    language = LanguageDoc.EN,
+		                    description = "Gets the application url for the administration interface.",
+		                    howToUse = {
+		                            @SourceCodeDoc(
+		                                    type = SourceCodeTypeDoc.JavaScript,
+		                                    code = "const servicesURL = _app.urlAdmin();"
+		                            )
+		                    })
+		    },
+    		parameters = {},
+    		returns = {
+    	            @ReturnTranslationDoc(
+    	                    language = LanguageDoc.PT,
+    	                    description = "Retorna a localização dos administração."
+    	            ),
+    	            @ReturnTranslationDoc(
+    	                    language = LanguageDoc.EN,
+    	                    description = "Returns the location of the administration."
+    	            )
+    	    }
+    )
+    public String urlAdmin() {
+        return Config.getUrlAdmin(getProteu());
+    }
+
+
+    @MethodDoc(
+    		translations = {
+		            @MethodTranslationDoc(
+		                    language = LanguageDoc.PT,
 		                    description = "Obtém o url da aplicação para a pasta services.",
 		                    howToUse = {
 		                            @SourceCodeDoc(
