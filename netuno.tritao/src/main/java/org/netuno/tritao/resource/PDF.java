@@ -45,6 +45,9 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.io.File;
+import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.config.Config;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -53,7 +56,9 @@ import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
 import org.xml.sax.SAXException;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 
@@ -248,6 +253,15 @@ public class PDF extends ResourceBase {
     public Document newDocument(Storage storage) {
         return newDocument(storage, PageSize.A4);
     }
+    public Document newDocument(File file) {
+        return newDocument(file, PageSize.A4);
+    }
+    public Document newDocument(OutputStream out) {
+        return newDocument(out, PageSize.A4);
+    }
+    public Document newDocument(java.io.OutputStream out) {
+        return newDocument(out, PageSize.A4);
+    }
 
     @MethodDoc(translations = {
             @MethodTranslationDoc(
@@ -329,7 +343,16 @@ public class PDF extends ResourceBase {
             )
     })
     public Document newDocument(Storage storage, PageSize pageSize) {
-        writer = new PdfWriter(storage.output());
+        return newDocument(storage.output(), pageSize);
+    }
+    public Document newDocument(File file, PageSize pageSize) {
+        return newDocument(file.outputStream(), pageSize);
+    }
+    public Document newDocument(OutputStream out, PageSize pageSize) {
+        return newDocument((java.io.OutputStream)out, pageSize);
+    }
+    public Document newDocument(java.io.OutputStream out, PageSize pageSize) {
+        writer = new PdfWriter(out);
         pdfDocument = new PdfDocument(writer);
         document = new Document(pdfDocument, pageSize);
         return document;
@@ -374,7 +397,16 @@ public class PDF extends ResourceBase {
     }, returns = {
     })
     public PdfDocument newPdfDocument(Storage storage) {
-        writer = new PdfWriter(storage.output());
+        return newPdfDocument(storage.output());
+    }
+    public PdfDocument newPdfDocument(File file) {
+        return newPdfDocument(file.outputStream());
+    }
+    public PdfDocument newPdfDocument(OutputStream out) {
+        return newPdfDocument((java.io.OutputStream)out);
+    }
+    public PdfDocument newPdfDocument(java.io.OutputStream out) {
+        writer = new PdfWriter(out);
         pdfDocument = new PdfDocument(writer);
         return pdfDocument;
     }
@@ -412,7 +444,7 @@ public class PDF extends ResourceBase {
     public PdfDocument openPdfDocument(String path) throws IOException {
         writer = new PdfWriter(getProteu().getOutput());
         reader = new PdfReader(Config.getPathAppFileSystem(getProteu()) +
-            File.separator +
+            java.io.File.separator +
             getProteu().safePath(path));
         pdfDocument = new PdfDocument(reader, writer);
         return pdfDocument;
@@ -4109,6 +4141,14 @@ public class PDF extends ResourceBase {
         );
         return image;
     }
+    public Image image(File file) throws MalformedURLException {
+        Image image = new Image(
+                ImageDataFactory.create(
+                        file.getFullPath()
+                )
+        );
+        return image;
+    }
 
     @MethodDoc(translations = {
             @MethodTranslationDoc(
@@ -4193,6 +4233,10 @@ public class PDF extends ResourceBase {
         );
         return font;
     }
+    public PdfFont font(File file) throws IOException {
+        PdfFont font = PdfFontFactory.createFont(file.getFullPath());
+        return font;
+    }
 
     @MethodDoc(translations = {
             @MethodTranslationDoc(
@@ -4243,6 +4287,10 @@ public class PDF extends ResourceBase {
                 FileSystemPath.absoluteFromStorage(getProteu(), storage),
                 encoding
         );
+        return font;
+    }
+    public PdfFont font(File file, String encoding) throws IOException {
+        PdfFont font = PdfFontFactory.createFont(file.getFullPath(), encoding);
         return font;
     }
 
@@ -4297,6 +4345,10 @@ public class PDF extends ResourceBase {
         );
         return font;
     }
+    public PdfFont font(File file, boolean embedded) throws IOException {
+        PdfFont font = PdfFontFactory.createFont(file.getFullPath(), "", embedded);
+        return font;
+    }
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -4348,6 +4400,10 @@ public class PDF extends ResourceBase {
         );
         return font;
     }
+    public PdfFont font(File file, String encoding, boolean embedded) throws IOException {
+        PdfFont font = PdfFontFactory.createFont(file.getFullPath(), encoding, embedded);
+        return font;
+    }
 
     public String toHTML(Storage storage) throws IOException {
         FileInputStream fis = null;
@@ -4358,6 +4414,12 @@ public class PDF extends ResourceBase {
             if (fis != null) {
                 fis.close();
             }
+        }
+    }
+
+    public String toHTML(File file) throws TikaException, IOException {
+        try (java.io.InputStream in = file.inputStream()) {
+            return toHTML(in);
         }
     }
 
@@ -4392,8 +4454,11 @@ public class PDF extends ResourceBase {
                     description = "Returns the Html."
             )
     })
-    public String toHTML(InputStream content) throws IOException {
-        PDDocument pddDocument = PDDocument.load(content);
+    public String toHTML(InputStream in) throws IOException {
+        return toHTML(in);
+    }
+    public String toHTML(java.io.InputStream in) throws IOException {
+        PDDocument pddDocument = PDDocument.load(in);
         PDFText2HTML stripper = new PDFText2HTML();
         return stripper.getText(pddDocument);
     }
@@ -4409,6 +4474,13 @@ public class PDF extends ResourceBase {
             }
         }
     }
+
+    public String toText(File file) throws TikaException, IOException {
+        try (java.io.InputStream in = file.inputStream()) {
+            return toText(in);
+        }
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -4440,9 +4512,13 @@ public class PDF extends ResourceBase {
                     description = "Returns the Html."
             )
     })
-    public String toText(InputStream content) throws TikaException, IOException {
-        return new Tika().parseToString(content);
+    public String toText(InputStream in) throws TikaException, IOException {
+        return toText(in);
     }
+    public String toText(java.io.InputStream in) throws TikaException, IOException {
+        return new Tika().parseToString(in);
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -4486,6 +4562,12 @@ public class PDF extends ResourceBase {
         }
     }
 
+    public Values extract(File file) throws TikaException, IOException, SAXException {
+        try (java.io.InputStream in = file.inputStream()) {
+            return extract(in);
+        }
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -4516,15 +4598,17 @@ public class PDF extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Returns the extracted content."
             )
-    })
-    public Values extract(InputStream is) throws TikaException, IOException, SAXException {
+    })public Values extract(InputStream in) throws TikaException, IOException, SAXException {
+        return extract(in);
+    }
+    public Values extract(java.io.InputStream in) throws TikaException, IOException, SAXException {
         StringWriter any = new StringWriter();
         BodyContentHandler handler = new BodyContentHandler(any);
         Metadata metadata = new Metadata();
         ParseContext pContext = new ParseContext();
 
         PDFParser pdfparser = new PDFParser();
-        pdfparser.parse(is, handler, metadata, pContext);
+        pdfparser.parse(in, handler, metadata, pContext);
 
         Values result = new Values();
         Values resultMetadata = new Values();

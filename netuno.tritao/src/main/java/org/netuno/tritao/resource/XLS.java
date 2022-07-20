@@ -2134,7 +2134,7 @@ public class XLS extends ResourceBase {
     }
     
     public Values read(InputStream in, int sheetNumber, boolean hiddenSheets) throws IOException {
-        return read(in, sheetNumber, hiddenSheets);
+        return read((java.io.InputStream)in, sheetNumber, hiddenSheets);
     }
     
     public Values read(java.io.InputStream in) throws IOException {
