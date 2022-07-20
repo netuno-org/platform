@@ -124,7 +124,7 @@ public class ProteuEvents implements Events {
             }
             
             System.out.println();
-            System.out.println("    © " + Config.VERSION_YEAR + " netuno.org // TRITAO // v" + Config.VERSION +":"+ Config.BUILD_NUMBER);
+            System.out.println("    TRITAO IN ORBIT // v" + Config.VERSION +":"+ Config.BUILD_NUMBER);
             System.out.println();
             System.out.println();
         }

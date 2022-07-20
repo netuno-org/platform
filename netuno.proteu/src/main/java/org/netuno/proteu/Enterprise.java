@@ -130,7 +130,7 @@ public class Enterprise extends HttpServlet {
         }
         
         System.out.println();
-        System.out.println("    © "+ Config.VERSION_YEAR +" netuno.org // PROTEU // v"+ Config.VERSION +":"+ Config.BUILD_NUMBER);
+        System.out.println("    PROTEU IN ORBIT // v"+ Config.VERSION +":"+ Config.BUILD_NUMBER);
         System.out.println();
 
         try {
