@@ -249,7 +249,7 @@ public class Server implements MainArg {
             // PlusConfiguration) to choosing where the webapp will unpack itself.
             WebAppContext webapp = new WebAppContext(Config.getWebHome(), "/");
 
-            List<String> allExtraJars = new ArrayList();
+            List<String> allExtraJars = new ArrayList<>();
             for (String extraLib : Config.getExtraLibs()) {
                 if (!Files.exists(Path.of(extraLib))) {
                     continue;

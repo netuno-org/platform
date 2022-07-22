@@ -211,8 +211,8 @@ public class GraalRunner {
         }
     }
 
-    public static Map transformMembers(Value v) {
-        Map map = new HashMap();
+    public static Map<String, Object> transformMembers(Value v) {
+        Map<String, Object> map = new HashMap<>();
         for (String key : v.getMemberKeys()) {
             Value member = v.getMember(key);
             if (member.hasArrayElements() && !member.isHostObject()) {
@@ -226,8 +226,8 @@ public class GraalRunner {
         return map;
     }
 
-    public static List transformArray(Value v) {
-        List list = new ArrayList();
+    public static List<Object> transformArray(Value v) {
+        List<Object> list = new ArrayList<>();
         for (int i = 0; i < v.getArraySize(); ++i) {
             Value element = v.getArrayElement(i);
             if (element.hasArrayElements() && !element.isHostObject()) {

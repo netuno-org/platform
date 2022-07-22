@@ -33,6 +33,8 @@ import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.net.ssl.*;
+import javax.xml.crypto.Data;
+
 import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
@@ -185,6 +187,14 @@ public class Remote {
         return this;
     }
 
+    public Values getQueryString() {
+        return getQS();
+    }
+
+    public Remote setQueryString(Values qs) {
+        return setQS(qs);
+    }
+
     public Values getQS() {
         return qs;
     }
@@ -194,17 +204,25 @@ public class Remote {
         return this;
     }
 
+    public Values getFormData() {
+        return getData();
+    }
+
+    public Remote setFormData(Values data) {
+        return this.setData(data);
+    }
+
     public Values getData() {
         return data;
     }
 
-    public Remote acceptJSON() {
-        header.set("Accept", contentTypeJSON);
+    public Remote setData(Values data) {
+        this.data = data;
         return this;
     }
 
-    public Remote setData(Values data) {
-        this.data = data;
+    public Remote acceptJSON() {
+        header.set("Accept", contentTypeJSON);
         return this;
     }
 
@@ -634,7 +652,10 @@ public class Remote {
             String charset = "";
 
             Response response = new Response();
-
+            response.setURL(fullUrl);
+            response.setMethod(method.toUpperCase());
+            response.setQSSent(qs);
+            response.setDataSent(data);
             InputStream clientResponseBody = null;
             try {
                 HttpResponse<InputStream> clientRequestResponse = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
@@ -1077,6 +1098,8 @@ public class Remote {
     public class Response {
         public String method = "";
         public String url = "";
+        public Values qsSent = null;
+        public Values dataSent = null;
         public boolean ok = false;
         public int statusCode = 0;
         public Values header = null;
@@ -1139,6 +1162,164 @@ public class Remote {
         public Response setURL(String url) {
             this.url = url;
             return this;
+        }
+
+        @MethodDoc(
+            translations = {
+                @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém os dados que foram enviados na conexão remota.",
+                    howToUse = {}),
+                @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the data that was sent over the remote connection.",
+                    howToUse = {})
+            },
+            parameters = { },
+            returns = {
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Todos os dados que foram enviados."
+                ),
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "All data that was sent."
+                )
+            }
+        )
+        public Values dataSent() {
+            return dataSent;
+        }
+        
+        public Values getDataSent() {
+            return dataSent;
+        }
+
+        public Response dataSent(Values dataSent) {
+            return this.setDataSent(dataSent);
+        }
+
+        public Response setDataSent(Values dataSent) {
+            this.dataSent = dataSent;
+            return this;
+        }
+
+        @MethodDoc(
+            translations = {
+                @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém os dados que foram enviados na conexão remota.",
+                    howToUse = {}),
+                @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the data that was sent over the remote connection.",
+                    howToUse = {})
+            },
+            parameters = { },
+            returns = {
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Todos os dados que foram enviados."
+                ),
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "All data that was sent."
+                )
+            }
+        )
+        public Values formDataSent() {
+            return getData();
+        }
+        
+        public Values getFormDataSent() {
+            return getData();
+        }
+
+        public Response formDataSent(Values dataSent) {
+            return this.setDataSent(dataSent);
+        }
+
+        public Response setFormDataSent(Values dataSent) {
+            return this.setDataSent(dataSent);
+        }
+
+        @MethodDoc(
+            translations = {
+                @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém os parâmetros de query string que foi enviada na conexão remota.",
+                    howToUse = {}),
+                @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the parameters of the query string that was sent on the remote connection.",
+                    howToUse = {})
+            },
+            parameters = { },
+            returns = {
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Todos os parâmetros de query string que foram enviados."
+                ),
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "All query string parameters that were sent."
+                )
+            }
+        )
+        public Values qsSent() {
+            return qsSent;
+        }
+        
+        public Values getQSSent() {
+            return qsSent;
+        }
+
+        public Response qsSent(Values qsSent) {
+            return this.setQSSent(qsSent);
+        }
+
+        public Response setQSSent(Values qsSent) {
+            this.qsSent = qsSent;
+            return this;
+        }
+
+        @MethodDoc(
+            translations = {
+                @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém os parâmetros de query string que foi enviada na conexão remota.",
+                    howToUse = {}),
+                @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the parameters of the query string that was sent on the remote connection.",
+                    howToUse = {})
+            },
+            parameters = { },
+            returns = {
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Todos os parâmetros de query string que foram enviados."
+                ),
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "All query string parameters that were sent."
+                )
+            }
+        )
+        public Values queryStringSent() {
+            return getQSSent();
+        }
+        
+        public Values getQueryStringSent() {
+            return getQSSent();
+        }
+
+        public Response queryStringSent(Values qs) {
+            return this.setQSSent(qs);
+        }
+
+        public Response setQueryStringSent(Values qs) {
+            return this.setQSSent(qs);
         }
 
         public boolean ok() {

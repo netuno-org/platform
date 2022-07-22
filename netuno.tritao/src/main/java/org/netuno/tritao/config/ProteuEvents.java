@@ -321,8 +321,24 @@ public class ProteuEvents implements Events {
                         } else {
                             org.postgresql.ds.PGSimpleDataSource ds = new org.postgresql.ds.PGSimpleDataSource();
                             ds.setDatabaseName(db.getString("name", app));
-                            ds.setServerName(db.getString("host", "localhost"));
-                            ds.setPortNumber(db.getInt("port", 5432));
+                            if (db.hasKey("hosts")) {
+                                ds.setServerNames(
+                                    db.getValues("hosts", new Values())
+                                        .list(String.class).toArray(new String[]{})
+                                );
+                            } else {
+                                ds.setServerNames(new String[] { db.getString("host", "localhost") });
+                            }
+                            if (db.hasKey("ports")) {
+                                ds.setPortNumbers(
+                                    db.getValues("ports", new Values())
+                                        .list(Integer.class).stream()
+                                        .mapToInt(Integer::intValue)
+                                        .toArray()
+                                );
+                            } else {
+                                ds.setPortNumbers(new int[] { db.getInt("port", 5432) });
+                            }
                             ds.setUser(db.getString("username"));
                             ds.setPassword(db.getString("password"));
                             config.setDataSource(ds);
@@ -339,9 +355,12 @@ public class ProteuEvents implements Events {
                         } else {
                             org.mariadb.jdbc.MariaDbDataSource ds = new org.mariadb.jdbc.MariaDbDataSource();
                             try {
-                                ds.setDatabaseName(db.getString("name", app));
-                                ds.setServerName(db.getString("host", "localhost"));
-                                ds.setPortNumber(db.getInt("port", 3306));
+                                ds.setUrl("jdbc:mysql://"
+                                    + db.getString("host", "localhost")
+                                    + ":"
+                                    + db.getInt("port", 3306)
+                                    + "/"
+                                    + db.getString("name", app));
                                 ds.setUser(db.getString("username"));
                                 ds.setPassword(db.getString("password"));
                             } catch (SQLException e) {

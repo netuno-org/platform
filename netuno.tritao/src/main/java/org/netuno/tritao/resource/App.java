@@ -383,7 +383,7 @@ public class App extends ResourceBase {
 		                    howToUse = {
 		                            @SourceCodeDoc(
 		                                    type = SourceCodeTypeDoc.JavaScript,
-		                                    code = "const urlServicos = _app.urlAdmin();"
+		                                    code = "const urlAdmin = _app.urlAdmin();"
 		                            )
 		                    }),
 		            @MethodTranslationDoc(
@@ -392,7 +392,7 @@ public class App extends ResourceBase {
 		                    howToUse = {
 		                            @SourceCodeDoc(
 		                                    type = SourceCodeTypeDoc.JavaScript,
-		                                    code = "const servicesURL = _app.urlAdmin();"
+		                                    code = "const adminURL = _app.urlAdmin();"
 		                            )
 		                    })
 		    },
@@ -400,11 +400,11 @@ public class App extends ResourceBase {
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
-    	                    description = "Retorna a localização dos administração."
+    	                    description = "Retorna o prefixo da localização de administração."
     	            ),
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.EN,
-    	                    description = "Returns the location of the administration."
+    	                    description = "Returns the location prefix of the administration."
     	            )
     	    }
     )
@@ -412,6 +412,42 @@ public class App extends ResourceBase {
         return Config.getUrlAdmin(getProteu());
     }
 
+	@MethodDoc(
+    		translations = {
+		            @MethodTranslationDoc(
+		                    language = LanguageDoc.PT,
+		                    description = "Obtém o prefixo da URL definido na configuração, como um prefixo de URL customizado.",
+		                    howToUse = {
+		                            @SourceCodeDoc(
+		                                    type = SourceCodeTypeDoc.JavaScript,
+		                                    code = "const urlCustom = _app.url('nome-da-minha-url-configurada');"
+		                            )
+		                    }),
+		            @MethodTranslationDoc(
+		                    language = LanguageDoc.EN,
+		                    description = "Gets the URL prefix defined in the configuration, as a custom URL prefix.",
+		                    howToUse = {
+		                            @SourceCodeDoc(
+		                                    type = SourceCodeTypeDoc.JavaScript,
+		                                    code = "const urlCustom = _app.url('name-of-my-configured-url');"
+		                            )
+		                    })
+		    },
+    		parameters = {},
+    		returns = {
+    	            @ReturnTranslationDoc(
+    	                    language = LanguageDoc.PT,
+    	                    description = "Retorna o prefixo da localização definida na configuração."
+    	            ),
+    	            @ReturnTranslationDoc(
+    	                    language = LanguageDoc.EN,
+    	                    description = "Returns the location prefix defined in the configuration."
+    	            )
+    	    }
+    )
+    public String url(String key) {
+        return Config.getUrl(getProteu(), key);
+    }
 
     @MethodDoc(
     		translations = {

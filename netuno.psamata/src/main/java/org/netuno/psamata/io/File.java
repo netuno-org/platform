@@ -67,29 +67,6 @@ public class File {
      * File.
      * @param filePath Path
      */
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Permite inserir o caminho para o ficheiro/pasta pretendido.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Allows insert the path to the file/directory wanted",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "path", translations = {
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.PT,
-                            name = "caminho",
-                            description = "Caminho para a pasta/diretorio."
-                    ),
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Path to the file/directory."
-                    )
-            })
-    }, returns = {})
     public File(final String filePath) {
         path = filePath;
         java.io.File ioFilePath = new java.io.File(path);
@@ -100,39 +77,6 @@ public class File {
      * @param filePath Path
      * @param jailPath Restrict file only inside this path
      */
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Permite inserir o caminho para o ficheiro/pasta pretendido validando se o mesmo é um subdiretório.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Allows the inserted path to the file/directory wanted and authenticates if its the same subfolder",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "filePath", translations = {
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.PT,
-                            name = "caminhoFicheiro",
-                            description = "Caminho para a pasta/diretorio."
-                    ),
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Path to the file/directory."
-                    )}),
-                    @ParameterDoc(name = "jailPath", translations = {
-                            @ParameterTranslationDoc(
-                                    language = LanguageDoc.PT,
-                                    name = "caminhoSubdiretorio",
-                                    description = "Caminho do subdiretorio."
-                            ),
-                            @ParameterTranslationDoc(
-                                    language = LanguageDoc.EN,
-                                    description = "Path of the subdirectory."
-                            )
-            })
-    }, returns = {})
     public File(final String filePath, final String jailPath) {
         path = Path.safePath(filePath);
         jail = jailPath;
@@ -147,50 +91,6 @@ public class File {
      * @param fileContentType Content Type
      * @param fileBytes Bytes
      */
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Permite gerar um objeto com informações do ficheiro.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Allows generates an object with the file information",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "filePath", translations = {
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.PT,
-                            name = "caminhoFicheiro",
-                            description = "Caminho para o ficheiro."
-                    ),
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Path to the file."
-                    )
-            }),
-            @ParameterDoc(name = "fileContentType", translations = {
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.PT,
-                            name = "conteúdo",
-                            description = "Conteúdo do ficheiro."
-                    ),
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "File content."
-                    )
-            }),
-            @ParameterDoc(name = "ByteArrayInputStream", translations = {
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.PT,
-                            name = "VetorBytes",
-                            description = "Ficheiro em binário."
-                    ),
-                    @ParameterTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "File in binary."
-                    )
-            })
-    }, returns = {})
     public File(final String filePath, final String fileContentType, final ByteArrayInputStream fileBytes) {
         path = Path.safePath(filePath);
         physicalPath = "";

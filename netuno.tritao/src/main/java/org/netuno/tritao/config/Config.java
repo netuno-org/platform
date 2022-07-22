@@ -208,8 +208,17 @@ public class Config {
         return getRealPath(proteu, "/");
     }
 
+    public static String getUrl(Proteu proteu, String key) {
+	    Values appConfig = proteu.getConfig().getValues("_app:config");
+        if (appConfig.has("url") && appConfig.getValues("url").has(key)) {
+            return getUrlBase(proteu) + appConfig.getValues("url").getString(key);
+        } else {
+            return getUrlBase(proteu) + "/";
+        }
+    }
+
     public static String getUrlBase(Proteu proteu) {
-	Values appConfig = proteu.getConfig().getValues("_app:config");
+        Values appConfig = proteu.getConfig().getValues("_app:config");
         String baseUrl = "";
         if (appConfig.has("url") && appConfig.getValues("url").has("base")) {
             baseUrl = appConfig.getValues("url").getString("base");
@@ -221,7 +230,7 @@ public class Config {
     }
 
     public static String getUrlAdmin(Proteu proteu) {
-	Values appConfig = proteu.getConfig().getValues("_app:config");
+        Values appConfig = proteu.getConfig().getValues("_app:config");
         if (appConfig.has("url") && appConfig.getValues("url").has("admin")) {
             return getUrlBase(proteu) + appConfig.getValues("url").getString("admin");
         } else {

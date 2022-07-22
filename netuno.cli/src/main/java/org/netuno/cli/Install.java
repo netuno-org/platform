@@ -18,8 +18,6 @@
 package org.netuno.cli;
 
 import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -35,9 +33,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
@@ -58,7 +53,7 @@ import org.apache.logging.log4j.Logger;
 public class Install implements MainArg {
     private static Logger logger = LogManager.getLogger(Install.class);
 
-    private static String graalVMVersion = "22.0.0.2";
+    private static String graalVMVersion = "22.1.0";
     
     @CommandLine.Option(names = { "-p", "path" }, paramLabel = "path", description = "Path to install.")
     protected String path = ".";
@@ -96,8 +91,9 @@ public class Install implements MainArg {
             System.out.println();
             if (!yes) {
                 System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
-                Scanner scanner = new Scanner(System.in);
-                remove = scanner.nextLine().equalsIgnoreCase("y");
+                try (Scanner scanner = new Scanner(System.in)) {
+                    remove = scanner.nextLine().equalsIgnoreCase("y");
+                }
             }
             System.out.println();
             if (remove == false) {
@@ -111,8 +107,9 @@ public class Install implements MainArg {
             System.out.println();
             if (!yes) {
                 System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
-                Scanner scanner = new Scanner(System.in);
-                force = scanner.nextLine().equalsIgnoreCase("y");
+                try (Scanner scanner = new Scanner(System.in)) {
+                    force = scanner.nextLine().equalsIgnoreCase("y");
+                }
             }
             System.out.println();
             if (force == false) {
@@ -126,8 +123,9 @@ public class Install implements MainArg {
             System.out.println();
             if (!yes) {
                 System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
-                Scanner scanner = new Scanner(System.in);
-                checksum = scanner.nextLine().equalsIgnoreCase("y");
+                try (Scanner scanner = new Scanner(System.in)) {
+                    checksum = scanner.nextLine().equalsIgnoreCase("y");
+                }
             }
             System.out.println();
             if (checksum == false) {
@@ -522,11 +520,6 @@ public class Install implements MainArg {
         return md5;
     }
 
-    private String getChecksum(InputStream is) throws IOException {
-        String md5 = DigestUtils.md5Hex(is);
-        return md5;
-    }
-
     public static void consoleReinstallMessage() {
         System.out.println();
         System.out.println(OS.consoleOutput("@|green Please try to install again. |@ "));
@@ -573,14 +566,15 @@ public class Install implements MainArg {
             builder.directory(new File(graalVMFolder, "bin"));
             StringBuilder versionOutput = new StringBuilder();
             StringBuilder versionError = new StringBuilder();
-            int exitCode = 0;
+            //int exitCode = 0;
             try {
                 Process process = builder.start();
                 StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), versionOutput::append);
                 Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
                 StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), versionError::append);
                 Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-                exitCode = process.waitFor();
+                //exitCode = process.waitFor();
+                process.waitFor();
             } catch (Exception e) {
                 logger.debug("Fail getting the GraalVM version.", e);
                 FileUtils.deleteDirectory(graalVMFolder);

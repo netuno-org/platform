@@ -17,11 +17,12 @@
 
 package org.netuno.tritao.resource;
 
-import com.itextpdf.io.font.FontConstants;
+import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.*;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.font.PdfFontFactory.EmbeddingStrategy;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
@@ -33,7 +34,7 @@ import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.property.AreaBreakType;
+import com.itextpdf.layout.properties.AreaBreakType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.PDFText2HTML;
 import org.apache.tika.Tika;
@@ -54,7 +55,6 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.FileInputStream;
@@ -645,7 +645,7 @@ public class PDF extends ResourceBase {
                     description = "Returns a table with the columns width inserted."
             )
     })
-    public Table table(java.util.List columnWidths) {
+    public Table table(java.util.List<?> columnWidths) {
         float[] widths = new float[columnWidths.size()];
         for (int i = 0; i < columnWidths.size(); i++) {
             widths[i] = Float.valueOf(columnWidths.get(i).toString()).floatValue();
@@ -846,7 +846,7 @@ public class PDF extends ResourceBase {
                     description = "Returns the created table."
             )
     })
-    public Table table(java.util.List columnWidths, boolean largeTable) {
+    public Table table(java.util.List<?> columnWidths, boolean largeTable) {
         float[] widths = new float[columnWidths.size()];
         for (int i = 0; i < columnWidths.size(); i++) {
             widths[i] = Float.valueOf(columnWidths.get(i).toString()).floatValue();
@@ -4184,13 +4184,13 @@ public class PDF extends ResourceBase {
     })
     public PdfFont font(String font) throws IOException {
         if (font.equalsIgnoreCase("helvetica")) {
-            return PdfFontFactory.createFont(FontConstants.HELVETICA);
+            return PdfFontFactory.createFont(StandardFonts.HELVETICA);
         } else if (font.equalsIgnoreCase("helvetica-bold")) {
-            return PdfFontFactory.createFont(FontConstants.HELVETICA_BOLD);
+            return PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
         } else if (font.equalsIgnoreCase("helvetica-boldoblique")) {
-            return PdfFontFactory.createFont(FontConstants.HELVETICA_BOLDOBLIQUE);
+            return PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLDOBLIQUE);
         } else if (font.equalsIgnoreCase("helvetica-oblique")) {
-            return PdfFontFactory.createFont(FontConstants.HELVETICA_OBLIQUE);
+            return PdfFontFactory.createFont(StandardFonts.HELVETICA_OBLIQUE);
         } else {
             return null;
         }
@@ -4341,12 +4341,16 @@ public class PDF extends ResourceBase {
         PdfFont font = PdfFontFactory.createFont(
                 FileSystemPath.absoluteFromStorage(getProteu(), storage),
                 "",
-                embedded
+                embedded ? EmbeddingStrategy.FORCE_EMBEDDED : EmbeddingStrategy.PREFER_EMBEDDED
         );
         return font;
     }
     public PdfFont font(File file, boolean embedded) throws IOException {
-        PdfFont font = PdfFontFactory.createFont(file.getFullPath(), "", embedded);
+        PdfFont font = PdfFontFactory.createFont(
+                file.getFullPath(), 
+                "", 
+                embedded ? EmbeddingStrategy.FORCE_EMBEDDED : EmbeddingStrategy.PREFER_EMBEDDED
+        );
         return font;
     }
     @MethodDoc(translations = {
@@ -4396,12 +4400,16 @@ public class PDF extends ResourceBase {
         PdfFont font = PdfFontFactory.createFont(
                 FileSystemPath.absoluteFromStorage(getProteu(), storage),
                 encoding,
-                embedded
+                embedded ? EmbeddingStrategy.FORCE_EMBEDDED : EmbeddingStrategy.PREFER_EMBEDDED
         );
         return font;
     }
     public PdfFont font(File file, String encoding, boolean embedded) throws IOException {
-        PdfFont font = PdfFontFactory.createFont(file.getFullPath(), encoding, embedded);
+        PdfFont font = PdfFontFactory.createFont(
+                file.getFullPath(),
+                encoding,
+                embedded ? EmbeddingStrategy.FORCE_EMBEDDED : EmbeddingStrategy.PREFER_EMBEDDED
+        );
         return font;
     }
 
@@ -4550,7 +4558,7 @@ public class PDF extends ResourceBase {
                     description = "Returns the extracted content."
             )
     })
-    public Values extract(Storage storage) throws TikaException, IOException, SAXException {
+    public Values extract(Storage storage) throws Exception {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage));
@@ -4562,7 +4570,7 @@ public class PDF extends ResourceBase {
         }
     }
 
-    public Values extract(File file) throws TikaException, IOException, SAXException {
+    public Values extract(File file) throws Exception {
         try (java.io.InputStream in = file.inputStream()) {
             return extract(in);
         }
@@ -4598,10 +4606,10 @@ public class PDF extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Returns the extracted content."
             )
-    })public Values extract(InputStream in) throws TikaException, IOException, SAXException {
+    })public Values extract(InputStream in) throws Exception {
         return extract(in);
     }
-    public Values extract(java.io.InputStream in) throws TikaException, IOException, SAXException {
+    public Values extract(java.io.InputStream in) throws Exception {
         StringWriter any = new StringWriter();
         BodyContentHandler handler = new BodyContentHandler(any);
         Metadata metadata = new Metadata();
