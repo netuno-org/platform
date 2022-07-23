@@ -9,6 +9,12 @@
  *
  */
 
-_out.json(
-    _remote.init().get("https://api.ipify.org?format=json")
-)
+const response = _remote.init().get("https://api.ipify.org?format=json")
+
+if (response.ok()) {
+  if (response.isJSON()) {
+    _out.json(
+      response
+    )
+  }
+}
