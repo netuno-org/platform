@@ -46,6 +46,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.psamata.io.MimeTypes;
+import org.netuno.psamata.net.Remote;
 import org.netuno.psamata.script.GraalRunner;
 
 /**
@@ -2241,6 +2242,10 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return result;
     }
 
+    public static synchronized Values fromJSON(Remote.Response content) {
+        return fromJSON(content.toString());
+    }
+
     public static synchronized Values fromJSON(String content) {
         if (content == null || content.isEmpty()) {
             return new Values();
@@ -2846,7 +2851,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return map();
     }
 
-    public Map map() {
+    public Map<String, Object> map() {
         return new Values(objects).objects;
     }
 
