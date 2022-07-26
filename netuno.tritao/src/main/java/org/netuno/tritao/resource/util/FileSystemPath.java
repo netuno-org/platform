@@ -18,7 +18,7 @@
 package org.netuno.tritao.resource.util;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.psamata.io.Path;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.resource.Storage;
 
@@ -42,15 +42,15 @@ public class FileSystemPath {
             }
             if (storage.path() != null && !storage.path().isEmpty()) {
                 path += File.separator +
-                        Path.safeFileSystemPath(storage.path());
+                        SafePath.fileSystemPath(storage.path());
             }
         } else if (storage.isDatabase()) {
             if (storage.path() != null && !storage.path().isEmpty()) {
                 path = Config.getPathAppStorageDatabase(proteu);
                 path += File.separator +
-                        Path.safePath(storage.getBase().substring("database/".length())) +
+                        SafePath.path(storage.getBase().substring("database/".length())) +
                         File.separator +
-                        Path.safeFileSystemPath(storage.path());
+                        SafePath.fileSystemPath(storage.path());
             }
         }
         return path;

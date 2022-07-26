@@ -30,7 +30,7 @@ import org.graalvm.polyglot.Value;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.io.Path;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.GraalRunner;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
@@ -190,7 +190,7 @@ public class Exec extends ResourceBaseValues {
             })
     }, returns = {})
     public Values core(String path, boolean preserveContext) throws ResourceException {
-        path = Path.safeFileSystemPath(path);
+        path = SafePath.fileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(getProteu()) + "/" +  path);
         if (scriptPath != null) {
             return getHili().runScriptSandbox(Config.getPathAppCore(getProteu()), path, preserveContext);
@@ -244,7 +244,7 @@ public class Exec extends ResourceBaseValues {
             })
     }, returns = {})
     public Values service(String path, boolean preserveContext) throws ResourceException {
-        path = Path.safeFileSystemPath(path);
+        path = SafePath.fileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + "/" +  path);
         if (scriptPath != null) {
             return getHili().runScriptSandbox(Config.getPathAppServices(getProteu()), path, preserveContext);

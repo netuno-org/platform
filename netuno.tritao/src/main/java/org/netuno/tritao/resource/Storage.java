@@ -23,7 +23,7 @@ import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
-import org.netuno.psamata.io.Path;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
@@ -78,7 +78,7 @@ public class Storage extends ResourceBase {
         super(proteu, hili);
         base = base.toLowerCase();
         if (setBase(base)) {
-            this.path = Path.safePath(path);
+            this.path = SafePath.path(path);
         }
     }
 
@@ -87,7 +87,7 @@ public class Storage extends ResourceBase {
         base = base.toLowerCase();
         if (setBase(base)) {
         	this.hasFile = true;
-            this.path = (path != null && !path.isEmpty() ? Path.safePath(path) + "/" : "") + Path.safeFileName(file);
+            this.path = (path != null && !path.isEmpty() ? SafePath.path(path) + "/" : "") + SafePath.fileName(file);
         }
     }
 
@@ -146,7 +146,7 @@ public class Storage extends ResourceBase {
         )
     })
     public boolean setBase(String base) {
-        this.base = Path.safePath(base);
+        this.base = SafePath.path(base);
         database = false;
         fileSystem = false;
         fileSystemPrivate = false;

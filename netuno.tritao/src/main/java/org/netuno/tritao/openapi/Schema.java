@@ -29,6 +29,7 @@ import org.leadpony.justify.api.ProblemHandler;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.WebMaster;
@@ -270,8 +271,8 @@ public class Schema extends WebMaster {
     }
 
     private void loadDataWithSchema(Values data, String path) {
-        path = org.netuno.psamata.io.Path.safeFileSystemPath(path);
-        String scriptPath = "/_schema/" + org.netuno.psamata.io.Path.safeFileSystemPath(path);
+        path = SafePath.fileSystemPath(path);
+        String scriptPath = "/_schema/" + SafePath.fileSystemPath(path);
         if (ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + scriptPath) != null) {
             data.unset("_schema");
             try {

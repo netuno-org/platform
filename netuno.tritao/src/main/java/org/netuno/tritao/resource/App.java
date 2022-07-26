@@ -21,7 +21,7 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
-import org.netuno.psamata.io.Path;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
@@ -882,7 +882,7 @@ public class App extends ResourceBase {
     )
     public File file(String path) {
         File file = new File(
-            Path.safeFileSystemPath(path),
+            SafePath.fileSystemPath(path),
             Config.getPathAppBase(getProteu())
         );
         if (file.exists()) {
@@ -933,7 +933,7 @@ public class App extends ResourceBase {
 	)
     public boolean isFile(String path) {
         File file = new File(
-                Path.safeFileSystemPath(path),
+                SafePath.fileSystemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         return file.exists() && file.isFile();
@@ -979,7 +979,7 @@ public class App extends ResourceBase {
 	)
     public File folder(String path) {
         File file = new File(
-                Path.safeFileSystemPath(path),
+                SafePath.fileSystemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         if (file.exists()) {
@@ -1031,7 +1031,7 @@ public class App extends ResourceBase {
 	)
     public boolean isFolder(String path) {
         File file = new File(
-                Path.safeFileSystemPath(path),
+                SafePath.fileSystemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         return file.exists() && file.isDirectory();

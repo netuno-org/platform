@@ -292,7 +292,7 @@ public class ProteuEvents implements Events {
                         dsH2.setMaxConnections(appConfig['db'].getInt('maxConnections', 10));
                         */
                         org.h2.jdbcx.JdbcDataSource dsH2 = new org.h2.jdbcx.JdbcDataSource();
-                        String dbURLConfigs = ";IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;";
+                        String dbURLConfigs = ";CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_UPPER=FALSE;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;";
                         try {
                             if (db.hasKey("url")) {
                                 dsH2.setURL(db.getString("url"));
