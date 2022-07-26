@@ -24,7 +24,7 @@ import org.netuno.psamata.PsamataException;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.MimeTypes;
-import org.netuno.psamata.io.Path;
+import org.netuno.psamata.io.SafePath;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -1192,15 +1192,15 @@ public class Proteu {
     }
 
     public String safePath(String path) {
-        return Path.safePath(path);
+        return SafePath.path(path);
     }
 
     public String safeFileName(String fileName) {
-        return Path.safeFileName(fileName);
+        return SafePath.fileName(fileName);
     }
 
     public String safeFileSystemPath(String path) {
-        return Path.safeFileSystemPath(path);
+        return SafePath.fileSystemPath(path);
     }
 
     public Values newValues() {
