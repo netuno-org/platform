@@ -78,12 +78,12 @@ public class File {
      * @param jailPath Restrict file only inside this path
      */
     public File(final String filePath, final String jailPath) {
-        path = Path.safePath(filePath);
+        path = SafePath.path(filePath);
         jail = jailPath;
-        if (!path.startsWith(Path.safePath(jail))) {
-            path = Path.safePath(new java.io.File(jail, path).getAbsolutePath());
+        if (!path.startsWith(SafePath.path(jail))) {
+            path = SafePath.path(new java.io.File(jail, path).getAbsolutePath());
         }
-        physicalPath = Path.safeFileSystemPath(path);
+        physicalPath = SafePath.fileSystemPath(path);
     }
     /**
      * File.
@@ -92,7 +92,7 @@ public class File {
      * @param fileBytes Bytes
      */
     public File(final String filePath, final String fileContentType, final ByteArrayInputStream fileBytes) {
-        path = Path.safePath(filePath);
+        path = SafePath.path(filePath);
         physicalPath = "";
         contentType = fileContentType;
         bytes = fileBytes;
@@ -105,8 +105,8 @@ public class File {
      */
 
     public File(final String filePath, final String filePhysicalPath, final String fileContentType) {
-        path = Path.safePath(filePath);
-        physicalPath = Path.safeFileSystemPath(filePhysicalPath);
+        path = SafePath.path(filePath);
+        physicalPath = SafePath.fileSystemPath(filePhysicalPath);
         contentType = fileContentType;
     }
     @MethodDoc(translations = {
@@ -324,7 +324,7 @@ public class File {
     	return getSequenceName(targetPath, fileName);
     }
     public static String getSequenceName(java.io.File targetPath, String fileName) {
-        fileName = Path.safeFileName(fileName);
+        fileName = SafePath.fileName(fileName);
         return getSequenceName(targetPath.getAbsolutePath(), fileName);
     }
     /**
@@ -372,7 +372,7 @@ public class File {
 
             }, returns = {})
     public static String getSequenceName(String targetPath, String fileName) {
-        fileName = Path.safeFileName(fileName);
+        fileName = SafePath.fileName(fileName);
         String sequenceFileName = fileName;
         for (int i = 1; i < 1000000; i++) {
             if (new java.io.File(targetPath + java.io.File.separator + sequenceFileName).exists()) {
@@ -703,10 +703,10 @@ public class File {
             if (pathToWriteFile.startsWith(jail)) {
                 pathToWriteFile = pathToWriteFile.substring(jail.length());
             }
-            pathToWriteFile = Path.safeFileSystemPath(pathToWriteFile);
+            pathToWriteFile = SafePath.fileSystemPath(pathToWriteFile);
             path = pathToWriteFile;
             pathToWriteFile = jail + java.io.File.separator + pathToWriteFile;
-            pathToWriteFile = Path.safeFileSystemPath(pathToWriteFile);
+            pathToWriteFile = SafePath.fileSystemPath(pathToWriteFile);
         }
         FileUtils.delete(pathToWriteFile, FileRecursionLevel.NONE, false, "");
         if (physicalPath.equals("")) {
@@ -797,12 +797,12 @@ public class File {
     }, returns = {})
     public boolean copy(String destPath, boolean override) throws IOException {
         if (!jail.isEmpty()) {
-            destPath = Path.safeFileSystemPath(destPath);
+            destPath = SafePath.fileSystemPath(destPath);
             if (destPath.startsWith(jail)) {
                 destPath = destPath.substring(jail.length());
             }
             destPath = jail + java.io.File.separator + destPath;
-            destPath = Path.safeFileSystemPath(destPath);
+            destPath = SafePath.fileSystemPath(destPath);
         }
         path = fullPath();
         java.io.File fOrig = new java.io.File(path);
@@ -849,12 +849,12 @@ public class File {
     }, returns = {})
     public boolean copyFiles(String destPath, String extension) throws IOException {
         if (!jail.isEmpty()) {
-            destPath = Path.safeFileSystemPath(destPath);
+            destPath = SafePath.fileSystemPath(destPath);
             if (destPath.startsWith(jail)) {
                 destPath = destPath.substring(jail.length());
             }
             destPath = jail + java.io.File.separator + destPath;
-            destPath = Path.safeFileSystemPath(destPath);
+            destPath = SafePath.fileSystemPath(destPath);
         }
         for (File file : list()) {
             if (!file.isDirectory()) {
@@ -989,12 +989,12 @@ public class File {
 
     public boolean renameTo(String destPath) {
         if (!jail.isEmpty()) {
-            destPath = Path.safeFileSystemPath(destPath);
+            destPath = SafePath.fileSystemPath(destPath);
             if (destPath.startsWith(jail)) {
                 destPath = destPath.substring(jail.length());
             }
             destPath = jail + java.io.File.separator + destPath;
-            destPath = Path.safeFileSystemPath(destPath);
+            destPath = SafePath.fileSystemPath(destPath);
         }
         java.io.File f = new java.io.File(fullPath());
         return f.renameTo(new java.io.File(destPath));
@@ -1032,7 +1032,7 @@ public class File {
     }, returns = {})
     public boolean isDirectory() {
         if (!jail.isEmpty()) {
-            path = Path.safeFileSystemPath(path);
+            path = SafePath.fileSystemPath(path);
         }
         java.io.File f = new java.io.File(this.physicalPath());
         return f.isDirectory();
@@ -1050,7 +1050,7 @@ public class File {
     }, returns = {})
     public boolean isFile() {
         if (!jail.isEmpty()) {
-            path = Path.safeFileSystemPath(path);
+            path = SafePath.fileSystemPath(path);
         }
         java.io.File f = new java.io.File(this.physicalPath());
         return f.isFile();
@@ -1072,7 +1072,7 @@ public class File {
     }, returns = {})
     public long lastModified() {
         if (!jail.isEmpty()) {
-            path = Path.safeFileSystemPath(path);
+            path = SafePath.fileSystemPath(path);
         }
         java.io.File f = new java.io.File(fullPath());
         return f.lastModified();
@@ -1090,7 +1090,7 @@ public class File {
     }, returns = {})
     public List<File> list() {
         if (!jail.isEmpty()) {
-            path = Path.safeFileSystemPath(path);
+            path = SafePath.fileSystemPath(path);
         }
         java.io.File f = new java.io.File(fullPath());
         List<File> files = new ArrayList<>();
@@ -1155,7 +1155,7 @@ public class File {
     }, returns = {})
     public boolean exists() {
     	if (!jail.isEmpty()) {
-            path = Path.safeFileSystemPath(path);
+            path = SafePath.fileSystemPath(path);
         }
         java.io.File f = new java.io.File(path);
         return f.exists();

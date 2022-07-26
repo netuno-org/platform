@@ -21,7 +21,7 @@ package org.netuno.psamata.io;
  * Ensures safe paths.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Path {
+public class SafePath {
 
     private static String OS = System.getProperty("os.name");
 
