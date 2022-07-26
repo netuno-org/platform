@@ -25,7 +25,7 @@ public class Path {
 
     private static String OS = System.getProperty("os.name");
 
-    public static String safePath(String path) {
+    public static String path(String path) {
         path = path.replace("\\", "/");
         while (true) {
             if (path.indexOf("./") != -1) {
@@ -65,15 +65,15 @@ public class Path {
         return path;
     }
 
-    public static String safeFileName(String fileName) {
-        fileName = safePath(fileName);
+    public static String fileName(String fileName) {
+        fileName = path(fileName);
         fileName = fileName.replace("/", "");
         fileName = fileName.replace("\\", "");
         return fileName;
     }
 
-    public static String safeFileSystemPath(String path) {
-        path = safePath(path);
+    public static String fileSystemPath(String path) {
+        path = path(path);
         path = path.replace("\\", java.io.File.separator);
         path = path.replace("/", java.io.File.separator);
         return path;
