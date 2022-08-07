@@ -48,5 +48,7 @@ protect/out/proguard/*
 
 install/
 
+!src/main/java/org/netuno/cli/install
+
 src/main/resources/
 
