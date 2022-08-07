@@ -19,18 +19,22 @@ package org.netuno.cli;
 
 import java.io.File;
 
+import java.io.FileInputStream;
 import java.net.URL;
 import java.time.Year;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import org.apache.commons.lang3.SystemUtils;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.fusesource.jansi.AnsiConsole;
+import org.netuno.cli.install.Install;
+import org.netuno.cli.migrate.Migrate;
 import org.netuno.cli.monitoring.Stats;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
@@ -52,7 +56,13 @@ public final class Main implements Runnable {
     private static Logger logger = LogManager.getLogger(Main.class);
 
     static {
-        System.setProperty("log4j.configurationFile", "logs/log.xml");
+        try {
+            Configurator.initialize(null, "logs/log.xml");
+            Configurator.reconfigure();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         /*try {
             Class.forName("org.h2.Driver");
         } catch (ClassNotFoundException e) {
@@ -112,46 +122,42 @@ public final class Main implements Runnable {
             // Disable DNS Cache
             java.security.Security.setProperty("networkaddress.cache.ttl", "0");
 
-            /*System.out.println(GraalRunner.isGraal());
-
-            Thread script1 = new Thread(() -> {
-                while (true) {
-                    new GraalRunner("js").eval("console.log('thread 1')");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            Thread script2 = new Thread(() -> {
-                while (true) {
-                    GraalRunner graalRunner = new GraalRunner("js");
-                    String ai = graalRunner.set("test", "oi")
-                            .eval("console.log('thread 2'+ test); var ai = 'aaaa';")
-                    .getString("ai");
-                    System.out.println(ai);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            script2.start();
-            script1.start();
-             */
             System.out.println();
             System.out.println();
             System.out.println();
+            System.out.println(OS.consoleOutput("@|cyan                       oolccccccllo                      |@"));
+            System.out.println(OS.consoleOutput("@|cyan                 dlcc::::::::::;;;;;;::ld                |@"));
+            System.out.println(OS.consoleOutput("@|cyan              dcccccccccccccc::::;;;;;;;;;co             |@"));
+            System.out.println(OS.consoleOutput("@|cyan            lcccllllllllllllccc::::;;;;;;;;;:cd          |@"));
+            System.out.println(OS.consoleOutput("@|cyan          occlllllllllllllllllcc::::;;;;;;;;;;;:         |@"));
+            System.out.println(OS.consoleOutput("@|cyan         lloooolllllllllllllllcc::::;;;;;;;;;;,,,l       |@"));
+            System.out.println(OS.consoleOutput("@|cyan       dllooooooooooollllllllccc::::;;;;;;;;;;,,,,:      |@"));
+            System.out.println(OS.consoleOutput("@|cyan      dlllooooooooooooooooollllccc::::::;;;;;;,,,,':     |@"));
+            System.out.println(OS.consoleOutput("@|cyan     dclllooooooooooooooooollllllcccccccc::::;,,,,,'c    |@"));
+            System.out.println(OS.consoleOutput("@|cyan     c:cccloooooooooooooollllllccccccccccccc::;;;;,',    |@"));
+            System.out.println(OS.consoleOutput("@|cyan    dc:ccccclllloooooollllllcccccccccccccccc:;;;;;,''l   |@"));
+            System.out.println(OS.consoleOutput("@|cyan    o:cccllccllcccccccccccccccccccccccccccc:;;;;;;,'':   |@"));
+            System.out.println(OS.consoleOutput("@|cyan    o::::ccllllllcccc:::::::::::ccccccccc::;;;;;;;,'';   |@"));
+            System.out.println(OS.consoleOutput("@|cyan    o:cccc:ccccccccccccc::::::::;:::::::;;;;;;;;;,'''c   |@"));
+            System.out.println(OS.consoleOutput("@|cyan     ::::ccccc::::::::cccccccccc:::::;;,,,,,,,,,,'..'o   |@"));
+            System.out.println(OS.consoleOutput("@|cyan     oc::::::cccccc:::::::::cccccccc:;;;;;,,,,,,'...;    |@"));
+            System.out.println(OS.consoleOutput("@|cyan      lccc:::::::cccccccc:::::::::;;;;;;;;;;;;;,''.,d    |@"));
+            System.out.println(OS.consoleOutput("@|cyan       cccccc:::;;:::::cccccccc:;;;,,,,,,,,,,,'...'o     |@"));
+            System.out.println(OS.consoleOutput("@|cyan        c:ccccccc:::;;;;:::;;;;;;;;;;;;;;;;,,'...,o      |@"));
+            System.out.println(OS.consoleOutput("@|cyan         l::::cccccc:::;;,,,,,,,,,,,,,,,,,,''..':        |@"));
+            System.out.println(OS.consoleOutput("@|cyan           c:;:::cc:::;;;;;,,,,,,,,,,,'''.....,o         |@"));
+            System.out.println(OS.consoleOutput("@|cyan             l:;;,,,,;;;;;;;;;;;;,,,'''....';o           |@"));
+            System.out.println(OS.consoleOutput("@|cyan               dc;,,,,,,,,,,,,,,,''''''',:o              |@"));
+            System.out.println(OS.consoleOutput("@|cyan                   ol:,''.........',;co                  |@"));
+            System.out.println(OS.consoleOutput("@|cyan                       dl:;;;,;;:ld                      |@"));
             System.out.println();
-            System.out.println(OS.consoleOutput("@|cyan    ooooo      ooo oooooooooooo ooooooooooooo ooooo     ooo ooooo      ooo   .oooooo.      |@"));
-            System.out.println(OS.consoleOutput("@|cyan    `888b.     `8' `888'     `8 8'   888   `8 `888'     `8' `888b.     `8'  d8P'  `Y8b     |@"));
-            System.out.println(OS.consoleOutput("@|cyan     8 `88b.    8   888              888       888       8   8 `88b.    8  888      888    |@"));
-            System.out.println(OS.consoleOutput("@|cyan     8   `88b.  8   888oooo8         888       888       8   8   `88b.  8  888      888    |@"));
-            System.out.println(OS.consoleOutput("@|cyan     8     `88b.8   888    \"         888       888       8   8     `88b.8  888      888    |@"));
-            System.out.println(OS.consoleOutput("@|cyan     8       `888   888       o      888       `88.    .8'   8       `888  `88b    d88'    |@"));
-            System.out.println(OS.consoleOutput("@|cyan    o8o        `8  o888ooooood8     o888o        `YbodP'    o8o        `8   `Y8bood8P'     |@"));
+            System.out.println();
+            System.out.println(OS.consoleOutput("@|cyan    N     N  eEEEee  TtttttT  u     u  N     N   oOOo    |@"));
+            System.out.println(OS.consoleOutput("@|cyan    n n   N  E          T     u     u  n n   N  O    O   |@"));
+            System.out.println(OS.consoleOutput("@|cyan    n  N  n  eEEE       t     U     U  n  N  n  o    o   |@"));
+            System.out.println(OS.consoleOutput("@|cyan    N   n n  E          t     U     U  N   n n  O    O   |@"));
+            System.out.println(OS.consoleOutput("@|cyan    N     n  eEEEee     T      UuuuU   N     n   OooO    |@"));
+            System.out.println(OS.consoleOutput("@|cyan                                                         |@"));
             System.out.println();
             System.out.println();
             System.out.println("   © " + Year.now().getValue() + " netuno.org // v" + Config.VERSION + ":" + buildNumber());
@@ -212,6 +218,7 @@ public final class Main implements Runnable {
             commandLine.addSubcommand("install", new Install());
             commandLine.addSubcommand("clone", new Clone());
             commandLine.addSubcommand("stats", new Stats());
+            commandLine.addSubcommand("migrate", new Migrate());
 
             commandLineParseResult = commandLine.parseArgs(args);
             commandLineList = commandLineParseResult.asCommandLineList();
