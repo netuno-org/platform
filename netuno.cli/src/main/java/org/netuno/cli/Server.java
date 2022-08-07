@@ -17,6 +17,7 @@
 
 package org.netuno.cli;
 
+import org.netuno.cli.install.GraalVMSetup;
 import org.netuno.cli.monitoring.Monitor;
 import com.vdurmont.emoji.EmojiParser;
 import org.apache.logging.log4j.LogManager;
@@ -26,8 +27,21 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+/*
+import java.net.UnknownHostException;
+
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
- 
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
+import org.eclipse.jetty.http2.HTTP2Cipher;
+
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+*/
+
 import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.StreamGobbler;
 import org.netuno.psamata.Values;
@@ -39,45 +53,26 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
-import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
-import org.eclipse.jetty.http2.HTTP2Cipher;
+
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
-import org.eclipse.jetty.server.handler.gzip.GzipHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.DateCache;
 import org.eclipse.jetty.util.component.LifeCycle;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.websocket.Decoder;
-import javax.websocket.Encoder;
-import javax.websocket.Extension;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpointConfig;
+
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.FileSessionDataStore;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import org.netuno.cli.ws.WSServletContextHandler;
 import org.netuno.psamata.crypto.RandomString;
 import org.netuno.psamata.net.Remote;
@@ -133,7 +128,7 @@ public class Server implements MainArg {
     
     public void run() {
         try {
-            Install.graalCheckAndSetup();
+            GraalVMSetup.checkAndSetup();
 
             Config.setName(name);
             
