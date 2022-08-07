@@ -17,14 +17,13 @@
 
 package org.netuno.cli;
 
-import org.apache.commons.lang3.SystemUtils;
+import org.netuno.cli.install.GraalVMSetup;
+import org.netuno.cli.install.Install;
 import org.netuno.cli.utils.OS;
-import org.netuno.cli.utils.RunCommand;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.crypto.RandomString;
-import org.netuno.psamata.net.Remote;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -409,7 +408,7 @@ public class App implements MainArg {
     protected String github = "";
 
     public void run() throws Exception {
-        Install.graalCheckAndSetup();
+        GraalVMSetup.checkAndSetup();
         System.err.println();
         System.err.println();
         if (!config.isEmpty()) {
