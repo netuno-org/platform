@@ -20,6 +20,8 @@ package org.netuno.cli;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.netuno.cli.install.GraalVMSetup;
+import org.netuno.cli.install.Install;
 import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.RunCommand;
 import org.netuno.psamata.Values;
@@ -56,7 +58,7 @@ public class Clone implements MainArg {
     protected String target = "";
 
     public void run() throws IOException, SQLException, ClassNotFoundException, ScriptException {
-        Install.graalCheckAndSetup();
+        GraalVMSetup.checkAndSetup();
         System.err.println();
         System.out.print(OS.consoleOutput("@|yellow Clone Application|@ "));
         System.err.println();
