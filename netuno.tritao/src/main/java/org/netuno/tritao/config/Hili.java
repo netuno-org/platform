@@ -26,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.velocity.script.VelocityScriptEngineFactory;
 import org.cajuscript.CajuScriptEngineFactory;
-import org.develnext.jphp.scripting.JPHPScriptEngineFactory;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory;
 import org.jruby.embed.jsr223.JRubyEngineFactory;
@@ -74,7 +73,6 @@ public class Hili {
 
     private ScriptEngine scriptEngineVelocity = null;
     private ScriptEngine scriptEngineCaju = null;
-    private ScriptEngine scriptEnginePHP = null;
     private ScriptEngine scriptEngineKotlin = null;
     private ScriptEngine scriptEngineGroovy = null;
     private ScriptEngine scriptEnginePython = null;
@@ -100,9 +98,6 @@ public class Hili {
         CajuScriptEngineFactory cajuEngineFactory = new CajuScriptEngineFactory();
         ScriptRunner.getScriptEngineManager().registerEngineName("caju", cajuEngineFactory);
 
-        JPHPScriptEngineFactory phpEngineFactory = new JPHPScriptEngineFactory();
-        ScriptRunner.getScriptEngineManager().registerEngineName("php", phpEngineFactory);
-
         KotlinJsr223JvmLocalScriptEngineFactory kotlinEngineFactory = new KotlinJsr223JvmLocalScriptEngineFactory();
         ScriptRunner.getScriptEngineManager().registerEngineName("kotlin", kotlinEngineFactory);
 
@@ -117,9 +112,6 @@ public class Hili {
 
         ScriptRunner.getExtensions().addAll(
                 cajuEngineFactory.getExtensions()
-        );
-        ScriptRunner.getExtensions().addAll(
-                phpEngineFactory.getExtensions()
         );
         ScriptRunner.getExtensions().addAll(
                 groovyEngineFactory.getExtensions()
@@ -284,13 +276,6 @@ public class Hili {
         return scriptEngineCaju;
     }
 
-    private synchronized ScriptEngine getPHPEngine() {
-        if (scriptEnginePHP == null) {
-            scriptEnginePHP = ScriptRunner.getScriptEngineManager().getEngineByName("php");
-        }
-        return scriptEnginePHP;
-    }
-
     private synchronized ScriptEngine getKotlinEngine() {
         if (scriptEngineKotlin == null) {
             scriptEngineKotlin = ScriptRunner.getScriptEngineManager().getEngineByName("kotlin");
@@ -384,15 +369,6 @@ public class Hili {
             Object definition = Config.getScriptingDefinitions(proteu, this).get(key);
             bindings.put("_" + key.toUpperCase(), definition);
         }*/
-        if (scriptName.endsWith("php/test")) {
-            for (String key : Config.getScriptingResources(proteu, this).keys()) {
-                Object resource = Config.getScriptingResources(proteu, this).get(key);
-                if (key.equals("out")) {
-                    bindings.put("_" + key, resource);
-                }
-            }
-            return;
-        }
         for (String key : Config.getScriptingResources(proteu, this).keys()) {
             Object resource = Config.getScriptingResources(proteu, this).get(key);
             if (key.equals("log")) {
@@ -490,13 +466,6 @@ public class Hili {
                     }
                     if (scriptPath.toLowerCase().endsWith(".cj")) {
                         ScriptEngine engine = getCajuEngine();
-                        Bindings bindings = runScript(engine, path, scriptName, script, fromOnError);
-                        if (bindings == null) {
-                            return null;
-                        }
-                        return new Values(bindings);
-                    } else if (scriptPath.toLowerCase().endsWith(".php")) {
-                        ScriptEngine engine = getPHPEngine();
                         Bindings bindings = runScript(engine, path, scriptName, script, fromOnError);
                         if (bindings == null) {
                             return null;

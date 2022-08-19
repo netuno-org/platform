@@ -32,8 +32,8 @@ import org.netuno.psamata.io.InputStream;
  * Build Http Protocol
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Http {
-    static Logger logger = LogManager.getLogger(Http.class);
+public class HTTP {
+    static Logger logger = LogManager.getLogger(HTTP.class);
     private StringBuilder clientHttp = new StringBuilder();
     private Values requestHead;
     private Values requestCookie;
@@ -49,7 +49,7 @@ public class Http {
      * Build Http, come of the client
      * @param in Data input of the client
      */
-    public Http(org.netuno.psamata.io.InputStream in) throws ProteuException {
+    public HTTP(org.netuno.psamata.io.InputStream in) throws ProteuException {
         try {
             this.in = in;
             String HEADrequest = "";

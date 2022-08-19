@@ -314,7 +314,7 @@ public class Proteu {
                 data.clear();
             }
             if (request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
-                Http.buildPostMultipart(new org.netuno.psamata.io.InputStream(request.getInputStream()), requestHeader, requestPost);
+                HTTP.buildPostMultipart(new org.netuno.psamata.io.InputStream(request.getInputStream()), requestHeader, requestPost);
             }
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
@@ -392,7 +392,7 @@ public class Proteu {
         }
         requestHeader.set("URL", url);
         if (queryString != null && !queryString.equals("")) {
-            requestGet = new Values(Http.buildForm(queryString), "&", "="); // "UTF-8", Http.getCharset(requestHead)
+            requestGet = new Values(HTTP.buildForm(queryString), "&", "="); // "UTF-8", Http.getCharset(requestHead)
         }
     }
     
