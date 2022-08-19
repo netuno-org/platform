@@ -225,7 +225,7 @@ do
             Write-Host " Downloading..." -ForegroundColor red
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             $WebClient = New-Object System.Net.WebClient
-            $WebClient.DownloadFile("https://sourceforge.net/projects/proguard/files/latest/download", "$PSScriptRoot\proguard.zip")
+            $WebClient.DownloadFile("https://github.com/Guardsquare/proguard/releases/download/v7.2.2/proguard-7.2.2.zip", "$PSScriptRoot\proguard.zip")
             Write-Host " Download Complete." -ForegroundColor green
 
             Write-Host ""

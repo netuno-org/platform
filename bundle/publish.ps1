@@ -34,6 +34,7 @@ cd netuno.tritao/protect
 cd ../..
 
 cd bundle
+npm install
 node index.js
 cd ..
 
