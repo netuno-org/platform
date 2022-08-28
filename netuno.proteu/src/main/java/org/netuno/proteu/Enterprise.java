@@ -145,13 +145,13 @@ public class Enterprise extends HttpServlet {
         }
 
         try {
-            List<String> packagesWhiteList = (List<String>)Class.forName("org.netuno.cli.Config")
-                    .getMethod("getPackagesWhiteList")
+            List<String> packagesScan = (List<String>)Class.forName("org.netuno.cli.Config")
+                    .getMethod("getPackagesScan")
                     .invoke(
                             null
                     );
-            Config.getPackagesWhiteList().addAll(
-                    packagesWhiteList
+            Config.getPackagesScan().addAll(
+                    packagesScan
             );
         } catch (Throwable e) {
             logger.error("Loading Netuno Server packages white list: "+ e.getMessage());
@@ -159,17 +159,17 @@ public class Enterprise extends HttpServlet {
 
         ScanResult scanResult = new ClassGraph()
                 .disableRuntimeInvisibleAnnotations()
-                .whitelistPackages(Config.getPackagesWhiteList().toArray(new String[0]))
+                .acceptPackages(Config.getPackagesScan().toArray(new String[0]))
                 .enableAllInfo()
                 .scan();
         String initClassPath = "";
         try {
-            ClassInfoList initClasses = scanResult.getClassesWithAnnotation(_Init.class.getName());
+            ClassInfoList initClasses = scanResult.getClassesWithAnnotation(Initialization.class.getName());
             for (String _initClassPath : initClasses.getNames()) {
                 initClassPath = _initClassPath;
                 logger.info("Loading init classes in "+ initClassPath);
                 Class clazz = Class.forName(initClassPath);
-                Method init = clazz.getMethod("_init", null);
+                Method init = clazz.getMethod("onInitialize", null);
                 init.invoke(null);
                 logger.info("Init class "+ clazz.getName() +" invoked.");
             }
@@ -178,14 +178,14 @@ public class Enterprise extends HttpServlet {
         }
         String webClassPath = "";
         try {
-            ClassInfoList webClasses = scanResult.getClassesWithAnnotation(_Web.class.getName());
+            ClassInfoList webClasses = scanResult.getClassesWithAnnotation(Path.class.getName());
             for (String _webClassPath : webClasses.getNames()) {
                 webClassPath = _webClassPath;
                 logger.info("Loading web classes in "+ webClassPath);
                 Class<?> clazz = Class.forName(webClassPath);
-                _Web _web = clazz.getAnnotation(_Web.class);
-                logger.info("Web class "+ clazz.getName() +" loaded with link "+ _web.url());
-                Config.getWebs().put(_web.url(), clazz);
+                Path path = clazz.getAnnotation(Path.class);
+                logger.info("Web class "+ clazz.getName() +" linked with path "+ path.value() +".");
+                Config.getWebs().put(path.value(), clazz);
             }
         } catch (Throwable e) {
             logger.fatal("Trying web "+ webClassPath +"...", e);
@@ -463,7 +463,6 @@ public class Enterprise extends HttpServlet {
                     }
                 } catch (Throwable t) {
                     logger.error("Script \"" + SCRIPT_END + "\": " + scriptClosePath, t);
-                    throw new Error(t);
                 } finally {
                     try {
                         Config.setStarting(false);
@@ -557,11 +556,24 @@ public class Enterprise extends HttpServlet {
                         throw new Error(t);
                     } finally {
                         try {
-                            if (proteu != null) {
-                                //proteu.clear();
+
+                            try {
+                                if (faros != null && faros instanceof AutoCloseable) {
+                                    ((AutoCloseable)faros).close();
+                                }
+                            } catch (Throwable t) {
+                                logger.error("Enterprise Cleaning Faros", t);
+                            }
+                            try {
+                                if (proteu != null) {
+                                    proteu.clear();
+                                }
+                            } catch (Throwable t) {
+                                logger.error("Enterprise Cleaning Proteu", t);
                             }
                             //System.gc();
                         } finally {
+                            faros = null;
                             proteu = null;
                             Config.initialized();
                         }
