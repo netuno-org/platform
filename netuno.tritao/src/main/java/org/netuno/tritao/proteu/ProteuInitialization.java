@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.config;
+package org.netuno.tritao.hili;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.netuno.proteu._Init;
+import org.netuno.proteu.Initialization;
+import org.netuno.tritao.config.Config;
 
 import java.util.regex.Pattern;
 
@@ -27,12 +28,12 @@ import java.util.regex.Pattern;
  * Proteu Initialization - Operations on the first request
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Init
-public class ProteuInit {
+@Initialization
+public class ProteuInitialization {
     private static Logger logger = LogManager.getLogger(ProteuEvents.class);
 
-    public static void _init() {
-        org.netuno.proteu.Config.setFarosClassPath("org.netuno.tritao.config.Hili");
+    public static void onInitialize() {
+        org.netuno.proteu.Config.setFarosClassPath(Hili.class.getName());
 
         org.netuno.proteu.Config.setUpload("tmp/");
         

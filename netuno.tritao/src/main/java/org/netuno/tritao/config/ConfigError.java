@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.config;
+package org.netuno.tritao.hili;
 
 import org.netuno.proteu.ProteuError;
 

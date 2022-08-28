@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.config;
+package org.netuno.tritao.hili;
 
 import com.vdurmont.emoji.EmojiParser;
 import com.zaxxer.hikari.HikariConfig;
@@ -27,6 +27,8 @@ import org.netuno.proteu.Events;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.config.ConfigError;
 import org.netuno.tritao.resource.Setup;
 import org.netuno.tritao.resource.URL;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -455,7 +457,7 @@ public class ProteuEvents implements Events {
             logger.error("When starting ensure jail to: "+ Config.getPathAppBase(proteu), e);
         }
 
-        hili.runScriptSandbox(Config.getPathAppBaseConfig(proteu), "_"+ Config.getEnv(proteu));
+        hili.sandbox().runScript(Config.getPathAppBaseConfig(proteu), "_"+ Config.getEnv(proteu));
         eventExecutor.runAppEvent(AppEventType.AfterEnvironment);
         if (Config.isSetup(proteu)) {
             eventExecutor.runAppEvent(AppEventType.BeforeSetup);
@@ -464,17 +466,17 @@ public class ProteuEvents implements Events {
         }
 
         eventExecutor.runAppEvent(AppEventType.BeforeConfiguration);
-        hili.runScriptSandbox(Config.getPathAppCore(proteu), "_config");
+        hili.sandbox().runScript(Config.getPathAppCore(proteu), "_config");
         proteu.getConfig().set("_app:config:loaded", true);
         eventExecutor.runAppEvent(AppEventType.AfterConfiguration);
         Config.getScriptingResources(proteu, hili, true);
         if (!starting.contains(Config.getApp(proteu))) {
             starting.add(Config.getApp(proteu));
             eventExecutor.runAppEvent(AppEventType.BeforeInitialization);
-            hili.runScriptSandbox(Config.getPathAppCore(proteu), "_init");
+            hili.sandbox().runScript(Config.getPathAppCore(proteu), "_init");
             eventExecutor.runAppEvent(AppEventType.AfterInitialization);
         }
-        hili.runScriptSandbox(Config.getPathAppCore(proteu), "_request_start");
+        hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_start");
     }
 
     public String beforeUrl(Proteu proteu, Object faros, String url) {
@@ -612,7 +614,7 @@ public class ProteuEvents implements Events {
         Hili hili = (Hili)faros;
         URL _url = new URL(proteu, hili);
         _url.to(url);
-        hili.runScriptSandbox(Config.getPathAppCore(proteu), "_request_url");
+        hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_url");
         url = _url.request();
         String storage_url = Config.getUrlStorage(proteu);
         if (url.startsWith(storage_url)) {
@@ -647,7 +649,7 @@ public class ProteuEvents implements Events {
     public void beforeClose(Proteu proteu, Object faros) {
         Hili hili = (Hili)faros;
         if (proteu.getConfig().getValues("_app:config") != null) {
-            hili.runScriptSandbox(Config.getPathAppCore(proteu), "_request_close");
+            hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_close");
         }
     }
 
@@ -658,7 +660,7 @@ public class ProteuEvents implements Events {
     public void beforeEnd(Proteu proteu, Object faros) {
         Hili hili = (Hili)faros;
         if (proteu.getConfig().getBoolean("_script:_request_end")) {
-            hili.runScriptSandbox(Config.getPathAppCore(proteu), "_request_end");
+            hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_end");
         }
     }
 
@@ -671,6 +673,7 @@ public class ProteuEvents implements Events {
                 }
             }
         }
+        proteu.getConfig().unset("_scripting_resources");
     }
 
     public void responseHTTPError(Proteu proteu, Object faros, Proteu.HTTPStatus httpStatus) {

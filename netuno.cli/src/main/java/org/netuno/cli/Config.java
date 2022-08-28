@@ -202,7 +202,7 @@ public final class Config {
     /**
      * Packages in white list to scan
      */
-    public static List<String> packagesWhiteList = new ArrayList<>();
+    public static List<String> packagesScan = new ArrayList<>();
 
     /**
      * Reduce Errors.
@@ -621,12 +621,12 @@ public final class Config {
         Config.cronThreadCount = cronThreadCount;
     }
 
-    public static List<String> getPackagesWhiteList() {
-        return packagesWhiteList;
+    public static List<String> getPackagesScan() {
+        return packagesScan;
     }
 
-    public static void setPackagesWhiteList(List<String> packagesWhiteList) {
-        Config.packagesWhiteList = packagesWhiteList;
+    public static void setPackagesScan(List<String> packagesScan) {
+        Config.packagesScan = packagesScan;
     }
 
     /**

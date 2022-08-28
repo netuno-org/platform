@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.config;
+package org.netuno.tritao.hili;
 
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;

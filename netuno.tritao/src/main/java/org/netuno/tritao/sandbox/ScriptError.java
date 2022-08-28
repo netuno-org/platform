@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.config;
+package org.netuno.tritao.script;
 
 import com.vdurmont.emoji.EmojiParser;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuError;
+import org.netuno.tritao.hili.Config;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Hili Error - Global Features
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class HiliError  extends ProteuError {
+public class ScriptError extends ProteuError {
 
-    public HiliError(Proteu proteu, Hili hili, String message) {
+    public ScriptError(Proteu proteu, Hili hili, String message) {
         super("\n#"
                 + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
                 + "\n#"
@@ -36,7 +38,7 @@ public class HiliError  extends ProteuError {
                 + "\n");
     }
 
-    public HiliError(Proteu proteu, Hili hili, String message, Throwable cause) {
+    public ScriptError(Proteu proteu, Hili hili, String message, Throwable cause) {
         super("\n#"
                 + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
                 + "\n#"
@@ -45,7 +47,7 @@ public class HiliError  extends ProteuError {
                 + "\n", cause);
     }
 
-    public HiliError(Proteu proteu, Hili hili, Throwable cause) {
+    public ScriptError(Proteu proteu, Hili hili, Throwable cause) {
         super("\n#"
                 + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
                 + "\n#"

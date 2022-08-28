@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.config;
+package org.netuno.tritao.hili;
 
 import com.vdurmont.emoji.EmojiParser;
 import io.github.classgraph.ClassGraph;
@@ -60,7 +60,7 @@ import org.graalvm.polyglot.PolyglotException;
  * Hili - Global Features
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Hili {
+public class Hili implements AutoCloseable {
     private static Logger logger = LogManager.getLogger(Hili.class);
 
     private static Map<String, ImmutablePair<Long, String>> cachedScripts = new ConcurrentHashMap<>();
@@ -858,6 +858,8 @@ public class Hili {
     
     @Override
     protected void finalize() throws Throwable {
+       /*
+       GC TEST
        cacheBindings.clear();
        graalRunner.close();
        
@@ -872,8 +874,26 @@ public class Hili {
        scriptEngineGroovy = null;
        scriptEnginePython = null;
        scriptEngineRuby = null;
+       */
     }
 
+    @Override
+    public void close() throws Exception {
+        cacheBindings.clear();
+        graalRunner.close();
+
+        scriptBindings = null;
+        cacheBindings = null;
+
+        proteu = null;
+        graalRunner = null;
+
+        scriptEngineVelocity = null;
+        scriptEngineKotlin = null;
+        scriptEngineGroovy = null;
+        scriptEnginePython = null;
+        scriptEngineRuby = null;
+    }
 }
 
 class TimeKiller implements Runnable
