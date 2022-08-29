@@ -34,6 +34,7 @@ import java.util.*;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -71,7 +72,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     /**
      * Array.
      */
-    private List<Object> array = Collections.synchronizedList(new LinkedList<>());
+    private List<Object> array = Collections.synchronizedList(new ArrayList<>());
 	/**
      * Reference to Original Keys.
      */
@@ -2518,6 +2519,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final void removeAll() {
         clear();
     }
+
     /**
      * Finalize.
      * @throws Throwable Throwable
@@ -2530,9 +2532,13 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
          * objects.clear();
          * array.clear();
          */
+
+        /*
+        GC TEST
         keysRef = null;
         objects = null;
         array = null;
+        */
     }
 
     public int sizeOfMap() {
@@ -2587,9 +2593,18 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public void forEach(Consumer action) {
         array.forEach(action);
     }
+
+    @Override
+    public void forEach(BiConsumer action) {
+        objects.forEach(action);
+    }
     
     public void forEach(Value function) {
-        array.forEach((i) -> function.execute(i));
+        if (isList()) {
+            array.forEach((i) -> function.execute(i));
+        } else if (isMap()) {
+            objects.forEach((k, v) -> function.execute(k, v));
+        }
     }
 
     @Override
