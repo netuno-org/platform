@@ -54,7 +54,7 @@ public class GroovySandbox implements Scriptable {
     @Override
     public void run(ScriptSourceCode script, Values bindings) throws Exception {
         bindings.forEach((k, v) -> this.bindings.put(k.toString(), v));
-        engine.eval(script.constent());
+        engine.eval(script.content());
     }
 
     @Override
