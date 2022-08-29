@@ -28,16 +28,13 @@ import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
-import org.netuno.tritao.Auth;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.providers.entities.UserDataProvider;
-import org.netuno.tritao.resource.JWT;
 import org.netuno.tritao.resource.Random;
-import org.netuno.tritao.resource.UID;
 
 import java.util.List;
 import java.util.UUID;
@@ -87,10 +84,10 @@ public class GoogleCallBack extends WebMaster {
                 if (scriptPath != null) {
                     UserDataProvider userDataProvider = new UserDataProvider(id, values.getString("name"), values.getString("name"), "Google");
                     try {
-                        hili.bind("userDataProvider", userDataProvider);
-                        hili.runScriptSandbox(Config.getPathAppCore(proteu), "_auth_provider_start");
+                        hili.sandbox().bind("userDataProvider", userDataProvider);
+                        hili.sandbox().runScript(Config.getPathAppCore(proteu), "_auth_provider_start");
                     } finally {
-                        hili.unbind("userDataProvider");
+                        hili.sandbox().unbind("userDataProvider");
                     }
                 }
             }

@@ -25,7 +25,7 @@ import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
 import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.psamata.io.File;

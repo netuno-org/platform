@@ -25,7 +25,7 @@ import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.psamata.crypto.RandomString;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.server.ServerClone;
 
 /**
@@ -51,7 +51,7 @@ public class Clone {
             String passwordAdmin = new RandomString(16).nextString();
             String passwordDevCrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, "dev", passwordDev);
             String passwordAdminCrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, "admin", passwordAdmin);
-            hili.bind("clone", data);
+            hili.sandbox().bind("clone", data);
             coreScript(proteu, hili, "_clone_start");
             Values values = ServerClone.clone(
                     proteu.getConfig().getString("_app"),
@@ -73,23 +73,22 @@ public class Clone {
             data.setResult(values.getBoolean("result"));
             data.setError(values.getBoolean("error"));
             data.setErrorCode(values.getString("errorCode"));
-            hili.bind("clone", data);
+            hili.sandbox().bind("clone", data);
             coreScript(proteu, hili, "_clone_end");
             proteu.outputJSON(values);
         } catch (Throwable t) {
             throw new CloneError("Failed to clone from "+ data.getFrom() +" to "+ data.getTo(), t);
         } finally {
-            hili.unbind("clone");
+            hili.sandbox().unbind("clone");
         }
     }
 
     private static boolean coreScript(Proteu proteu, Hili hili, String file) {
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(proteu) + "/" + file);
         if (scriptPath != null) {
-            if (hili.runScriptSandbox(Config.getPathAppCore(proteu), file) == null) {
-                return false;
-            }
-            return true;
+            return hili.sandbox()
+                    .runScript(Config.getPathAppCore(proteu), file)
+                    .isSuccess();
         }
         return false;
     }

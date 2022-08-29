@@ -24,7 +24,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuError;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Resource;
 
 /**
@@ -55,7 +55,7 @@ public class EventExecutor {
      * @param appEventType The application event type will be executed.
      */
     public void runAppEvent(AppEventType appEventType) {
-        Values resources = Config.getScriptingResources(proteu, hili);
+        Values resources = hili.resource().all();
         for (String key : resources.keys()) {
             Object objectResource = resources.get(key);
             Class classResource = objectResource.getClass();

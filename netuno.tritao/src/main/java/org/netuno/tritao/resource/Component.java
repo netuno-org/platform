@@ -22,7 +22,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.Configuration;
 import org.netuno.tritao.com.Label;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.util.List;
 

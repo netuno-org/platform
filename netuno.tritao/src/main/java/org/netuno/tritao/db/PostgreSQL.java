@@ -23,7 +23,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import java.util.*;
 
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * PostgreSQL Database Builder - Core Operations

@@ -28,7 +28,7 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.resource.util.ResourceException;
 
@@ -507,7 +507,7 @@ public class JWT extends ResourceBase {
     )
 
     public boolean check(String token) {
-    	Time time = new Time(getProteu(), getHili());
+    	Time time = resource(Time.class);
         Data dbManagerData = new Data(getProteu(), getHili());
         List<Values> dbTokens = dbManagerData.find(
                 "netuno_auth_jwt_token",

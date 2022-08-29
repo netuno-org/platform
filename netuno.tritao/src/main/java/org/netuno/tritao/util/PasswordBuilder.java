@@ -18,7 +18,7 @@
 package org.netuno.tritao.util;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Password Builder Interface

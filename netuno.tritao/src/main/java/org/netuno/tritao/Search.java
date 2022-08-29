@@ -54,7 +54,7 @@ import org.netuno.tritao.com.ComponentData.Type;
 import org.netuno.tritao.com.DateTime;
 import org.netuno.tritao.com.Id;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;

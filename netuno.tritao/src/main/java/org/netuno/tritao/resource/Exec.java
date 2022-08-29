@@ -34,8 +34,9 @@ import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.GraalRunner;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
+import org.netuno.tritao.sandbox.ScriptResult;
 
 /**
  * Execution - Resource
@@ -133,7 +134,7 @@ public class Exec extends ResourceBaseValues {
     }, returns = {})
     public Exec bind(String key,
             Object object) {
-        getHili().bind(key, object);
+        getHili().sandbox().bind(key, object);
         return this;
     }
 
@@ -189,15 +190,15 @@ public class Exec extends ResourceBaseValues {
                     )
             })
     }, returns = {})
-    public Values core(String path, boolean preserveContext) throws ResourceException {
+    public ScriptResult core(String path, boolean preserveContext) throws ResourceException {
         path = SafePath.fileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(getProteu()) + "/" +  path);
         if (scriptPath != null) {
-            return getHili().runScriptSandbox(Config.getPathAppCore(getProteu()), path, preserveContext);
+            return getHili().sandbox().runScript(Config.getPathAppCore(getProteu()), path, preserveContext);
         }
         throw new ResourceException("Core script not found: "+ path);
     }
-    public Values core(String path) throws ResourceException {
+    public ScriptResult core(String path) throws ResourceException {
         return core(path, true);
     }
 
@@ -243,15 +244,15 @@ public class Exec extends ResourceBaseValues {
                     )
             })
     }, returns = {})
-    public Values service(String path, boolean preserveContext) throws ResourceException {
+    public ScriptResult service(String path, boolean preserveContext) throws ResourceException {
         path = SafePath.fileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + "/" +  path);
         if (scriptPath != null) {
-            return getHili().runScriptSandbox(Config.getPathAppServices(getProteu()), path, preserveContext);
+            return getHili().sandbox().runScript(Config.getPathAppServices(getProteu()), path, preserveContext);
         }
         throw new ResourceException("Service script not found: "+ path);
     }
-    public Values service(String path) throws ResourceException {
+    public ScriptResult service(String path) throws ResourceException {
         return service(path, true);
     }
     

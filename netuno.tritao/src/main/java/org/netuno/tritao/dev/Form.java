@@ -28,7 +28,7 @@ import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.ComponentData.Type;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.DB;
 import org.netuno.tritao.resource.Firebase;
 import org.netuno.tritao.util.Link;

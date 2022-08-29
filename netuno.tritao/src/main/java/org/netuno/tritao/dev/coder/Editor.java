@@ -18,14 +18,10 @@
 package org.netuno.tritao.dev.coder;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.psamata.PsamataException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.dev.Index;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
-
-import java.io.IOException;
 
 public class Editor {
     public static void _main(Proteu proteu, Hili hili) throws Exception {

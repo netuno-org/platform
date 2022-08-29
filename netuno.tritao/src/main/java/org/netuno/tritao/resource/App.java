@@ -23,7 +23,7 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
 /**
@@ -1039,7 +1039,10 @@ public class App extends ResourceBase {
     
     @Override
     protected final void finalize() throws Throwable {
+		/*
+		GC TEST
     	config = null;
     	settings = null;
+		*/
     }
 }

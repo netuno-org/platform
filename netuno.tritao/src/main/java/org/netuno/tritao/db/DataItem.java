@@ -374,11 +374,14 @@ public class DataItem {
 
     @Override
     protected void finalize() throws Throwable {
+        /*
+        GC TEST
         this.record = null;
         this.oldRecord = null;
         this.values = null;
         this.relationTable = null;
         this.relationItem = null;
         this.firebaseValues = null;
+        */
     }
 }

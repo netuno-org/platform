@@ -18,13 +18,13 @@
 package org.netuno.tritao.api.dev;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
 import org.netuno.tritao.resource.Out;
 
@@ -32,7 +32,7 @@ import org.netuno.tritao.resource.Out;
  * Component Types Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/api/dev/ComponentTypes")
+@Path("/org/netuno/tritao/api/dev/ComponentTypes")
 public class ComponentTypes extends WebMaster {
     public ComponentTypes() {
         super();

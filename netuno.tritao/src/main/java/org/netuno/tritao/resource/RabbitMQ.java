@@ -23,7 +23,7 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -172,7 +172,7 @@ public class RabbitMQ extends ResourceBase {
                         : null;
                     if (queue != null
                             && queue.getBoolean("enabled", true)
-                            && queue.getString("url").contains(org.netuno.tritao.config.Config.getUrlServices(getProteu()) + service.path)) {
+                            && queue.getString("url").contains(Config.getUrlServices(getProteu()) + service.path)) {
                         secret = queue.getString("secret", secret);
                         Values params = server.getValues("params", new Values());
                         String paramsSecret = params.getString("secret");

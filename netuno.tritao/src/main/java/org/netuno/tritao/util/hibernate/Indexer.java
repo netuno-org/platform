@@ -32,7 +32,7 @@ import org.hibernate.search.MassIndexer;
 import org.hibernate.search.Search;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.AsciiUtils;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Hibernate Indexer

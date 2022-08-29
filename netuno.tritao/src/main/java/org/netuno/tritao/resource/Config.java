@@ -19,7 +19,7 @@ package org.netuno.tritao.resource;
 
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Configuration - Resource

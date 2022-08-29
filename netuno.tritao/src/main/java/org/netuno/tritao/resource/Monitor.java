@@ -33,9 +33,9 @@ import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.Service;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.Service;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.util.ResourceException;
@@ -101,7 +101,7 @@ public class Monitor extends ResourceBase {
             alerts = getProteu().getConfig().getValues("_monitor:alerts", alerts);
             Values alert = alerts.find("name", getProteu().getRequestAll().getString("alert"));
             Service service = Service.getInstance(getProteu());
-            if (alert != null && alert.getBoolean("enabled", true) && alert.getString("url").contains(org.netuno.tritao.config.Config.getUrlServices(getProteu()) + service.path)) {
+            if (alert != null && alert.getBoolean("enabled", true) && alert.getString("url").contains(Config.getUrlServices(getProteu()) + service.path)) {
                 String alertSecret = alert.getString("secret");
                 if ((alertSecret.isEmpty() && secret.equals(getProteu().getRequestAll().getString("secret")))
                         || (!alertSecret.isEmpty() && alert.has("secret", getProteu().getRequestAll().getString("secret")))) {

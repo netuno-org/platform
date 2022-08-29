@@ -18,10 +18,8 @@
 package org.netuno.tritao.includes;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
-
-import java.io.IOException;
 
 /**
  * HTML Includes

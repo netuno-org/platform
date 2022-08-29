@@ -20,10 +20,9 @@ package org.netuno.tritao.resource;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

@@ -20,7 +20,7 @@ package org.netuno.tritao.api.dev;
 import java.util.ArrayList;
 import java.util.List;
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
@@ -28,7 +28,7 @@ import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.Parameter;
 import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
 import org.netuno.tritao.resource.Out;
 
@@ -36,7 +36,7 @@ import org.netuno.tritao.resource.Out;
  * Diagram Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/api/dev/Diagram")
+@Path("/org/netuno/tritao/api/dev/Diagram")
 public class Diagram extends WebMaster {
     public Diagram() {
         super();

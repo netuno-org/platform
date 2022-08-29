@@ -17,11 +17,8 @@
 
 package org.netuno.tritao;
 
-import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.resource.Out;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
 
@@ -29,23 +26,18 @@ import org.netuno.tritao.util.TemplateBuilder;
  * Log Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url= "/netuno/logger")
+@Path("/netuno/logger")
 public class Log extends WebMaster {
-
-    public static void _main(Proteu proteu, Hili hili) throws Exception {
-        if (!Auth.isAuthenticated(proteu, hili, Auth.Type.SESSION, true)) {
-            return;
-        }
-        if (!Rule.getRule(proteu, hili).isAdmin()) {
-                return;
-        }
-        Values data = new Values();
-        TemplateBuilder.output(proteu, hili, "log/search", data);
-    }
 
     @Override
     public void run() throws Exception {
-        Out out = getHili().resource(Out.class);
-        out.println("Log okkkk!!!");
+        if (!Auth.isAuthenticated(getProteu(), getHili(), Auth.Type.SESSION, true)) {
+            return;
+        }
+        if (!Rule.getRule(getProteu(), getHili()).isAdmin()) {
+            return;
+        }
+        Values data = new Values();
+        TemplateBuilder.output(getProteu(), getHili(), "log/search", data);
     }
 }

@@ -24,11 +24,10 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.mail.SMTPTransport;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.config.HiliError;
+import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.hili.HiliError;
 
 import java.io.*;
 import java.util.Arrays;
@@ -37,7 +36,7 @@ import java.util.List;
 import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.providers.google.Google;
 import org.netuno.tritao.providers.google.GoogleCallBack;
-import org.netuno.tritao.resource.Resource;
+import org.netuno.tritao.resource.JWT;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.event.EventExecutor;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -91,7 +90,7 @@ public class Service {
 			return;
 		}*/
 
-        hili.bind("service", this);
+        hili.sandbox().bind("service", this);
     }
 
     public List<String> getMethods() {
@@ -215,6 +214,11 @@ public class Service {
                     }
                     return;
                 }
+                JWT jwt = new JWT(proteu, hili);
+                if (!jwt.token().isEmpty() && !jwt.check()) {
+                    proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
+                    return;
+                }
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
                 service.core("_service_start");
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
@@ -253,25 +257,25 @@ public class Service {
     public boolean core(String file) {
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(proteu) + "/" + file);
         if (scriptPath != null) {
-            if (hili.runScriptSandbox(Config.getPathAppCore(proteu), file) == null) {
-                if (!file.equals("_service_error")) {
-                    core("_service_error");
-                }
-                return false;
-            }
-            return true;
-        } else {
-            proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
-            logger.warn("\n"
-                    + "\n#"
-                    + "\n# Core script not found: "
-                    + "\n#"
-                    + "\n# " + Config.getPathAppCore(proteu)
-                    + "\n# " + file
-                    + "\n#"
-                    + "\n"
-            );
+            return hili.sandbox()
+                    .runScript(Config.getPathAppCore(proteu), file)
+                    .ifError(() -> {
+                        if (!file.equals("_service_error")) {
+                            core("_service_error");
+                        }
+                    })
+                    .isSuccess();
         }
+        proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
+        logger.warn("\n"
+                + "\n#"
+                + "\n# Core script not found: "
+                + "\n#"
+                + "\n# " + Config.getPathAppCore(proteu)
+                + "\n# " + file
+                + "\n#"
+                + "\n"
+        );
         return false;
     }
 
@@ -282,11 +286,10 @@ public class Service {
         }
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppServices(proteu) + "/" + file);
         if (scriptPath != null) {
-            if (hili.runScriptSandbox(Config.getPathAppServices(proteu), file) == null) {
-                core("_service_error");
-                return false;
-            }
-            return true;
+            return hili.sandbox()
+                    .runScript(Config.getPathAppServices(proteu), file)
+                    .ifError(() -> core("_service_error"))
+                    .isSuccess();
         } else if (!file.equals("config")) {
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceNotFound);
             if (isNotFoundDefaultError()) {
@@ -331,6 +334,9 @@ public class Service {
     
     @Override
     protected void finalize() throws Throwable {
+        /*
+        GC TEST
         hili.unbind("service");
+        */
     }
 }

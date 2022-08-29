@@ -34,8 +34,8 @@ import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.config.HiliError;
+import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.hili.HiliError;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -276,10 +276,10 @@ public class Schema extends WebMaster {
         if (ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + scriptPath) != null) {
             data.unset("_schema");
             try {
-                getHili().bind("dataSchema", createDataSchema(data));
-                getHili().runScriptSandbox(Config.getPathAppServices(getProteu()), scriptPath);
+                getHili().sandbox().bind("dataSchema", createDataSchema(data));
+                getHili().sandbox().runScript(Config.getPathAppServices(getProteu()), scriptPath);
             } finally {
-                getHili().unbind("dataSchema");
+                getHili().sandbox().unbind("dataSchema");
             }
             return;
         }

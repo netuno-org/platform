@@ -20,11 +20,9 @@ package org.netuno.tritao.com;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.Manager;
 import org.netuno.tritao.util.Link;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 

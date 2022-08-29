@@ -33,7 +33,7 @@ import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.ComponentData.Type;
 import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.manager.Base;
 import org.netuno.tritao.db.manager.CheckExists;
 import org.netuno.tritao.db.manager.Column;

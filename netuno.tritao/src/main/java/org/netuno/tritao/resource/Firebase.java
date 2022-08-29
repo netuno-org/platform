@@ -31,7 +31,7 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 import org.netuno.psamata.net.Remote;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 
 import java.io.IOException;

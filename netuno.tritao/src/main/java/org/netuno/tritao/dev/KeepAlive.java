@@ -20,9 +20,8 @@ package org.netuno.tritao.dev;
 import java.io.IOException;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Keep Alive Service

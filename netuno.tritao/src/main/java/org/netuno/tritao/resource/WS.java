@@ -27,7 +27,8 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.util.ResourceException;
@@ -72,7 +73,7 @@ public class WS extends ResourceBase {
     
     public WS(Proteu proteu, Hili hili) {
         super(proteu, hili);
-        app = org.netuno.tritao.config.Config.getApp(getProteu());
+        app = Config.getApp(getProteu());
     }
     
     @AppEvent(type=AppEventType.BeforeEnvironment)
@@ -361,7 +362,7 @@ public class WS extends ResourceBase {
                 remote.getHeader().set(headerKey, header.get(headerKey));
             }
         }
-        String urlService = org.netuno.tritao.config.Config.getFullOrLocalURL(
+        String urlService = Config.getFullOrLocalURL(
                 getProteu(),
                 message.getString("service")
         );
@@ -556,7 +557,7 @@ public class WS extends ResourceBase {
                 remote.getHeader().set(headerKey, header.get(headerKey));
             }
         }
-        String urlService = org.netuno.tritao.config.Config.getFullOrLocalURL(
+        String urlService = Config.getFullOrLocalURL(
                 getProteu(),
                 message.getString("service")
         );

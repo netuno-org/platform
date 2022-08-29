@@ -19,12 +19,12 @@ package org.netuno.tritao.api.dev;
 
 import java.util.List;
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.DB;
 import org.netuno.tritao.resource.Firebase;
 import org.netuno.tritao.resource.Header;
@@ -35,7 +35,7 @@ import org.netuno.tritao.resource.Req;
  * Form Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/api/dev/Form")
+@Path("/org/netuno/tritao/api/dev/Form")
 public class Form extends WebMaster {
     public Form() {
         super();

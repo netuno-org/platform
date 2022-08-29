@@ -18,14 +18,14 @@
 package org.netuno.tritao.api.dev;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
-import org.netuno.tritao.config.Hili;
+import org.netuno.proteu.Path;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Authentication Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/api/dev/Auth")
+@Path("/org/netuno/tritao/api/dev/Auth")
 public class Auth extends org.netuno.tritao.Auth {
     
     public Auth(Proteu proteu, Hili hili) {

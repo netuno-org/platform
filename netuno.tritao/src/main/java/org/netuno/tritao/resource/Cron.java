@@ -23,7 +23,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.resource.event.AppEvent;
@@ -184,7 +184,7 @@ public class Cron extends ResourceBase {
             Service service = Service.getInstance(getProteu());
             for (Values schedule : schedules().listOfValues()) {
                 if (schedule.has("key", getProteu().getRequestAll().getString("job"))
-                        && schedule.getString("url").endsWith(org.netuno.tritao.config.Config.getUrlServices(getProteu()) + service.path)
+                        && schedule.getString("url").endsWith(Config.getUrlServices(getProteu()) + service.path)
                         && schedule.getValues("params").has("secret", getProteu().getRequestAll().getString("secret"))) {
                     service.allow();
                 }

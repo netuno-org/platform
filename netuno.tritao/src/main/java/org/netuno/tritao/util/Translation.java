@@ -2,7 +2,7 @@ package org.netuno.tritao.util;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Lang;
 
 public class Translation {

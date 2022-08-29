@@ -28,7 +28,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,7 +88,7 @@ public class Setup extends ResourceBase {
             if (setupConfig != null && !setupConfig.getBoolean("enabled", true)) {
                 return;
             }
-            getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), "_start");
+            getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), "_start");
             Config.getDataBaseBuilder(getProteu(), "default").setup();
             if (setupConfig == null
                     || setupConfig.getValues("schema") == null
@@ -98,7 +98,7 @@ public class Setup extends ResourceBase {
                             (f) -> {
                                 String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
                                 if (fileName.startsWith("_schema-")) {
-                                    getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), fileName);
+                                    getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
                                 }
                             }
                     );
@@ -110,7 +110,7 @@ public class Setup extends ResourceBase {
                             (f) -> {
                                 String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
                                 if (fileName.startsWith("_data-")) {
-                                    getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), fileName);
+                                    getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
                                 }
                             }
                     );
@@ -126,7 +126,7 @@ public class Setup extends ResourceBase {
                             (f) -> {
                                 String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
                                 if (!fileName.startsWith("_")) {
-                                    getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), fileName);
+                                    getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
                                 }
                             }
                     );
@@ -134,7 +134,7 @@ public class Setup extends ResourceBase {
                     logger.fatal("When looking for setup scripts into the folder: " + Config.getPathAppSetup(getProteu()), e);
                 }
             }
-            getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), "_end");
+            getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), "_end");
         } finally {
             getProteu().getConfig().set("_setup:running", false);
             running = false;

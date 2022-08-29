@@ -20,10 +20,10 @@ package org.netuno.tritao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Out;
 import org.netuno.tritao.resource.Remote;
 import org.netuno.tritao.resource.Req;
@@ -33,7 +33,7 @@ import org.netuno.tritao.util.TemplateBuilder;
  * Register Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/Register")
+@Path("/org/netuno/tritao/Register")
 public class Register extends WebMaster {
     private static Logger logger = LogManager.getLogger(Register.class);
 

@@ -18,7 +18,7 @@
 package org.netuno.tritao.dev;
 
 import org.apache.logging.log4j.LogManager;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
@@ -30,7 +30,7 @@ import org.netuno.tritao.resource.Template;
  * System Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url= "/org/netuno/tritao/dev/System")
+@Path("/org/netuno/tritao/dev/System")
 public class System extends WebMaster {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(System.class);
     

@@ -24,7 +24,7 @@ import java.util.List;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**

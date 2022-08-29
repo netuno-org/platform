@@ -20,7 +20,7 @@ package org.netuno.tritao.util;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.PsamataException;
 import org.netuno.psamata.crypto.SHA256;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Password SHA256 Hexadecimal

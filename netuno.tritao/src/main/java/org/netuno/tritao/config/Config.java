@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.hili;
+package org.netuno.tritao.config;
 
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
@@ -26,6 +26,7 @@ import org.netuno.tritao.com.TextHTML;
 import org.netuno.tritao.com.User;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.Manager;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.*;
 import org.netuno.tritao.util.PasswordBuilder;
 import org.netuno.tritao.util.PasswordSHA256Hex;
@@ -651,7 +652,7 @@ public class Config {
     }
 
     public static Values getScriptingDefinitions(Proteu proteu, Hili hili) {
-        return getScriptingResources(proteu, hili, false);
+        return getScriptingDefinitions(proteu, hili, false);
     }
 
     public static Values getScriptingDefinitions(Proteu proteu, Hili hili, boolean forceLoad) {
@@ -682,65 +683,6 @@ public class Config {
             return proteu.getConfig().getValues("_scripting_definitions");
         }
         return proteu.getConfig().getValues("_scripting_definitions");
-    }
-
-    public static List<Class> getResourcesClasses() {
-        return resourcesClasses;
-    }
-
-    public static void setResourcesClasses(List<Class> resourcesClasses) {
-        Config.resourcesClasses = resourcesClasses;
-    }
-
-    public static void setScriptingResource(Proteu proteu, Hili hili, String name, Object value) {
-	getScriptingResources(proteu, hili).set(name, value);
-    }
-
-    public static Values getScriptingResources(Proteu proteu, Hili hili) {
-        return getScriptingResources(proteu, hili, false);
-    }
-
-    public static Values getScriptingResources(Proteu proteu, Hili hili, boolean forceLoad) {
-        if (proteu.getConfig().get("_scripting_resources") == null || forceLoad) {
-            Values scriptingResources = new Values();
-            proteu.getConfig().set("_scripting_resources", scriptingResources);
-
-            scriptingResources.set("proteu", proteu);
-            scriptingResources.set("config", proteu.getConfig());
-            scriptingResources.set("session", proteu.getSession());
-
-            Class currentClass = null;
-            try {
-                for (Class _class : getResourcesClasses()) {
-                    currentClass = _class;
-                    Resource resource = (Resource) _class.getAnnotation(Resource.class);
-                    if (!resource.autoLoad()) {
-                        continue;
-                    }
-                    if (resource.name().equals("config") || resource.name().equals("session")) {
-                        continue;
-                    }
-                    if (resource.name().equals("lang") && proteu.getConfig().getBoolean("_lang:disabled") == true) {
-                        continue;
-                    }
-                    Object object = _class.getConstructor(
-                            Proteu.class,
-                            Hili.class
-                    ).newInstance(proteu, hili);
-                    scriptingResources.set(resource.name(), object);
-                }
-            } catch (Exception e) {
-                if (e.getCause() != null) {
-                    throw new ConfigError("Resource not load " + currentClass.getName() +
-                            ": "+ e.getCause().getMessage(), e)
-                            .setLogFatal(true);
-                } else {
-                    throw new ConfigError(e);
-                }
-            }
-            return proteu.getConfig().getValues("_scripting_resources");
-        }
-        return proteu.getConfig().getValues("_scripting_resources");
     }
 
     public static PasswordBuilder getPasswordBuilder(Proteu proteu) {

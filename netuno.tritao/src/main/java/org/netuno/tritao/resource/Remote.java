@@ -22,7 +22,8 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ErrorException;
 import org.netuno.tritao.resource.util.ResourceException;
 
@@ -34,8 +35,6 @@ import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
-import org.netuno.library.doc.SourceCodeDoc;
-import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.psamata.io.File;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
@@ -168,13 +167,13 @@ public class Remote extends org.netuno.psamata.net.Remote {
         );
         if (config.hasKey("urlPrefix")) {
             remote.setURLPrefix(
-                    org.netuno.tritao.config.Config.getFullOrLocalURL(proteu, config.getString("urlPrefix"))
+                    Config.getFullOrLocalURL(proteu, config.getString("urlPrefix"))
             );
         }
         if (config.hasKey("url")) {
             if (remote.getURLPrefix().isEmpty()) {
                 remote.setURL(
-                    org.netuno.tritao.config.Config.getFullOrLocalURL(
+                    Config.getFullOrLocalURL(
                             proteu,
                             config.getString("url")
                     )
@@ -2650,12 +2649,12 @@ public class Remote extends org.netuno.psamata.net.Remote {
         
         public File file() {
             return super.file()
-                    .ensureJail(org.netuno.tritao.config.Config.getPathAppBase(proteu));
+                    .ensureJail(Config.getPathAppBase(proteu));
         }
         
         public File getFile() {
             return super.getFile()
-                    .ensureJail(org.netuno.tritao.config.Config.getPathAppBase(proteu));
+                    .ensureJail(Config.getPathAppBase(proteu));
         }
 
         public RemoteResponse setContent(Object content) {

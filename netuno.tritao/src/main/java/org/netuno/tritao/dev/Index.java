@@ -18,19 +18,16 @@
 package org.netuno.tritao.dev;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
-import org.netuno.psamata.PsamataException;
+import org.netuno.proteu.Path;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
-import org.netuno.tritao.config.Hili;
-
-import java.io.IOException;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Index Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/dev/Index")
+@Path("/org/netuno/tritao/dev/Index")
 public class Index extends WebMaster {
 
     public Index(Proteu proteu, Hili hili) {

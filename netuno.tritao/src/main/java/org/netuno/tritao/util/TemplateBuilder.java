@@ -34,7 +34,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Lang;
 
 import javax.script.ScriptEngine;
@@ -199,8 +199,9 @@ public class TemplateBuilder {
 
         velocityEngine.put("data", data);
 
-        for (String key : Config.getScriptingResources(proteu, hili).keys()) {
-            velocityEngine.put("_" + key, Config.getScriptingResources(proteu, hili).get(key));
+        Values resources = hili.resource().all();
+        for (String key : resources.keys()) {
+            velocityEngine.put("_" + key, resources.get(key));
         }
 
         velocityEngine.eval(content);
