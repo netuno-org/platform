@@ -19,7 +19,6 @@ package org.netuno.cli;
 
 import java.io.File;
 
-import java.io.FileInputStream;
 import java.net.URL;
 import java.time.Year;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.jar.Manifest;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.fusesource.jansi.AnsiConsole;
@@ -110,7 +108,6 @@ public final class Main implements Runnable {
      */
     public static void main(final String[] args) throws Exception {
         StatusLogger.getLogger().setLevel(Level.OFF);
-
         CommandLine.ParseResult commandLineParseResult = null;
         List<CommandLine> commandLineList = null;
         try {
