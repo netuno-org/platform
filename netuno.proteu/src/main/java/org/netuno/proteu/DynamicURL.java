@@ -106,76 +106,78 @@ public class DynamicURL {
                     _fileScript = null;
                 }
             }
-            if (file.isDirectory()) {
-                File fileJava = new File(filePath + "Index.java");
-                File fileClass = new File(fileBinPath + "Index.class");
-                File fileProteu = null;
-                for (String key : Config.getExtensions().keySet()) {
-                    fileProteu = new File(filePath + "index" + key);
-                    if (fileProteu.exists()) {
-                        break;
-                    } else {
-                        fileProteu = null;
+            try (var run = new Run(proteu, faros, scriptRunner)) {
+                if (file.isDirectory()) {
+                    File fileJava = new File(filePath + "Index.java");
+                    File fileClass = new File(fileBinPath + "Index.class");
+                    File fileProteu = null;
+                    for (String key : Config.getExtensions().keySet()) {
+                        fileProteu = new File(filePath + "index" + key);
+                        if (fileProteu.exists()) {
+                            break;
+                        } else {
+                            fileProteu = null;
+                        }
                     }
-                }
-                File fileScript = new File(fileBinPath + "index.lua");
-                if (fileJava.exists()) {
-                    logger.info("Java: "+ fileJava.toString());
-                    Compile.engineClass(proteu.getOutput(), fileJava, fileClass);
-                    new Run(proteu, faros, url.substring(1, url.length()) + "Index", scriptRunner);
-                } else if (fileClass.exists()) {
-                    logger.info("Class: "+ fileClass.toString());
-                    new Run(proteu, faros, url.substring(1, url.length()) + "Index", scriptRunner);
-                } else if (fileProteu != null && fileProteu.exists()) {
-                    logger.info("Proteu file: "+ fileProteu.toString());
-                    new Compile(proteu.getOutput(), fileProteu, fileBinPath + "index");
-                    new Run(proteu, faros, fileBinPath + "index", scriptRunner);
-                } else if (fileScript != null && fileScript.exists()) {
-                    logger.info("Script: "+ fileScript.toString());
-                    new Run(proteu, faros, fileScript.toString(), scriptRunner);
-                } else {
-                    logger.warn("Not found: "+ url);
-                    proteu.setResponseHeaderNoCache();
-                    RunEvent.responseHTTPError(proteu, faros, Proteu.HTTPStatus.NotFound404);
-                }
-                fileJava = null;
-                fileClass = null;
-                fileProteu = null;
-                fileScript = null;
-            } else {
-                File fileJava = new File(file.toString() + ".java");
-                File fileClass = new File(fileBin.toString() + ".class");
-                File fileProteu = _fileProteu;
-                File fileScript = _fileProteuScript;
-                if (fileJava.exists()) {
-                    logger.info("Java: "+ fileJava.toString());
-                    Compile.engineClass(proteu.getOutput(), fileJava, fileClass);
-                    new Run(proteu, faros, url.substring(1, url.length()), scriptRunner);
-                } else if (fileClass.exists()) {
-                    logger.info("Class: "+ fileClass.toString());
-                    new Run(proteu, faros, url.substring(1, url.length()), scriptRunner);
-                } else if (fileProteu != null && fileProteu.exists()) {
-                    logger.info("Proteu file: "+ fileProteu.toString());
-                    new Compile(proteu.getOutput(), fileProteu, _fileProteuScriptPath);
-                    new Run(proteu, faros, _fileProteuScriptPath, scriptRunner);
-                } else if (fileScript != null && fileScript.exists()) {
-                    logger.info("Script: "+ fileScript.toString());
-                    new Run(proteu, faros, fileScript.toString(), scriptRunner);
-                } else {
-                    if (url.endsWith("/")) {
-                        new Run(proteu, faros, url + "Index", scriptRunner);
-                    } else if (url.endsWith(Config.getExtension())) {
-                        new Run(proteu, faros, url.substring(0, url.length() - Config.getExtension().length()), scriptRunner);
+                    File fileScript = new File(fileBinPath + "index.lua");
+                    if (fileJava.exists()) {
+                        logger.info("Java: " + fileJava);
+                        Compile.engineClass(proteu.getOutput(), fileJava, fileClass);
+                        run.execute(url.substring(1) + "Index");
+                    } else if (fileClass.exists()) {
+                        logger.info("Class: " + fileClass);
+                        run.execute(url.substring(1) + "Index");
+                    } else if (fileProteu != null && fileProteu.exists()) {
+                        logger.info("Proteu file: " + fileProteu);
+                        new Compile(proteu.getOutput(), fileProteu, fileBinPath + "index");
+                        run.execute(fileBinPath + "index");
+                    } else if (fileScript != null && fileScript.exists()) {
+                        logger.info("Script: " + fileScript);
+                        run.execute(fileScript.toString());
                     } else {
-                        logger.info("Not found: "+ url);
+                        logger.warn("Not found: " + url);
                         proteu.setResponseHeaderNoCache();
                         RunEvent.responseHTTPError(proteu, faros, Proteu.HTTPStatus.NotFound404);
                     }
+                    fileJava = null;
+                    fileClass = null;
+                    fileProteu = null;
+                    fileScript = null;
+                } else {
+                    File fileJava = new File(file + ".java");
+                    File fileClass = new File(fileBin + ".class");
+                    File fileProteu = _fileProteu;
+                    File fileScript = _fileProteuScript;
+                    if (fileJava.exists()) {
+                        logger.info("Java: " + fileJava);
+                        Compile.engineClass(proteu.getOutput(), fileJava, fileClass);
+                        run.execute(url.substring(1));
+                    } else if (fileClass.exists()) {
+                        logger.info("Class: " + fileClass);
+                        run.execute(url.substring(1));
+                    } else if (fileProteu != null && fileProteu.exists()) {
+                        logger.info("Proteu file: " + fileProteu);
+                        new Compile(proteu.getOutput(), fileProteu, _fileProteuScriptPath);
+                        run.execute(_fileProteuScriptPath);
+                    } else if (fileScript != null && fileScript.exists()) {
+                        logger.info("Script: " + fileScript);
+                        run.execute(fileScript.toString());
+                    } else {
+                        if (url.endsWith("/")) {
+                            run.execute(url + "Index");
+                        } else if (url.endsWith(Config.getExtension())) {
+                            run.execute(url.substring(0, url.length() - Config.getExtension().length()));
+                        } else {
+                            logger.info("Not found: " + url);
+                            proteu.setResponseHeaderNoCache();
+                            RunEvent.responseHTTPError(proteu, faros, Proteu.HTTPStatus.NotFound404);
+                        }
+                    }
+                    fileJava = null;
+                    fileClass = null;
+                    fileProteu = null;
+                    fileScript = null;
                 }
-                fileJava = null;
-                fileClass = null;
-                fileProteu = null;
-                fileScript = null;
             }
             file = null;
             fileBin = null;

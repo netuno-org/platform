@@ -31,24 +31,24 @@ import org.netuno.psamata.script.ScriptRunner;
  * Run Java and Script files
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Run {
+public class Run implements AutoCloseable {
     static Logger logger = LogManager.getLogger(Run.class);
     private Proteu proteu = null;
     private Object faros = null;
     private ScriptRunner scriptRunner = null;
+
     /**
      * Run file.
      * @param proteu Proteu
-     * @param file File to be executed
      */
-    public Run(Proteu proteu, Object faros, String file, ScriptRunner scriptRunner) throws ProteuException {
+    public Run(Proteu proteu, Object faros, ScriptRunner scriptRunner) throws ProteuException {
         this.proteu = proteu;
         this.faros = faros;
         this.scriptRunner = scriptRunner;
-        logger.info("Running "+ file);
-        run(file);
     }
-    private synchronized void run(String file) throws ProteuException {
+
+    public void execute(String file) throws ProteuException {
+        logger.info("Running "+ file);
         try {
         	proteu.setResponseHeaderNoCache();
             String scriptPath = scriptRunner != null ? scriptRunner.searchFile(file) : null;
@@ -152,37 +152,11 @@ public class Run {
             }
         }
     }
-    /*
-    private void loadConfig(File file) throws ProteuException {
-    	if (file == null) {
-            return;
-    	}
-        if (file.isDirectory()) {
-            String configPath = scriptRunner.searchFile(file.toString().replace((CharSequence) Config.getBuild(), (CharSequence) Config.getPublic()) + (file.toString().endsWith(File.separator) ? "" : File.separator) + "config");
-            if (configPath != null) {
-                try {
-                    int threadID = Integer.parseInt(proteu.getConfig().getString("thread_id"));
-                    scriptRunner.getBindings().put("_proteu", proteu);
-                    scriptRunner.runFile(configPath);
-                    proteu.getConfig().set("thread_id", ""+ threadID);
-                    logger.info("Config "+ configPath +" loaded");
-                    return;
-                } catch (Exception e) {
-                    logger.error("Load config: "+ configPath, e);
-                    throw new ProteuException("Load config: "+ configPath, e);
-                }
-            } else {
-                if (file.getAbsolutePath().equals(new File(Config.getBuild()).getAbsolutePath())) {
-                    return;
-                }
-                loadConfig(file.getParentFile());
-            }
-        }
-        return;
-    }
-    */
+
     @Override
-    protected void finalize() throws Throwable {
+    public void close() {
         proteu = null;
+        faros = null;
+        scriptRunner = null;
     }
 }
