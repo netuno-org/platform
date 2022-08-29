@@ -38,6 +38,10 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
+/**
+ * H2 Database migration process.
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
 public class H2DatabaseMigration {
     public static final String FILE_ID = ".h2database-migration.json";
 
