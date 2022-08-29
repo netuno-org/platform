@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.hili;
+package org.netuno.tritao.proteu;
 
 import com.vdurmont.emoji.EmojiParser;
 import com.zaxxer.hikari.HikariConfig;
@@ -29,6 +29,7 @@ import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.ConfigError;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Setup;
 import org.netuno.tritao.resource.URL;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -448,7 +449,7 @@ public class ProteuEvents implements Events {
         }
         Config.getComponents(proteu, hili);
         Config.getScriptingDefinitions(proteu, hili);
-        Config.getScriptingResources(proteu, hili);
+        hili.resource().all(true);
         EventExecutor eventExecutor = new EventExecutor(proteu, hili);
         eventExecutor.runAppEvent(AppEventType.BeforeEnvironment);
         try {
@@ -469,7 +470,7 @@ public class ProteuEvents implements Events {
         hili.sandbox().runScript(Config.getPathAppCore(proteu), "_config");
         proteu.getConfig().set("_app:config:loaded", true);
         eventExecutor.runAppEvent(AppEventType.AfterConfiguration);
-        Config.getScriptingResources(proteu, hili, true);
+        //hili.resource().all(true);
         if (!starting.contains(Config.getApp(proteu))) {
             starting.add(Config.getApp(proteu));
             eventExecutor.runAppEvent(AppEventType.BeforeInitialization);

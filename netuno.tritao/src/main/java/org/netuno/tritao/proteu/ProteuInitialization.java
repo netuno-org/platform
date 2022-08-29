@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.hili;
+package org.netuno.tritao.proteu;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Initialization;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.hili.Hili;
 
 import java.util.regex.Pattern;
 
