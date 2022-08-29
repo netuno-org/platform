@@ -19,7 +19,7 @@ package org.netuno.tritao;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Web;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Web Master
@@ -47,11 +47,11 @@ public class WebMaster implements Web {
     }
 
     public<T> T resource(Class<T> resourceClass) {
-        return getHili().resource(resourceClass);
+        return getHili().resource().get(resourceClass);
     }
 
     public<T> T resource(String name) {
-        return getHili().resource(name);
+        return getHili().resource().get(name);
     }
 
     @Override
