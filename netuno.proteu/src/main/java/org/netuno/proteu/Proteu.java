@@ -1231,35 +1231,42 @@ public class Proteu {
         clientHttp = null;
         out = null;
 
+        config.clear();
         config = null;
+
+        requestHeader.clear();
         requestHeader = null;
+
+        requestPost.clear();
         requestPost = null;
+
+        requestPostCache.clear();
         requestPostCache = null;
+
+        requestGet.clear();
         requestGet = null;
+
+        requestCookie.clear();
         requestCookie = null;
+
+        requestBody.clear();
         requestBody = null;
+
+        requestAll.clear();
         requestAll = null;
+
+        responseHeader.clear();
         responseHeader = null;
+
+        responseCookie.clear();
         responseCookie = null;
+
+        session.clear();
         session = null;
-    }
 
-    
-    @Override
-    protected void finalize() throws Throwable {
-        clear();
+        gzipExtensions.clear();
+        gzipExtensions = null;
     }
-
-    /*protected void finalize() throws Throwable {
-        if (isEnterprise()) {
-            if (httpUploads != null) {
-                for (String file : httpUploads) {
-                    org.netuno.psamata.io.File.delete(file);
-                }
-                httpUploads.clear();
-            }
-        }
-    }*/
     
     class OutputNotify implements org.netuno.psamata.io.OutputStreamNotify {
         private Proteu proteu = null;
