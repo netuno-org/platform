@@ -32,7 +32,7 @@ import org.netuno.psamata.io.InputStream;
  * Build Http Protocol
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class HTTP {
+public class HTTP implements AutoCloseable {
     static Logger logger = LogManager.getLogger(HTTP.class);
     private StringBuilder clientHttp = new StringBuilder();
     private Values requestHead;
@@ -437,7 +437,7 @@ public class HTTP {
     }
     
     @Override
-    protected void finalize() throws Throwable {
+    public void close() {
         clientHttp = null;
         requestHead.removeAll();
         requestPost.removeAll();
