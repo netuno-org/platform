@@ -306,6 +306,9 @@ public class GraalRunner {
     
     @Override
     protected void finalize() throws Throwable {
+        /*
+        GC TEST
         close();
+        */
     }
 }

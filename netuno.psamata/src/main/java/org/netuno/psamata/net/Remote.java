@@ -1087,12 +1087,15 @@ public class Remote {
 
     @Override
     protected final void finalize() throws Throwable {
+        /*
+        GC TEST
         qs.removeAll();
         qs = null;
         data.removeAll();
         data = null;
         header.removeAll();
         header = null;
+        */
     }
 
     public class Response {
@@ -1469,10 +1472,13 @@ public class Remote {
 
         @Override
         protected final void finalize() throws Throwable {
+            /*
+            GC TEST
             if (header != null) {
                 header.removeAll();
             }
             header = null;
+            */
         }
     }
 }
