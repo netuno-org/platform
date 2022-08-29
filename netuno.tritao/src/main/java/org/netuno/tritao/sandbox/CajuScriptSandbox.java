@@ -1,51 +1,31 @@
-package org.netuno.tritao.script;
+/*
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import org.netuno.psamata.Values;
-import org.netuno.psamata.script.ScriptRunner;
-import org.netuno.tritao.script.annotation.ScriptSandbox;
+package org.netuno.tritao.sandbox;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-
+/**
+ * CajuScript Sandbox
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
 @ScriptSandbox(extensions = {"cj"})
-public class CajuScriptSandbox implements Sandbox {
-    private SandboxFactory factory;
-    private ScriptEngine engine = null;
-    private Bindings bindings = null;
+public class CajuScriptSandbox extends JSR223GenericSandbox {
 
-    public CajuScriptSandbox(SandboxFactory factory) {
-        this.factory = factory;
-        engine = ScriptRunner.getScriptEngineManager().getEngineByName("caju");
-        bindings = engine.createBindings();
-        engine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+    public CajuScriptSandbox(SandboxManager manager) {
+        super(manager, "caju");
     }
 
-    @Override
-    public void newContext() {
-        bindings.clear();
-        bindings = engine.createBindings();
-        engine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
-    }
-
-    @Override
-    public void closeContext() {
-        bindings.clear();
-        bindings = engine.createBindings();
-        engine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
-    }
-
-    @Override
-    public Values run(ScriptSourceCode script, Values bindings) throws Exception {
-        bindings.forEach((k, v) -> this.bindings.put(k.toString(), v));
-        engine.eval(script.constent());
-        return new Values(bindings);
-    }
-
-    @Override
-    public void close() throws Exception {
-        bindings.clear();
-        bindings = null;
-        engine = null;
-    }
 }

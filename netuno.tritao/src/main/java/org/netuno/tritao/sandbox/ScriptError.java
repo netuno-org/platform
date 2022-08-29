@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.script;
+package org.netuno.tritao.sandbox;
 
 import com.vdurmont.emoji.EmojiParser;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuError;
-import org.netuno.tritao.hili.Config;
+import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 
 /**

@@ -1,4 +1,21 @@
-package org.netuno.tritao.script;
+/*
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.netuno.tritao.sandbox;
 
 import com.vdurmont.emoji.EmojiParser;
 import io.github.classgraph.ClassGraph;
@@ -13,30 +30,38 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.ScriptRunner;
-import org.netuno.tritao.hili.Config;
+import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.script.annotation.ScriptSandbox;
 
 import javax.script.ScriptException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SandboxFactory implements AutoCloseable {
-    private static Logger logger = LogManager.getLogger(SandboxFactory.class);
+/**
+ * Sandbox Manager
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
+public class SandboxManager implements AutoCloseable {
+    private static Logger logger = LogManager.getLogger(SandboxManager.class);
 
     private static Map<String, ImmutablePair<Long, String>> cachedSourceCodes = new ConcurrentHashMap<>();
 
-    private static Map<String, Class<? extends Sandbox>> sandboxesClasses = null;
+    private static Map<String, Class<? extends Scriptable>> sandboxesClasses = null;
 
     private Proteu proteu = null;
     private Hili hili = null;
 
-    private  Map<String, Sandbox> sandboxes = new HashMap<>();
+    private  Map<String, Scriptable> sandboxes = new HashMap<>();
 
     private Values bindings = new Values();
 
@@ -47,10 +72,7 @@ public class SandboxFactory implements AutoCloseable {
     private boolean stopped = false;
 
     static {
-        sandboxesClasses = new ConcurrentHashMap<>() {{
-            put("js", JavaScriptSandbox.class);
-            put("cj", CajuScriptSandbox.class);
-        }};
+        sandboxesClasses = new ConcurrentHashMap<>();
 
         ScanResult scanResult = new ClassGraph()
                 .disableRuntimeInvisibleAnnotations()
@@ -64,7 +86,7 @@ public class SandboxFactory implements AutoCloseable {
             ClassInfoList scriptSandboxClasses = scanResult.getClassesWithAnnotation(ScriptSandbox.class.getName());
             for (String scriptSandboxClassNameItem : scriptSandboxClasses.getNames()) {
                 scriptSandboxClassName = scriptSandboxClassNameItem;
-                Class<? extends Sandbox> sandbox = (Class<? extends Sandbox>)Class.forName(scriptSandboxClassName);
+                Class<? extends Scriptable> sandbox = (Class<? extends Scriptable>)Class.forName(scriptSandboxClassName);
                 ScriptSandbox scriptSandbox = sandbox.getAnnotation(ScriptSandbox.class);
                 for (String extension : scriptSandbox.extensions()) {
                     sandboxesClasses.put(extension, sandbox);
@@ -75,7 +97,7 @@ public class SandboxFactory implements AutoCloseable {
         }
     }
 
-    public SandboxFactory(Proteu proteu, Hili hili) {
+    public SandboxManager(Proteu proteu, Hili hili) {
         this.proteu = proteu;
         this.hili = hili;
     }
@@ -86,6 +108,10 @@ public class SandboxFactory implements AutoCloseable {
 
     public Hili getHili() {
         return hili;
+    }
+
+    public boolean isScriptsRunning() {
+        return scriptsRunning > 0;
     }
 
     public void bind(String name, Object obj) {
@@ -111,8 +137,9 @@ public class SandboxFactory implements AutoCloseable {
             return;
         }*/
         Values scriptBindings = new Values();
-        for (String key : Config.getScriptingResources(proteu, hili).keys()) {
-            Object resource = Config.getScriptingResources(proteu, hili).get(key);
+        Values resources = hili.resource().all();
+        for (String key : resources.keys()) {
+            Object resource = resources.get(key);
             if (key.equals("log")) {
                 resource = new org.netuno.tritao.resource.Logger(proteu, hili, script.path(), script.fileName());
             }
@@ -143,7 +170,7 @@ public class SandboxFactory implements AutoCloseable {
     public void stop() {
         stopped = true;
         sandboxes.entrySet().forEach((es) -> {
-            Sandbox sandbox = es.getValue();
+            Scriptable sandbox = es.getValue();
             try {
                 sandbox.close();
             } catch (Exception e) {
@@ -153,13 +180,13 @@ public class SandboxFactory implements AutoCloseable {
     }
 
 
-    public Sandbox getSandbox(String extension) {
+    public Scriptable getSandbox(String extension) {
         return sandboxes.entrySet().stream().filter((es) ->
                         es.getKey().equals(extension)
                 ).map((es) -> es.getValue())
                 .findFirst()
                 .orElseGet(() -> {
-                        Class<? extends Sandbox> sandboxClass = sandboxesClasses.get(extension);
+                        Class<? extends Scriptable> sandboxClass = sandboxesClasses.get(extension);
                         return sandboxes.values().stream().filter(s ->
                                         s.getClass().equals(sandboxClass)
                                 ).findFirst()
@@ -168,8 +195,8 @@ public class SandboxFactory implements AutoCloseable {
                                         return null;
                                     }
                                     try {
-                                        Sandbox sandbox = sandboxesClasses.get(extension)
-                                                .getConstructor(SandboxFactory.class)
+                                        Scriptable sandbox = sandboxesClasses.get(extension)
+                                                .getConstructor(SandboxManager.class)
                                                 .newInstance(this);
                                         sandboxes.put(extension, sandbox);
                                         return sandbox;
@@ -180,25 +207,23 @@ public class SandboxFactory implements AutoCloseable {
                 });
     }
 
-    public Values runScript(String path, String scriptName) {
-        Values bindings = runScript(path, scriptName, false, false);
-        return returnScriptSandboxBindings(bindings);
+    public ScriptResult runScript(String path, String scriptName) {
+        return runScript(path, scriptName, false, false);
     }
 
-    public Values runScript(String path, String scriptName, boolean preserveContext) {
-        Values bindings = runScript(path, scriptName, preserveContext, false);
-        return returnScriptSandboxBindings(bindings);
+    public ScriptResult runScript(String path, String scriptName, boolean preserveContext) {
+        return runScript(path, scriptName, preserveContext, false);
     }
 
-    private Values runScript(String path, String fileName, boolean preserveContext, boolean fromOnError) {
+    private ScriptResult runScript(String path, String fileName, boolean preserveContext, boolean fromOnError) {
         path = SafePath.fileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(path + "/" + fileName);
-        Optional<Sandbox> sandbox = Optional.empty();
+        Optional<Scriptable> sandbox = Optional.empty();
         try {
             if (scriptPath != null) {
                 scriptsRunning++;
                 if (!preserveContext) {
-                    sandboxes.forEach((e, s) -> s.newContext());
+                    sandboxes.forEach((e, s) -> s.resetContext());
                 }
                 java.nio.file.Path scriptPathFileSystem = Paths.get(path);
                 path = scriptPathFileSystem.getParent().toAbsolutePath().toString();
@@ -234,32 +259,32 @@ public class SandboxFactory implements AutoCloseable {
                             String importScriptCorePath = ScriptRunner.searchScriptFile(Config.getPathAppCore(proteu) +"/"+ importScriptPath);
                             if (importScriptCorePath != null) {
                                 if (runScript(Config.getPathAppCore(proteu), importScriptPath, true) == null) {
-                                    return null;
+                                    return ScriptResult.withError();
                                 }
                             } else {
                                 ScriptError error = new ScriptError(proteu, hili, "Import script not found "+ importScriptPath + " in "+ fileName);
                                 onError(script, error.getMessage(), -1, -1, error);
-                                return null;
+                                return ScriptResult.withError();
                             }
                         }
                     }
-                    sandbox = Optional.of(getSandbox(scriptExtension));
+                    sandbox = Optional.ofNullable(getSandbox(scriptExtension));
                     if (!sandbox.isPresent()) {
-                        logger.info("Script "+ fileName +" not supported.");
-                        return null;
+                        logger.fatal("Script "+ fileName +"."+ scriptExtension +" is not supported.");
+                        return ScriptResult.withError();
                     } else {
-                        return runSandboxScript(sandbox.get(), script);
+                        return runScriptSandbox(script, sandbox.get());
                     }
                 } else {
-                    return new Values();
+                    return ScriptResult.withSuccess();
                 }
             } else {
                 logger.info("Script file not found: "+ fileName);
-                return null;
+                return ScriptResult.withError();
             }
         } catch (Throwable t) {
             if (stopped) {
-                return null;
+                return ScriptResult.withError();
             }
             if (t instanceof ScriptError && t.getMessage().contains(EmojiParser.parseToUnicode(":boom:") +" SCRIPT RUNTIME ERROR")) {
                 throw (ScriptError)t;
@@ -301,25 +326,24 @@ public class SandboxFactory implements AutoCloseable {
                 error.setLogFatal(true);
                 throw error;
             }
-            return null;
+            return ScriptResult.withError();
         } finally {
             if (scriptPath != null) {
                 if (!preserveContext && sandbox.isPresent()) {
-                    sandbox.get().closeContext();
+                    sandbox.get().resetContext();
                 }
                 scriptsRunning--;
             }
         }
     }
 
-    private Values runSandboxScript(Sandbox sandbox, ScriptSourceCode script) {
+    private ScriptResult runScriptSandbox(ScriptSourceCode script, Scriptable sandbox) {
         Throwable throwable = null;
-        var bindingsReturned = new Values();
         try {
             //ThreadMonitor threadMonitor = new ThreadMonitor(Config.getMaxCPUTime(), Config.getMaxMemory());
             //threadMonitor.setThreadToMonitor(Thread.currentThread());
             //threadMonitor.run();
-            bindingsReturned = sandbox.run(script, loadBindings(script));
+            sandbox.run(script, loadBindings(script));
             //threadMonitor.stopMonitor();
             /*RunScriptThread runScriptThread = new RunScriptThread(engine, script);
             ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -335,7 +359,7 @@ public class SandboxFactory implements AutoCloseable {
         }
         if (throwable != null) {
             if (scriptRequestErrorExecuted) {
-                return null;
+                return ScriptResult.withError();
             }
             int errorLineNumber = -1;
             int errorColumnNumber = -1;
@@ -363,9 +387,9 @@ public class SandboxFactory implements AutoCloseable {
             if (script.error() == false) {
                 onError(script, getErrorMessage(throwable), errorLineNumber, errorColumnNumber, throwable);
             }
-            return null;
+            return ScriptResult.withError();
         }
-        return bindingsReturned;
+        return ScriptResult.withSuccess();
     }
 
     public String getErrorMessage(Throwable t) {
@@ -400,7 +424,7 @@ public class SandboxFactory implements AutoCloseable {
                 .set("line", errorLine)
                 .set("column", errorLine)
                 .set("throwable", t);
-        hili.resource(org.netuno.tritao.resource.Error.class).data(errorData);
+        hili.resource().get(org.netuno.tritao.resource.Error.class).data(errorData);
         runScript(Config.getPathAppCore(proteu), "_request_error", false, true);
     }
 
@@ -413,6 +437,323 @@ public class SandboxFactory implements AutoCloseable {
                 logger.error("Fail to close "+ s.getClass().getSimpleName() +".", ex);
             }
         });
+        sandboxes.clear();
+        sandboxes = null;
+        proteu = null;
+        hili = null;
+    }
+}
+
+class TimeKiller implements Runnable
+{
+
+    private Thread mainThread;
+    private Thread targetThread;
+    private ExecutorService executorService;
+    private long millis;
+    private Thread watcherThread;
+    private boolean loop;
+    private boolean enabled;
+    private Throwable throwable;
+
+    public TimeKiller(ExecutorService executorService, Thread targetThread, long millis)
+    {
+        this.mainThread = Thread.currentThread();
+        this.executorService = executorService;
+        this.targetThread = targetThread;
+        this.millis = millis;
+        enabled = true;
+        watcherThread = new Thread(this);
+        watcherThread.start();
+        // Hack - pause a bit to let the watcher thread get started.
+        try
+        {
+            Thread.sleep( 100 );
+        }
+        catch (InterruptedException e) {}
+    }
+
+    /// Constructor.  Give it a thread to watch, and a timeout in milliseconds.
+    // After the timeout has elapsed, the thread gets killed.  If you want
+    // to cancel the kill, just call done().
+    public TimeKiller(Thread targetThread, long millis)
+    {
+        this.mainThread = Thread.currentThread();
+        this.targetThread = targetThread;
+        this.millis = millis;
+        enabled = true;
+        watcherThread = new Thread(this);
+        watcherThread.start();
+        // Hack - pause a bit to let the watcher thread get started.
+        try
+        {
+            Thread.sleep(100);
+        }
+        catch (InterruptedException e) {}
+    }
+
+    /// Constructor, current thread.
+    public TimeKiller(long millis)
+    {
+        this(Thread.currentThread(), millis);
+    }
+
+    /// Call this when the target thread has finished.
+    public synchronized void done()
+    {
+        loop = false;
+        enabled = false;
+        notify();
+    }
+
+    /// Call this to restart the wait from zero.
+    public synchronized void reset()
+    {
+        loop = true;
+        notify();
+    }
+
+    /// Call this to restart the wait from zero with a different timeout value.
+    public synchronized void reset( long millis )
+    {
+        this.millis = millis;
+        reset();
+    }
+
+    /// The watcher thread - from the Runnable interface.
+    // This has to be pretty anal to avoid monitor lockup, lost
+    // threads, etc.
+    public synchronized void run()
+    {
+        Thread me = Thread.currentThread();
+        me.setPriority(Thread.MAX_PRIORITY);
+        if (enabled) {
+            do {
+                loop = false;
+                try {
+                    wait(millis);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+            while (enabled && loop);
+        }
+        if (enabled && targetThread.isAlive()) {
+            try {
+                wait(Config.getMaxCPUTime());
+            } catch (InterruptedException e) {
+                return;
+            }
+            if (targetThread.isAlive()) {
+                targetThread.interrupt();
+                if (targetThread != mainThread) {
+                    mainThread.interrupt();
+                }
+                throwable = new RuntimeException("Execution time exceeded.");
+                if (executorService != null) {
+                    executorService.shutdownNow();
+                    try {
+                        if (executorService.awaitTermination(1000, TimeUnit.MILLISECONDS)) {
+                            targetThread.interrupt();
+                            if (targetThread != mainThread) {
+                                mainThread.interrupt();
+                            }
+                            executorService.shutdownNow();
+                        }
+                    } catch (InterruptedException e) {
+                        executorService.shutdownNow();
+                    }
+                } else {
+                    targetThread.stop();
+                }
+            }
+        }
+    }
+
+    public Throwable getThrowable() {
+        return throwable;
+    }
+}
+
+@SuppressWarnings("restriction")
+class ThreadMonitor {
+    private static final int MILLIS_TO_NANO = 1000000;
+
+    private final long maxCPUTime;
+
+    private final long maxMemory;
+
+    private final AtomicBoolean stop;
+
+    /** Check if interrupted script has finished. */
+    private final AtomicBoolean scriptFinished;
+
+    /** Check if script should be killed to stop it when abusive. */
+    private final AtomicBoolean scriptKilled;
+
+    private final AtomicBoolean cpuLimitExceeded;
+
+    private final AtomicBoolean memoryLimitExceeded;
+
+    private final Object monitor;
+
+    private Thread threadToMonitor;
+
+    private final ThreadMXBean threadBean;
+
+    private final com.sun.management.ThreadMXBean memoryCounter;
+
+    ThreadMonitor(final long maxCPUTime, final long maxMemory) {
+        this.maxMemory = maxMemory;
+        this.maxCPUTime = maxCPUTime * 1000000;
+        stop = new AtomicBoolean(false);
+        scriptFinished = new AtomicBoolean(false);
+        scriptKilled = new AtomicBoolean(false);
+        cpuLimitExceeded = new AtomicBoolean(false);
+        memoryLimitExceeded = new AtomicBoolean(false);
+        monitor = new Object();
+        threadBean = ManagementFactory.getThreadMXBean();
+        // ensure this feature is enabled
+        threadBean.setThreadCpuTimeEnabled(true);
+        if (threadBean instanceof com.sun.management.ThreadMXBean) {
+            memoryCounter = (com.sun.management.ThreadMXBean) threadBean;
+            // ensure this feature is enabled
+            memoryCounter.setThreadAllocatedMemoryEnabled(true);
+        } else {
+            if (maxMemory > 0) {
+                throw new UnsupportedOperationException("JVM does not support thread memory counting");
+            }
+            memoryCounter = null;
+        }
+    }
+
+    private void reset() {
+        stop.set(false);
+        scriptFinished.set(false);
+        scriptKilled.set(false);
+        cpuLimitExceeded.set(false);
+        threadToMonitor = null;
+    }
+
+    @SuppressWarnings("deprecation")
+    void run() {
+        try {
+            // wait, for threadToMonitor to be set in JS evaluator thread
+            synchronized (monitor) {
+                if (threadToMonitor == null) {
+                    monitor.wait((maxCPUTime + 100) / MILLIS_TO_NANO);
+                }
+            }
+            if (threadToMonitor == null) {
+                throw new IllegalStateException("Executor thread not set after " + maxCPUTime / MILLIS_TO_NANO + " ms");
+            }
+            final long startCPUTime = getCPUTime();
+            final long startMemory = getCurrentMemory();
+            while (!stop.get()) {
+                final long runtime = getCPUTime() - startCPUTime;
+                final long memory = getCurrentMemory() - startMemory;
+
+                if (isCpuTimeExceeded(runtime) || isMemoryExceeded(memory)) {
+
+                    cpuLimitExceeded.set(isCpuTimeExceeded(runtime));
+                    memoryLimitExceeded.set(isMemoryExceeded(memory));
+                    threadToMonitor.interrupt();
+                    synchronized (monitor) {
+                        monitor.wait(50);
+                    }
+                    if (stop.get()) {
+                        return;
+                    }
+                    if (!scriptFinished.get()) {
+                        // HARD SHUTDOWN
+                        threadToMonitor.stop();
+                        scriptKilled.set(true);
+                    }
+                    return;
+                } else {
+
+                }
+                synchronized (monitor) {
+                    long waitTime = getCheckInterval(runtime);
+
+                    if (waitTime == 0) {
+                        waitTime = 1;
+                    }
+                    monitor.wait(waitTime);
+                }
+
+            }
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private long getCheckInterval(final long runtime) {
+        if (maxCPUTime == 0) {
+            return 10;
+        }
+        if (maxMemory == 0) {
+            return Math.max((maxCPUTime - runtime) / MILLIS_TO_NANO, 5);
+        }
+        return Math.min((maxCPUTime - runtime) / MILLIS_TO_NANO, 10);
+    }
+
+    private boolean isCpuTimeExceeded(final long runtime) {
+        if (maxCPUTime == 0) {
+            return false;
+        }
+        return runtime > maxCPUTime;
+    }
+
+    private boolean isMemoryExceeded(final long memory) {
+        if (maxMemory == 0) {
+            return false;
+        }
+        return memory > maxMemory;
+    }
+
+    private long getCurrentMemory() {
+        if (maxMemory == 0 || memoryCounter != null) {
+            return memoryCounter.getThreadAllocatedBytes(threadToMonitor.getId());
+        }
+        return 0L;
+    }
+
+    private long getCPUTime() {
+        return threadBean.getThreadCpuTime(threadToMonitor.getId());
+    }
+
+    public void stopMonitor() {
+        stop.set(true);
+        notifyMonitorThread();
+    }
+
+    public void setThreadToMonitor(final Thread t) {
+        reset();
+        threadToMonitor = t;
+        notifyMonitorThread();
+    }
+
+    public void scriptFinished() {
+        scriptFinished.set(false);
+    }
+
+    public boolean isCPULimitExceeded() {
+        return cpuLimitExceeded.get();
+    }
+
+    public boolean isMemoryLimitExceeded() {
+        return memoryLimitExceeded.get();
+    }
+
+    public boolean isScriptKilled() {
+        return scriptKilled.get();
+    }
+
+    private void notifyMonitorThread() {
+        synchronized (monitor) {
+            monitor.notifyAll();
+        }
     }
 
 }
