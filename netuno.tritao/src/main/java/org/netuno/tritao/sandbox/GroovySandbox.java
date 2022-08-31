@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.sandbox;
 
+import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
 
@@ -35,6 +36,11 @@ public class GroovySandbox implements Scriptable {
     private ScriptEngine engine = null;
 
     private Bindings bindings = null;
+
+    static {
+        GroovyScriptEngineFactory groovyEngineFactory = new GroovyScriptEngineFactory();
+        ScriptRunner.getScriptEngineManager().registerEngineName("groovy", groovyEngineFactory);
+    }
 
     public GroovySandbox(SandboxManager manager) {
         this.manager = manager;

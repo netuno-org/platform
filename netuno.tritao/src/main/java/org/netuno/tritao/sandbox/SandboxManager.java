@@ -88,6 +88,7 @@ public class SandboxManager implements AutoCloseable {
                 scriptSandboxClassName = scriptSandboxClassNameItem;
                 Class<? extends Scriptable> sandbox = (Class<? extends Scriptable>)Class.forName(scriptSandboxClassName);
                 ScriptSandbox scriptSandbox = sandbox.getAnnotation(ScriptSandbox.class);
+                ScriptRunner.addExtensions(scriptSandbox.extensions());
                 for (String extension : scriptSandbox.extensions()) {
                     sandboxesClasses.put(extension, sandbox);
                 }
@@ -279,7 +280,7 @@ public class SandboxManager implements AutoCloseable {
                     return ScriptResult.withSuccess();
                 }
             } else {
-                logger.info("Script file not found: "+ fileName);
+                logger.info("Script file not found: "+ path +"/"+ fileName);
                 return ScriptResult.withError();
             }
         } catch (Throwable t) {

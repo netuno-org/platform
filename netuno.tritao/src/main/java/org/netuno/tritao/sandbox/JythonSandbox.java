@@ -17,12 +17,20 @@
 
 package org.netuno.tritao.sandbox;
 
+import org.netuno.psamata.script.ScriptRunner;
+import org.python.jsr223.PyScriptEngineFactory;
+
 /**
  * Jython Sandbox
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @ScriptSandbox(extensions = {"py"})
 public class JythonSandbox extends JSR223GenericSandbox {
+
+    static {
+        PyScriptEngineFactory pythonEngineFactory = new PyScriptEngineFactory();
+        ScriptRunner.getScriptEngineManager().registerEngineName("python", pythonEngineFactory);
+    }
 
     public JythonSandbox(SandboxManager manager) {
         super(manager, "python");

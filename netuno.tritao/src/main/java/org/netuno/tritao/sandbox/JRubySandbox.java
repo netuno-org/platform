@@ -17,12 +17,20 @@
 
 package org.netuno.tritao.sandbox;
 
+import org.jruby.embed.jsr223.JRubyEngineFactory;
+import org.netuno.psamata.script.ScriptRunner;
+
 /**
  * JRuby Sandbox
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @ScriptSandbox(extensions = {"rb"})
 public class JRubySandbox extends JSR223GenericSandbox {
+
+    static {
+        JRubyEngineFactory rubyEngineFactory = new JRubyEngineFactory();
+        ScriptRunner.getScriptEngineManager().registerEngineName("ruby", rubyEngineFactory);
+    }
 
     public JRubySandbox(SandboxManager manager) {
         super(manager, "ruby");

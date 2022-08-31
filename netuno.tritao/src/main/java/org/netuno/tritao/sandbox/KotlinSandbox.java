@@ -17,7 +17,9 @@
 
 package org.netuno.tritao.sandbox;
 
+import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.script.ScriptRunner;
 
 /**
  * Kotlin Sandbox
@@ -25,6 +27,11 @@ import org.netuno.psamata.Values;
  */
 @ScriptSandbox(extensions = {"kts"})
 public class KotlinSandbox extends JSR223GenericSandbox {
+
+    static {
+        KotlinJsr223JvmLocalScriptEngineFactory kotlinEngineFactory = new KotlinJsr223JvmLocalScriptEngineFactory();
+        ScriptRunner.getScriptEngineManager().registerEngineName("kotlin", kotlinEngineFactory);
+    }
 
     public KotlinSandbox(SandboxManager manager) {
         super(manager, "kotlin");

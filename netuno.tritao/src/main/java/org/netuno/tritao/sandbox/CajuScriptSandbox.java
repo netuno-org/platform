@@ -17,12 +17,20 @@
 
 package org.netuno.tritao.sandbox;
 
+import org.cajuscript.CajuScriptEngineFactory;
+import org.netuno.psamata.script.ScriptRunner;
+
 /**
  * CajuScript Sandbox
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @ScriptSandbox(extensions = {"cj"})
 public class CajuScriptSandbox extends JSR223GenericSandbox {
+
+    static {
+        CajuScriptEngineFactory cajuEngineFactory = new CajuScriptEngineFactory();
+        ScriptRunner.getScriptEngineManager().registerEngineName("caju", cajuEngineFactory);
+    }
 
     public CajuScriptSandbox(SandboxManager manager) {
         super(manager, "caju");
