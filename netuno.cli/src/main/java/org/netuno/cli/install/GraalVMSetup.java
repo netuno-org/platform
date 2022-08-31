@@ -69,7 +69,7 @@ public class GraalVMSetup {
 
     public static boolean graalCheck(String path, String graalVMVersion) throws IOException {
         File graalVMFolder = new File(path, Constants.GRAALVM_FOLDER);
-        if (new File(path, Constants.GRAALVM_FOLDER).exists()) {
+        if (graalVMFolder.exists()) {
             ProcessBuilder builder = new ProcessBuilder();
             builder.command(new String[]{
                     (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX ? "./" : "")
@@ -235,6 +235,7 @@ public class GraalVMSetup {
                         break;
                     } finally {
                         executing.set("run", false);
+                        installJS(path);
                     }
                 } else {
                     File zipFileGraalVM = new File(path, graalVMFileName);
@@ -276,12 +277,34 @@ public class GraalVMSetup {
                             file.renameTo(new File(path, "graalvm"));
                         }
                     }
+                    installJS(path);
                     break;
                 }
             }
 
             System.out.println();
             System.out.println();
+        }
+    }
+
+    public static void installJS(String path) throws IOException, InterruptedException {
+        File graalVMFolder = new File(path, Constants.GRAALVM_FOLDER);
+        if (graalVMFolder.exists()) {
+            System.out.println();
+            ProcessBuilder builder = new ProcessBuilder();
+            builder.command(new String[]{
+                    (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX ? "./" : "")
+                            + "gu",
+                    "install", "nodejs"
+            });
+            builder.directory(new File(graalVMFolder, "bin"));
+            Process process = builder.start();
+            StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+            Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
+            StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err::println);
+            Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
+            process.waitFor();
+            process.destroy();
         }
     }
 }
