@@ -19,6 +19,7 @@ package org.netuno.cli;
 
 import java.io.File;
 
+import java.io.FileInputStream;
 import java.net.URL;
 import java.time.Year;
 import java.util.List;
@@ -28,6 +29,8 @@ import java.util.jar.Manifest;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.fusesource.jansi.AnsiConsole;
@@ -54,8 +57,14 @@ public final class Main implements Runnable {
     private static Logger logger = LogManager.getLogger(Main.class);
 
     static {
+        String logConfigFile = "logs/log.xml";
+        System.setProperty("idea.use.native.fs.for.win", "false");
+        System.setProperty("idea.io.use.nio2", "true");
+        System.setProperty("log4j2.configurationFile", logConfigFile);
+
         try {
-            Configurator.initialize(null, "logs/log.xml");
+            ConfigurationSource source = new ConfigurationSource(new FileInputStream(logConfigFile));
+            Configurator.initialize(null, source);
             Configurator.reconfigure();
         } catch (Exception e) {
             e.printStackTrace();
@@ -174,14 +183,26 @@ public final class Main implements Runnable {
                 logger.debug("Fail to check the latest version.", t);
             }
 
-            String path = ScriptRunner.searchScriptFile("config");
-            if (path != null) {
-                if (GraalRunner.isGraal() && path.toLowerCase().endsWith(".js")) {
-                    String script = org.netuno.psamata.io.InputStream.readFromFile(path);
-                    new GraalRunner("js")
-                            .set("js", "config", new Config())
-                            .eval("js", script);
+            try {
+                String path = ScriptRunner.searchScriptFile("config");
+                if (path != null) {
+                    if (GraalRunner.isGraal() && path.toLowerCase().endsWith(".js")) {
+                        String script = org.netuno.psamata.io.InputStream.readFromFile(path);
+                        new GraalRunner("js")
+                                .set("js", "config", new Config())
+                                .eval("js", script);
+                    } else {
+                        logger.warn("The configuration script "+ path +" is not supported.");
+                    }
+                } else {
+                    logger.warn("Configuration script not found in: ./config.js");
                 }
+            } catch (Throwable t) {
+                System.out.println(OS.consoleOutput("@|red    Configuration script failed. |@"));
+                System.out.println();
+                t.printStackTrace();
+                System.out.println();
+                throw t;
             }
 
             Main main = new Main();
@@ -225,6 +246,7 @@ public final class Main implements Runnable {
                 ((MainArg) firstCommand).run();
             }
         } catch (CommandLine.UnmatchedArgumentException e) {
+            logger.trace(e);
             commandLineList = null;
         } finally {
             if (commandLineList == null || commandLineList.size() < 2) {
