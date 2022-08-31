@@ -37,7 +37,7 @@ import javax.script.SimpleBindings;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class ScriptRunner {
-    private static List<String> extensions = new ArrayList<String>();
+    private static List<String> extensions = new ArrayList<>();
     private static ScriptEngineManager manager = new ScriptEngineManager();
     private ScriptEngine engine = null;
     private Bindings bindings = null;
@@ -69,6 +69,15 @@ public class ScriptRunner {
                 throw new Error("With GraalVM the ScriptRunner is unable to run.");
             }
             bindings = new SimpleBindings(new GlobalBindingsMap());
+        }
+    }
+
+    public static void addExtensions(String... others) {
+        for (String other : others) {
+            if (extensions.contains(other)) {
+                continue;
+            }
+            extensions.add(other);
         }
     }
 
@@ -244,11 +253,11 @@ public class ScriptRunner {
      * @return Script String
      */
     public static String toString(ScriptEngine engine, String str) {
-        str = str.replace((CharSequence)"\\", (CharSequence)"\\\\");
-        str = str.replace((CharSequence)"\"", (CharSequence)"\\\"");
-        str = str.replace((CharSequence)"\r", (CharSequence)"\\r");
-        str = str.replace((CharSequence)"\n", (CharSequence)"\\n");
-        str = str.replace((CharSequence)"\t", (CharSequence)"\\t");
+        str = str.replace("\\", "\\\\");
+        str = str.replace("\"", "\\\"");
+        str = str.replace("\r", "\\r");
+        str = str.replace("\n", "\\n");
+        str = str.replace("\t", "\\t");
         return "\"" + str + "\"";
     }
     /**

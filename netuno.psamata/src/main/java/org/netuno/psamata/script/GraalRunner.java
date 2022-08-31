@@ -66,7 +66,7 @@ public class GraalRunner {
                         (v) -> transformArray(v)
                 )
                 .build();
-            
+
             graal = true;
         } catch (Throwable t) {
             graal = false;
