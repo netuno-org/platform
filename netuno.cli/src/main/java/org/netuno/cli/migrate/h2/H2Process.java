@@ -40,8 +40,14 @@ class H2Process {
     protected static void run(H2ProcessInfo processInfo, Path jar) {
         System.out.println();
         switch (processInfo.type()) {
-            case EXPORTATION -> System.out.println(OS.consoleOutput("@|white Exporting H2Database |@@|yellow " + processInfo.dbPath() + "|@ @|white to:|@ @|green " + processInfo.dbName() + "-" + processInfo.id() + ".sql|@"));
-            case IMPORTATION -> System.out.println(OS.consoleOutput("@|white Importing H2Database |@@|yellow " + processInfo.dbPath().getParent().resolve(Path.of(processInfo.dbName() + "-" + processInfo.id() + ".sql")) + "|@ @|white to:|@ @|green " + processInfo.dbPath().getFileName() + "|@"));
+            case EXPORTATION:
+                System.out.println(OS.consoleOutput("@|white Exporting H2Database |@@|yellow " + processInfo.dbPath() + "|@ @|white to:|@ @|green " + processInfo.dbName() + "-" + processInfo.id() + ".sql|@"));
+                break;
+            case IMPORTATION:
+                System.out.println(OS.consoleOutput("@|white Importing H2Database |@@|yellow " + processInfo.dbPath().getParent().resolve(Path.of(processInfo.dbName() + "-" + processInfo.id() + ".sql")) + "|@ @|white to:|@ @|green " + processInfo.dbPath().getFileName() + "|@"));
+                break;
+            default:
+                break;
         }
         System.out.println();
         Path directory = Path.of(Constants.ROOT_PATH).relativize(processInfo.dbPath().getParent());
@@ -53,18 +59,17 @@ class H2Process {
                 "org.h2.tools.Shell",
                 "-url",
                 "jdbc:h2:./"+ processInfo.dbName() +";"
-                        + (switch (processInfo.type()) {
-                            case EXPORTATION -> "MODE=PostgreSQL;";
-                            default -> "";
-                        }) + "DATABASE_TO_UPPER=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;",
+                        + (processInfo.type() == H2MigrationType.EXPORTATION ? "MODE=PostgreSQL;" : "")
+                        + "DATABASE_TO_UPPER=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;",
                 "-user",
                 "sa",
                 "-sql",
-                switch (processInfo.type()) {
-                    case EXPORTATION -> "SCRIPT TO";
-                    case IMPORTATION -> "RUNSCRIPT FROM";
-                    default -> "";
-                } +" './"+ processInfo.dbName() +"-"+ processInfo.id() +".sql';"
+                (processInfo.type() == H2MigrationType.EXPORTATION ?
+                        "SCRIPT TO" :
+                        processInfo.type() == H2MigrationType.IMPORTATION ?
+                                "RUNSCRIPT FROM" :
+                                ""
+                ) +" './"+ processInfo.dbName() +"-"+ processInfo.id() +".sql';"
         };
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(command);
@@ -74,22 +79,24 @@ class H2Process {
         Process process = null;
         Consumer<Throwable> logError = (t) -> {
             logger.warn("\n#\n# Fail to "
-                    + (switch (processInfo.type()) {
-                        case EXPORTATION -> "EXPORT";
-                        case IMPORTATION -> "IMPORT";
-                        default -> "";
-                    }) +": "
+                    + (processInfo.type() == H2MigrationType.EXPORTATION ?
+                            "EXPORT" :
+                            processInfo.type() == H2MigrationType.IMPORTATION ?
+                                    "IMPORT" :
+                                    ""
+                    ) +": "
                     + processInfo.dbPath()
                     +"\n#\n# "
                     + processError
                     +"\n#\n# Command: \n#   "
                     + Arrays.stream(command).map((c) -> {
                 if (c.startsWith("jdbc:") || c.startsWith(
-                        switch (processInfo.type()) {
-                            case EXPORTATION -> "SCRIPT TO";
-                            case IMPORTATION -> "RUNSCRIPT FROM";
-                            default -> "";
-                        })) {
+                        processInfo.type() == H2MigrationType.EXPORTATION ?
+                                "SCRIPT TO" :
+                                processInfo.type() == H2MigrationType.IMPORTATION ?
+                                        "RUNSCRIPT FROM" :
+                                        ""
+                        )) {
                     return "\""+ c +"\"";
                 }
                 return c;
@@ -112,7 +119,7 @@ class H2Process {
                 process.destroy();
             }
         }
-        if (!processError.isEmpty()) {
+        if (processError.length() > 0) {
             logError.accept(null);
         }
     }

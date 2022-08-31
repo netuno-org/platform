@@ -129,7 +129,7 @@ public final class Main implements Runnable {
             System.out.println(OS.consoleOutput("@|white  N   n n  E         't'    U     U  N   n n  O    O   |@"));
             System.out.println(OS.consoleOutput("@|white  N     n  eEEEee     T      UuuuU   N     n   OooO    |@"));
             System.out.println(OS.consoleOutput("@|cyan                      ..,;ooddQOPttoc;,..              |@"));
-            System.out.println(OS.consoleOutput("@|cyan              .,;ooddlllLQ/[~;'  ',~~]Llllddoo;,.      |@"));
+            System.out.println(OS.consoleOutput("@|cyan              .,;odlKWQ[~;'         '~;]QWKldo;,.      |@"));
             System.out.println(OS.consoleOutput("@|cyan          ,codloll=~'                    '~-+:={ldoc,  |@"));
             System.out.println(OS.consoleOutput("@|cyan        ,td&=}~'                               '~;=%&t,|@"));
             System.out.println();

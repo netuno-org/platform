@@ -83,9 +83,6 @@ public class Install implements MainArg {
     private final String checksumFileName = ".checksum.json";
 
     public void run() throws IOException, InterruptedException {
-        if (true) {
-            System.exit(0);
-        }
         System.out.println();
         System.out.println(OS.consoleOutput("@|cyan All will set up into "+ (path.equals(Constants.ROOT_PATH) ? "this current directory." : path +"/") +" |@ "));
         System.out.println();

@@ -29,7 +29,34 @@ import java.util.Optional;
  *
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-record H2ProcessInfo(H2MigrationType type, String id, Path dbPath, String dbName) {
+public class H2ProcessInfo {
+    private H2MigrationType type;
+    private String id;
+    private Path dbPath;
+    private String dbName;
+    public H2ProcessInfo(H2MigrationType type, String id, Path dbPath, String dbName) {
+        this.type = type;
+        this.id = id;
+        this.dbPath = dbPath;
+        this.dbName = dbName;
+    }
+
+    public H2MigrationType type() {
+        return type;
+    }
+
+    public String id() {
+        return id;
+    }
+
+    public Path dbPath() {
+        return dbPath;
+    }
+
+    public String dbName() {
+        return dbName;
+    }
+
     public static Optional<H2ProcessInfo> create(H2MigrationType type, String id, Values appConfig) {
         if (!appConfig.has("db")) {
             return Optional.empty();
