@@ -59,6 +59,9 @@ public class Clone implements MainArg {
 
     public void run() throws IOException, SQLException, ClassNotFoundException, ScriptException {
         GraalVMSetup.checkAndSetup();
+        if (!Config.runConfigScript()) {
+            return;
+        }
         System.err.println();
         System.out.print(OS.consoleOutput("@|yellow Clone Application|@ "));
         System.err.println();

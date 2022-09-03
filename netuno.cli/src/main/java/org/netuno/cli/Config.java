@@ -21,9 +21,11 @@ import com.vdurmont.emoji.EmojiParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
+import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.mail.SMTPTransport;
+import org.netuno.psamata.script.GraalRunner;
 import org.netuno.psamata.script.ScriptRunner;
 import javax.script.ScriptException;
 
@@ -985,5 +987,31 @@ public final class Config {
             }
         }
         return null;
+    }
+
+    public static boolean runConfigScript() {
+        try {
+            ScriptRunner.addExtensions("js");
+            String path = ScriptRunner.searchScriptFile("config");
+            if (path != null) {
+                if (GraalRunner.isGraal() && path.toLowerCase().endsWith(".js")) {
+                    String script = org.netuno.psamata.io.InputStream.readFromFile(path);
+                    new GraalRunner("js")
+                            .set("js", "config", new Config())
+                            .eval("js", script);
+                } else {
+                    logger.warn("The configuration script "+ path +" is not supported.");
+                }
+            } else {
+                logger.warn("Configuration script not found in: ./config.js");
+            }
+            return true;
+        } catch (Throwable t) {
+            System.out.println(org.netuno.cli.utils.OS.consoleOutput("@|red    Configuration script failed. |@"));
+            System.out.println();
+            t.printStackTrace();
+            System.out.println();
+            return false;
+        }
     }
 }

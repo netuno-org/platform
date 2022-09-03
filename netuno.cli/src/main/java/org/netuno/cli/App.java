@@ -409,6 +409,9 @@ public class App implements MainArg {
 
     public void run() throws Exception {
         GraalVMSetup.checkAndSetup();
+        if (!Config.runConfigScript()) {
+            return;
+        }
         System.err.println();
         System.err.println();
         if (!config.isEmpty()) {

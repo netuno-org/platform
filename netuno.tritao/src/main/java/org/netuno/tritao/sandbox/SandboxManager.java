@@ -90,6 +90,7 @@ public class SandboxManager implements AutoCloseable {
                 ScriptSandbox scriptSandbox = sandbox.getAnnotation(ScriptSandbox.class);
                 ScriptRunner.addExtensions(scriptSandbox.extensions());
                 for (String extension : scriptSandbox.extensions()) {
+                    logger.trace("Sandbox "+ sandbox.getName() +" registered to extension "+ extension +".");
                     sandboxesClasses.put(extension, sandbox);
                 }
             }

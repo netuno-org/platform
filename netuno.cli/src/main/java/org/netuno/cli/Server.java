@@ -129,7 +129,9 @@ public class Server implements MainArg {
     public void run() {
         try {
             GraalVMSetup.checkAndSetup();
-
+            if (!Config.runConfigScript()) {
+                return;
+            }
             Config.setName(name);
             
             Config.setWebHome(webHome);
