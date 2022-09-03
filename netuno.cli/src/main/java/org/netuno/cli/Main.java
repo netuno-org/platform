@@ -21,6 +21,9 @@ import java.io.File;
 
 import java.io.FileInputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Year;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -57,17 +60,19 @@ public final class Main implements Runnable {
     private static Logger logger = LogManager.getLogger(Main.class);
 
     static {
-        String logConfigFile = "logs/log.xml";
         System.setProperty("idea.use.native.fs.for.win", "false");
         System.setProperty("idea.io.use.nio2", "true");
-        System.setProperty("log4j2.configurationFile", logConfigFile);
 
-        try {
-            ConfigurationSource source = new ConfigurationSource(new FileInputStream(logConfigFile));
-            Configurator.initialize(null, source);
-            Configurator.reconfigure();
-        } catch (Exception e) {
-            e.printStackTrace();
+        String logConfigFile = "logs/log.xml";
+        if (Files.exists(Path.of("logs/log.xml"))) {
+            System.setProperty("log4j2.configurationFile", logConfigFile);
+            try {
+                ConfigurationSource source = new ConfigurationSource(new FileInputStream(logConfigFile));
+                Configurator.initialize(null, source);
+                Configurator.reconfigure();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         /*try {
@@ -181,28 +186,6 @@ public final class Main implements Runnable {
                 }
             } catch (Throwable t) {
                 logger.debug("Fail to check the latest version.", t);
-            }
-
-            try {
-                String path = ScriptRunner.searchScriptFile("config");
-                if (path != null) {
-                    if (GraalRunner.isGraal() && path.toLowerCase().endsWith(".js")) {
-                        String script = org.netuno.psamata.io.InputStream.readFromFile(path);
-                        new GraalRunner("js")
-                                .set("js", "config", new Config())
-                                .eval("js", script);
-                    } else {
-                        logger.warn("The configuration script "+ path +" is not supported.");
-                    }
-                } else {
-                    logger.warn("Configuration script not found in: ./config.js");
-                }
-            } catch (Throwable t) {
-                System.out.println(OS.consoleOutput("@|red    Configuration script failed. |@"));
-                System.out.println();
-                t.printStackTrace();
-                System.out.println();
-                throw t;
             }
 
             Main main = new Main();
