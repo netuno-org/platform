@@ -42,6 +42,9 @@ public class Migrate implements MainArg {
     })
     protected String h2 = "";
 
+    @CommandLine.Option(names = { "-a", "app" }, paramLabel = "demo", description = "The application name is to be processed.")
+    protected String app = "*";
+
     @CommandLine.Option(names = { "-y", "yes" }, paramLabel = "yes", description = "To all questions, reply as YES, and you are sure that files will be destroyed.")
     protected boolean yes = false;
 
@@ -52,9 +55,9 @@ public class Migrate implements MainArg {
         System.err.println();
         System.err.println();
         if (h2.equalsIgnoreCase("export-v1")) {
-            H2DatabaseMigration.exportationVersion1();
+            H2DatabaseMigration.exportationVersion1(app);
         } else if (h2.equalsIgnoreCase("import-v2")) {
-            H2DatabaseMigration.importationVersion2();
+            H2DatabaseMigration.importationVersion2(app);
         } else if (h2.equalsIgnoreCase("clean")) {
             boolean clear = true;
             if (clear) {

@@ -65,7 +65,7 @@ public class H2DatabaseMigration {
         return null;
     }
 
-    public static void exportationVersion1() {
+    public static void exportationVersion1(String app) {
         var jarV1 = getV1jar();
         if (jarV1 == null) {
             return;
@@ -92,7 +92,7 @@ public class H2DatabaseMigration {
         }
         for (var key : Config.getAppConfig().keys()) {
             var appConfig = Config.getAppConfig().getValues(key);
-            if (!key.equalsIgnoreCase("demo")) {
+            if (!app.equals("*") && !key.equalsIgnoreCase(app)) {
                 continue;
             }
             H2ProcessInfo.create(
@@ -105,7 +105,7 @@ public class H2DatabaseMigration {
         }
     }
 
-    public static void importationVersion2() {
+    public static void importationVersion2(String app) {
         Path jarV2 = getV2jar();
         if (jarV2 == null) {
             return;
@@ -119,7 +119,7 @@ public class H2DatabaseMigration {
         }
         for (String key : Config.getAppConfig().keys()) {
             var appConfig = Config.getAppConfig().getValues(key);
-            if (!key.equalsIgnoreCase("demo")) {
+            if (!app.equals("*") && !key.equalsIgnoreCase(app)) {
                 continue;
             }
             H2ProcessInfo.create(
