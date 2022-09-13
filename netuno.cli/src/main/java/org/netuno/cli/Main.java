@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Year;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -32,7 +31,6 @@ import java.util.jar.Manifest;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.status.StatusLogger;
@@ -43,8 +41,6 @@ import org.netuno.cli.monitoring.Stats;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.net.Remote;
-import org.netuno.psamata.script.GraalRunner;
-import org.netuno.psamata.script.ScriptRunner;
 import picocli.CommandLine;
 
 /**

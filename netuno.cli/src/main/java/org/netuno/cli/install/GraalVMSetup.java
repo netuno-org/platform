@@ -43,7 +43,10 @@ public class GraalVMSetup {
     private static Logger logger = LogManager.getLogger(GraalVMSetup.class);
 
     public static void checkAndSetup() {
-        checkAndSetup(Constants.GRAALVM_VERSION);
+        String javaVersion = System.getProperty("java.vendor.version");
+        if (!javaVersion.startsWith("GraalVM") || !javaVersion.endsWith(Constants.GRAALVM_VERSION)) {
+            checkAndSetup(Constants.GRAALVM_VERSION);
+        }
     }
 
     public static void checkAndSetup(String graalVMVersion) {
