@@ -1,7 +1,7 @@
 
 const dbRecords = _db.query(`
     SELECT DISTINCT
-        worker.name, SUM(DATEDIFF(HOUR, record.start, record.end)) AS total
+        worker.name, SUM(DATEDIFF(HOUR, record."start", record."end")) AS total
     FROM worker INNER JOIN record
         ON worker.id = record.worker_id
     WHERE worker.active = true AND record.active = true
