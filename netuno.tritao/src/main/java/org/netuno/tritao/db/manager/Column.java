@@ -94,7 +94,7 @@ public class Column extends Base {
                 if (this == Type.DECIMAL) {
                     return "double";
                 } else if (this == Type.VARCHAR) {
-                    return "varchar_ignorecase";
+                    return "varchar";
                 }
             } else if (isMSSQL(builder)) {
                 if (this == Type.UUID) {
