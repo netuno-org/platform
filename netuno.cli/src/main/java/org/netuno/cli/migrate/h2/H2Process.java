@@ -23,11 +23,14 @@ import org.netuno.cli.install.Constants;
 import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.StreamGobbler;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The process of migrating the H2 databases from the old version to a new one.
@@ -59,17 +62,25 @@ class H2Process {
                 "org.h2.tools.Shell",
                 "-url",
                 "jdbc:h2:./"+ processInfo.dbName() +";"
-                        + (processInfo.type() == H2MigrationType.EXPORTATION ? "MODE=PostgreSQL;" : "")
-                        + "DATABASE_TO_UPPER=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;",
+                        + (processInfo.type() == H2MigrationType.EXPORTATION ? 
+                                "MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;" : 
+                                processInfo.type() == H2MigrationType.IMPORTATION ?
+                                        "MODE=PostgreSQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;" :
+                                        "")
+                        + "DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;",
                 "-user",
                 "sa",
                 "-sql",
                 (processInfo.type() == H2MigrationType.EXPORTATION ?
-                        "SCRIPT TO" :
+                        "SCRIPT NOPASSWORDS NOSETTINGS TO" :
                         processInfo.type() == H2MigrationType.IMPORTATION ?
                                 "RUNSCRIPT FROM" :
                                 ""
-                ) +" './"+ processInfo.dbName() +"-"+ processInfo.id() +".sql';"
+                ) +" './"+ processInfo.dbName() +"-"+ processInfo.id() +".sql'"+
+                (processInfo.type() == H2MigrationType.EXPORTATION ?
+                    " SCHEMA PUBLIC" :
+                    ""
+                )+";"
         };
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(command);
@@ -112,6 +123,15 @@ class H2Process {
             StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), processError::append);
             Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
             process.waitFor();
+            if (processInfo.type() == H2MigrationType.EXPORTATION && processError.length() == 0) {
+                Path exportedSQLFile = directory.resolve(processInfo.dbName() +"-"+ processInfo.id() +".sql");
+                Stream<String> lines = Files.lines(exportedSQLFile);
+                String data = lines.collect(Collectors.joining("\n"));
+                lines.close();
+                data = data.replace(" \"PUBLIC\".", " \"public\".")
+                        .replace("VARCHAR_IGNORECASE", "VARCHAR");
+                Files.write(exportedSQLFile, data.getBytes());
+            }
         } catch (Exception e) {
             logError.accept(e);
         } finally {
