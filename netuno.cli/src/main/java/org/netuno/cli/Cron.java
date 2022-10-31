@@ -22,7 +22,6 @@ import org.netuno.psamata.Values;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -43,8 +42,6 @@ public class Cron {
 
     private static SchedulerFactory schedulerFactory = null;
     private static Scheduler scheduler = null;
-    
-    private static Values scheduled = new Values();
 
     static {
         if (scheduler == null) {
