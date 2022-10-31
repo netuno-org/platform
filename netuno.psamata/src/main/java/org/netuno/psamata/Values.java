@@ -111,17 +111,17 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         merge(object);
     }
 
-    public Values(Iterable list) {
+    public Values(Iterable<?> list) {
         this.forceList = true;
         merge(list);
     }
 
-    public Values(List list) {
+    public Values(List<?> list) {
         this.forceList = true;
         merge(list);
     }
 
-    public Values(Map map) {
+    public Values(Map<?, ?> map) {
         this.forceMap = true;
         merge(map);
     }
@@ -496,67 +496,99 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return as(get(index), defaultValue);
     }
 
-    public List asList(String key) {
+    public List<?> asList(String key) {
         return getList(key);
     }
 
-    public List asList(String key, Object defaultValue) {
+    public <T> List<T> asList(String key, Class<T> claz) {
+        return getList(key, claz);
+    }
+
+    public List<?> asList(String key, Object defaultValue) {
         return getList(key, defaultValue);
     }
 
-    public List getList(String key) {
+    public <T> List<T> asList(String key, Object defaultValue, Class<T> claz) {
+        return getList(key, defaultValue, claz);
+    }
+
+    public List<?> getList(String key) {
         return as(get(key)).toList();
     }
 
-    public List getList(String key, Object defaultValue) {
+    public <T> List<T> getList(String key, Class<T> claz) {
+        return as(get(key)).list(claz);
+    }
+
+    public List<?> getList(String key, Object defaultValue) {
         return as(get(key), defaultValue).toList();
     }
 
-    public List asList(int index) {
+    public <T> List<T> getList(String key, Object defaultValue, Class<T> claz) {
+        return as(get(key), defaultValue).toList(claz);
+    }
+
+    public List<?> asList(int index) {
         return getList(index);
     }
 
-    public List asList(int index, Object defaultValue) {
+    public <T> List<T> asList(int index, Class<T> claz) {
+        return getList(index, claz);
+    }
+
+    public List<?> asList(int index, Object defaultValue) {
         return getList(index, defaultValue);
     }
 
-    public List getList(int index) {
+    public <T> List<T> asList(int index, Object defaultValue, Class<T> claz) {
+        return getList(index, defaultValue, claz);
+    }
+
+    public List<?> getList(int index) {
         return as(get(index)).toList();
     }
 
-    public List getList(int index, Object defaultValue) {
+    public <T> List<T> getList(int index, Class<T> claz) {
+        return as(get(index)).toList(claz);
+    }
+
+    public List<?> getList(int index, Object defaultValue) {
         return as(get(index), defaultValue).toList();
     }
 
-    public Map asMap(String key) {
+    public <T> List<T> getList(int index, Object defaultValue, Class<T> claz) {
+        return as(get(index), defaultValue).toList(claz);
+    }
+
+    public Map<?, ?> asMap(String key) {
         return getMap(key);
     }
 
-    public Map asMap(String key, Object defaultValue) {
+    public Map<?, ?> asMap(String key, Object defaultValue) {
         return getMap(key, defaultValue);
     }
 
-    public Map getMap(String key) {
+    public Map<?, ?> getMap(String key) {
         return as(get(key)).toMap();
     }
 
-    public Map getMap(String key, Object defaultValue) {
+    public Map<?, ?> getMap(String key, Object defaultValue) {
         return as(get(key), defaultValue).toMap();
     }
 
-    public Map asMap(int index) {
+    public Map<?, ?> asMap(int index) {
         return getMap(index);
     }
 
-    public Map asMap(int index, Object defaultValue) {
+    public Map<?, ?> asMap(int index, Object defaultValue) {
         return getMap(index, defaultValue);
     }
 
-    public Map getMap(int index) {
+    public Map<?, ?> getMap(int index) {
         return as(get(index)).toMap();
     }
 
-    public Map getMap(int index, Object defaultValue) {
+    public Map<?, ?> getMap(int index, Object defaultValue) {
         return as(get(index), defaultValue).toMap();
     }
 
@@ -1882,7 +1914,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param set Set sign of the key and value
      * @return Formatted values
      */
-    public static String toString(final Iterable list, final String splitter, final String set) {
+    public static String toString(final Iterable<?> list, final String splitter, final String set) {
         return toString(list, splitter, set, null, new Values());
     }
 
@@ -1894,7 +1926,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param excludes Keys to excluded
      * @return Formatted values
      */
-    public static String toString(final Iterable list, final String splitter, final String set, final String[] excludes) {
+    public static String toString(final Iterable<?> list, final String splitter, final String set, final String[] excludes) {
         return toString(list, splitter, set, excludes);
     }
 
@@ -1906,7 +1938,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param config Configurations
      * @return Formatted values
      */
-    public static String toString(final Iterable list, final String splitter, final String set, final Values config) {
+    public static String toString(final Iterable<?> list, final String splitter, final String set, final Values config) {
         return toString(list, splitter, set, null, config);
     }
 
@@ -1919,7 +1951,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param config Configurations
      * @return Formatted values
      */
-    public static String toString(final Iterable list, final String splitter, final String set, final String[] excludes, Values config) {
+    public static String toString(final Iterable<?> list, final String splitter, final String set, final String[] excludes, Values config) {
         boolean urlEncode = config.getBoolean("urlEncode", false);
         String booleanTrue = config.getString("booleanTrue", "true");
         String booleanFalse = config.getString("booleanFalse", "false");
@@ -1961,7 +1993,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param set Set sign of the key and value
      * @return Formatted values
      */
-    public static String toString(final Map map, final String splitter, final String set) {
+    public static String toString(final Map<?, ?> map, final String splitter, final String set) {
         return toString(map, splitter, set, null, new Values());
     }
 
@@ -1973,7 +2005,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param excludes Keys to excluded
      * @return Formatted values
      */
-    public static String toString(final Map map, final String splitter, final String set, final String[] excludes) {
+    public static String toString(final Map<?, ?> map, final String splitter, final String set, final String[] excludes) {
         return toString(map, splitter, set, excludes);
     }
 
@@ -1985,7 +2017,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param config Configurations
      * @return Formatted values
      */
-    public static String toString(final Map map, final String splitter, final String set, final Values config) {
+    public static String toString(final Map<?, ?> map, final String splitter, final String set, final Values config) {
         return toString(map, splitter, set, null, config);
     }
 
@@ -1998,7 +2030,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param config Configurations
      * @return Formatted values
      */
-    public static String toString(final Map map, final String splitter, final String set, final String[] excludes, Values config) {
+    public static String toString(final Map<?, ?> map, final String splitter, final String set, final String[] excludes, Values config) {
         boolean urlEncode = config.getBoolean("urlEncode", false);
         String booleanTrue = config.getString("booleanTrue", "true");
         String booleanFalse = config.getString("booleanFalse", "false");
@@ -2169,7 +2201,6 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     }
 
     public final String toString(String splitter) {
-        new ArrayList();
         String result = null;
         if (isList()) {
             for (Object item : this) {
@@ -2258,7 +2289,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     private static Object fromJSONUnescape(Object object) {
         if (object instanceof Map) {
-            Map map = (Map) object;
+            Map<?, ?> map = (Map<?, ?>)object;
             Values values = new Values().forceMap();
             for (Object key : map.keySet()) {
                 values.set(key.toString(), fromJSONUnescape(map.get(key)));
@@ -2272,7 +2303,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             }
             return values;
         } else if (object instanceof List) {
-            List list = (List)object;
+            List<?> list = (List<?>)object;
             Values values = new Values().forceList();
             for (Object i : list) {
                 values.add(fromJSONUnescape(i));
@@ -2861,7 +2892,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return this.forceMap;
     }
 
-    public Map toMap() {
+    public Map<?, ?> toMap() {
     	forceMap();
         return map();
     }
@@ -2886,12 +2917,17 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return this.forceList;
     }
 
-    public List toList() {
+    public List<?> toList() {
     	forceList();
         return list();
     }
 
-    public List list() {
+    public <T> List<T> toList(Class<T> cls) {
+    	forceList();
+        return list(cls);
+    }
+
+    public List<?> list() {
         return new Values(array).array;
     }
     
@@ -2903,9 +2939,9 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         List<Values> list = new ArrayList<>();
         for (Object item : array) {
             if (item instanceof Map) {
-                list.add(new Values((Map)item));
+                list.add(new Values((Map<?, ?>)item));
             } else if (item instanceof Iterable) {
-                Values values = new Values((Iterable)item);
+                Values values = new Values((Iterable<?>)item);
                 list.add(values);
             }
         }
@@ -2948,7 +2984,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return objects.keySet();
     }
     
-    public Collection getValues() {
+    public Collection<?> getValues() {
         if (isList()) {
             return array;
         }
@@ -2956,7 +2992,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     }
 
     @Override
-    public Collection values() {
+    public Collection<Object> values() {
         if (isList()) {
             return array;
         }
@@ -2985,10 +3021,10 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     		throw new Error(new PsamataException("Unable to merge values locked as read-only."));
     	}
     	checkLockAsReadOnly();
-        Collection forceList = null;
+        Collection<?> forceList = null;
         if ((object instanceof Values && ((Values)object).isMap())
                 || (!(object instanceof Values) && object instanceof Map)) {
-            Map map = (Map)object;
+            Map<?, ?> map = (Map<?, ?>)object;
             for (Object key : map.keySet()) {
                 if (key == null) {
                     continue;
@@ -3014,7 +3050,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             if (forceList != null) {
                 object = forceList;
             }
-            for (Object o : (Iterable) object) {
+            for (Object o : (Iterable<?>) object) {
                 if (isMergeable(o)) {
                     if (o instanceof Values) {
                         add(o);
@@ -3113,14 +3149,46 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         if (o instanceof Values) {
             return (Values) o;
         } else if (isMap(o) && o instanceof Map) {
-            return new Values((Map)o);
+            return new Values((Map<?, ?>)o);
         } else if (isList(o) && o instanceof Iterable) {
-            return new Values((Iterable)o);
+            return new Values((Iterable<?>)o);
         } else if (o instanceof JSONObject || o instanceof JSONArray) {
             return new Values(o);
         }
         if (oDefault != null) {
             return as(oDefault);
+        }
+        return null;
+    }
+
+    public static Values ofList(Object o) {
+        if (isList(o)) {
+            return as(o);
+        }
+        return null;
+    }
+
+    public static Values ofMap(Object o) {
+        if (isMap(o)) {
+            return as(o);
+        }
+        return null;
+    }
+
+    public static <T> Values of(T... array) {
+        return of(Arrays.asList(array));
+    }
+
+    public static Values of(List<?> list) {
+        if (isList(list)) {
+            return as(list);
+        }
+        return null;
+    }
+
+    public static Values of(Map<?, ?> map) {
+        if (isMap(map)) {
+            return as(map);
         }
         return null;
     }
