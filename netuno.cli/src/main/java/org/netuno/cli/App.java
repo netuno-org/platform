@@ -18,12 +18,10 @@
 package org.netuno.cli;
 
 import org.netuno.cli.install.GraalVMSetup;
-import org.netuno.cli.install.Install;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
-import org.netuno.psamata.crypto.RandomString;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -425,8 +423,9 @@ public class App implements MainArg {
         while (true) {
             if (name.length() == 0) {
                 System.out.print(OS.consoleOutput("@|yellow App name:|@ "));
-                Scanner scanner = new Scanner(System.in);
-                name = scanner.nextLine();
+                try (Scanner scanner = new Scanner(System.in)) {
+                    name = scanner.nextLine();
+                } finally { }
             }
             name = name.toLowerCase();
             if (checkAppName(name)) {
@@ -445,17 +444,18 @@ public class App implements MainArg {
                 System.out.println(OS.consoleOutput("\t@|green 3|@ - MariaDB"));
                 System.out.println(OS.consoleOutput("\t@|green 4|@ - Microsoft SQL Server"));
                 System.out.print(OS.consoleOutput("@|yellow Choose your database:|@ @|cyan [1]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                String option = scanner.nextLine();
-                if (option.isEmpty() || option.equals("1")) {
-                    dbEngine = "h2";
-                } else if (option.equals("2")) {
-                    dbEngine = "pg";
-                } else if (option.equals("3")) {
-                    dbEngine = "mariadb";
-                } else if (option.equals("4")) {
-                    dbEngine = "mssql";
-                }
+                try (Scanner scanner = new Scanner(System.in)) {
+                    String option = scanner.nextLine();
+                    if (option.isEmpty() || option.equals("1")) {
+                        dbEngine = "h2";
+                    } else if (option.equals("2")) {
+                        dbEngine = "pg";
+                    } else if (option.equals("3")) {
+                        dbEngine = "mariadb";
+                    } else if (option.equals("4")) {
+                        dbEngine = "mssql";
+                    }
+                } finally {}
             }
             if (!dbEngine.isEmpty()) {
                 break;
@@ -469,11 +469,12 @@ public class App implements MainArg {
                 if (dbHost.length() == 0) {
                     System.out.println();
                     System.out.print(OS.consoleOutput("@|yellow Database host name or ip:|@ @|cyan [localhost]|@ "));
-                    Scanner scanner = new Scanner(System.in);
-                    dbHost = scanner.nextLine();
-                    if (dbHost.isEmpty()) {
-                        dbHost = "localhost";
-                    }
+                    try (Scanner scanner = new Scanner(System.in)) {
+                        dbHost = scanner.nextLine();
+                        if (dbHost.isEmpty()) {
+                            dbHost = "localhost";
+                        }
+                    } finally {}
                 }
                 if (dbPort.length() == 0) {
                     System.out.println();
@@ -483,17 +484,18 @@ public class App implements MainArg {
                                             dbEngine.equals("mssql") ? "1433" :
                                                     "")
                             +"]|@ "));
-                    Scanner scanner = new Scanner(System.in);
-                    dbPort = scanner.nextLine();
-                    if (dbPort.isEmpty()) {
-                        if (dbEngine.equals("pg")) {
-                            dbPort = "5432";
-                        } else if (dbEngine.equals("mariadb")) {
-                            dbPort = "3306";
-                        } else if (dbEngine.equals("mssql")) {
-                            dbPort = "1433";
+                    try (Scanner scanner = new Scanner(System.in)) {
+                        dbPort = scanner.nextLine();
+                        if (dbPort.isEmpty()) {
+                            if (dbEngine.equals("pg")) {
+                                dbPort = "5432";
+                            } else if (dbEngine.equals("mariadb")) {
+                                dbPort = "3306";
+                            } else if (dbEngine.equals("mssql")) {
+                                dbPort = "1433";
+                            }
                         }
-                    }
+                    } finally {}
                 }
                 if (dbPort.matches("^[0-9]+$")) {
                     break;
@@ -507,11 +509,12 @@ public class App implements MainArg {
             if (dbName.length() == 0) {
                 System.out.println();
                 System.out.print(OS.consoleOutput("@|yellow Database name:|@ @|cyan ["+ name +"]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                dbName = scanner.nextLine();
-                if (dbName.isEmpty()) {
-                    dbName = name;
-                }
+                try (Scanner scanner = new Scanner(System.in)) {
+                    dbName = scanner.nextLine();
+                    if (dbName.isEmpty()) {
+                        dbName = name;
+                    }
+                } finally {}
             }
             dbName = dbName.toLowerCase();
             if (checkAppName(dbName)) {
@@ -532,22 +535,19 @@ public class App implements MainArg {
             if (dbUsername.length() == 0 && silent == false) {
                 System.out.println();
                 System.out.print(OS.consoleOutput("@|yellow Database user name:|@ @|cyan ["+ name +"]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                dbUsername = scanner.nextLine();
-                if (dbUsername.isEmpty()) {
-                    dbUsername = name;
-                }
+                try (Scanner scanner = new Scanner(System.in)) {
+                    dbUsername = scanner.nextLine();
+                    if (dbUsername.isEmpty()) {
+                        dbUsername = name;
+                    }
+                } finally {}
             }
             if (dbPassword.length() == 0 && silent == false) {
                 System.out.println();
                 System.out.print(OS.consoleOutput("@|yellow Database password:|@ "));
-                if (false) { // (Config.getCommand().hasKey("psql") && !Config.getCommand().getString("psql").isEmpty()) {
-                    dbPassword = new RandomString(16).nextString();
-                    System.err.println();
-                } else {
-                    Scanner scanner = new Scanner(System.in);
+                try (Scanner scanner = new Scanner(System.in)) {
                     dbPassword = scanner.nextLine();
-                }
+                } finally {}
                 System.out.println();
             }
         }
@@ -562,19 +562,20 @@ public class App implements MainArg {
                 System.out.println(OS.consoleOutput("\t@|green PT|@ - Portuguese (pt_PT)"));
                 System.out.println(OS.consoleOutput("\t@|green US|@ - American English (en_US)"));
                 System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [GB]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                String option = scanner.nextLine();
-                if (option.equalsIgnoreCase("BR")) {
-                    language = "pt_BR";
-                } else if (option.equalsIgnoreCase("ES")) {
-                    language = "es_ES";
-                } else if (option.isEmpty() || option.equalsIgnoreCase("GB")) {
-                    language = "en_GB";
-                } else if (option.equalsIgnoreCase("PT")) {
-                    language = "pt_PT";
-                } else if (option.equalsIgnoreCase("US")) {
-                    language = "en_US";
-                }
+                try (Scanner scanner = new Scanner(System.in)) {
+                    String option = scanner.nextLine();
+                    if (option.equalsIgnoreCase("BR")) {
+                        language = "pt_BR";
+                    } else if (option.equalsIgnoreCase("ES")) {
+                        language = "es_ES";
+                    } else if (option.isEmpty() || option.equalsIgnoreCase("GB")) {
+                        language = "en_GB";
+                    } else if (option.equalsIgnoreCase("PT")) {
+                        language = "pt_PT";
+                    } else if (option.equalsIgnoreCase("US")) {
+                        language = "en_US";
+                    }
+                } finally {}
             }
             if (language.equals("pt_BR")
                     || language.equals("es_ES")
@@ -605,35 +606,36 @@ public class App implements MainArg {
                 System.out.println(OS.consoleOutput("\t@|green US|@ - United States (en_US)"));
 
                 System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan ["+ language.substring(3) +"]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                String option = scanner.nextLine();
-                if (option.equalsIgnoreCase("BR") ||
-                        (option.isEmpty() && language.equalsIgnoreCase("pt_BR"))) {
-                    locale = "pt_BR";
-                } else if (option.equalsIgnoreCase("CN")) {
-                    locale = "zh_CN";
-                } else if (option.equalsIgnoreCase("DE")) {
-                    locale = "de_DE";
-                } else if (option.equalsIgnoreCase("ES")) {
-                    locale = "es_ES";
-                } else if (option.equalsIgnoreCase("FR")) {
-                    locale = "fr_FR";
-                } else if (option.equalsIgnoreCase("GB") ||
-                        (option.isEmpty() && language.equalsIgnoreCase("en_GB"))) {
-                    locale = "en_GB";
-                } else if (option.equalsIgnoreCase("IT")) {
-                    locale = "it_IT";
-                } else if (option.equalsIgnoreCase("JP")) {
-                    locale = "jp_JP";
-                } else if (option.equalsIgnoreCase("KR")) {
-                    locale = "ko_KR";
-                } else if (option.equalsIgnoreCase("PT") ||
-                        (option.isEmpty() && language.equalsIgnoreCase("pt_PT"))) {
-                    locale = "pt_PT";
-                } else if (option.equalsIgnoreCase("US") ||
-                        (option.isEmpty() && language.equalsIgnoreCase("en_US"))) {
-                    locale = "en_US";
-                }
+                try (Scanner scanner = new Scanner(System.in)) {
+                    String option = scanner.nextLine();
+                    if (option.equalsIgnoreCase("BR") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("pt_BR"))) {
+                        locale = "pt_BR";
+                    } else if (option.equalsIgnoreCase("CN")) {
+                        locale = "zh_CN";
+                    } else if (option.equalsIgnoreCase("DE")) {
+                        locale = "de_DE";
+                    } else if (option.equalsIgnoreCase("ES")) {
+                        locale = "es_ES";
+                    } else if (option.equalsIgnoreCase("FR")) {
+                        locale = "fr_FR";
+                    } else if (option.equalsIgnoreCase("GB") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("en_GB"))) {
+                        locale = "en_GB";
+                    } else if (option.equalsIgnoreCase("IT")) {
+                        locale = "it_IT";
+                    } else if (option.equalsIgnoreCase("JP")) {
+                        locale = "jp_JP";
+                    } else if (option.equalsIgnoreCase("KR")) {
+                        locale = "ko_KR";
+                    } else if (option.equalsIgnoreCase("PT") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("pt_PT"))) {
+                        locale = "pt_PT";
+                    } else if (option.equalsIgnoreCase("US") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("en_US"))) {
+                        locale = "en_US";
+                    }
+                } finally {}
             }
             if (locale.equals("pt_BR")
                     || locale.equals("zh_CN")
