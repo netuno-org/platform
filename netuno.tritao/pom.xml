@@ -11,7 +11,6 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <kotlin.version>1.7.10</kotlin.version>
-        <graalvm.version>22.2.0</graalvm.version>
         <arrow.version>1.1.2</arrow.version>
         <apache.poi>5.2.2</apache.poi>
         <apache.tika>2.4.1</apache.tika>
@@ -61,12 +60,6 @@
             <artifactId>javax.websocket-api</artifactId>
             <version>1.1</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.graalvm.sdk</groupId>
-            <artifactId>graal-sdk</artifactId>
-            <version>${graalvm.version}</version>
-	        <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
