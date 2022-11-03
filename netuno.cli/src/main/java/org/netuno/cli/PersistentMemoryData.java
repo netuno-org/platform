@@ -1,4 +1,4 @@
-package org.netuno.cli.utils;
+package org.netuno.cli;
 
 import org.netuno.psamata.Values;
 
