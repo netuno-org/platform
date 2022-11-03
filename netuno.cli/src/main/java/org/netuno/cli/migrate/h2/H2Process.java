@@ -21,11 +21,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.install.Constants;
 import org.netuno.cli.utils.OS;
-import org.netuno.cli.utils.StreamGobbler;
+import org.netuno.psamata.io.StreamGobbler;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;

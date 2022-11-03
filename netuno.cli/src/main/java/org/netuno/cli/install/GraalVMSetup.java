@@ -24,7 +24,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.utils.OS;
-import org.netuno.cli.utils.StreamGobbler;
+import org.netuno.psamata.io.StreamGobbler;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.net.Download;
 

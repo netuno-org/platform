@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.cli.utils;
+package org.netuno.psamata.io;
 
 import java.io.BufferedReader;
 import java.io.IOException;
