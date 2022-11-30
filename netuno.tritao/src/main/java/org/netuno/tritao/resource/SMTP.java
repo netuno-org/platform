@@ -28,6 +28,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
+import org.netuno.psamata.mail.Mail;
 import org.netuno.psamata.mail.SMTPConfig;
 import org.netuno.psamata.mail.SMTPTransport;
 import org.netuno.tritao.hili.Hili;
@@ -62,13 +63,14 @@ public class SMTP extends ResourceBase {
     public String to = "";
     public String bcc = "";
     public String cc = "";
+    public String replyTo = "";
     public String subjectPrefix = "";
     public String subject = "";
     public String text = "";
     public String html = "";
     public String multipartSubtype = "";
 
-    private SMTPTransport smtpTransport = null;
+    private SMTPTransport transport = null;
 
     public SMTP(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -76,13 +78,14 @@ public class SMTP extends ResourceBase {
 
     private SMTP(Proteu proteu, Hili hili, SMTPConfig smtpConfig) {
         super(proteu, hili);
-        this.smtpTransport = new SMTPTransport(smtpConfig);
+        this.transport = new SMTPTransport(smtpConfig);
         this.config = smtpConfig;
         this.enabled = smtpConfig.isEnabled();
         this.from = smtpConfig.getFrom();
         this.to = smtpConfig.getTo();
         this.bcc = smtpConfig.getBcc();
         this.cc = smtpConfig.getCc();
+        this.replyTo = smtpConfig.getReplyTo();
         this.subjectPrefix = smtpConfig.getSubjectPrefix();
         this.subject = smtpConfig.getSubject();
         this.text = smtpConfig.getText();
@@ -269,6 +272,7 @@ public class SMTP extends ResourceBase {
         config.setTo(values.getString("to", config.getTo()));
         config.setCc(values.getString("cc", config.getCc()));
         config.setBcc(values.getString("bcc", config.getBcc()));
+        config.setReplyTo(values.getString("replyTo", config.getReplyTo()));
         config.setSubjectPrefix(values.getString("subjectPrefix", config.getSubjectPrefix()));
         config.setSubject(values.getString("subject", config.getSubject()));
         config.setText(values.getString("text", config.getText()));
@@ -531,6 +535,70 @@ public class SMTP extends ResourceBase {
     public SMTP to(String to) {
         return setTo(to);
     }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém quem recebe uma cópia do e-mail.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets whoever receives a copy of the e-mail.",
+                howToUse = { })
+    }, parameters = { }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O e-mail de quem vai receber o e-mail como cópia."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The e-mail of who will receive the e-mail as a copy."
+        )
+    })
+    public String getCc() {
+        return cc;
+    }
+    public String cc() {
+        return getCc();
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define quem recebe uma cópia do e-mail.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines who receives a copy of the e-mail.",
+                howToUse = { })
+    }, parameters = {
+        @ParameterDoc(name = "cc", translations = {
+            @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O e-mail de quem vai receber o e-mail como cópia."
+            ),
+            @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The e-mail of who will receive the e-mail as a copy."
+            )
+        })
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto SMTP atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current SMTP object."
+        )
+    })
+    public SMTP setCc(String cc) {
+        this.cc = cc;
+        return this;
+    }
+    public SMTP cc(String cc) {
+        return setCc(cc);
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -599,47 +667,47 @@ public class SMTP extends ResourceBase {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Obtém quem recebe uma cópia do e-mail.",
+                description = "Obtém quem deve receber a resposta ao e-mail.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Gets whoever receives a copy of the e-mail.",
+                description = "Gets who should receive the email reply.",
                 howToUse = { })
     }, parameters = { }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "O e-mail de quem vai receber o e-mail como cópia."
+                description = "O e-mail de quem vai receber o e-mail como resposta."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The e-mail of who will receive the e-mail as a copy."
+                description = "The e-mail of who will receive the e-mail as a reply."
         )
     })
-    public String getCc() {
-        return cc;
+    public String getReplyTo() {
+        return replyTo;
     }
-    public String cc() {
-        return getCc();
+    public String replyTo() {
+        return getReplyTo();
     }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define quem recebe uma cópia do e-mail.",
+                description = "Define quem deve ser respondido ao e-mail.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Defines who receives a copy of the e-mail.",
+                description = "Defines who should be replied to the email.",
                 howToUse = { })
     }, parameters = {
-        @ParameterDoc(name = "cc", translations = {
+        @ParameterDoc(name = "replyTo", translations = {
             @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "O e-mail de quem vai receber o e-mail como cópia."
+                    description = "O e-mail de quem vai receber o e-mail como resposta."
             ),
             @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "The e-mail of who will receive the e-mail as a copy."
+                    description = "The e-mail of who will receive the e-mail as a reply."
             )
         })
     }, returns = {
@@ -652,12 +720,12 @@ public class SMTP extends ResourceBase {
                 description = "Current SMTP object."
         )
     })
-    public SMTP setCc(String cc) {
-        this.cc = cc;
+    public SMTP setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
         return this;
     }
-    public SMTP cc(String cc) {
-        return setCc(cc);
+    public SMTP replyTo(String replyTo) {
+        return setReplyTo(replyTo);
     }
     
     @MethodDoc(translations = {
@@ -1060,26 +1128,43 @@ public class SMTP extends ResourceBase {
         )
     })
     public SMTP attachment(String name, String type, File file, String contentId, boolean inline) {
-        smtpTransport.addAttachment(
+        transport.addAttachment(
                 name, type, file, contentId, inline
         );
         return this;
     }
     
     public SMTP attachment(String name, String type, File file, String contentId) {
-        smtpTransport.addAttachment(
+        transport.addAttachment(
                 name, type, file, contentId
         );
         return this;
     }
     
     public SMTP attachment(String name, String type, File file) {
-        smtpTransport.addAttachment(
+        transport.addAttachment(
                 name, type, file
         );
         return this;
     }
-    
+
+    protected SMTPTransport getTransport() {
+        return transport;
+    }
+
+    public SMTP with(IMAP imap) {
+        transport.with(imap.getClient());
+        return this;
+    }
+
+    protected java.util.Properties getProperties() {
+        return transport.getProperties();
+    }
+
+    protected jakarta.mail.Session getSession() {
+        return transport.getSession();
+    }
+
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
@@ -1094,15 +1179,40 @@ public class SMTP extends ResourceBase {
         if (!enabled) {
             return;
         }
-        smtpTransport.setFrom(from);
-        smtpTransport.setTo(to);
-        smtpTransport.setBcc(bcc);
-        smtpTransport.setCc(cc);
-        smtpTransport.setSubjectPrefix(subjectPrefix);
-        smtpTransport.setSubject(subject);
-        smtpTransport.setText(text);
-        smtpTransport.setHTML(html);
-        smtpTransport.setMultipartSubtype(multipartSubtype);
-        smtpTransport.send();
+        transport.setFrom(from);
+        transport.setTo(to);
+        transport.setCc(cc);
+        transport.setBcc(bcc);
+        transport.setReplyTo(replyTo);
+        transport.setSubjectPrefix(subjectPrefix);
+        transport.setSubject(subject);
+        transport.setText(text);
+        transport.setHTML(html);
+        transport.setMultipartSubtype(multipartSubtype);
+        transport.send();
+    }
+
+    public void send(Mail mail) {
+        if (!enabled) {
+            return;
+        }
+        transport.send(mail);
+    }
+
+    public Mail mail() {
+        return new Mail()
+                .setFrom(from)
+                .setTo(Values.of(to.split("[,;]+")))
+                .setCc(Values.of(cc.split("[,;]+")))
+                .setBcc(Values.of(bcc.split("[,;]+")))
+                .setReplyTo(Values.of(replyTo.split("[,;]+")))
+                .setSubject(subject)
+                .setText(text)
+                .setHTML(html)
+                .setMultipartSubtype(multipartSubtype);
+    }
+
+    public Mail emptyMail() {
+        return new Mail();
     }
 }
