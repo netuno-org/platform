@@ -2,8 +2,6 @@ package org.netuno.psamata.io;
 
 import org.netuno.psamata.Values;
 
-import java.util.Collection;
-
 public class MimeTypes {
     private static Values mimeTypes = new Values();
 
