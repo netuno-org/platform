@@ -22,23 +22,23 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 
 /**
- * SMTP Configurations
+ * IMAP Configurations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
-                title = "SMTPConfig",
-                introduction = "Definição da configuração do SMTP.",
+                title = "IMAPConfig",
+                introduction = "Definição da configuração do IMAP.",
                 howToUse = {}
         )
 })
-public class SMTPConfig {
+public class IMAPConfig {
     private boolean enabled = true;
     private boolean debug = false;
-    private String protocol = "smtps";
+    private String protocol = "imaps";
     private String host = "";
-    private int port = 465;
+    private int port = 993;
     private boolean ssl = true;
     private boolean tls = false;
     private boolean socketFactoryFallback = true;
@@ -49,22 +49,12 @@ public class SMTPConfig {
     private String authNTLMDomain = "";
     private String username = "";
     private String password = "";
-    private String from = "";
-    private String to = "";
-    private String cc = "";
-    private String bcc = "";
-    private String replyTo = "";
-    private String subjectPrefix = "";
-    private String subject = "";
-    private String text = "";
-    private String html = "";
-    private String multipartSubtype = "mixed";
 
     public boolean isEnabled() {
         return enabled;
     }
 
-    public SMTPConfig setEnabled(boolean enabled) {
+    public IMAPConfig setEnabled(boolean enabled) {
         this.enabled = enabled;
         return this;
     }
@@ -73,7 +63,7 @@ public class SMTPConfig {
         return debug;
     }
 
-    public SMTPConfig setDebug(boolean debug) {
+    public IMAPConfig setDebug(boolean debug) {
         this.debug = debug;
         return this;
     }
@@ -82,7 +72,7 @@ public class SMTPConfig {
         return protocol;
     }
 
-    public SMTPConfig setProtocol(String protocol) {
+    public IMAPConfig setProtocol(String protocol) {
         this.protocol = protocol;
         return this;
     }
@@ -91,7 +81,7 @@ public class SMTPConfig {
         return host;
     }
 
-    public SMTPConfig setHost(String host) {
+    public IMAPConfig setHost(String host) {
         this.host = host;
         return this;
     }
@@ -100,7 +90,7 @@ public class SMTPConfig {
         return port;
     }
 
-    public SMTPConfig setPort(int port) {
+    public IMAPConfig setPort(int port) {
         this.port = port;
         return this;
     }
@@ -109,7 +99,7 @@ public class SMTPConfig {
         return ssl;
     }
 
-    public SMTPConfig setSSL(boolean ssl) {
+    public IMAPConfig setSSL(boolean ssl) {
         this.ssl = ssl;
         return this;
     }
@@ -118,7 +108,7 @@ public class SMTPConfig {
         return tls;
     }
 
-    public SMTPConfig setTLS(boolean tls) {
+    public IMAPConfig setTLS(boolean tls) {
         this.tls = tls;
         return this;
     }
@@ -127,7 +117,7 @@ public class SMTPConfig {
         return socketFactoryFallback;
     }
 
-    public SMTPConfig setSocketFactoryFallback(boolean socketFactoryFallback) {
+    public IMAPConfig setSocketFactoryFallback(boolean socketFactoryFallback) {
         this.socketFactoryFallback = socketFactoryFallback;
         return this;
     }
@@ -136,7 +126,7 @@ public class SMTPConfig {
         return socketFactoryClass;
     }
 
-    public SMTPConfig setSocketFactoryClass(String socketFactoryClass) {
+    public IMAPConfig setSocketFactoryClass(String socketFactoryClass) {
         this.socketFactoryClass = socketFactoryClass;
         return this;
     }
@@ -145,7 +135,7 @@ public class SMTPConfig {
         return socketFactoryPort;
     }
 
-    public SMTPConfig setSocketFactoryPort(int socketFactoryPort) {
+    public IMAPConfig setSocketFactoryPort(int socketFactoryPort) {
         this.socketFactoryPort = socketFactoryPort;
         return this;
     }
@@ -154,7 +144,7 @@ public class SMTPConfig {
         return quitWait;
     }
 
-    public SMTPConfig setQuitWait(boolean quitWait) {
+    public IMAPConfig setQuitWait(boolean quitWait) {
         this.quitWait = quitWait;
         return this;
     }
@@ -163,7 +153,7 @@ public class SMTPConfig {
         return authMechanisms;
     }
 
-    public SMTPConfig setAuthMechanisms(String authMechanisms) {
+    public IMAPConfig setAuthMechanisms(String authMechanisms) {
         this.authMechanisms = authMechanisms;
         return this;
     }
@@ -172,7 +162,7 @@ public class SMTPConfig {
         return authNTLMDomain;
     }
 
-    public SMTPConfig setAuthNTLMDomain(String authNTLMDomain) {
+    public IMAPConfig setAuthNTLMDomain(String authNTLMDomain) {
         this.authNTLMDomain = authNTLMDomain;
         return this;
     }
@@ -181,7 +171,7 @@ public class SMTPConfig {
         return username;
     }
 
-    public SMTPConfig setUsername(String username) {
+    public IMAPConfig setUsername(String username) {
         this.username = username;
         return this;
     }
@@ -190,98 +180,8 @@ public class SMTPConfig {
         return password;
     }
 
-    public SMTPConfig setPassword(String password) {
+    public IMAPConfig setPassword(String password) {
         this.password = password;
-        return this;
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public SMTPConfig setFrom(String from) {
-        this.from = from;
-        return this;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public SMTPConfig setTo(String to) {
-        this.to = to;
-        return this;
-    }
-
-    public String getCc() {
-        return cc;
-    }
-
-    public SMTPConfig setCc(String cc) {
-        this.cc = cc;
-        return this;
-    }
-
-    public String getBcc() {
-        return bcc;
-    }
-
-    public SMTPConfig setBcc(String bcc) {
-        this.bcc = bcc;
-        return this;
-    }
-
-    public String getReplyTo() {
-        return replyTo;
-    }
-
-    public SMTPConfig setReplyTo(String replyTo) {
-        this.replyTo = replyTo;
-        return this;
-    }
-
-    public String getSubjectPrefix() {
-        return subjectPrefix;
-    }
-
-    public SMTPConfig setSubjectPrefix(String subjectPrefix) {
-        this.subjectPrefix = subjectPrefix;
-        return this;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public SMTPConfig setSubject(String subject) {
-        this.subject = subject;
-        return this;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public SMTPConfig setText(String text) {
-        this.text = text;
-        return this;
-    }
-
-    public String getHTML() {
-        return html;
-    }
-
-    public SMTPConfig setHTML(String html) {
-        this.html = html;
-        return this;
-    }
-
-    public String getMultipartSubtype() {
-        return multipartSubtype;
-    }
-
-    public SMTPConfig setMultipartSubtype(String multipartSubtype) {
-        this.multipartSubtype = multipartSubtype;
         return this;
     }
 }
