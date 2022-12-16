@@ -685,19 +685,55 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         }
     }
 
+    public UUID asUID(String key) {
+        return getUUID(key);
+    }
+
+    public final UUID getUID(final String key) {
+        return getUUID(key);
+    }
+
+    public UUID asUID(String key, UUID defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+
+    public UUID asUID(String key, String defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+    
+    public final UUID getUID(final String key, final UUID defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+    
+    public final UUID getUID(final String key, final String defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+
     public UUID asUUID(String key) {
         return getUUID(key);
     }
 
     public final UUID getUUID(final String key) {
-        return getUUID(key, null);
+        return getUUIDImplementation(key, null);
     }
 
     public UUID asUUID(String key, UUID defaultValue) {
         return getUUID(key, defaultValue);
     }
 
+    public UUID asUUID(String key, String defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+
+    public final UUID getUUID(final String key, final String defaultValue) {
+        return getUUIDImplementation(key, UUID.fromString(defaultValue));
+    }
+
     public final UUID getUUID(final String key, final UUID defaultValue) {
+        return getUUIDImplementation(key, defaultValue);
+    }
+
+    private final UUID getUUIDImplementation(final String key, final UUID defaultValue) {
         String value = getString(key);
         if (value.isEmpty()) {
             return defaultValue;
