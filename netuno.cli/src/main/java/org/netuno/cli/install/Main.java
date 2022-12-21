@@ -15,37 +15,28 @@
  * limitations under the License.
  */
 
-package org.netuno.cli;
+package org.netuno.cli.install;
 
-import java.io.File;
-
-import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.fusesource.jansi.AnsiConsole;
-import org.netuno.cli.install.Install;
-import org.netuno.cli.migrate.Migrate;
-import org.netuno.cli.monitoring.Stats;
 import org.netuno.cli.utils.Banner;
 import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.Update;
+import org.netuno.cli.MainArg;
 import picocli.CommandLine;
 
 /**
- * Netuno's command line entry point.
+ * Netuno's install command line entry point.
  * 
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @CommandLine.Command(
-        name = "netuno",
+        name = "netuno-install",
         mixinStandardHelpOptions = false,
         version = "")
 public final class Main implements Runnable {
@@ -54,24 +45,6 @@ public final class Main implements Runnable {
     static {
         System.setProperty("idea.use.native.fs.for.win", "false");
         System.setProperty("idea.io.use.nio2", "true");
-
-        String logConfigFile = "logs/log.xml";
-        if (Files.exists(Path.of("logs/log.xml"))) {
-            System.setProperty("log4j2.configurationFile", logConfigFile);
-            try {
-                ConfigurationSource source = new ConfigurationSource(new FileInputStream(logConfigFile));
-                Configurator.initialize(null, source);
-                Configurator.reconfigure();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        /*try {
-            Class.forName("org.h2.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new Error(e);
-        }*/
     }
 
     @CommandLine.Option(names = {"-v", "--version", "version"}, versionHelp = true, description = "display version info")
@@ -112,14 +85,8 @@ public final class Main implements Runnable {
 
             Main main = new Main();
             CommandLine commandLine = new CommandLine(main);
-            commandLine.addSubcommand("server", new Server());
-            commandLine.addSubcommand("app", new App());
-            //commandLine.addSubcommand("license", new License());
             commandLine.addSubcommand("install", new Install());
-            commandLine.addSubcommand("clone", new Clone());
-            commandLine.addSubcommand("stats", new Stats());
-            commandLine.addSubcommand("migrate", new Migrate());
-
+            
             commandLineParseResult = commandLine.parseArgs(args);
             commandLineList = commandLineParseResult.asCommandLineList();
 
@@ -136,15 +103,6 @@ public final class Main implements Runnable {
             if (main.isVersionInfoRequested() || commandLine.isVersionHelpRequested()) {
                 return;
             }
-
-            /*if (!License.load()
-                && parsed.size() >= 2
-                && parsed.get(1).getCommand().getClass() == Server.class) {
-                new License().run(true);
-            } else {
-                System.out.println(OS.consoleOutput("@|white    License " + License.getTypeText() + "  //  " + License.getMail() + " |@"));
-                System.out.println();
-            }*/
 
             if (commandLineList != null && commandLineList.size() >= 2) {
                 Object firstCommand = commandLineList.get(1).getCommand();
@@ -166,28 +124,6 @@ public final class Main implements Runnable {
             }
             AnsiConsole.systemUninstall();
         }
-    }
-
-    /**
-     * Get all jars in a folder and build the class path.
-     * @param path Folder.
-     * @return Class path with all jars.
-     */
-    public static String getLibsToClassPath(String path) {
-        String allLib = "";
-        File[] files = new File(path).listFiles();
-        for (int x = 0; x < files.length; x++) {
-            if (files[x].isDirectory()) {
-                String subdir = getLibsToClassPath(files[x].toString());
-                allLib += subdir.equals("") ? subdir : System.getProperty("path.separator") + subdir;
-            } else {
-                if (files[x].toString().toLowerCase().endsWith(".jar")) {
-                    allLib += System.getProperty("path.separator");
-                    allLib += files[x].toString();
-                }
-            }
-        }
-        return allLib.equals("") ? allLib : allLib.substring(1);
     }
 
     public boolean isVersionInfoRequested() {

@@ -32,9 +32,26 @@ echo
 echo
 echo "MVN Package"
 echo
+
+cp netuno.cli/pom-base.xml netuno.cli/pom.xml
+
 ./mvn-package.sh
 
 cd netuno.cli/protect && ./run.sh && cd ../..
+
+mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-base.jar
+
+cp netuno.cli/pom-install.xml netuno.cli/pom.xml
+
+cd netuno.cli && mvn clean && mvn package && cd ..
+
+cd netuno.cli/protect && ./run.sh && cd ../..
+
+mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-install.jar
+
+cp netuno.cli/pom-base.xml netuno.cli/pom.xml
+
+mv netuno.cli/protect/out/proguard/netuno-base.jar netuno.cli/protect/out/proguard/netuno.jar
 
 cd netuno.tritao/protect && ./run.sh && cd ../..
 
@@ -42,11 +59,11 @@ cd bundle && node index.js && cd ..
 
 mkdir -p bundle/dist
 
-cp bundle/out/netuno/netuno.jar bundle/dist/netuno.jar
+cp netuno.cli/protect/out/proguard/netuno-install.jar bundle/dist/netuno.jar
 
 mv bundle/out/netuno.zip bundle/dist/netuno.zip
 
-BuildVersion=`unzip -p netuno.cli/target/netuno-cli-*-jar-with-dependencies.jar META-INF/MANIFEST.MF | grep "Build-Number:" | grep -Eow "[0-9\.]+"`
+BuildVersion=`unzip -p bundle/out/netuno/netuno.jar META-INF/MANIFEST.MF | grep "Build-Number:" | grep -Eow "[0-9\.]+"`
 
 cp bundle/dist/netuno.zip bundle/dist/netuno-v7-`echo $BuildVersion | sed -E 's/[\\.]/_/g'`.zip
 

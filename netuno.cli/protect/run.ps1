@@ -7,6 +7,6 @@ if(Test-Path -Path "out/proguard"){
     rm -r "out/proguard"
 }
 
-copy "../target/netuno-cli-*-jar-with-dependencies.jar" "out/artifacts/netuno-cli.jar"
+copy "../target/netuno-cli.jar" "out/artifacts/netuno-cli.jar"
 
 ../../proguard/bin/proguard.bat @netuno-cli.pro

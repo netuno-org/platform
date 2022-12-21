@@ -50,16 +50,6 @@
             <version>5.1.1</version>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-api</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.18.0</version>
@@ -132,31 +122,49 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>${jetty.version}</version>
+	        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
             <version>${jetty.version}</version>
+	        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>
             <version>${jetty.version}</version>
+	        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-alpn-server</artifactId>
             <version>${jetty.version}</version>
+	        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.http2</groupId>
             <artifactId>http2-server</artifactId>
             <version>${jetty.version}</version>
+	        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>javax-websocket-server-impl</artifactId>
             <version>${jetty.version}</version>
+	        <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+	        <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>1.1</version>
+	        <scope>provided</scope>
         </dependency>
 
         <!-- OSHI -->
@@ -164,24 +172,27 @@
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
             <version>6.2.1</version>
-	    </dependency>
+	        <scope>provided</scope>
+        </dependency>
 
         <!-- GRAALVM -->
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
             <artifactId>graal-sdk</artifactId>
             <version>${graalvm.version}</version>
+	        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.graalvm.js</groupId>
             <artifactId>js</artifactId>
             <version>${graalvm.version}</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.graalvm.js</groupId>
             <artifactId>js-scriptengine</artifactId>
             <version>${graalvm.version}</version>
+	        <scope>provided</scope>
         </dependency>
 
         <!-- QUARTZ -->
@@ -189,6 +200,7 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>2.3.2</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -200,6 +212,7 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
             <version>2.3.2</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -247,6 +260,17 @@
                     <configuration>
                         <excludes>
                             <exclude>**/node_modules/**</exclude>
+                            <exclude>**/netuno/cli/migrate/**</exclude>
+                            <exclude>**/netuno/cli/migrate/h2/**</exclude>
+                            <exclude>**/netuno/cli/monitoring/**</exclude>
+                            <exclude>**/netuno/cli/ws/**</exclude>
+                            <exclude>**/netuno/cli/App.java</exclude>
+                            <exclude>**/netuno/cli/Clone.java</exclude>
+                            <exclude>**/netuno/cli/Cron.java</exclude>
+                            <exclude>**/netuno/cli/CronJob.java</exclude>
+                            <exclude>**/netuno/cli/License.java</exclude>
+                            <exclude>**/netuno/cli/Server.java</exclude>
+                            <exclude>**/netuno/cli/Main.java</exclude>
                         </excludes>
                         <source>17</source>
                         <target>17</target>
@@ -270,19 +294,19 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <configuration>
-                        <descriptorRefs>
-                            <descriptorRef>jar-with-dependencies</descriptorRef>
-                        </descriptorRefs>
+                        <descriptors>
+                            <descriptor>install-dependencies-excludes.xml</descriptor>
+                        </descriptors>
                         <finalName>netuno-cli</finalName>
                         <appendAssemblyId>false</appendAssemblyId>
                         <archive>
                             <manifest>
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                <mainClass>org.netuno.cli.Main</mainClass>
+                                <mainClass>org.netuno.cli.install.Main</mainClass>
                             </manifest>
                             <manifestEntries>
-                                <Build-Number>${buildNumber}</Build-Number>
+                                <Build-Number>install-${buildNumber}</Build-Number>
                             </manifestEntries>
                         </archive>
                     </configuration>
@@ -302,12 +326,23 @@
                     <configuration>
                         <excludes>
                             <exclude>**/node_modules/**</exclude>
+                            <exclude>**/netuno/cli/migrate/**</exclude>
+                            <exclude>**/netuno/cli/migrate/h2/**</exclude>
+                            <exclude>**/netuno/cli/monitoring/**</exclude>
+                            <exclude>**/netuno/cli/ws/**</exclude>
+                            <exclude>**/netuno/cli/App.java</exclude>
+                            <exclude>**/netuno/cli/Clone.java</exclude>
+                            <exclude>**/netuno/cli/Cron.java</exclude>
+                            <exclude>**/netuno/cli/CronJob.java</exclude>
+                            <exclude>**/netuno/cli/License.java</exclude>
+                            <exclude>**/netuno/cli/Server.java</exclude>
+                            <exclude>**/netuno/cli/Main.java</exclude>
                         </excludes>
                         <archive>
                             <manifest>
                                 <addClasspath>true</addClasspath>
                                 <classpathPrefix>lib/</classpathPrefix>
-                                <mainClass>org.netuno.cli.Main</mainClass>
+                                <mainClass>org.netuno.cli.install.Main</mainClass>
                             </manifest>
                         </archive>
                     </configuration>

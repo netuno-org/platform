@@ -62,6 +62,9 @@
 -keep class jdk.** { *; }
 -dontwarn jdk.**
 
+-keep class org.graalvm.** { *; }
+-dontwarn org.graalvm.**
+
 -keep class !org.netuno.** { *; }
 -dontwarn !org.netuno.**
 
