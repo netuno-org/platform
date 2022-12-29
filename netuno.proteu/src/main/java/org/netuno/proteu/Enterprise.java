@@ -122,8 +122,8 @@ public class Enterprise extends HttpServlet {
     @Override
     public void init() {
         try {
-            Class cls = Class.forName("org.netuno.cli.Main");
-            Config.BUILD_NUMBER = (String)cls.getMethod("buildNumber").invoke(null);
+            Class<?> cls = Class.forName("org.netuno.cli.utils.Build");
+            Config.BUILD_NUMBER = (String)cls.getMethod("getNumber").invoke(null);
         } catch (ClassNotFoundException e) {
         } catch (Exception e) {
             logger.fatal("Error loading build number.", e);
