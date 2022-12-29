@@ -245,6 +245,8 @@ public class Install implements MainArg {
                             System.out.println(OS.consoleOutput("@|red The download link was not found: |@ " + e.getMessage()));
                         } else {
                             System.out.println(OS.consoleOutput("@|red " + e.getClass().getName() + ": |@ " + e.getMessage()));
+                            System.out.println();
+                            e.printStackTrace();
                         }
                         System.out.println();
                         System.out.println();
