@@ -2657,12 +2657,12 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     }
 
     @Override
-    public void forEach(Consumer action) {
+    public void forEach(Consumer<? super Object> action) {
         array.forEach(action);
     }
 
     @Override
-    public void forEach(BiConsumer action) {
+    public void forEach(BiConsumer<? super String, ? super Object> action) {
         objects.forEach(action);
     }
     
@@ -2964,7 +2964,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     }
 
     public List<?> list() {
-        return new Values(array).array;
+        return List.copyOf(new Values(array).array);
     }
     
     public<T> List<T> list(Class<T> cls) {
