@@ -4463,7 +4463,7 @@ public class PDF extends ResourceBase {
             )
     })
     public String toHTML(InputStream in) throws IOException {
-        return toHTML(in);
+        return toHTML((java.io.InputStream)in);
     }
     public String toHTML(java.io.InputStream in) throws IOException {
         PDDocument pddDocument = PDDocument.load(in);
@@ -4521,7 +4521,7 @@ public class PDF extends ResourceBase {
             )
     })
     public String toText(InputStream in) throws TikaException, IOException {
-        return toText(in);
+        return toText((java.io.InputStream)in);
     }
     public String toText(java.io.InputStream in) throws TikaException, IOException {
         return new Tika().parseToString(in);
@@ -4607,7 +4607,7 @@ public class PDF extends ResourceBase {
                     description = "Returns the extracted content."
             )
     })public Values extract(InputStream in) throws Exception {
-        return extract(in);
+        return extract((java.io.InputStream)in);
     }
     public Values extract(java.io.InputStream in) throws Exception {
         StringWriter any = new StringWriter();
