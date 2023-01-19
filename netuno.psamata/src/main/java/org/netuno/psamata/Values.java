@@ -760,11 +760,11 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return StringEscapeUtils.unescapeHtml4(value);
     }
 
-    public byte asByte(byte index) {
+    public byte asByte(int index) {
         return getByte(index);
     }
 
-    public byte getByte(byte index) {
+    public byte getByte(int index) {
         return getByte(index, (byte)-1);
     }
 
@@ -2685,6 +2685,62 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     public <T> T[] toArray(T[] a) {
         return array.toArray(a);
+    }
+
+    public byte[] toByteArray() {
+        byte[] bytes = new byte[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            bytes[i] = getByte(i);
+        }
+        return bytes;
+    }
+
+    public short[] toShortArray() {
+        short[] shorts = new short[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            shorts[i] = getShort(i);
+        }
+        return shorts;
+    }
+
+    public int[] toIntArray() {
+        int[] ints = new int[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            ints[i] = getInt(i);
+        }
+        return ints;
+    }
+
+    public long[] toLongArray() {
+        long[] longs = new long[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            longs[i] = getLong(i);
+        }
+        return longs;
+    }
+
+    public float[] toFloatArray() {
+        float[] floats = new float[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            floats[i] = getFloat(i);
+        }
+        return floats;
+    }
+
+    public double[] toDoubleArray() {
+        double[] doubles = new double[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            doubles[i] = getDouble(i);
+        }
+        return doubles;
+    }
+
+    public String[] toStringArray() {
+        String[] doubles = new String[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            doubles[i] = getString(i);
+        }
+        return doubles;
     }
 
     public Values add(Object o) {
