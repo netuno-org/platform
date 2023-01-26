@@ -358,7 +358,7 @@ public class ProteuEvents implements Events {
                         } else {
                             org.mariadb.jdbc.MariaDbDataSource ds = new org.mariadb.jdbc.MariaDbDataSource();
                             try {
-                                ds.setUrl("jdbc:mysql://"
+                                ds.setUrl("jdbc:mariadb://"
                                     + db.getString("host", "localhost")
                                     + ":"
                                     + db.getInt("port", 3306)
