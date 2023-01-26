@@ -742,20 +742,20 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         }
     }
 
-    public String asHtmlEncode(String key) {
-        return getHtmlEncode(key);
+    public String asHTMLEncode(String key) {
+        return getHTMLEncode(key);
     }
     
-    public final String getHtmlEncode(final String key) {
+    public final String getHTMLEncode(final String key) {
         String value = getString(key);
         return StringEscapeUtils.escapeHtml4(value);
     }
 
-    public String asHtmlDecode(String key) {
-        return getHtmlDecode(key);
+    public String asHTMLDecode(String key) {
+        return getHTMLDecode(key);
     }
     
-    public final String getHtmlDecode(final String key) {
+    public final String getHTMLDecode(final String key) {
         String value = getString(key);
         return StringEscapeUtils.unescapeHtml4(value);
     }

@@ -47,7 +47,7 @@ public class Group {
 	        	JSONObject jsonObject = new JSONObject();
 	        	if (group != null) {
 	                jsonObject.put("id", dataId);
-	                jsonObject.put("label", group.getHtmlEncode("name"));
+	                jsonObject.put("label", group.getHTMLEncode("name"));
 	            }
 	        	json = jsonObject.toString();
 	        } else {
@@ -65,7 +65,7 @@ public class Group {
 			        	continue;
 		        	}
 		        	String id = queryRow.getString("uid");
-		        	String label = queryRow.getHtmlEncode("name");
+		        	String label = queryRow.getHTMLEncode("name");
 					JSONObject jsonObject = new JSONObject();
 		            jsonObject.put("id", id);
 		            jsonObject.put("label", label);

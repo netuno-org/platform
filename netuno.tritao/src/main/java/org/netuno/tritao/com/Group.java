@@ -101,7 +101,7 @@ public class Group extends ComponentBase {
     	String dataShow = "";
         Values tritaoGroup = Config.getDataBaseBuilder(getProteu()).getGroupByUId(value);
     	if (tritaoGroup != null) {
-            dataShow = tritaoGroup.getHtmlEncode("name");
+            dataShow = tritaoGroup.getHTMLEncode("name");
     	}
         return dataShow;
     }
@@ -113,7 +113,7 @@ public class Group extends ComponentBase {
                 String dataShow = "";
                 Values tritaoGroup = Config.getDataBaseBuilder(getProteu()).getGroupByUId(value);
                 if (tritaoGroup != null) {
-                    dataShow = tritaoGroup.getHtmlEncode("name");
+                    dataShow = tritaoGroup.getHTMLEncode("name");
                 }
                 getDesignData().set("com.select.datashow", dataShow);
                 return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/select", getDesignData());

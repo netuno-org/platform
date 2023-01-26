@@ -50,7 +50,7 @@ public class User {
 	        	JSONObject jsonObject = new JSONObject();
 	        	if (user != null) {
 	                jsonObject.put("id", dataId);
-	                jsonObject.put("label", user.getHtmlEncode("user") +" - "+ user.getHtmlEncode("name"));
+	                jsonObject.put("label", user.getHTMLEncode("user") +" - "+ user.getHTMLEncode("name"));
 	            }
 	        	json = jsonObject.toString();
 	        } else {
@@ -84,7 +84,7 @@ public class User {
 			        		&& Arrays.binarySearch(users, queryRow.getString("user")) < 0) {
 			        	continue;
 		        	}
-		        	String label = queryRow.getHtmlEncode("user") + " - " + queryRow.getHtmlEncode("name");
+		        	String label = queryRow.getHTMLEncode("user") + " - " + queryRow.getHTMLEncode("name");
 					JSONObject jsonObject = new JSONObject();
 		            jsonObject.put("id", id);
 		            jsonObject.put("label", label);
