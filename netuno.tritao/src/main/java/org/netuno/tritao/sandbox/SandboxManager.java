@@ -65,7 +65,7 @@ public class SandboxManager implements AutoCloseable {
 
     private Values bindings = new Values();
 
-    private int scriptsRunning = 0;
+    private List<Scriptable> scriptablesRunning = new ArrayList<>();
 
     private boolean scriptRequestErrorExecuted = false;
 
@@ -113,7 +113,7 @@ public class SandboxManager implements AutoCloseable {
     }
 
     public boolean isScriptsRunning() {
-        return scriptsRunning > 0;
+        return scriptablesRunning.size() > 0;
     }
 
     public void bind(String name, Object obj) {
@@ -169,16 +169,17 @@ public class SandboxManager implements AutoCloseable {
         return binds;
     }
 
-    public void stop() {
+    public void stopScript() {
+        if (scriptablesRunning.size() == 0) {
+            return;
+        }
         stopped = true;
-        sandboxes.entrySet().forEach((es) -> {
-            Scriptable sandbox = es.getValue();
-            try {
-                sandbox.close();
-            } catch (Exception e) {
-                logger.error("Fail closing the "+ sandbox.getClass().getSimpleName() +" sandbox.", e);
-            }
-        });
+        var scriptable = scriptablesRunning.get(scriptablesRunning.size() - 1);
+        try {
+            scriptable.stop();
+        } catch (Exception e) {
+            logger.error("Fail stopping the "+ scriptable.getClass().getSimpleName() +" sandbox.", e);
+        }
     }
 
 
@@ -220,12 +221,11 @@ public class SandboxManager implements AutoCloseable {
     private ScriptResult runScript(String path, String fileName, boolean preserveContext, boolean fromOnError) {
         path = SafePath.fileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(path + "/" + fileName);
-        Optional<Scriptable> sandbox = Optional.empty();
+        Optional<Scriptable> scriptable = Optional.empty();
         try {
             if (scriptPath != null) {
-                scriptsRunning++;
                 if (!preserveContext) {
-                    sandboxes.forEach((e, s) -> s.resetContext());
+                    scriptablesRunning.forEach((s) -> s.resetContext());
                 }
                 java.nio.file.Path scriptPathFileSystem = Paths.get(path);
                 path = scriptPathFileSystem.getParent().toAbsolutePath().toString();
@@ -270,12 +270,13 @@ public class SandboxManager implements AutoCloseable {
                             }
                         }
                     }
-                    sandbox = Optional.ofNullable(getSandbox(scriptExtension));
-                    if (!sandbox.isPresent()) {
+                    scriptable = Optional.ofNullable(getSandbox(scriptExtension));
+                    if (!scriptable.isPresent()) {
                         logger.fatal("Script "+ fileName +"."+ scriptExtension +" is not supported.");
                         return ScriptResult.withError();
                     } else {
-                        return runScriptSandbox(script, sandbox.get());
+                        scriptablesRunning.add(scriptable.get());
+                        return runScriptSandbox(script, scriptable.get());
                     }
                 } else {
                     return ScriptResult.withSuccess();
@@ -286,6 +287,7 @@ public class SandboxManager implements AutoCloseable {
             }
         } catch (Throwable t) {
             if (stopped) {
+                stopped = false;
                 return ScriptResult.withError();
             }
             if (t instanceof ScriptError && t.getMessage().contains(EmojiParser.parseToUnicode(":boom:") +" SCRIPT RUNTIME ERROR")) {
@@ -331,10 +333,12 @@ public class SandboxManager implements AutoCloseable {
             return ScriptResult.withError();
         } finally {
             if (scriptPath != null) {
-                if (!preserveContext && sandbox.isPresent()) {
-                    sandbox.get().resetContext();
+                if (!preserveContext && scriptable.isPresent()) {
+                    scriptable.get().resetContext();
                 }
-                scriptsRunning--;
+                if (scriptablesRunning.size() > 0) {
+                    scriptablesRunning.remove(scriptablesRunning.size() - 1);
+                }
             }
         }
     }

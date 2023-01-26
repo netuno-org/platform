@@ -97,10 +97,6 @@ public class Hili implements AutoCloseable {
         return scriptEngineVelocity;
     }
 
-    public void stop() {
-        sandbox.close();
-    }
-
     public String getErrorMessage(Throwable t) {
         String message = "\n# " + t.getClass().getSimpleName() + ": ";
         String tMessage = "";

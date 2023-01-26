@@ -66,6 +66,11 @@ public class JavaScriptSandbox implements Scriptable {
     }
 
     @Override
+    public void stop() throws Exception {
+        graalRunner.closeContext();
+    }
+
+    @Override
     public void close() throws Exception {
         graalRunner.close();
         graalRunner = null;

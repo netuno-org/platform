@@ -27,6 +27,8 @@ public interface Scriptable extends AutoCloseable {
 
     void resetContext();
 
+    void stop() throws Exception;
+
     void run(ScriptSourceCode script, Values bindings) throws Exception;
 
 }

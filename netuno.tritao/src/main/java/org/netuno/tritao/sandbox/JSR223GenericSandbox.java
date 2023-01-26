@@ -20,6 +20,10 @@ package org.netuno.tritao.sandbox;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
 
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -34,6 +38,8 @@ public abstract class JSR223GenericSandbox implements Scriptable {
     private ScriptEngine engine = null;
 
     private Bindings bindings = null;
+
+    private Future<Object> executor = null;
 
     public JSR223GenericSandbox(SandboxManager manager, String engineName) {
         this.manager = manager;
@@ -69,7 +75,17 @@ public abstract class JSR223GenericSandbox implements Scriptable {
     @Override
     public void run(ScriptSourceCode script, Values bindings) throws Exception {
         loadBindings(bindings);
-        engine.eval(script.content());
+        executor = Executors.newCachedThreadPool().submit(() -> {
+            return engine.eval(script.content());
+        });
+        try {
+            executor.get();
+        } catch (CancellationException e) { }
+    }
+    
+    @Override
+    public void stop() throws Exception {
+        executor.cancel(true);
     }
 
     @Override

@@ -125,11 +125,15 @@ public class GraalRunner {
     }
     
     public void closeContext() {
-        contexts.get(contexts.size() - 1).close(true);
-        contexts.remove(contexts.size() - 1);
+        if (contexts.size() > 0) {
+            contexts.get(contexts.size() - 1).close(true);
+            contexts.remove(contexts.size() - 1);
+        }
         context = null;
         if (contexts.size() > 0) {
             context = contexts.get(contexts.size() - 1);
+        } else {
+            newContext();
         }
     }
     
@@ -204,6 +208,11 @@ public class GraalRunner {
         } catch (Exception e) { }
         try {
             return context.eval(language, code);
+        } catch (org.graalvm.polyglot.PolyglotException e) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("Context execution was cancelled.")) {
+                return null;
+            }
+            throw e;
         } finally {
             try {
                 //context.leave();

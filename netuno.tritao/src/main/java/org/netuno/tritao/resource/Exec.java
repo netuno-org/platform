@@ -318,7 +318,7 @@ public class Exec extends ResourceBaseValues {
                             ) })
     }, parameters = { }, returns = {})
     public void stop() {
-        getHili().stop();
+        getHili().sandbox().stopScript();
     }
 
     @MethodDoc(translations = {
