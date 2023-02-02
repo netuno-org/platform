@@ -75,34 +75,6 @@ public class Text extends ComponentBase {
     public Component setValues(String prefix, Values values) {
         super.setValues(prefix, values);
         value = getDataStructure().get(0).getValue();
-        System.out.println("TEXT SETVALUES");
-        if (false && getDesignData().getString("type").equals("textfloat") && !value.isEmpty()) {
-            System.out.println("IF ENTROU!");
-            float floatValue = Float.valueOf(value);
-            if (floatValue != 0
-                    && getConfiguration().getParameter("MASK").getValue() != null
-                    && !getConfiguration().getParameter("MASK").getValue().isEmpty()) {
-                String mask = getConfiguration().getParameter("MASK").getValue();
-                int maskDecimalComma = mask.lastIndexOf(',');
-                int maskDecimalDot = mask.lastIndexOf('.');
-                if (maskDecimalComma <= 0) {
-                    maskDecimalComma = Integer.MIN_VALUE;
-                }
-                if (maskDecimalDot <= 0) {
-                    maskDecimalDot = Integer.MIN_VALUE;
-                }
-                int maskDecimalSymbol = Math.max(maskDecimalComma, maskDecimalDot);
-                if (maskDecimalSymbol > 0 && maskDecimalSymbol < Integer.MAX_VALUE) {
-                    int digits = getConfiguration().getParameter("MASK").getValue().substring(maskDecimalSymbol + 1).length();
-                    if (value.indexOf('.') == -1) {
-                        getDataStructure().get(0).setValue(Float.toString(floatValue / (float) Math.pow(10, digits)));
-                    } else {
-                        value = Integer.toString((int) (floatValue * (float) Math.pow(10, digits)));
-                    }
-                }
-            }
-        }
-        System.out.println("BOYAKASHA!");
         return this;
     }
 
