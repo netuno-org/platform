@@ -12,8 +12,8 @@
         <maven.compiler.target>17</maven.compiler.target>
         <kotlin.version>1.7.10</kotlin.version>
         <arrow.version>1.1.2</arrow.version>
-        <apache.poi>5.2.2</apache.poi>
-        <apache.tika>2.4.1</apache.tika>
+        <apache.poi>5.2.3</apache.poi>
+        <apache.tika>2.6.0</apache.tika>
         <apache.velocity>2.3</apache.velocity>
     </properties>
 
