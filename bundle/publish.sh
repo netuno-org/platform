@@ -41,13 +41,13 @@ cd netuno.cli/protect && ./run.sh && cd ../..
 
 mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-base.jar
 
-cp netuno.cli/pom-install.xml netuno.cli/pom.xml
+cp netuno.cli/pom-setup.xml netuno.cli/pom.xml
 
 cd netuno.cli && mvn clean && mvn package && cd ..
 
 cd netuno.cli/protect && ./run.sh && cd ../..
 
-mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-install.jar
+mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-setup.jar
 
 cp netuno.cli/pom-base.xml netuno.cli/pom.xml
 
@@ -59,7 +59,7 @@ cd bundle && node index.js && cd ..
 
 mkdir -p bundle/dist
 
-cp netuno.cli/protect/out/proguard/netuno-install.jar bundle/dist/netuno.jar
+cp netuno.cli/protect/out/proguard/netuno-setup.jar bundle/dist/netuno-setup.jar
 
 mv bundle/out/netuno.zip bundle/dist/netuno.zip
 
