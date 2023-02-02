@@ -17,8 +17,6 @@
 
 package org.netuno.tritao.db.manager;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
@@ -54,8 +52,6 @@ import org.netuno.tritao.db.DBError;
         )
 })
 public class Column extends Base {
-
-    private static Logger logger = LogManager.getLogger(Column.class);
 
     public enum Type {
         INT,
@@ -325,7 +321,7 @@ public class Column extends Base {
         return "";
     }
 
-    public String toDefinitionString() {
+    public String toTypeDefinition() {
     	String defaultLength = "";
     	String extraLength = "";
     	if (getType() == Type.DECIMAL) {
@@ -334,24 +330,34 @@ public class Column extends Base {
     	}
         if (isH2() || isPostgreSQL() || isMSSQL()) {
             return getType()
-                    + (getMaxLength() > 0 ? "("+ getMaxLength() + extraLength +")" : defaultLength)
-                    + (getDefault() != null && !getDefault().isEmpty() ? " default "+ getDefault() : "");
+                    + (getMaxLength() > 0 ? "("+ getMaxLength() + extraLength +")" : defaultLength);
         } else if (isMariaDB()) {
             return getType()
-                    + (getMaxLength() > 0 ? "("+ getMaxLength() + extraLength +")" : defaultLength)
-                    + (getDefault() != null && !getDefault().isEmpty() ? " default "+ getDefault() : "");
+                    + (getMaxLength() > 0 ? "("+ getMaxLength() + extraLength +")" : defaultLength);
         }
         return "";
+    }
+
+    public String toDefaultDefinition() {
+        return getDefault() != null && !getDefault().isEmpty() ? "default "+ getDefault() : "";
     }
 
     public Column changeType(String table) {
         try {
             if (isMariaDB()) {
-                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " modify column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toDefinitionString() + ";");
+                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " modify column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
             } else if (isMSSQL()) {
-                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toDefinitionString() + ";");
+                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
+            } else if (isPostgreSQL()) {
+                //getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " drop default;");
+                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition()
+                 + " using " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + "::" + toTypeDefinition() + ";");
+                String defaultDefinition = toDefaultDefinition();
+                if (!defaultDefinition.isEmpty()) {
+                    getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " set " + toDefaultDefinition() + ";");
+                }
             } else {
-                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toDefinitionString() + ";");
+                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Changing column type on "+ table +"."+ getName());
@@ -366,10 +372,8 @@ public class Column extends Base {
             if (!new CheckExists(this).column(table, newRawSQLName)) {
                 if (isH2()) {
                     getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
-                } else if (isPostgreSQL()) {
+                } else if (isPostgreSQL() || isMariaDB()) {
                     getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " rename column " + getBuilder().escape(oldRawSQLName) + " to " + getBuilder().escape(newRawSQLName) + "");
-                } else if (isMariaDB()) {
-                	getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " change column " + getBuilder().escape(oldRawSQLName) + " " + getBuilder().escape(newRawSQLName) + " "+ toDefinitionString());
                 } else if (isMSSQL()) {
                 	getManager().execute("exec sp_rename '" + DB.sqlInjectionRawName(table) + "." + getBuilder().escape(oldRawSQLName) + "', '" + newRawSQLName + "', 'COLUMN'");
                 }
