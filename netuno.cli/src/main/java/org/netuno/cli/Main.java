@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -31,9 +32,9 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.fusesource.jansi.AnsiConsole;
-import org.netuno.cli.install.Install;
 import org.netuno.cli.migrate.Migrate;
 import org.netuno.cli.monitoring.Stats;
+import org.netuno.cli.setup.Install;
 import org.netuno.cli.utils.Banner;
 import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.Update;
@@ -119,7 +120,7 @@ public final class Main implements Runnable {
             commandLine.addSubcommand("clone", new Clone());
             commandLine.addSubcommand("stats", new Stats());
             commandLine.addSubcommand("migrate", new Migrate());
-
+            
             commandLineParseResult = commandLine.parseArgs(args);
             commandLineList = commandLineParseResult.asCommandLineList();
 

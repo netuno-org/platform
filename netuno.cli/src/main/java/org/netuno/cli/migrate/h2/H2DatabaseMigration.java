@@ -20,7 +20,7 @@ package org.netuno.cli.migrate.h2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.Config;
-import org.netuno.cli.install.Constants;
+import org.netuno.cli.setup.Constants;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.GlobFileVisitor;

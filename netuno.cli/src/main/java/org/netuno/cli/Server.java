@@ -17,8 +17,9 @@
 
 package org.netuno.cli;
 
-import org.netuno.cli.install.GraalVMSetup;
 import org.netuno.cli.monitoring.Monitor;
+import org.netuno.cli.setup.GraalVMSetup;
+
 import com.vdurmont.emoji.EmojiParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
