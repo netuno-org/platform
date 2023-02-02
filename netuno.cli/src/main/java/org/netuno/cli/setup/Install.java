@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.cli.install;
+package org.netuno.cli.setup;
 
 import me.tongfei.progressbar.ProgressBar;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -86,51 +86,47 @@ public class Install implements MainArg {
         System.out.println();
         System.out.println(OS.consoleOutput("@|cyan All will set up into "+ (path.equals(Constants.ROOT_PATH) ? "this current directory." : path +"/") +" |@ "));
         System.out.println();
-        if (remove) {
-            remove = yes;
-            System.out.println(OS.consoleOutput("@|red ALL NETUNO FILES WILL BE REMOVED|@ "));
-            System.out.println();
-            if (!yes) {
-                System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
-                try (Scanner scanner = new Scanner(System.in)) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            if (remove) {
+                remove = yes;
+                System.out.println(OS.consoleOutput("@|red ALL NETUNO FILES WILL BE REMOVED|@ "));
+                System.out.println();
+                if (!yes) {
+                    System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
                     remove = scanner.nextLine().equalsIgnoreCase("y");
                 }
-            }
-            System.out.println();
-            if (remove == false) {
-                return;
-            }
-        }
-
-        if (force) {
-            force = yes;
-            System.out.println(OS.consoleOutput("@|red WILL OVERRIDE ALL LOCAL CHANGES|@ "));
-            System.out.println();
-            if (!yes) {
-                System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
-                try (Scanner scanner = new Scanner(System.in)) {
-                    force = scanner.nextLine().equalsIgnoreCase("y");
+                System.out.println();
+                if (remove == false) {
+                    return;
                 }
             }
-            System.out.println();
-            if (force == false) {
-                return;
-            }
-        }
 
-        if (checksum) {
-            checksum = yes;
-            System.out.println(OS.consoleOutput("@|red CHECKSUM OF ALL FILES WILL BE STORED AND CHANGES AT NETUNO FILES WILL BE DESTROYED IN THE NEXT UPDATE. |@ "));
-            System.out.println();
-            if (!yes) {
-                System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
-                try (Scanner scanner = new Scanner(System.in)) {
+            if (force) {
+                force = yes;
+                System.out.println(OS.consoleOutput("@|red WILL OVERRIDE ALL LOCAL CHANGES|@ "));
+                System.out.println();
+                if (!yes) {
+                    System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
+                        force = scanner.nextLine().equalsIgnoreCase("y");
+                }
+                System.out.println();
+                if (force == false) {
+                    return;
+                }
+            }
+
+            if (checksum) {
+                checksum = yes;
+                System.out.println(OS.consoleOutput("@|red CHECKSUM OF ALL FILES WILL BE STORED AND CHANGES AT NETUNO FILES WILL BE DESTROYED IN THE NEXT UPDATE. |@ "));
+                System.out.println();
+                if (!yes) {
+                    System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
                     checksum = scanner.nextLine().equalsIgnoreCase("y");
                 }
-            }
-            System.out.println();
-            if (checksum == false) {
-                return;
+                System.out.println();
+                if (checksum == false) {
+                    return;
+                }
             }
         }
 

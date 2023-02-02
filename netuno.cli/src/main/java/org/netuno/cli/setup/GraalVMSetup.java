@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.cli.install;
+package org.netuno.cli.setup;
 
 import me.tongfei.progressbar.ProgressBar;
 import org.apache.commons.io.FileUtils;
@@ -295,9 +295,8 @@ public class GraalVMSetup {
         if (graalVMFolder.exists()) {
             System.out.println();
             ProcessBuilder builder = new ProcessBuilder();
-            builder.command(new String[]{
-                    (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX ? "./" : "")
-                            + "gu",
+            builder.command(new String[] {
+                    SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX ? "./gu" : "gu.cmd",
                     "install", "nodejs"
             });
             builder.directory(new File(graalVMFolder, "bin"));

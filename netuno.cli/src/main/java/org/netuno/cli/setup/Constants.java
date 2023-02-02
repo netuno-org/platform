@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.netuno.cli.install;
-
-import org.netuno.cli.utils.OS;
+package org.netuno.cli.setup;
 
 /**
- * Messages are shown in varying cases.
+ * Default values.
  *
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class ConsoleMessage {
-    public static void reinstall() {
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|green Please try to install again. |@ "));
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|white For te current stable version: |@ "));
-        System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install"));
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|white For the testing version: |@ "));
-        System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install version=testing"));
-        System.out.println();
-    }
+public class Constants {
+    public static String GRAALVM_VERSION = "22.3.0";
+
+    public static String GRAALVM_FOLDER = "graalvm";
+
+    public static String ROOT_PATH = ".";
 }

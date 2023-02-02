@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.cli.install;
+package org.netuno.cli.setup;
 
 import java.util.List;
 
