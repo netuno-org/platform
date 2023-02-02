@@ -1767,8 +1767,6 @@ public class XLS extends ResourceBase {
         anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
         anchor.setCol1(column);
         anchor.setRow1(row);
-        anchor.setRow2(row);
-        anchor.setCol2(column + 1);
         return insertPicture(storage, anchor);
     }
 
@@ -1871,11 +1869,182 @@ public class XLS extends ResourceBase {
     })
     public Picture insertPicture(HSSFSheet sheet, Storage storage, ClientAnchor anchor) throws IOException {
         Drawing drawing = sheet.createDrawingPatriarch();
-
+        
         int pictureIndex = workbook.addPicture(
                 InputStream.readAllBytesFromFile(
                         FileSystemPath.absoluteFromStorage(getProteu(), storage)
-                ), Workbook.PICTURE_TYPE_PNG
+                ), storage.isExtension("png") ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG
+        );
+
+        Picture pict = drawing.createPicture(anchor, pictureIndex);
+        return pict;
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Insere a imagem na célula específicada.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Insert the image into the specified cell.",
+                howToUse = { })
+        }, parameters = {
+                @ParameterDoc(name = "file", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                description = "Ficheiro de imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Image file."
+                        )
+                }),
+                @ParameterDoc(name = "row", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "linha",
+                                description = "Número da linha."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                name = "linha",
+                                description = "Line number."
+                        )
+                }),
+                @ParameterDoc(name = "column", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "coluna",
+                                description = "Número da coluna."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                name = "coluna",
+                                description = "Column number."
+                        )
+                })
+        }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O objeto de referência da imagem inserida."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The reference object of the inserted image."
+        )
+    })
+    public Picture insertPicture(File file, int row, int column) throws IOException {
+        CreationHelper helper = workbook.getCreationHelper();
+        ClientAnchor anchor = helper.createClientAnchor();
+        anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
+        anchor.setCol1(column);
+        anchor.setRow1(row);
+        return insertPicture(file, anchor);
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Insere uma imagem associada à âncora.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Inserts an image associated with the anchor.",
+                howToUse = { })
+        }, parameters = {
+                @ParameterDoc(name = "file", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                description = "Ficheiro de imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Image file."
+                        )
+                }),
+                @ParameterDoc(name = "anchor", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "ancora",
+                                description = "Âncora para associar a imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Anchor to associate the image."
+                        )
+                })
+        }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O objeto de referência da imagem inserida."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The reference object of the inserted image."
+        )
+    })
+    public Picture insertPicture(File file, ClientAnchor anchor) throws IOException {
+        return insertPicture(sheet, file, anchor);
+    }
+    
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Insere uma imagem associada à âncora em uma folha de cálculos específica.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Inserts an image associated with the anchor in a specific spreadsheet.",
+                howToUse = { })
+        }, parameters = {
+                @ParameterDoc(name = "sheet", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "folhaCalculos",
+                                description = "Folha de cálculos que será utilizada para inserir a imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Spreadsheet that will be used to insert the image."
+                        )
+                }),
+                @ParameterDoc(name = "file", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                description = "Ficheiro de imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Image file."
+                        )
+                }),
+                @ParameterDoc(name = "anchor", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "ancora",
+                                description = "Âncora para associar a imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Anchor to associate the image."
+                        )
+                })
+        }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O objeto de referência da imagem inserida."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The reference object of the inserted image."
+        )
+    })
+    public Picture insertPicture(HSSFSheet sheet, File file, ClientAnchor anchor) throws IOException {
+        Drawing drawing = sheet.createDrawingPatriarch();
+        
+        int pictureIndex = workbook.addPicture(
+                file.bytes(), file.isExtension("png") ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG
         );
 
         Picture pict = drawing.createPicture(anchor, pictureIndex);
