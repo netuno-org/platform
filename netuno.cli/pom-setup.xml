@@ -295,7 +295,7 @@
                     <artifactId>maven-assembly-plugin</artifactId>
                     <configuration>
                         <descriptors>
-                            <descriptor>install-dependencies-excludes.xml</descriptor>
+                            <descriptor>setup-dependencies-excludes.xml</descriptor>
                         </descriptors>
                         <finalName>netuno-cli</finalName>
                         <appendAssemblyId>false</appendAssemblyId>
@@ -303,10 +303,10 @@
                             <manifest>
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                <mainClass>org.netuno.cli.install.Main</mainClass>
+                                <mainClass>org.netuno.cli.setup.Main</mainClass>
                             </manifest>
                             <manifestEntries>
-                                <Build-Number>install-${buildNumber}</Build-Number>
+                                <Build-Number>setup-${buildNumber}</Build-Number>
                             </manifestEntries>
                         </archive>
                     </configuration>
@@ -342,7 +342,7 @@
                             <manifest>
                                 <addClasspath>true</addClasspath>
                                 <classpathPrefix>lib/</classpathPrefix>
-                                <mainClass>org.netuno.cli.install.Main</mainClass>
+                                <mainClass>org.netuno.cli.setup.Main</mainClass>
                             </manifest>
                         </archive>
                     </configuration>
