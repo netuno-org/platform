@@ -340,6 +340,9 @@ netuno.loadReport = (container) ->
       success: (response) ->
         container.html(response);
         netuno.contentLoaded(container)
+        containerForm = container.find("form[name=netuno_report_#{ container.attr('netuno-report-name') }_form]")
+        if (containerForm.length > 0)
+          netuno.loadValidation(containerForm)
     )
   container.show()
 
@@ -348,8 +351,10 @@ netuno.buildReport = (report) ->
   container = report.parents("[netuno-report][netuno-report-uid]:first")
   containerResult = container.children("[netuno-report-result=#{ container.attr('netuno-report-name') }]")
   containerForm = container.find("form[name=netuno_report_#{ container.attr('netuno-report-name') }_form]:first")
+  netuno.unmask containerForm
   containerForm.ajaxForm().submit()
   if containerForm.validate().valid()
+    netuno.mask containerForm
     containerForm.ajaxForm(
       url: "#{ netuno.config.urlAdmin }ReportBuilder#{ netuno.config.extension }"
       iframe: false
@@ -359,6 +364,7 @@ netuno.buildReport = (report) ->
     ).submit()
     return true
   else
+    netuno.mask containerForm
     return false
 
 netuno.loadValidation = (form) ->
@@ -482,9 +488,44 @@ netuno.mask = (container)->
   container.find('[data-mask]').each(()->
     o = $(this)
     if (o.attr('data-mask') != null and o.attr('data-mask') != '')
+      if (o.attr('data-type') is 'textfloat')
+        value = if o.is(':input') then o.val() else o.text()
+        maskDecimals = o.attr('data-mask').match(/0[.,](0+)/)
+        if maskDecimals?
+          maskDecimalsLen = maskDecimals[1].length
+          decimalsMultiple = 10
+          for i in [1 .. maskDecimalsLen - 1]
+            decimalsMultiple *= 10
+          o.attr('data-mask-clean-value', value)
+          if value.indexOf('.') > 0
+            valFloat = parseFloat(value)
+            valFloat = Math.round(valFloat * decimalsMultiple) / decimalsMultiple
+            val = "#{valFloat}"
+            for i in [(val.length - val.indexOf('.') - 1) .. maskDecimalsLen]
+              if i isnt maskDecimalsLen
+                val += '0'
+            if o.is(':input')
+              o.val(val)
+            else
+              o.text(val)
+          else if value isnt ''
+            val = value
+            val += '0' for i in [1 .. maskDecimalsLen]
+            if o.is(':input')
+              o.val(val)
+            else
+              o.text(val)
       o.mask(o.attr('data-mask'), {
         reverse: o.attr('data-mask-reverse') is 'true'
         selectOnFocus: o.attr('data-mask-selectonfocus') is 'true'
+        onChange: (val)->
+          if (o.attr('data-type') is 'textfloat')
+            decimals = o.attr('data-mask').match(/0[.,](0+)/)
+            if decimals?
+              decimalsLen = decimals[1].length
+              val = o.cleanVal()
+              val = "#{val.substring(0, val.length - decimalsLen)}.#{val.substring(val.length - decimalsLen)}"
+              o.attr('data-mask-clean-value', val)
       })
   )
 
@@ -498,6 +539,8 @@ netuno.unmask = (container)->
         o.data(data)
       else
         o.unmask()
+      if (o.attr('data-mask-clean-value')? && o.attr('data-mask-clean-value') isnt '')
+        o.val(o.attr('data-mask-clean-value'))
   )
 
 netuno.addContentLoad (container)->
