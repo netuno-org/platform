@@ -35,6 +35,8 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
+import org.netuno.tritao.resource.event.AppEvent;
+import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 
 /**
@@ -65,14 +67,15 @@ public class User extends ResourceBase {
 
     public User(Proteu proteu, Hili hili) {
         super(proteu, hili);
-        if (!Config.isAppConfigLoaded(proteu)) {
-            return;
-        }
+    }
+    
+    @AppEvent(type=AppEventType.AfterConfiguration)
+    private void beforeConfiguration() {
         if (Auth.getUser(getProteu(), getHili()) != null) {
-            id = Auth.getUser(getProteu(), getHili()).getInt("id");
-            uid = Auth.getUser(getProteu(), getHili()).getString("uid");
-            name = Auth.getUser(getProteu(), getHili()).getString("name");
-            code = Auth.getUser(getProteu(), getHili()).getString("code");
+             id = Auth.getUser(getProteu(), getHili()).getInt("id");
+             uid = Auth.getUser(getProteu(), getHili()).getString("uid");
+             name = Auth.getUser(getProteu(), getHili()).getString("name");
+             code = Auth.getUser(getProteu(), getHili()).getString("code");
         }
     }
 
