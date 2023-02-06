@@ -252,6 +252,19 @@ public class Install implements MainArg {
                     System.out.println();
                 }
 
+                if (!checksumLocal.isEmpty()) {
+                    System.out.println(OS.consoleOutput("@|yellow Cleaning old version... |@ "));
+                    for (String localFilePathKey : checksumLocal.keys()) {
+                        Path localFilePath = Paths.get(path, localFilePathKey);
+                        if (Files.exists(localFilePath)
+                            && checksumLocal.getString(localFilePathKey)
+                                .equals(getChecksum(localFilePath.toFile()))) {
+                            Files.deleteIfExists(localFilePath);
+                        }
+                    }
+                    System.out.println();
+                }
+
                 System.out.println(OS.consoleOutput("@|green Unzipping Netuno... |@ "));
                 System.out.println();
                 if (remove) {
