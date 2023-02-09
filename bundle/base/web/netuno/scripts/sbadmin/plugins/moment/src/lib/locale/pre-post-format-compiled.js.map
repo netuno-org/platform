@@ -1,0 +1,1 @@
+{"version":3,"sources":["pre-post-format.js"],"names":[],"mappings":"AAAA,OAAO,SAAS,kBAAkB,CAAE,MAAM,EAAE;AACxC,WAAO,MAAM,CAAC;CACjB","file":"pre-post-format-compiled.js","sourcesContent":["export function preParsePostFormat (string) {\n    return string;\n}\n"]}

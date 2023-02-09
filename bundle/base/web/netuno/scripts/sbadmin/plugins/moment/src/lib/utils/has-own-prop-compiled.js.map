@@ -1,0 +1,1 @@
+{"version":3,"sources":["has-own-prop.js"],"names":[],"mappings":"AAAA,eAAe,SAAS,UAAU,CAAC,CAAC,EAAE,CAAC,EAAE;AACrC,WAAO,MAAM,CAAC,SAAS,CAAC,cAAc,CAAC,IAAI,CAAC,CAAC,EAAE,CAAC,CAAC,CAAC;CACrD","file":"has-own-prop-compiled.js","sourcesContent":["export default function hasOwnProp(a, b) {\n    return Object.prototype.hasOwnProperty.call(a, b);\n}\n"]}
