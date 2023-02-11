@@ -173,6 +173,10 @@
         var reportRulesButton = $('a#netuno_user_report_rules_button');
 
         netuno.com.select.callbackForFieldId('netuno_user_form_user_uid', 'changed', function () {
+            var that = $('#netuno_user_form_user_uid');
+            if (netuno.com.select.netunoUserChanged == that.val()) {
+                return;
+            }
             form.off("submit");
             form.ajaxForm({
                 url: url,
@@ -182,7 +186,7 @@
                     $('button#netuno_user_report_rules_button').fadeTo('fast', 1);
                     $('div#netuno_user_form_rules_container').hide();
                     $('div#netuno_user_report_rules_container').hide();
-                    netuno.com.select.netunoUserChanged = true;
+                    netuno.com.select.netunoUserChanged = that.val();
                     netuno.contentLoaded(container);
                 }
             }).submit();
