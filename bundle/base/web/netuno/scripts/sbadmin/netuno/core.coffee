@@ -861,7 +861,8 @@ netuno.com['select'] =
     if fieldId? and fieldId.length > 0 and not netuno.com.select.callbacks[fieldId]?
       netuno.com.select.callbacks[fieldId] = {}
   load: (fieldId, comUid, service)->
-    $("\##{ fieldId }").select2(netuno.com.select.getConfig(fieldId, service, { com_uid: comUid }))
+    select2 = $("\##{ fieldId }").select2(netuno.com.select.getConfig(fieldId, service, { com_uid: comUid }))
+    return select2
   loadInContainer: (container)->
     container.find("select[netuno-select-uid]").each(()->
       select = $(this)
@@ -872,7 +873,7 @@ netuno.com['select'] =
       if comUid? and comUid isnt ''
         select2 = select.select2(netuno.com.select.getConfig(select.attr('id'), service, { com_uid: comUid }))
         if value? and value isnt ''
-          option = $('<option selected>Loading...</option>').val(value)
+          option = $("<option selected>#{netuno.config.com.lang.select["searching"]}</option>").val(value)
           select.append(option)
           select.trigger('change')
           $.ajax({
@@ -884,16 +885,25 @@ netuno.com['select'] =
               option.removeData()
               select.trigger('change')
               selectId = select.attr('id')
-              selectContainer = $("\#select2-#{ selectId }-container");
-              selectContainer.html(data.label)
-              selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', (e)->
-                select = $("\##{ selectId }")
-                select.attr("value", "")
-                select.empty()
-                netuno.com.select.loadInContainer(select.parent())
-                e.preventDefault()
-              ))
-              selectContainer.find('.select2-selection__clear').data(data)
+              selectContainer = $("\#select2-#{ selectId }-container")
+              selectContainer.contents().filter(()->
+                this.nodeType == 3
+              )[0].nodeValue = data.label
+              #selectContainer.html(data.label)
+              #selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', (e)->
+              #  select = $("\##{ selectId }")
+              #  select.attr("value", "")
+              #  select.empty()
+              #  netuno.com.select.loadInContainer(select.parent())
+              #  e.preventDefault()
+              #))
+              #selectContainer.find('.select2-selection__clear').data(data)
+            else
+              selectId = select.attr('id')
+              selectContainer = $("\#select2-#{ selectId }-container")
+              selectContainer.contents().filter(()->
+                this.nodeType == 3
+              )[0].nodeValue = $('<div />').html(netuno.config.com.lang.select["defaulttext"]).text()
           )
     )
     container.find("select[netuno-select-link]").each(()->
@@ -903,12 +913,12 @@ netuno.com['select'] =
       onlyActives = $(this).attr('netuno-select-only-actives')
       service = $(this).attr('netuno-select-service')
       if link? and link isnt ''
-        $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service, {
+        select2 = $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service, {
           link: link,
           column_separator: columnSeparator,
           max_column_length: maxColumnLength,
           only_actives: onlyActives
-        }));
+        }))
     )
     container.find("select[netuno-select-service]:not([netuno-select-uid],[netuno-select-link])").each(()->
       service = $(this).attr('netuno-select-service')
@@ -919,8 +929,9 @@ netuno.com['select'] =
         service = select.attr('netuno-select-service')
         select2 = $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service))
         if value? and value isnt ''
-          option = $('<option selected>Loading...</option>').val(value)
-          select.append(option).trigger('change')
+          option = $("<option selected>#{netuno.config.com.lang.select["searching"]}</option>").val(value)
+          select.append(option)
+          select.trigger('change')
           $.ajax({
             dataType: "jsonp"
             url: "#{ service }&data_uid=#{ value }"
@@ -930,13 +941,10 @@ netuno.com['select'] =
               option.removeData()
               select.trigger('change')
               selectId = select.attr('id')
-              selectContainer = $("\#select2-#{ selectId }-container");
-              selectContainer.html(data.label)
-              selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', ()->
-                $("\##{ selectId }").val('')
-                $(this).parent().empty()
-              ))
-              selectContainer.find('.select2-selection__clear').data(data)
+              selectContainer = $("\#select2-#{ selectId }-container")
+              selectContainer.contents().filter(()->
+                this.nodeType == 3
+              )[0].nodeValue = data.label
           )
     )
   setValue: (select, uid) ->
