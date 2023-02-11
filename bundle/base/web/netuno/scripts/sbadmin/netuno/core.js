@@ -1106,9 +1106,11 @@
       }
     },
     load: function(fieldId, comUid, service) {
-      return $(`\#${fieldId}`).select2(netuno.com.select.getConfig(fieldId, service, {
+      var select2;
+      select2 = $(`\#${fieldId}`).select2(netuno.com.select.getConfig(fieldId, service, {
         com_uid: comUid
       }));
+      return select2;
     },
     loadInContainer: function(container) {
       container.find("select[netuno-select-uid]").each(function() {
@@ -1123,7 +1125,7 @@
             com_uid: comUid
           }));
           if ((value != null) && value !== '') {
-            option = $('<option selected>Loading...</option>').val(value);
+            option = $(`<option selected>${netuno.config.com.lang.select["searching"]}</option>`).val(value);
             select.append(option);
             select.trigger('change');
             return $.ajax({
@@ -1137,29 +1139,38 @@
                 select.trigger('change');
                 selectId = select.attr('id');
                 selectContainer = $(`\#select2-${selectId}-container`);
-                selectContainer.html(data.label);
-                selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', function(e) {
-                  select = $(`\#${selectId}`);
-                  select.attr("value", "");
-                  select.empty();
-                  netuno.com.select.loadInContainer(select.parent());
-                  return e.preventDefault();
-                }));
-                return selectContainer.find('.select2-selection__clear').data(data);
+                return selectContainer.contents().filter(function() {
+                  return this.nodeType === 3;
+                })[0].nodeValue = data.label;
+              } else {
+                //selectContainer.html(data.label)
+                //selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', (e)->
+                //  select = $("\##{ selectId }")
+                //  select.attr("value", "")
+                //  select.empty()
+                //  netuno.com.select.loadInContainer(select.parent())
+                //  e.preventDefault()
+                //))
+                //selectContainer.find('.select2-selection__clear').data(data)
+                selectId = select.attr('id');
+                selectContainer = $(`\#select2-${selectId}-container`);
+                return selectContainer.contents().filter(function() {
+                  return this.nodeType === 3;
+                })[0].nodeValue = $('<div />').html(netuno.config.com.lang.select["defaulttext"]).text();
               }
             });
           }
         }
       });
       container.find("select[netuno-select-link]").each(function() {
-        var columnSeparator, link, maxColumnLength, onlyActives, service;
+        var columnSeparator, link, maxColumnLength, onlyActives, select2, service;
         link = $(this).attr('netuno-select-link');
         columnSeparator = $(this).attr('netuno-select-column-separator');
         maxColumnLength = $(this).attr('netuno-select-max-column-length');
         onlyActives = $(this).attr('netuno-select-only-actives');
         service = $(this).attr('netuno-select-service');
         if ((link != null) && link !== '') {
-          return $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service, {
+          return select2 = $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service, {
             link: link,
             column_separator: columnSeparator,
             max_column_length: maxColumnLength,
@@ -1177,8 +1188,9 @@
           service = select.attr('netuno-select-service');
           select2 = $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service));
           if ((value != null) && value !== '') {
-            option = $('<option selected>Loading...</option>').val(value);
-            select.append(option).trigger('change');
+            option = $(`<option selected>${netuno.config.com.lang.select["searching"]}</option>`).val(value);
+            select.append(option);
+            select.trigger('change');
             return $.ajax({
               dataType: "jsonp",
               url: `${service}&data_uid=${value}`
@@ -1190,12 +1202,9 @@
                 select.trigger('change');
                 selectId = select.attr('id');
                 selectContainer = $(`\#select2-${selectId}-container`);
-                selectContainer.html(data.label);
-                selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', function() {
-                  $(`\#${selectId}`).val('');
-                  return $(this).parent().empty();
-                }));
-                return selectContainer.find('.select2-selection__clear').data(data);
+                return selectContainer.contents().filter(function() {
+                  return this.nodeType === 3;
+                })[0].nodeValue = data.label;
               }
             });
           }
