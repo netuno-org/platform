@@ -110,7 +110,7 @@ public class Group {
     	Values data = new Values();
     	boolean restore = false;
         if (proteu.getRequestAll().getString("execute").equals("save") && proteu.getRequestAll().getString("uid").isEmpty()) {
-        	int id = Config.getDataBaseBuilder(proteu).insertGroup(proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getString("active").equals("1") ? "1" : "0");
+        	int id = Config.getDataBaseBuilder(proteu).insertGroup(proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getBoolean("active") ? "1" : "0");
             if (id > 0) {
 				Values group = Config.getDataBaseBuilder(proteu).getGroupById(Integer.toString(id));
             	proteu.getRequestAll().set("id", id);
@@ -125,7 +125,7 @@ public class Group {
         	Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
 			if (group != null) {
 				saveRules(proteu, hili, group);
-				if (Config.getDataBaseBuilder(proteu).updateGroup(group.getString("id"), proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getString("active").equals("1") ? "1" : "0")) {
+				if (Config.getDataBaseBuilder(proteu).updateGroup(group.getString("id"), proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getBoolean("active") ? "1" : "0")) {
 					TemplateBuilder.output(proteu, hili, "group/notification/saved", data);
 				} else {
 					TemplateBuilder.output(proteu, hili, "group/notification/error_exists", data);
@@ -160,7 +160,12 @@ public class Group {
         	} else {
         		data.set("group.admin.checked", "");
         	}
-        	if (proteu.getRequestAll().getString("active").equals("1")) {
+        	if (proteu.getRequestAll().getBoolean("login_allowed")) {
+        		data.set("group.login_allowed.checked", "checked");
+        	} else {
+        		data.set("group.login_allowed.checked", "");
+        	}
+        	if (proteu.getRequestAll().getBoolean("active")) {
         		data.set("group.active.checked", "checked");
         	} else {
         		data.set("group.active.checked", "");
@@ -175,7 +180,12 @@ public class Group {
         	} else {
         		data.set("group.admin.checked", "");
         	}
-        	if (group.getString("active").equals("1") || group.getString("active").equals("true")) {
+        	if (group.getBoolean("login_allowed")) {
+        		data.set("group.login_allowed.checked", "checked");
+        	} else {
+        		data.set("group.login_allowed.checked", "");
+        	}
+        	if (group.getBoolean("active")) {
         		data.set("group.active.checked", "checked");
         	} else {
         		data.set("group.active.checked", "");

@@ -700,12 +700,13 @@ public class CoreBusiness extends Base {
         return getManager().query(sql);
     }
 
-    public boolean updateGroup(String id, String name, String netuno_group, String mail, String active) {
+    public boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String active) {
         return updateGroup(
             new Values()
                     .set("id", id)
                     .set("name", name)
                     .set("netuno_group", netuno_group)
+                    .set("login_allowed", login_allowed)
                     .set("mail", mail)
                     .set("active", active)
         );
@@ -750,6 +751,9 @@ public class CoreBusiness extends Base {
         if (values.hasKey("netuno_group")) {
             update += ", netuno_group = " + DB.sqlInjectionInt(values.getString("netuno_group")) + "";
         }
+        if (values.hasKey("login_allowed")) {
+            update += ", login_allowed = " + getBuilder().booleanValue(values.getBoolean("login_allowed")) + "";
+        }
         if (values.hasKey("active")) {
             update += ", active = " + getBuilder().booleanValue(values.getBoolean("active")) + "";
         }
@@ -768,11 +772,12 @@ public class CoreBusiness extends Base {
         return true;
     }
 
-    public int insertGroup(String name, String netuno_group, String mail, String active) {
+    public int insertGroup(String name, String netuno_group, String login_allowed, String mail, String active) {
         return insertGroup(
                 new Values()
                         .set("name", name)
                         .set("netuno_group", netuno_group)
+                        .set("login_allowed", login_allowed)
                         .set("mail", mail)
                         .set("active", active)
         );
@@ -810,6 +815,9 @@ public class CoreBusiness extends Base {
         }
         if (values.hasKey("netuno_group")) {
             data.set("netuno_group", DB.sqlInjectionInt(values.getString("netuno_group")));
+        }
+        if (values.hasKey("login_allowed")) {
+            data.set("login_allowed", values.getBoolean("login_allowed"));
         }
         if (values.hasKey("mail")) {
             data.set("mail", "'" + DB.sqlInjection(values.getString("mail")) + "'");
