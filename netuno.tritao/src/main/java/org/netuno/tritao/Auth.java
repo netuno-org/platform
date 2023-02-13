@@ -239,18 +239,27 @@ public class Auth extends WebMaster {
     }
 
     public static boolean signIn(Proteu proteu, Hili hili, String username, String password, Type type, Profile profile) {
-        List<Values> users = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUserLogin(
+        List<Values> dbUsers = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUserLogin(
                 username,
                 org.netuno.tritao.config.Config.getPasswordBuilder(proteu).getCryptPassword(
                         proteu, hili, username, password
                 )
         );
-        if (users.size() == 1) {
-            Values dbUser = users.get(0);
+        if (dbUsers.size() == 1) {
+            Values dbUser = dbUsers.get(0);
+            if (type == Type.SESSION) {
+                List<Values> dbGroups = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectGroup(dbUser.getString("group_id"));
+                if (dbGroups.size() != 1) {
+                    return false;
+                }
+                Values dbGroup = dbGroups.get(0);
+                if (!dbGroup.getBoolean("login_allowed")) {
+                    return false;
+                }
+            }
             return signIn(proteu, hili, dbUser, type, profile);
-        } else {
-            return false;
         }
+        return false;
     }
 
 
