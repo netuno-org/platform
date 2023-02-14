@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -183,13 +184,10 @@ public class Install implements MainArg {
                             Values data = Values.fromJSON(new Remote().get(url).toString());
                             version = data.getString("version");
                         }
-
                         String versionURL = version.equalsIgnoreCase("testing") || version.equalsIgnoreCase("latest") ? "testing" : "v" + versionType + "-" + version.replace(".", "_");
-
                         url = "https://github.com/netuno-org/platform/releases/download/" + (version.equalsIgnoreCase("testing") ? "testing" : versionURL) + "/" + bundleFileName + (version.equalsIgnoreCase("testing") ? "" : "-" + versionURL) + ".zip";
-
                         final String downloadURL = url;
-
+                        System.out.println();
                         Download download = new Download();
                         download.http(url, bundleFile, new Download.DownloadEvent() {
                             ProgressBar pb = null;
@@ -254,14 +252,20 @@ public class Install implements MainArg {
 
                 if (!checksumLocal.isEmpty()) {
                     System.out.println(OS.consoleOutput("@|yellow Cleaning old version... |@ "));
+                    int countLocalFilesRemoved = 0;
                     for (String localFilePathKey : checksumLocal.keys()) {
                         Path localFilePath = Paths.get(path, localFilePathKey);
                         if (Files.exists(localFilePath)
                             && checksumLocal.getString(localFilePathKey)
                                 .equals(getChecksum(localFilePath.toFile()))) {
                             Files.deleteIfExists(localFilePath);
+                            countLocalFilesRemoved++;
+                        }
+                        if (countLocalFilesRemoved % 100 == 0) {
+                            System.out.print(". ");
                         }
                     }
+                    System.out.println();
                     System.out.println();
                 }
 
@@ -307,7 +311,7 @@ public class Install implements MainArg {
                                 || name.equalsIgnoreCase(".DS_Store")) {
                             continue;
                         }
-                        if (countElements % 10 == 0) {
+                        if (countElements % 100 == 0) {
                             System.out.print(". ");
                         }
                         File entryDestination = new File(path, name);
@@ -392,30 +396,22 @@ public class Install implements MainArg {
                             System.out.println(OS.consoleOutput("\t@|red > chmod +x netuno.sh && cp netuno.sh netuno |@ "));
                         }
                     }
-                    if (new File(path, "install-stable.sh").exists() && !new File(path, "install-stable").exists()) {
-                        ProcessBuilder builder = new ProcessBuilder();
-                        builder.command(new String[]{"sh", "-c", "chmod +x install-stable.sh && cp install-stable.sh install-stable"});
-                        builder.directory(new File(path));
-                        Process process = builder.start();
-                        int exitCode = process.waitFor();
-                        if (exitCode != 0) {
-                            System.out.println();
-                            System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
-                            System.out.println(OS.consoleOutput("\t@|red > chmod +x install-stable.sh && cp install-stable.sh install-stable |@ "));
+                    List.of("stable", "testing").stream().forEach((type) -> {
+                        try {
+                            ProcessBuilder builder = new ProcessBuilder();
+                            builder.command(new String[]{"sh", "-c", "chmod +x install-"+ type +".sh && cp install-"+ type +".sh install-"+ type});
+                            builder.directory(new File(path));
+                            Process process = builder.start();
+                            int exitCode = process.waitFor();
+                            if (exitCode != 0) {
+                                System.out.println();
+                                System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
+                                System.out.println(OS.consoleOutput("\t@|red > chmod +x install-"+ type +".sh && cp install-"+ type +".sh install-"+ type +" |@ "));
+                            }
+                        } catch (Exception e) {
+                            logger.fatal("Not possible to create the install-" + type +" script.", e);
                         }
-                    }
-                    if (new File(path, "install-testing.sh").exists() && !new File(path, "install-testing").exists()) {
-                        ProcessBuilder builder = new ProcessBuilder();
-                        builder.command(new String[]{"sh", "-c", "chmod +x install-testing.sh && cp install-testing.sh install-testing"});
-                        builder.directory(new File(path));
-                        Process process = builder.start();
-                        int exitCode = process.waitFor();
-                        if (exitCode != 0) {
-                            System.out.println();
-                            System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
-                            System.out.println(OS.consoleOutput("\t@|red > chmod +x install-testing.sh && cp install-testing.sh install-testing |@ "));
-                        }
-                    }
+                    });
                     if (new File(path, "bin-unix").isDirectory()) {
                     	ProcessBuilder builder = new ProcessBuilder();
                         builder.command(new String[]{"sh", "-c", "chmod +x bin-unix/*.sh"});
@@ -429,7 +425,6 @@ public class Install implements MainArg {
                         }
                     }
                 }
-                
                 String webWEBINFlib = new File(
                         path,
                         ("web/WEB-INF/lib").replace("/", File.separator)
