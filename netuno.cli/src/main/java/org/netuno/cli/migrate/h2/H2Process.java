@@ -53,11 +53,10 @@ class H2Process {
         }
         System.out.println();
         Path directory = Path.of(Constants.ROOT_PATH).relativize(processInfo.dbPath().getParent());
-        Path binJava = directory.relativize(Path.of(Constants.GRAALVM_FOLDER, "bin", "java"));
         String[] command = new String[]{
-                binJava.toString(),
+                Path.of(".", Constants.GRAALVM_FOLDER, "bin", "java").toAbsolutePath().toString(),
                 "-cp",
-                directory.relativize(jar).toString(),
+                jar.toAbsolutePath().toString(),
                 "org.h2.tools.Shell",
                 "-url",
                 "jdbc:h2:./"+ processInfo.dbName() +";"
