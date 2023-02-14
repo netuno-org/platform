@@ -46,7 +46,7 @@ public class Config {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Config.class);
 
     public static final String VERSION = "7";
-    public static final String VERSION_YEAR = "2021";
+    public static final String VERSION_YEAR = "2023";
     
     public static String BUILD_NUMBER = "99999999.9999";
 
