@@ -17,8 +17,6 @@
 
 package org.netuno.cli.utils;
 
-import java.time.Year;
-
 import org.netuno.cli.Config;
 
 /**
@@ -43,7 +41,7 @@ public class Banner {
         System.out.println(OS.consoleOutput("@|cyan        ,td&=}~'                               '~;=%&t,|@"));
         System.out.println();
         System.out.println();
-        System.out.println(" © " + Year.now().getValue() + " netuno.org // v" + Config.VERSION + ":" + Build.getNumber());
+        System.out.println(" © " + Config.VERSION_YEAR + " netuno.org // v" + Config.VERSION + ":" + Build.getNumber());
         System.out.println();
         System.out.println();
     }
