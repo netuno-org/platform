@@ -8,6 +8,7 @@ import org.netuno.psamata.ImageTools;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.MimeTypes;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
@@ -17,6 +18,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.font.TextAttribute;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.AttributedString;
@@ -86,11 +89,10 @@ public class Image extends ResourceBase implements AutoCloseable {
     }
 
     public Image init(final File file) {
-        String path = file.getFullPath();
         try {
-            return new Image(getProteu(), getHili(), new ImageTools(path));
+            return new Image(getProteu(), getHili(), new ImageTools(file.getInputStream()));
         } catch (Exception e) {
-            throw new ResourceException("_image.init("+ path +")", e);
+            throw new ResourceException("_image.init("+ file.getName() +")", e);
         }
     }
     
@@ -281,25 +283,59 @@ public class Image extends ResourceBase implements AutoCloseable {
         return new java.awt.geom.AffineTransform(tx.toDoubleArray());
     }
 
+    public java.awt.Image image() {
+        return getImage();
+    }
+
     public java.awt.Image getImage() {
         return imageTools.getImage();
+    }
+
+    public java.awt.image.BufferedImage bufferedImage() {
+        return getBufferedImage();
     }
 
     public java.awt.image.BufferedImage getBufferedImage() {
         return imageTools.getBufferedImage();
     }
 
+    public int width() {
+        return getWidth();
+    }
+
     public int getWidth() {
         return imageTools.getWidth();
+    }
+    
+    public int height() {
+        return getHeight();
     }
     
     public int getHeight() {
         return imageTools.getHeight();
     }
+
+    public File file(String fileName, String type) {
+        return getFile(fileName, type);
+    }
+
+    public File getFile(String fileName, String type) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        save(baos, type);
+        return new File(fileName, MimeTypes.getMimeTypeFromExtension(type), new ByteArrayInputStream(baos.toByteArray()));
+    }
+    
+    public float jpegCompression() {
+        return getJPEGCompression();
+    }
     
     public float getJPEGCompression() {
         return imageTools.getJPEGCompression();
     }
+
+    public Image jpegCompression(float jpegCompression) {
+		return setJPEGCompression(jpegCompression);
+	}
 
     public Image setJPEGCompression(float jpegCompression) {
 		imageTools.setJPEGCompression(jpegCompression);
@@ -314,6 +350,10 @@ public class Image extends ResourceBase implements AutoCloseable {
     public Image crop(final int x, final int y, final int width, final int height) {
         imageTools.crop(x, y, width, height);
         return this;
+    }
+
+    public java.awt.Graphics2D graphics() {
+        return getGraphics();
     }
 
     public java.awt.Graphics2D getGraphics() {
