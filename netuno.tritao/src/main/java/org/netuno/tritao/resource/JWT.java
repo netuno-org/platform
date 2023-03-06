@@ -332,7 +332,9 @@ public class JWT extends ResourceBase {
                             @ParameterTranslationDoc(
                                     language = LanguageDoc.EN,
                                     description = "Header value."
-                            ),
+                            )
+                    }),
+                    @ParameterDoc(name = "body", translations = {
                             @ParameterTranslationDoc(
                                     language=LanguageDoc.PT,
                                     name = "corpo",
@@ -351,7 +353,7 @@ public class JWT extends ResourceBase {
             ),
             @ReturnTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Returns the values enconded."
+                    description = "Returns the values encoded."
             )
     })
     public String encode(Values header, Values body) {
@@ -375,35 +377,26 @@ public class JWT extends ResourceBase {
                     howToUse = {})
     },
             parameters = {
-                    @ParameterDoc(name = "header", translations = {
-                            @ParameterTranslationDoc(
-                                    language = LanguageDoc.PT,
-                                    name = "cabeçalho",
-                                    description = "Valor do cabeçalho."
-                            ),
-                            @ParameterTranslationDoc(
-                                    language = LanguageDoc.EN,
-                                    description = "Header value."
-                            ),
+                    @ParameterDoc(name = "token", translations = {
                             @ParameterTranslationDoc(
                                     language=LanguageDoc.PT,
-                                    name = "corpo",
-                                    description = "Valor do corpo."
+                                    name = "token",
+                                    description = "Código de acesso."
                             ),
                             @ParameterTranslationDoc(
                                     language = LanguageDoc.EN,
-                                    description = "Body value."
+                                    description = "Acess code."
                             )
 
                     })
             }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna os valores codificados."
+                    description = "Retorna os valores decodificados."
             ),
             @ReturnTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Returns the values enconded."
+                    description = "Returns the values decoded."
             )
     })
     public Values decode(String token) {
