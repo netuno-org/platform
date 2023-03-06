@@ -47,11 +47,11 @@ public class H2 implements Builder {
     }
 
     public String escapeStart() {
-        return "\"";
+        return "`";
     }
 
     public String escapeEnd() {
-        return "\"";
+        return "`";
     }
 
     public String escape(String data) {
