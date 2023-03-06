@@ -1148,6 +1148,27 @@ public class SMTP extends ResourceBase {
         return this;
     }
 
+    public SMTP attachment(String name, String type, Storage storage, String contentId, boolean inline) {
+        transport.addAttachment(
+                name, type, storage.file(), contentId, inline
+        );
+        return this;
+    }
+    
+    public SMTP attachment(String name, String type, Storage storage, String contentId) {
+        transport.addAttachment(
+                name, type, storage.file(), contentId
+        );
+        return this;
+    }
+    
+    public SMTP attachment(String name, String type, Storage storage) {
+        transport.addAttachment(
+                name, type, storage.file()
+        );
+        return this;
+    }
+
     protected SMTPTransport getTransport() {
         return transport;
     }
