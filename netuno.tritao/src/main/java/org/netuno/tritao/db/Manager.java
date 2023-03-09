@@ -175,7 +175,7 @@ public class Manager {
         try {
             hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.sandbox().runScript(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "save");
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "save");
         } finally {
             hili.sandbox().unbind("dataItem");
         }
@@ -185,7 +185,7 @@ public class Manager {
         try {
             hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.sandbox().runScript(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "saved");
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "saved");
         } finally {
             hili.sandbox().unbind("dataItem");
         }
@@ -195,7 +195,7 @@ public class Manager {
         try {
             hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.sandbox().runScript(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "remove");
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "remove");
         } finally {
             hili.sandbox().unbind("dataItem");
         }
@@ -205,7 +205,7 @@ public class Manager {
         try {
             hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.sandbox().runScript(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "removed");
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "removed");
         } finally {
             hili.sandbox().unbind("dataItem");
         }

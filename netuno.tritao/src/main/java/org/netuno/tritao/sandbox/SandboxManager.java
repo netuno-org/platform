@@ -210,17 +210,28 @@ public class SandboxManager implements AutoCloseable {
                 });
     }
 
+    public ScriptResult runScriptIfExists(String path, String scriptName) {
+        return runScript(path, scriptName, false, false, true);
+    }
+
+    public ScriptResult runScriptIfExists(String path, String scriptName, boolean preserveContext) {
+        return runScript(path, scriptName, preserveContext, false, true);
+    }
+
     public ScriptResult runScript(String path, String scriptName) {
-        return runScript(path, scriptName, false, false);
+        return runScript(path, scriptName, false, false, false);
     }
 
     public ScriptResult runScript(String path, String scriptName, boolean preserveContext) {
-        return runScript(path, scriptName, preserveContext, false);
+        return runScript(path, scriptName, preserveContext, false, false);
     }
 
-    private ScriptResult runScript(String path, String file, boolean preserveContext, boolean fromOnError) {
+    private ScriptResult runScript(String path, String file, boolean preserveContext, boolean fromOnError, boolean onlyExists) {
         path = SafePath.fileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(path + "/" + file);
+        if (onlyExists && scriptPath == null) {
+            return ScriptResult.withSuccess();
+        }
         Optional<Scriptable> scriptable = Optional.empty();
         Optional<ScriptSourceCode> scriptSourceCode = Optional.empty();
         OptionalInt errorScriptLine = OptionalInt.empty();
@@ -455,7 +466,7 @@ public class SandboxManager implements AutoCloseable {
                 .set("column", errorLine)
                 .set("throwable", t);
         hili.resource().get(org.netuno.tritao.resource.Error.class).data(errorData);
-        runScript(Config.getPathAppCore(proteu), "_request_error", false, true);
+        runScript(Config.getPathAppCore(proteu), "_request_error", false, true, false);
     }
 
     @Override
