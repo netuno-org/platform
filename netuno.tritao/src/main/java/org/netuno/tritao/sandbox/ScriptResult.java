@@ -17,43 +17,45 @@
 
 package org.netuno.tritao.sandbox;
 
+import java.util.function.Consumer;
+
 /**
  * Script Result
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class ScriptResult {
-    private boolean error = false;
+    private Throwable error = null;
 
     private ScriptResult() { }
 
-    private ScriptResult(boolean withError) {
-        this.error = withError;
+    private ScriptResult(Throwable error) {
+        this.error = error;
     }
 
     public boolean isError() {
-        return error;
+        return error != null;
     }
 
     public boolean isSuccess() {
-        return error == false;
+        return isError() == false;
     }
 
-    public ScriptResult ifError(Runnable func) {
+    public ScriptResult whenError(Consumer<Throwable> func) {
         if (isError()) {
-            func.run();
+            func.accept(error);
         }
         return this;
     }
 
-    public ScriptResult ifSuccess(Runnable func) {
+    public ScriptResult whenSucceed(Runnable func) {
         if (isSuccess()) {
             func.run();
         }
         return this;
     }
 
-    protected static ScriptResult withError() {
-        return new ScriptResult(true);
+    protected static ScriptResult withError(Throwable error) {
+        return new ScriptResult(error);
     }
 
     protected static ScriptResult withSuccess() {

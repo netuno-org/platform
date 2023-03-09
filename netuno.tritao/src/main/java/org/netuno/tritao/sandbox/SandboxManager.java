@@ -258,22 +258,26 @@ public class SandboxManager implements AutoCloseable {
                         String importScriptPath = m.group(2);
                         importScriptPath = SafePath.fileSystemPath(importScriptPath);
                         if (importScriptFolder.equals("_core")) {
-                            String importScriptCorePath = ScriptRunner.searchScriptFile(Config.getPathAppCore(proteu) +"/"+ importScriptPath);
-                            if (importScriptCorePath != null) {
-                                if (runScript(Config.getPathAppCore(proteu), importScriptPath, true) == null) {
-                                    return ScriptResult.withError();
+                            String importScriptCorePath = Config.getPathAppCore(proteu) +"/"+ importScriptPath;
+                            String importScriptCore = ScriptRunner.searchScriptFile(importScriptCorePath);
+                            if (importScriptCore != null) {
+                                ScriptResult result = runScript(Config.getPathAppCore(proteu), importScriptPath, true);
+                                if (result.isError()) {
+                                    return result;
                                 }
                             } else {
-                                ScriptError error = new ScriptError(proteu, hili, "Import script not found "+ importScriptPath + " in "+ fileName);
-                                onError(script, error.getMessage(), -1, -1, error);
-                                return ScriptResult.withError();
+                                throw new Exception("Import failed at line "
+                                        + sourceCode.substring(0, m.start()).split("[\n\r]+").length
+                                        + ": The script "
+                                        + importScriptCorePath.substring(Config.getPathAppBase(proteu).length()) 
+                                        + " was not found."
+                                );
                             }
                         }
                     }
                     scriptable = Optional.ofNullable(getSandbox(scriptExtension));
                     if (!scriptable.isPresent()) {
-                        logger.fatal("Script "+ fileName +"."+ scriptExtension +" is not supported.");
-                        return ScriptResult.withError();
+                        throw new Exception("This script "+ fileName +"."+ scriptExtension +" is not supported.");
                     } else {
                         scriptablesRunning.add(scriptable.get());
                         return runScriptSandbox(script, scriptable.get());
@@ -282,16 +286,16 @@ public class SandboxManager implements AutoCloseable {
                     return ScriptResult.withSuccess();
                 }
             } else {
-                logger.info("Script file not found: "+ path +"/"+ fileName);
-                return ScriptResult.withError();
+                throw new Exception("This script file was not found.");
             }
         } catch (Throwable t) {
             if (stopped) {
                 stopped = false;
-                return ScriptResult.withError();
+                return ScriptResult.withError(t);
             }
             if (t instanceof ScriptError && t.getMessage().contains(EmojiParser.parseToUnicode(":boom:") +" SCRIPT RUNTIME ERROR")) {
-                throw (ScriptError)t;
+                logger.fatal(((ScriptError)t).getMessage());
+                return ScriptResult.withError(t);
             }
             String detail = "";
             if (t instanceof ScriptError) {
@@ -307,30 +311,36 @@ public class SandboxManager implements AutoCloseable {
                     break;
                 }
                 if (stackTrace.getClassName().equals("<js>")) {
-                    detail += "\n    "+ stackTrace.getClassName() +" "+ stackTrace.getMethodName() +":"+ stackTrace.getLineNumber();
+                    detail += "\n#    "+ stackTrace.getClassName() +" "+ stackTrace.getMethodName() +":"+ stackTrace.getLineNumber();
                 }
             }
             StackTraceElement stackTrace = t.getStackTrace()[0];
-            detail += "\n    "+  stackTrace.getClassName() +"."+ stackTrace.getMethodName();
+            if (!stackTrace.getClassName().equals(this.getClass().getName())) {
+                detail += "\n#    "+  stackTrace.getClassName() +"."+ stackTrace.getMethodName();
+            }
             if (t instanceof PolyglotException) {
                 //PolyglotException e = (PolyglotException)t;
                 //detail += "\n    "+  e.toString();
             }
-            String message = EmojiParser.parseToUnicode(":boom:") +" SCRIPT RUNTIME ERROR" +
-                    "\n" +
-                    "\n" + EmojiParser.parseToUnicode(":open_file_folder:") +" "+ path +
-                    "\n" + EmojiParser.parseToUnicode(":stop_sign:") +" "+ scriptPath.substring(path.length()) + (lineNumber > 0 ? ":"+ lineNumber : "") +
-                    "\n\n    " +
-                    detail;
+            String message = "\n#" +
+                    "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu) +
+                    "\n#" +
+                    "\n# " + EmojiParser.parseToUnicode(":boom:") +" SCRIPT LOADING" +
+                    "\n#" +
+                    "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") +" "+ path +
+                    "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ (scriptPath == null ? fileName : scriptPath.substring(path.length())) + (lineNumber > 0 ? ":"+ lineNumber : "") +
+                    "\n#\n#    " +
+                    detail
+                    +"\n#";
             logger.debug(message, t);
             ScriptError error = new ScriptError(proteu, hili, message);
             if (t instanceof IOException) {
-                logger.error(error.getMessage());
+                error.setLogWarn(true);
             } else {
                 error.setLogFatal(true);
-                throw error;
+                logger.fatal(message);
             }
-            return ScriptResult.withError();
+            return ScriptResult.withError(error);
         } finally {
             if (scriptPath != null) {
                 if (!preserveContext && scriptable.isPresent()) {
@@ -365,7 +375,7 @@ public class SandboxManager implements AutoCloseable {
         }
         if (throwable != null) {
             if (scriptRequestErrorExecuted) {
-                return ScriptResult.withError();
+                return ScriptResult.withError(throwable);
             }
             int errorLineNumber = -1;
             int errorColumnNumber = -1;
@@ -378,10 +388,10 @@ public class SandboxManager implements AutoCloseable {
                     "\n#" +
                     "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu) +
                     "\n#" +
-                    "\n# "+ EmojiParser.parseToUnicode(":boom:") +" ERROR" +
+                    "\n# "+ EmojiParser.parseToUnicode(":boom:") +" SCRIPT EXECUTION" +
                     "\n#" +
-                    "\n# " + script.path() +
-                    "\n# " + script.fileName() + " > " + errorLineNumber + ":" + errorColumnNumber +
+                    "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") +" "+ script.path() +
+                    "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ script.fileName() + " > " + errorLineNumber + ":" + errorColumnNumber +
                     "\n# " + getErrorMessage(throwable) +
                     "\n# " + getErrorInnerMessages(throwable) +
                     "\n"
@@ -393,7 +403,7 @@ public class SandboxManager implements AutoCloseable {
             if (script.error() == false) {
                 onError(script, getErrorMessage(throwable), errorLineNumber, errorColumnNumber, throwable);
             }
-            return ScriptResult.withError();
+            return ScriptResult.withError(throwable);
         }
         return ScriptResult.withSuccess();
     }

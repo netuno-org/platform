@@ -259,7 +259,7 @@ public class Service {
         if (scriptPath != null) {
             return hili.sandbox()
                     .runScript(Config.getPathAppCore(proteu), file)
-                    .ifError(() -> {
+                    .whenError((t) -> {
                         if (!file.equals("_service_error")) {
                             core("_service_error");
                         }
@@ -288,7 +288,7 @@ public class Service {
         if (scriptPath != null) {
             return hili.sandbox()
                     .runScript(Config.getPathAppServices(proteu), file)
-                    .ifError(() -> core("_service_error"))
+                    .whenError((t) -> core("_service_error"))
                     .isSuccess();
         } else if (!file.equals("config")) {
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceNotFound);
