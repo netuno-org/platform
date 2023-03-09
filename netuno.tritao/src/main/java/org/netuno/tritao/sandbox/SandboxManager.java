@@ -218,10 +218,12 @@ public class SandboxManager implements AutoCloseable {
         return runScript(path, scriptName, preserveContext, false);
     }
 
-    private ScriptResult runScript(String path, String fileName, boolean preserveContext, boolean fromOnError) {
+    private ScriptResult runScript(String path, String file, boolean preserveContext, boolean fromOnError) {
         path = SafePath.fileSystemPath(path);
-        String scriptPath = ScriptRunner.searchScriptFile(path + "/" + fileName);
+        String scriptPath = ScriptRunner.searchScriptFile(path + "/" + file);
         Optional<Scriptable> scriptable = Optional.empty();
+        Optional<ScriptSourceCode> scriptSourceCode = Optional.empty();
+        OptionalInt errorScriptLine = OptionalInt.empty();
         try {
             if (scriptPath != null) {
                 if (!preserveContext) {
@@ -229,7 +231,7 @@ public class SandboxManager implements AutoCloseable {
                 }
                 java.nio.file.Path scriptPathFileSystem = Paths.get(path);
                 path = scriptPathFileSystem.getParent().toAbsolutePath().toString();
-                fileName = scriptPathFileSystem.getFileName().toString() +"/"+ fileName;
+                file = scriptPathFileSystem.getFileName().toString() +"/"+ file;
                 String sourceCode = "";
                 ImmutablePair<Long, String> cachedScript = cachedSourceCodes.get(scriptPath);
                 File fileScript = new File(scriptPath);
@@ -244,13 +246,13 @@ public class SandboxManager implements AutoCloseable {
                 }
                 if (!sourceCode.isEmpty()) {
                     String scriptExtension = FilenameUtils.getExtension(scriptPath.toLowerCase());
-                    var script = new ScriptSourceCode(
+                    scriptSourceCode = Optional.of(new ScriptSourceCode(
                             scriptExtension,
                             path,
-                            fileName,
+                            file,
                             sourceCode,
                             fromOnError
-                    );
+                    ));
                     Matcher m = Pattern.compile("^\\s*\\/\\/\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE)
                             .matcher(sourceCode);
                     while (m.find()) {
@@ -266,8 +268,9 @@ public class SandboxManager implements AutoCloseable {
                                     return result;
                                 }
                             } else {
+                                errorScriptLine = OptionalInt.of(sourceCode.substring(0, m.start()).split("[\n\r]+").length);
                                 throw new Exception("Import failed at line "
-                                        + sourceCode.substring(0, m.start()).split("[\n\r]+").length
+                                        + errorScriptLine.getAsInt()
                                         + ": The script "
                                         + importScriptCorePath.substring(Config.getPathAppBase(proteu).length()) 
                                         + " was not found."
@@ -277,10 +280,10 @@ public class SandboxManager implements AutoCloseable {
                     }
                     scriptable = Optional.ofNullable(getSandbox(scriptExtension));
                     if (!scriptable.isPresent()) {
-                        throw new Exception("This script "+ fileName +"."+ scriptExtension +" is not supported.");
+                        throw new Exception("This script "+ file +"."+ scriptExtension +" is not supported.");
                     } else {
                         scriptablesRunning.add(scriptable.get());
-                        return runScriptSandbox(script, scriptable.get());
+                        return runScriptSandbox(scriptSourceCode.get(), scriptable.get());
                     }
                 } else {
                     return ScriptResult.withSuccess();
@@ -328,7 +331,7 @@ public class SandboxManager implements AutoCloseable {
                     "\n# " + EmojiParser.parseToUnicode(":boom:") +" SCRIPT LOADING" +
                     "\n#" +
                     "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") +" "+ path +
-                    "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ (scriptPath == null ? fileName : scriptPath.substring(path.length())) + (lineNumber > 0 ? ":"+ lineNumber : "") +
+                    "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ (scriptPath == null ? file : scriptPath.substring(path.length())) + (lineNumber > 0 ? ":"+ lineNumber : "") +
                     "\n#\n#    " +
                     detail
                     +"\n#";
@@ -340,6 +343,17 @@ public class SandboxManager implements AutoCloseable {
                 error.setLogFatal(true);
                 logger.fatal(message);
             }
+            final var finalPath = path;
+            final var finalFile = file;
+            onError(
+                scriptSourceCode.orElseGet(
+                    () -> new ScriptSourceCode(null, finalPath, finalFile, null, true)
+                ), 
+                message, 
+                errorScriptLine.orElseGet(() -> -1),
+                -1,
+                t
+            );
             return ScriptResult.withError(error);
         } finally {
             if (scriptPath != null) {
