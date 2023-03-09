@@ -26,6 +26,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.SourceSection;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.SafePath;
@@ -336,7 +337,8 @@ public class SandboxManager implements AutoCloseable {
                 //PolyglotException e = (PolyglotException)t;
                 //detail += "\n    "+  e.toString();
             }
-            String message = "\n#" +
+            String message = "\n"+
+                    "\n#" +
                     "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu) +
                     "\n#" +
                     "\n# " + EmojiParser.parseToUnicode(":boom:") +" SCRIPT LOADING" +
@@ -345,7 +347,8 @@ public class SandboxManager implements AutoCloseable {
                     "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ (scriptPath == null ? file : scriptPath.substring(path.length())) + (lineNumber > 0 ? ":"+ lineNumber : "") +
                     "\n#\n#    " +
                     detail
-                    +"\n#";
+                    +"\n#"
+                    +"\n";
             logger.debug(message, t);
             ScriptError error = new ScriptError(proteu, hili, message);
             if (t instanceof IOException) {
@@ -404,8 +407,13 @@ public class SandboxManager implements AutoCloseable {
             }
             int errorLineNumber = -1;
             int errorColumnNumber = -1;
-            if (throwable instanceof ScriptException) {
-                ScriptException scriptException = (ScriptException) throwable;
+            if (throwable instanceof PolyglotException) {
+                PolyglotException scriptException = (PolyglotException)throwable;
+                SourceSection sourceSection = scriptException.getSourceLocation();
+                errorLineNumber = sourceSection.getStartLine();
+                errorColumnNumber = sourceSection.getStartColumn();
+            } else if (throwable instanceof ScriptException) {
+                ScriptException scriptException = (ScriptException)throwable;
                 errorLineNumber = scriptException.getLineNumber();
                 errorColumnNumber = scriptException.getColumnNumber();
             }
