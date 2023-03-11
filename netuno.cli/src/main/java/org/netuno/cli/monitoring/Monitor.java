@@ -55,7 +55,7 @@ public class Monitor implements Runnable {
         if (GLOBAL_SECRET == null) {
             GLOBAL_SECRET = new RandomString().nextString();
         }
-        this.server = server;
+        Monitor.server = server;
     }
 
     public static String getGlobalSecret() {
@@ -94,8 +94,6 @@ public class Monitor implements Runnable {
                 double cpuLoadProcess = entry.getValues("cpu").getValues("load").getDouble("process");
                 
                 Values memory = entry.getValues("memory");
-                
-                double cpuLoadProcessBefore = entryBefore.getValues("cpu").getValues("load").getDouble("process");
                 
                 Values memorySystem = memory.getValues("system");
                 long memorySystemTotal = memorySystem.getLong("total");
