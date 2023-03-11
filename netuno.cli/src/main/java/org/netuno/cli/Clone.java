@@ -21,7 +21,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.netuno.cli.setup.GraalVMSetup;
-import org.netuno.cli.setup.Install;
+import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.RunCommand;
 import org.netuno.psamata.Values;
@@ -40,8 +40,6 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static org.fusesource.jansi.Ansi.ansi;
-
 /**
  * Clone the applications.
  * 
@@ -59,7 +57,7 @@ public class Clone implements MainArg {
 
     public void run() throws IOException, SQLException, ClassNotFoundException, ScriptException {
         GraalVMSetup.checkAndSetup();
-        if (!Config.runConfigScript()) {
+        if (!ConfigScript.run()) {
             return;
         }
         System.err.println();
