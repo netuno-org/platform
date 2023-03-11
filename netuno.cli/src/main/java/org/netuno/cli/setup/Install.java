@@ -25,6 +25,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.netuno.cli.Config;
 import org.netuno.cli.MainArg;
 import org.netuno.cli.migrate.h2.H2DatabaseMigration;
+import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.net.Download;
@@ -160,6 +161,8 @@ public class Install implements MainArg {
             GraalVMSetup.execute(path, graalVMVersion);
         }
 
+        ConfigScript.loadEnv();
+        
         H2DatabaseMigration.exportationVersion1("*");
 
         int installNetuno = 0;
