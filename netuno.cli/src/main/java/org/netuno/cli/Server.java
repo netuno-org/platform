@@ -28,6 +28,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.netuno.cli.utils.ConfigScript;
 
 /*
 import java.net.UnknownHostException;
@@ -128,12 +129,39 @@ public class Server implements MainArg {
     private Values appConfig = null;
     
     public void run() {
+        boolean nameConfigOverride = this.name.equals(Config.getName());
+        boolean hostConfigOverride = this.host.equals(Config.getHost());
+        boolean portConfigOverride = this.port == Config.getPort();
+        boolean appsHomeConfigOverride = this.appsHome.equals(Config.getAppsHome());
+        boolean coreHomeConfigOverride = this.coreHome.equals(Config.getCoreHome());
+        boolean webHomeConfigOverride = this.webHome.equals(Config.getWebHome());
+        GraalVMSetup.checkAndSetup();
+        if (!ConfigScript.run()) {
+            return;
+        }
+        if (nameConfigOverride) {
+            this.name = Config.getName();
+        }
+        if (hostConfigOverride) {
+            this.host = Config.getHost();
+        }
+        if (portConfigOverride) {
+            this.port = Config.getPort();
+        }
+        if (appsHomeConfigOverride) {
+            this.appsHome = Config.getAppsHome();
+        }
+        if (coreHomeConfigOverride) {
+            this.appsHome = Config.getAppsHome();
+        }
+        if (webHomeConfigOverride) {
+            this.webHome = Config.getWebHome();
+        }
         try {
-            GraalVMSetup.checkAndSetup();
-            if (!Config.runConfigScript()) {
-                return;
-            }
             Config.setName(name);
+            
+            Config.setHost(host);
+            Config.setPort(port);
             
             Config.setWebHome(webHome);
             
