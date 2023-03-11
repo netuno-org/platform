@@ -80,8 +80,8 @@ public class License implements MainArg {
                     System.err.println(OS.consoleOutput("@|red Invalid license length...|@") );
                     System.err.println();
                 }
-                this.setLicense(newLicense);
-                this.save();
+                License.setLicense(newLicense);
+                License.save();
                 System.out.println();
                 System.out.println();
                 System.out.println();
