@@ -18,6 +18,7 @@
 package org.netuno.cli;
 
 import org.netuno.cli.setup.GraalVMSetup;
+import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
@@ -407,7 +408,7 @@ public class App implements MainArg {
 
     public void run() throws Exception {
         GraalVMSetup.checkAndSetup();
-        if (!Config.runConfigScript()) {
+        if (!ConfigScript.run()) {
             return;
         }
         System.err.println();
