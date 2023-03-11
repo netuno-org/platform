@@ -17,10 +17,9 @@
 
 package org.netuno.cli.migrate;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.netuno.cli.MainArg;
 import org.netuno.cli.migrate.h2.H2DatabaseMigration;
+import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
 import picocli.CommandLine;
 
@@ -33,7 +32,6 @@ import java.util.Scanner;
  */
 @CommandLine.Command(name = "migrate", helpCommand = true, description = "Tools to migrating operations.")
 public class Migrate implements MainArg {
-    private static Logger logger = LogManager.getLogger(Migrate.class);
     @CommandLine.Option(names = { "h2" }, paramLabel = "export-v1|import-v2|clean", description = {
             "Options available:",
             "export-v1: Exports all H2 databases (version 1.4+) used by Apps to SQL file; each SQL file is saved inside the same folder of the database original file.",
@@ -54,6 +52,7 @@ public class Migrate implements MainArg {
         System.out.println(OS.consoleOutput("@|yellow Migration Tools|@ "));
         System.err.println();
         System.err.println();
+        ConfigScript.loadEnv();
         if (h2.equalsIgnoreCase("export-v1")) {
             H2DatabaseMigration.exportationVersion1(app);
         } else if (h2.equalsIgnoreCase("import-v2")) {
