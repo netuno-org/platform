@@ -414,11 +414,11 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Obtém o objeto original associado a chave convertido para o tipo da classe especificada.",
+                description = "Obtém o objeto original associado a chave, mas convertido para o tipo da classe especificada.",
                 howToUse = {}),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Gets the original object associated with the cast key for the specified class type.",
+                description = "Gets the original object associated with the key, but cast for the specified class type.",
                 howToUse = {}),
         },
         parameters = {
@@ -426,11 +426,11 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
                     name = "chave",
-                    description = "Chave para obter o objeto para associado."
+                    description = "Chave para obter o objeto associado."
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Key to get the object to associate."
+                    description = "Key to get the associated object."
                 )
             }),
             @ParameterDoc(name = "type", translations = {
@@ -464,10 +464,91 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o objeto associado à chave e converte para Valores (Dicionário ou Lista).",
+                howToUse = {}),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the object associated with the key and then casts to Values (Dictionary or List).",
+                howToUse = {}),
+        },
+        parameters = {
+            @ParameterDoc(name = "key", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    name = "chave",
+                    description = "A chave para obter o objeto associado."
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The key to get the associated object."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto convertido para Values."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Object converted to Values."
+            )
+        }
+    )
     public Values asValues(String key) {
         return getValues(key);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o objeto associado à chave e converte para Valores (Dicionário ou Lista).",
+                howToUse = {}),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the object associated with the key and then casts to Values (Dictionary or List).",
+                howToUse = {}),
+        },
+        parameters = {
+            @ParameterDoc(name = "key", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    name = "chave",
+                    description = "A chave para obter o objeto associado."
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The key to get the associated object."
+                )
+            }),
+            @ParameterDoc(name = "defaultValue", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    name = "valorPadrao",
+                    description = "Caso não consiga obter o valor como um objeto em Values então retorna este valor padrão como alternativa."
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "If it fails to get the value as an object in Values then it returns this default value instead."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto convertido para Values."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Object converted to Values."
+            )
+        }
+    )
     public Values asValues(String key, Object defaultValue) {
         return getValues(key, defaultValue);
     }
