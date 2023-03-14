@@ -26,7 +26,7 @@ import java.util.*;
  * Manage GraalVM script executions.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class GraalRunner {
+public class GraalRunner implements AutoCloseable {
     private static boolean graal = false;
     
     private static Engine engine = null;
@@ -137,7 +137,7 @@ public class GraalRunner {
         }
     }
     
-    public void close() {
+    public void close() throws Exception {
         if (contexts != null) {
             for (Context context : contexts) {
                 context.close(true);
