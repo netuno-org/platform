@@ -211,8 +211,7 @@ public class HTTP implements AutoCloseable {
     	
 	    for (int i = 0; i < mimeMultipart.getCount(); i++) {
 	    	BodyPart bodyPart = mimeMultipart.getBodyPart(i);
-	    	@SuppressWarnings("unchecked")
-			Enumeration<Header> enumerationHeaders = bodyPart.getAllHeaders();
+	    	Enumeration<Header> enumerationHeaders = bodyPart.getAllHeaders();
 	    	Values fieldContentDisposition = null;
 	    	String fieldContentType = null;
 	    	while (enumerationHeaders.hasMoreElements()) {

@@ -87,18 +87,18 @@ public class Run implements AutoCloseable {
                 		proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, faros);
                 	}
                 } else {
-                    @SuppressWarnings("rawtypes")
-                    Class aClass = null;
+                    Class<?> aClass = null;
                     String classPath = "";
                     if (new File(file).exists()) {
                         File dirPublic = new File(Config.getPublic());
                         File dirBuild = new File(Config.getBuild());
-                        ClassLoader loader = new URLClassLoader(new URL[]{dirPublic.toURI().toURL(), dirBuild.toURI().toURL()});
-                        classPath = file.replace('/', '.');
-                        aClass = loader.loadClass(classPath);
-                        dirPublic = null;
-                        dirBuild = null;
-                        loader = null;
+                        try (URLClassLoader loader = new URLClassLoader(new URL[]{dirPublic.toURI().toURL(), dirBuild.toURI().toURL()})) {
+                            classPath = file.replace('/', '.');
+                            aClass = loader.loadClass(classPath);
+                        } finally {
+                            dirPublic = null;
+                            dirBuild = null;
+                        }
                     } else {
                         classPath = file.substring(1).replace('/', '.');
                         aClass = Class.forName(classPath);

@@ -736,8 +736,7 @@ public class Proteu {
     private boolean loadSession() {
         if (isEnterprise()) {
             HttpSession httpSession = getServletRequest().getSession();
-            @SuppressWarnings("unchecked")
-			Enumeration<String> httpSessionAttributeNames = httpSession.getAttributeNames();
+            Enumeration<String> httpSessionAttributeNames = httpSession.getAttributeNames();
             while (httpSessionAttributeNames.hasMoreElements()) {
                 String name = httpSessionAttributeNames.nextElement();
                 if (name.equals("netuno")) {
@@ -1133,12 +1132,12 @@ public class Proteu {
         if (o instanceof Values) {
             outputJSON((Values)o);
         } else if (o instanceof Map) {
-            outputJSON(new Values((Map) o).toJSON());
+            outputJSON(new Values((Map<?, ?>) o).toJSON());
         } else if (o instanceof List) {
             List<Values> list = new ArrayList<>();
-            for (Object item : (List)o) {
+            for (Object item : (List<?>)o) {
                 if (item instanceof Map) {
-                    list.add(new Values((Map)item));
+                    list.add(new Values((Map<?, ?>)item));
                 } else if (item instanceof Values) {
                     list.add((Values)o);
                 }
@@ -1211,15 +1210,15 @@ public class Proteu {
         return new Values(o);
     }
     
-    public Values newValues(Map m) {
+    public Values newValues(Map<?, ?> m) {
         return new Values(m);
     }
 
-    public Values newValues(List l) {
+    public Values newValues(List<?> l) {
         return new Values(l);
     }
 
-    public Values newValues(Iterable i) {
+    public Values newValues(Iterable<?> i) {
         return new Values(i);
     }
 
