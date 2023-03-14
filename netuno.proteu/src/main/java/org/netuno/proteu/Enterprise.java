@@ -145,13 +145,11 @@ public class Enterprise extends HttpServlet {
         }
 
         try {
-            List<String> packagesScan = (List<String>)Class.forName("org.netuno.cli.Config")
-                    .getMethod("getPackagesScan")
-                    .invoke(
-                            null
-                    );
+            Method method = Class.forName("org.netuno.cli.Config")
+                    .getMethod("getPackagesScan");
+            List<?> packagesScan = (List<?>)method.invoke(null);
             Config.getPackagesScan().addAll(
-                    packagesScan
+                packagesScan.stream().map(o -> o.toString()).toList()
             );
         } catch (Throwable e) {
             logger.error("Loading Netuno Server packages white list: "+ e.getMessage());
@@ -168,8 +166,8 @@ public class Enterprise extends HttpServlet {
             for (String _initClassPath : initClasses.getNames()) {
                 initClassPath = _initClassPath;
                 logger.info("Loading init classes in "+ initClassPath);
-                Class clazz = Class.forName(initClassPath);
-                Method init = clazz.getMethod("onInitialize", null);
+                Class<?> clazz = Class.forName(initClassPath);
+                Method init = clazz.getMethod("onInitialize");
                 init.invoke(null);
                 logger.info("Init class "+ clazz.getName() +" invoked.");
             }
@@ -196,12 +194,12 @@ public class Enterprise extends HttpServlet {
             for (String _event : eventsClasses.getNames()) {
                 eventsClassPath = _event;
                 logger.info("Loading events in "+ eventsClassPath);
-                Class clazz = Class.forName(eventsClassPath);
+                Class<?> clazz = Class.forName(eventsClassPath);
                 logger.info("Events class "+ clazz.getName() +" loaded.");
                 Config.getEvents().add(
                         ((Events)clazz
-                                .getConstructor(null)
-                                .newInstance(null))
+                                .getConstructor()
+                                .newInstance())
                 );
             }
             Collections.sort(
@@ -217,11 +215,11 @@ public class Enterprise extends HttpServlet {
             for (String _enterpriseEvent : enterpriseEventsClasses.getNames()) {
                 enterpriseEventsClassPath = _enterpriseEvent;
                 logger.info("Loading enterprise events "+ enterpriseEventsClassPath);
-                Class clazz = Class.forName(enterpriseEventsClassPath);
+                Class<?> clazz = Class.forName(enterpriseEventsClassPath);
                 getEvents().add(
                         ((EnterpriseEvents)clazz
-                                .getConstructor(null)
-                                .newInstance(null))
+                                .getConstructor()
+                                .newInstance())
                 );
             }
         } catch (Throwable e) {
@@ -331,7 +329,7 @@ public class Enterprise extends HttpServlet {
                 return;
             }
             out = null;
-            Class farosClass = Class.forName(Config.getFarosClassPath());
+            Class<?> farosClass = Class.forName(Config.getFarosClassPath());
             faros = farosClass.getConstructor(Proteu.class).newInstance(proteu);
             try {
                 for (EnterpriseEvents enterpriseEvents : getEvents()) {
@@ -587,17 +585,15 @@ public class Enterprise extends HttpServlet {
         if (scriptPath != null && proteu != null) {
             if (GraalRunner.isGraal() && scriptPath.toLowerCase().endsWith(".js")) {
                 String script = org.netuno.psamata.io.InputStream.readFromFile(scriptPath);
-                GraalRunner graalRunner = null;
-                try {
-                    graalRunner = new GraalRunner("js");
+                try (GraalRunner graalRunner = new GraalRunner("js")) {
                     graalRunner
                         .set("js", "_proteu", proteu)
                         .set("js", "_servlet", this)
                         .set("js", "_request", request)
                         .set("js", "_response", response)
                         .eval("js", script);
-                } finally {
-                    graalRunner.close();
+                } catch (Exception e) {
+                    throw new ScriptException(e);
                 }
             } else {
                 scriptRunner.getBindings().put("_proteu", proteu);
