@@ -167,7 +167,7 @@ public class Schema extends WebMaster {
                 JsonSchema schema = jsonValidationService.readSchema(loadSchemaAsInputStream(pathSchema));
                 ProblemHandler handler = jsonValidationService.createProblemPrinter(this::validateSchemaOutProblem);
                 String outContent = new String(outStream.toByteArray());
-                try ( JsonReader reader = jsonValidationService.createReader(new StringReader(outContent), schema, handler)) {
+                try (JsonReader reader = jsonValidationService.createReader(new StringReader(outContent), schema, handler)) {
                     JsonValue value = reader.readValue();
                     if (validateSchemaOutProblems.isEmpty()) {
                         return true;
@@ -180,6 +180,16 @@ public class Schema extends WebMaster {
                             + "\n#"
                             + "\n"
                             + validateSchemaOutProblems + "\n#\n");
+                    return false;
+                } catch (Exception e) {
+                    logger.warn("\n"
+                            + "\n#"
+                            + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(getProteu())
+                            + "\n#"
+                            + "\n# Invalid JSON output " + getProteu().getResponseHeaderStatus().getCode() + " to service " + service.getPath() + ""
+                            + "\n#"
+                            + "\n"
+                            + outContent + "\n#\n");
                     return false;
                 }
             } catch (Exception e) {
