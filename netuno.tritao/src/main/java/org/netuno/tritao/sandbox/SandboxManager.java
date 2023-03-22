@@ -410,8 +410,10 @@ public class SandboxManager implements AutoCloseable {
             if (throwable instanceof PolyglotException) {
                 PolyglotException scriptException = (PolyglotException)throwable;
                 SourceSection sourceSection = scriptException.getSourceLocation();
-                errorLineNumber = sourceSection.getStartLine();
-                errorColumnNumber = sourceSection.getStartColumn();
+                if (sourceSection != null) {
+                    errorLineNumber = sourceSection.getStartLine();
+                    errorColumnNumber = sourceSection.getStartColumn();
+                }
             } else if (throwable instanceof ScriptException) {
                 ScriptException scriptException = (ScriptException)throwable;
                 errorLineNumber = scriptException.getLineNumber();
