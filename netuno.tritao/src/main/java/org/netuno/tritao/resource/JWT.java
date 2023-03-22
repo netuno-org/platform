@@ -83,6 +83,11 @@ public class JWT extends ResourceBase {
     private void beforeEnvironment() {
         getProteu().getConfig().set("_jwt", getProteu().getConfig().getValues("_app:config").getValues("jwt"));
     }
+    
+    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    private void beforeServiceConfiguration() {
+        init();
+    }
 
     public JWT init() throws ResourceException {
         Values config = getProteu().getConfig().asValues("_jwt");
