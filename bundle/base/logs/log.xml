@@ -13,7 +13,7 @@
             <AppenderRef ref="file"/>
             <AppenderRef ref="STDOUT"/>
         </Root>
-        <Logger name="org.netuno" level="trace"></Logger>
+        <Logger name="org.netuno" level="warn"></Logger>
         <Logger name="org.netuno.tritao.resource.Logger" level="trace"></Logger>
     </Loggers>
 </Configuration>
