@@ -158,7 +158,8 @@ netuno.loadDevLinks = (container)->
     if element.is("[netuno-dev-content]")
       container = $(element.attr("href"))
       $("#containers > div").hide()
-      if container.length > 0 and container.is(":empty")
+      if (container.length > 0 and container.is(":empty")) or element.is("[netuno-dev-reload]")
+        container.empty()
         $.ajax
           url: element.attr('netuno-dev-content'),
           success: (response) ->

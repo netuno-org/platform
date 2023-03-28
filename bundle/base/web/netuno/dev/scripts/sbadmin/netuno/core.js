@@ -205,7 +205,8 @@
       if (element.is("[netuno-dev-content]")) {
         container = $(element.attr("href"));
         $("#containers > div").hide();
-        if (container.length > 0 && container.is(":empty")) {
+        if ((container.length > 0 && container.is(":empty")) || element.is("[netuno-dev-reload]")) {
+          container.empty();
           $.ajax({
             url: element.attr('netuno-dev-content'),
             success: function(response) {
