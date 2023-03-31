@@ -74,6 +74,7 @@ public class Service {
     public String path = "";
     public Boolean generatingOpenAPIDefinition = false;
     public Boolean allowed = false;
+    public Boolean denied = false;
     public Boolean cancelled = false;
     public Values errorData = null;
     
@@ -131,10 +132,12 @@ public class Service {
 
     public void allow() {
         this.allowed = true;
+        this.denied = false;
     }
 
     public void deny() {
         this.allowed = false;
+        this.denied = true;
     }
 
     public boolean isAllowed() {
@@ -142,7 +145,7 @@ public class Service {
     }
 
     public boolean isDenied() {
-        return this.allowed == false;
+        return this.denied;
     }
 
     @IgnoreDoc
@@ -194,27 +197,24 @@ public class Service {
                 proteu.responseHTTPError(Proteu.HTTPStatus.BadRequest400, hili);
                 return;
             }
-            if (service.getPath().equalsIgnoreCase("_auth")) {
+            if (service.getPath().equalsIgnoreCase("_auth") || Auth.isAuthenticated(proteu, hili)) {
                 service.allow();
             }
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
             if (service.core("_service_config")) {
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
-                if (!service.wasCancelled()
-                        && !service.isAllowed()
-                        && !Auth.isAuthenticated(proteu, hili)) {
-                    if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
-                        proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
-                    }
-                    return;
-                }
                 if (service.wasCancelled()) {
                     if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
                         proteu.responseHTTPError(Proteu.HTTPStatus.ServiceUnavailable503, hili);
                     }
                     return;
+                } else if (service.isDenied() || !service.isAllowed()) {
+                    if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
+                        proteu.responseHTTPError(Proteu.HTTPStatus.Unauthorized401, hili);
+                    }
+                    return;
                 }
-                JWT jwt = new JWT(proteu, hili);
+                JWT jwt = hili.resource().get(JWT.class);
                 if (!jwt.token().isEmpty() && !jwt.check()) {
                     proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
                     return;
@@ -269,10 +269,12 @@ public class Service {
         proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
         logger.warn("\n"
                 + "\n#"
-                + "\n# Core script not found: "
+                + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
                 + "\n#"
-                + "\n# " + Config.getPathAppCore(proteu)
-                + "\n# " + file
+                + "\n# " + EmojiParser.parseToUnicode(":compass:") + " The core script was not found at: "
+                + "\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") + " " + Config.getPathAppCore(proteu)
+                + "\n# " + EmojiParser.parseToUnicode(":stop_sign:") + " " + file
                 + "\n#"
                 + "\n"
         );
@@ -298,10 +300,10 @@ public class Service {
                         + "\n#"
                         + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
                         + "\n#"
-                        + "\n# " + EmojiParser.parseToUnicode(":compass:") + " Service not found for " + proteu.getRequestHeader().getString("Method").toUpperCase() + " method: "
+                        + "\n# " + EmojiParser.parseToUnicode(":compass:") + " Service script was not found for the " + proteu.getRequestHeader().getString("Method").toUpperCase() + " method: "
                         + "\n#"
-                        + "\n# " + Config.getPathAppServices(proteu)
-                        + "\n# " + file
+                        + "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") + " " + Config.getPathAppServices(proteu)
+                        + "\n# " + EmojiParser.parseToUnicode(":stop_sign:") + " " + file
                         + "\n#"
                         + "\n"
                 );
