@@ -54,6 +54,7 @@ public class User {
 	            }
 	        	json = jsonObject.toString();
 	        } else {
+				boolean noDevs = proteu.getRequestAll().getBoolean("no_devs");
 				boolean allowAll = proteu.getRequestAll().getBoolean("allow_all");
 		        List<Values> rsQuery = Config.getDataBaseBuilder(proteu).selectUserSearch(proteu.getRequestAll().getString("q"));
 		        JSONArray jsonArray = new JSONArray();
@@ -64,6 +65,9 @@ public class User {
 	            java.util.Arrays.sort(users);
 	            java.util.Arrays.sort(groups);
 		        for (Values queryRow : rsQuery) {
+					if (noDevs && queryRow.getInt("netuno_group") == -2) {
+						continue;
+					}
 		        	String id = queryRow.getString("uid");
 		        	if (queryRow.getString("id").equals(Auth.getUser(proteu, hili, Auth.Type.SESSION).getString("id"))) {
 		        		if (!proteu.getRequestAll().getBoolean("allow_user_logged")) {
