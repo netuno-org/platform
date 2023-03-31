@@ -51,20 +51,29 @@ public class Group {
 	            }
 	        	json = jsonObject.toString();
 	        } else {
+				boolean noDevs = proteu.getRequestAll().getBoolean("no_devs");
 				boolean allowAll = proteu.getRequestAll().getBoolean("allow_all");
 		        List<Values> rsQuery = Config.getDataBaseBuilder(proteu).selectGroupSearch(proteu.getRequestAll().getString("q"));
 		        JSONArray jsonArray = new JSONArray();
 	            String groupsMode = proteu.getRequestAll().getString("groups_mode");
 	            String[] groups = proteu.getRequestAll().getString("groups").split(",");
 		        for (Values queryRow : rsQuery) {
+					if (noDevs && queryRow.getInt("netuno_group") == -2) {
+						continue;
+					}
 		        	if (groupsMode.equals("exclude")
-		        			&& Arrays.binarySearch(groups, queryRow.getString("group_name")) > -1) {
+		        			&& Arrays.binarySearch(groups, queryRow.getString("name")) > -1) {
 			        	continue;
 		        	} else if (groupsMode.equals("only")
-		        			&& Arrays.binarySearch(groups, queryRow.getString("group_name")) < 0) {
+		        			&& Arrays.binarySearch(groups, queryRow.getString("name")) < 0) {
 			        	continue;
 		        	}
 		        	String id = queryRow.getString("uid");
+					if (queryRow.getString("id").equals(Auth.getGroup(proteu, hili, Auth.Type.SESSION).getString("id"))) {
+		        		if (!proteu.getRequestAll().getBoolean("allow_group_logged")) {
+		        			continue;
+		        		}
+		        	}
 		        	String label = queryRow.getHTMLEncode("name");
 					JSONObject jsonObject = new JSONObject();
 		            jsonObject.put("id", id);
