@@ -196,7 +196,9 @@ public class CoreBusiness extends Base {
     }
 
     public List<Values> selectUserSearch(String term) {
-        String select = " *, (select netuno_group.name from netuno_group where netuno_group.id = netuno_user.group_id) as group_name ";
+        String select = " *, "
+            + "(select netuno_group.name from netuno_group where netuno_group.id = netuno_user.group_id) as group_name, "
+            + "(select netuno_group.netuno_group from netuno_group where netuno_group.id = netuno_user.group_id) as netuno_group ";
         String from = " netuno_user ";
         String where = "where 1 = 1 ";
         if (!term.isEmpty()) {
