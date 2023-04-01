@@ -84,8 +84,8 @@
         <div class="col-md-6">
           <div class="form-group">
             <label for="fieldReportDesign__{data=table.name}_type">_{&lang=netuno.dev.reportdesign.label.type}</label>
-            <select class="form-control" id="fieldReportDesign__{data=table.name}_type" name="type" validation="notzero">
-              <option value="0"></option>
+            <select required class="form-control" id="fieldReportDesign__{data=table.name}_type" name="type">
+              <option value=""></option>
               _{data=type.items}
             </select>
           </div>
@@ -222,10 +222,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">_{&data=displayname}</h4>
+        <h4 class="modal-title">_{&data=displayname.value}</h4>
       </div>
       <div class="modal-body">
-        <p>_{&lang=netuno.dev.reportdesign.delete.confirm.text}</p>
+        <p>_{&lang=netuno.dev.reportdesign.confirm.delete.text}</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.no}</button>
@@ -275,36 +275,52 @@
     });
     netuno.componentConfig.load("report", "_{request=netuno_table_uid}");
     $('#buttonReportDesign__{data=table.name}_new,#buttonReportDesign__{data=table.name}_clear').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#fieldReportDesign__{data=table.name}_execute').val('new');
       $('#fieldReportDesign__{data=table.name}_uid').val('');
       if (!netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false)) {
+        that.prop('disabled', false);
         $('#fieldReportDesign__{data=table.name}_execute').val('');
       }
     });
     $('#buttonReportDesign__{data=table.name}_save').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#fieldReportDesign__{data=table.name}_execute').val('save');
       if (!netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', true)) {
+        that.prop('disabled', false);
         $('#fieldReportDesign__{data=table.name}_execute').val('');
       }
     });
     $('#buttonReportDesign__{data=table.name}_delete_yes').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#fieldReportDesign__{data=table.name}_execute').val('delete');
+      $('#modalReportDesign__{data=table.name}_delete').modal('hide');
       if (!netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false)) {
+        that.prop('disabled', false);
         $('#fieldReportDesign__{data=table.name}_execute').val('');
       }
     });
     $('#buttonReportDesign__{data=table.name}_copy').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#fieldReportDesign__{data=table.name}_execute').val('new');
       $('#fieldReportDesign__{data=table.name}_uid').val('');
-      netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false, function () {
+      if (!netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false, function () {
+        that.prop('disabled', false);
         $('#fieldReportDesign__{data=table.name}_execute').val('');
         netuno.componentConfig.link.select('_{request=netuno_table_uid}', function (field, uid) {
-            $('#fieldReportDesign__{data=table.name}_execute').val('copy');
-            $('#fieldReportDesign__{data=table.name}_copy').val(uid);
-            $('#fieldReportDesign__{data=table.name}_uid').val('');
-            netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false);
+          $('#fieldReportDesign__{data=table.name}_execute').val('copy');
+          $('#fieldReportDesign__{data=table.name}_copy').val(uid);
+          $('#fieldReportDesign__{data=table.name}_uid').val('');
+          netuno.componentConfig.link.close();
+          netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false);
         });
-      });
+      })) {
+        that.prop('disabled', false);
+      }
     });
     netuno.loadValidationDev('reportDesign__{data=table.uid}');
     $("#fieldReportDesign__{data=table.name}_description").summernote({
