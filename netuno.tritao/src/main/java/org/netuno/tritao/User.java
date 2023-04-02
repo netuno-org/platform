@@ -231,7 +231,7 @@ public class User {
         	data.set("user.id.value", proteu.getRequestAll().getString("id"));
 			data.set("user.uid.value", proteu.getRequestAll().getString("uid"));
         	data.set("user.name.value", proteu.getRequestAll().getString("name"));
-        	data.set("user.username.value", proteu.getRequestAll().getString("user"));
+        	data.set("user.username.value", proteu.getRequestAll().getString("username"));
 			data.set("user.mail.value", proteu.getRequestAll().getString("mail"));
         	data.set("user.group_id.value", proteu.getRequestAll().getString("group_id"));
 			data.set("user.group_uid.value", proteu.getRequestAll().getString("group_uid"));
