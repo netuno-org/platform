@@ -1120,6 +1120,10 @@ public class Proteu {
         return responseHeaderStatus;
     }
 
+    public boolean isResponseHeaderStatusOk() {
+        return responseHeaderStatus.getCode() >= 200 && responseHeaderStatus.getCode() < 299;
+    }
+
     public void responseHTTPError(int code, Object faros) {
         responseHTTPError(HTTPStatus.fromCode(code), faros);
     }
