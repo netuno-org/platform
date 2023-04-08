@@ -5,7 +5,7 @@
     "debug": false,
     "newestOnTop": true,
     "progressBar": false,
-    "positionClass": "toast-top-center",
+    "positionClass": "netuno-toast-top-center",
     "preventDuplicates": true,
     "onclick": null,
     "showDuration": "300",
@@ -49,13 +49,13 @@
     navMenuHtml = `<li><a netuno-navigation-dashboard href=\"#netuno_dashboard\"><i class=\"fa fa-fw fa-dashboard\"></i> ${netuno.lang['menu.dashboard']}</a></li>`;
     containersHtml = '';
     buildMenu = function(type, parentUId, items, level) {
-      var expand, item, j, len, menuHtml;
+      var expand, item, k, len, menuHtml;
       menuHtml = '';
       if (level > 0) {
         menuHtml += '<ul>';
       }
-      for (j = 0, len = items.length; j < len; j++) {
-        item = items[j];
+      for (k = 0, len = items.length; k < len; k++) {
+        item = items[k];
         expand = "";
         if (item.items.length > 0) {
           expand = " data-toggle=";
@@ -228,6 +228,7 @@
         "processing": false,
         "serverSide": true,
         "destroy": true,
+        "order": container.data().sorting ? container.data().sorting : [],
         "displayStart": container.data().pageNumber > 0 ? container.data().pageNumber * 25 : null,
         "ajax": {
           "url": `${netuno.config.urlAdmin}Search${netuno.config.extension}?netuno_action=datasource&` + containerSearchForm.serialize(),
@@ -270,7 +271,8 @@
                 container.data({
                   pageNumber: tr.data().pageNumber,
                   pageLength: tr.data().pageLength,
-                  rowIndex: tr.data().rowIndex
+                  rowIndex: tr.data().rowIndex,
+                  sorting: table.dataTableSettings[0].aaSorting
                 });
                 return netuno.loadFormEdit(table, uid);
               }
@@ -640,7 +642,7 @@
 
   netuno.mask = function(container) {
     return container.find('[data-mask]').each(function() {
-      var decimalsMultiple, i, j, k, l, maskDecimals, maskDecimalsLen, o, ref, ref1, ref2, ref3, val, valFloat, value;
+      var decimalsMultiple, i, j, k, l, maskDecimals, maskDecimalsLen, n, o, ref, ref1, ref2, ref3, val, valFloat, value;
       o = $(this);
       if (o.attr('data-mask') !== null && o.attr('data-mask') !== '') {
         if (o.attr('data-type') === 'textfloat') {
@@ -649,7 +651,7 @@
           if (maskDecimals != null) {
             maskDecimalsLen = maskDecimals[1].length;
             decimalsMultiple = 10;
-            for (i = j = 1, ref = maskDecimalsLen - 1; (1 <= ref ? j <= ref : j >= ref); i = 1 <= ref ? ++j : --j) {
+            for (i = k = 1, ref = maskDecimalsLen - 1; (1 <= ref ? k <= ref : k >= ref); i = 1 <= ref ? ++k : --k) {
               decimalsMultiple *= 10;
             }
             o.attr('data-mask-clean-value', value);
@@ -657,8 +659,8 @@
               valFloat = parseFloat(value);
               valFloat = Math.round(valFloat * decimalsMultiple) / decimalsMultiple;
               val = `${valFloat}`;
-              for (i = k = ref1 = val.length - val.indexOf('.') - 1, ref2 = maskDecimalsLen; (ref1 <= ref2 ? k <= ref2 : k >= ref2); i = ref1 <= ref2 ? ++k : --k) {
-                if (i !== maskDecimalsLen) {
+              for (j = l = ref1 = val.length - (val.indexOf('.') > 0 ? val.indexOf('.') + 1 : val.length), ref2 = maskDecimalsLen; (ref1 <= ref2 ? l <= ref2 : l >= ref2); j = ref1 <= ref2 ? ++l : --l) {
+                if (j < maskDecimalsLen) {
                   val += '0';
                 }
               }
@@ -669,7 +671,7 @@
               }
             } else if (value !== '') {
               val = value;
-              for (i = l = 1, ref3 = maskDecimalsLen; (1 <= ref3 ? l <= ref3 : l >= ref3); i = 1 <= ref3 ? ++l : --l) {
+              for (j = n = 1, ref3 = maskDecimalsLen; (1 <= ref3 ? n <= ref3 : n >= ref3); j = 1 <= ref3 ? ++n : --n) {
                 val += '0';
               }
               if (o.is(':input')) {
@@ -825,13 +827,13 @@
   };
 
   netuno.modal.hide = function(modal) {
-    var i, j, ref;
+    var i, k, ref;
     if (!(modal instanceof jQuery)) {
       modal = $(modal);
     }
     modal.trigger('netuno:modal:hide');
     modal.hide();
-    for (i = j = 0, ref = netuno.modal.stack.length; (0 <= ref ? j < ref : j > ref); i = 0 <= ref ? ++j : --j) {
+    for (i = k = 0, ref = netuno.modal.stack.length; (0 <= ref ? k < ref : k > ref); i = 0 <= ref ? ++k : --k) {
       if (netuno.modal.stack[i] === modal) {
         netuno.modal.stack.splice(i, 1);
       }
@@ -858,7 +860,7 @@
         return summernote = $(`\#${id}`).summernote({
           callbacks: {
             onImageUpload: function(files) {
-              var file, j, len, results, upload;
+              var file, k, len, results, upload;
               upload = function(file) {
                 var comUid, formData;
                 comUid = summernote.attr('netuno-texthtml-uid');
@@ -882,8 +884,8 @@
                 });
               };
               results = [];
-              for (j = 0, len = files.length; j < len; j++) {
-                file = files[j];
+              for (k = 0, len = files.length; k < len; k++) {
+                file = files[k];
                 results.push(upload(file));
               }
               return results;
@@ -1141,7 +1143,7 @@
                 selectContainer = $(`\#select2-${selectId}-container`);
                 return selectContainer.contents().filter(function() {
                   return this.nodeType === 3;
-                })[0].nodeValue = data.label;
+                })[0].nodeValue = $('<div />').html(data.label).text();
               } else {
                 //selectContainer.html(data.label)
                 //selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', (e)->
@@ -1204,7 +1206,7 @@
                 selectContainer = $(`\#select2-${selectId}-container`);
                 return selectContainer.contents().filter(function() {
                   return this.nodeType === 3;
-                })[0].nodeValue = data.label;
+                })[0].nodeValue = $('<div />').html(data.label).text();
               }
             });
           }

@@ -4,7 +4,7 @@ toastr.options = {
   "debug": false,
   "newestOnTop": true,
   "progressBar": false,
-  "positionClass": "toast-top-center",
+  "positionClass": "netuno-toast-top-center",
   "preventDuplicates": true,
   "onclick": null,
   "showDuration": "300",
@@ -179,6 +179,7 @@ netuno.loadFormSearchDataTable = (table) ->
       "processing": false
       "serverSide": true
       "destroy": true
+      "order": if container.data().sorting then container.data().sorting else []
       "displayStart": if container.data().pageNumber > 0 then container.data().pageNumber * 25 else null
       "ajax": {
         "url": "#{ netuno.config.urlAdmin }Search#{ netuno.config.extension }?netuno_action=datasource&"+ containerSearchForm.serialize()
@@ -210,7 +211,8 @@ netuno.loadFormSearchDataTable = (table) ->
               container.data({
                 pageNumber: tr.data().pageNumber,
                 pageLength: tr.data().pageLength,
-                rowIndex: tr.data().rowIndex
+                rowIndex: tr.data().rowIndex,
+                sorting: table.dataTableSettings[0].aaSorting
               })
               netuno.loadFormEdit(table, uid)
         )
@@ -501,8 +503,8 @@ netuno.mask = (container)->
             valFloat = parseFloat(value)
             valFloat = Math.round(valFloat * decimalsMultiple) / decimalsMultiple
             val = "#{valFloat}"
-            for i in [(val.length - val.indexOf('.') - 1) .. maskDecimalsLen]
-              if i isnt maskDecimalsLen
+            for j in [(val.length - (if val.indexOf('.') > 0 then val.indexOf('.') + 1 else val.length)) .. maskDecimalsLen]
+              if j < maskDecimalsLen
                 val += '0'
             if o.is(':input')
               o.val(val)
@@ -510,7 +512,7 @@ netuno.mask = (container)->
               o.text(val)
           else if value isnt ''
             val = value
-            val += '0' for i in [1 .. maskDecimalsLen]
+            val += '0' for j in [1 .. maskDecimalsLen]
             if o.is(':input')
               o.val(val)
             else
@@ -888,7 +890,7 @@ netuno.com['select'] =
               selectContainer = $("\#select2-#{ selectId }-container")
               selectContainer.contents().filter(()->
                 this.nodeType == 3
-              )[0].nodeValue = data.label
+              )[0].nodeValue = $('<div />').html(data.label).text()
               #selectContainer.html(data.label)
               #selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', (e)->
               #  select = $("\##{ selectId }")
@@ -944,7 +946,7 @@ netuno.com['select'] =
               selectContainer = $("\#select2-#{ selectId }-container")
               selectContainer.contents().filter(()->
                 this.nodeType == 3
-              )[0].nodeValue = data.label
+              )[0].nodeValue = $('<div />').html(data.label).text()
           )
     )
   setValue: (select, uid) ->
