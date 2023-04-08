@@ -4,7 +4,7 @@ toastr.options = {
   "debug": false,
   "newestOnTop": true,
   "progressBar": false,
-  "positionClass": "toast-top-center",
+  "positionClass": "netuno-toast-top-center",
   "preventDuplicates": true,
   "onclick": null,
   "showDuration": "300",
@@ -193,9 +193,9 @@ netuno.submitDev = (containerId, formId, validation, callback) ->
         netuno.loadValidationDev(formId)
         callback?()
     ).submit()
-    return true
-  else
-    return false
+    if validation is false or form.validate().valid()
+      return true
+  return false
 
 netuno.loadValidationDev = (id) ->
   form = $("\##{ id }")
@@ -282,7 +282,7 @@ netuno.componentConfig = {
       netuno.componentConfig.link.popup = $("#componentConfig#{ netunoTableUid }LinkModalSelect")
       netuno.componentConfig.link.report = netuno.componentConfig.link.popup.attr('data-report') == ''
       tableUid = netuno.componentConfig.link.popup.attr('data-table-uid')
-      if typeof tableUid == 'undefined' or tableUid == null
+      if not tableUid?
         tableUid = ''
       netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-mode', 'select').removeAttr('data-table-uid').removeAttr('data-parameter-key')
       netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=select&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
@@ -293,7 +293,7 @@ netuno.componentConfig = {
       netuno.componentConfig.link.callbackItem = callbackItem
       netuno.componentConfig.link.popup = $("#componentConfig#{ netunoTableUid }LinkModal_#{ parameterKey }")
       tableUid = netuno.componentConfig.link.popup.attr('data-table-uid')
-      if typeof tableUid == 'undefined' or tableUid == null
+      if not tableUid?
         tableUid = ''
       netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-table-uid', netunoTableUid).attr('data-parameter-key', parameterKey)
       netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=add&netuno_table_uid=#{ netunoTableUid }&parameter_key=#{ parameterKey }&table_uid=#{ tableUid }&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
@@ -308,7 +308,7 @@ netuno.componentConfig = {
           e.stopPropagation()
           item = $(this)
           netuno.componentConfig.link.openTable(item.attr('data-netuno-table-uid'), item.attr('data-parameter-key'), item.attr('data-table-uid'))
-      if $('.component_config_link_popup_field_item').length
+      if $('.component_config_link_popup_fields_title').length
         popup.find("[data-netuno-back]").off('click').on('click', ()->
           back = $(this);
           popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=#{ back.attr('data-mode') }&netuno_table_uid=#{ back.attr('data-table-uid') }&parameter_key=#{ back.attr('data-parameter-key') }&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
@@ -336,7 +336,7 @@ netuno.componentConfig = {
       )
       val = $("\#componentConfig#{ netunoTableUid }LinkField_#{ parameterKey }").val()
       netuno.componentConfig.link.popup.find('p[data-link-fields-selected]').text('')
-      if val is null or val is ''
+      if not val? or val is ''
         return
       columns = val.substring(val.indexOf(':') + 1).split(',')
       netuno.componentConfig.link.popup.find('p[data-link-fields-selected]').text(columns.join(', '))
@@ -357,8 +357,8 @@ netuno.componentConfig = {
       mode = 'add'
       if fieldItem.attr('active') == 'true'
         mode = 'remove'
-      if mode == 'add' or mode == 'remove'
-        value = $("\#componentConfig#{ netunoTableUid }LinkField_#{ parameterKey }").val()
+      value = $("\#componentConfig#{ netunoTableUid }LinkField_#{ parameterKey }").val() or ''
+      if value? and (mode == 'add' or mode == 'remove')
         if mode == 'add' and
         ((value.indexOf(":") isnt -1 and value.substring(0, value.indexOf(':')) != table) or
         (((value.indexOf(":") isnt -1 and value.substring(value.lastIndexOf(":")) isnt ":#{ field }") or value.indexOf(":") is -1) and
@@ -380,8 +380,12 @@ netuno.componentConfig = {
             value = ''
         $("\#componentConfig#{ netunoTableUid }LinkField_#{ parameterKey }").val(value)
         $("\#componentConfig#{ netunoTableUid }FieldShow_#{ parameterKey }").val(value)
-      netuno.componentConfig.link.updateFields netunoTableUid, parameterKey, tableUid, table
+        netuno.componentConfig.link.updateFields netunoTableUid, parameterKey, tableUid, table
       netuno.componentConfig.link.callbackItem field, fieldUid if netuno.componentConfig.link.callbackItem
+    close: ()->
+      if netuno.componentConfig.link.popup?
+        netuno.componentConfig.link.popup.attr('data-table-uid', null)
+        netuno.componentConfig.link.popup.modal('hide')
   },
   choice: {
     load: (netunoTableUid, parameterKey, defaultValue, value)->

@@ -5,7 +5,7 @@
     "debug": false,
     "newestOnTop": true,
     "progressBar": false,
-    "positionClass": "toast-top-center",
+    "positionClass": "netuno-toast-top-center",
     "preventDuplicates": true,
     "onclick": null,
     "showDuration": "300",
@@ -250,10 +250,11 @@
           return typeof callback === "function" ? callback() : void 0;
         }
       }).submit();
-      return true;
-    } else {
-      return false;
+      if (validation === false || form.validate().valid()) {
+        return true;
+      }
     }
+    return false;
   };
 
   netuno.loadValidationDev = function(id) {
@@ -360,7 +361,7 @@
         netuno.componentConfig.link.popup = $(`#componentConfig${netunoTableUid}LinkModalSelect`);
         netuno.componentConfig.link.report = netuno.componentConfig.link.popup.attr('data-report') === '';
         tableUid = netuno.componentConfig.link.popup.attr('data-table-uid');
-        if (typeof tableUid === 'undefined' || tableUid === null) {
+        if (tableUid == null) {
           tableUid = '';
         }
         netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-mode', 'select').removeAttr('data-table-uid').removeAttr('data-parameter-key');
@@ -373,7 +374,7 @@
         netuno.componentConfig.link.callbackItem = callbackItem;
         netuno.componentConfig.link.popup = $(`#componentConfig${netunoTableUid}LinkModal_${parameterKey}`);
         tableUid = netuno.componentConfig.link.popup.attr('data-table-uid');
-        if (typeof tableUid === 'undefined' || tableUid === null) {
+        if (tableUid == null) {
           tableUid = '';
         }
         netuno.componentConfig.link.popup.find("[data-netuno-back]").attr('data-table-uid', netunoTableUid).attr('data-parameter-key', parameterKey);
@@ -393,7 +394,7 @@
             return netuno.componentConfig.link.openTable(item.attr('data-netuno-table-uid'), item.attr('data-parameter-key'), item.attr('data-table-uid'));
           });
         }
-        if ($('.component_config_link_popup_field_item').length) {
+        if ($('.component_config_link_popup_fields_title').length) {
           popup.find("[data-netuno-back]").off('click').on('click', function() {
             var back;
             back = $(this);
@@ -426,7 +427,7 @@
         });
         val = $(`\#componentConfig${netunoTableUid}LinkField_${parameterKey}`).val();
         netuno.componentConfig.link.popup.find('p[data-link-fields-selected]').text('');
-        if (val === null || val === '') {
+        if ((val == null) || val === '') {
           return;
         }
         columns = val.substring(val.indexOf(':') + 1).split(',');
@@ -454,8 +455,8 @@
         if (fieldItem.attr('active') === 'true') {
           mode = 'remove';
         }
-        if (mode === 'add' || mode === 'remove') {
-          value = $(`\#componentConfig${netunoTableUid}LinkField_${parameterKey}`).val();
+        value = $(`\#componentConfig${netunoTableUid}LinkField_${parameterKey}`).val() || '';
+        if ((value != null) && (mode === 'add' || mode === 'remove')) {
           if (mode === 'add' && ((value.indexOf(":") !== -1 && value.substring(0, value.indexOf(':')) !== table) || (((value.indexOf(":") !== -1 && value.substring(value.lastIndexOf(":")) !== `:${field}`) || value.indexOf(":") === -1) && ((value.indexOf(",") !== -1 && value.substring(value.lastIndexOf(",")) !== `,${field}`) || value.indexOf(",") === -1) && value.indexOf(`,${field},`) === -1))) {
             if (value.indexOf(':') > -1 && value.substring(0, value.indexOf(':')) === table) {
               value += ',' + field;
@@ -476,10 +477,16 @@
           }
           $(`\#componentConfig${netunoTableUid}LinkField_${parameterKey}`).val(value);
           $(`\#componentConfig${netunoTableUid}FieldShow_${parameterKey}`).val(value);
+          netuno.componentConfig.link.updateFields(netunoTableUid, parameterKey, tableUid, table);
         }
-        netuno.componentConfig.link.updateFields(netunoTableUid, parameterKey, tableUid, table);
         if (netuno.componentConfig.link.callbackItem) {
           return netuno.componentConfig.link.callbackItem(field, fieldUid);
+        }
+      },
+      close: function() {
+        if (netuno.componentConfig.link.popup != null) {
+          netuno.componentConfig.link.popup.attr('data-table-uid', null);
+          return netuno.componentConfig.link.popup.modal('hide');
         }
       }
     },
