@@ -195,6 +195,7 @@ public class Service {
 
             if (!schema.validateSchemaIn()) {
                 proteu.responseHTTPError(Proteu.HTTPStatus.BadRequest400, hili);
+                service.defaultEmptyOutput();
                 return;
             }
             if (service.getPath().equalsIgnoreCase("_auth") || Auth.isAuthenticated(proteu, hili)) {
@@ -204,19 +205,22 @@ public class Service {
             if (service.core("_service_config")) {
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
                 if (service.wasCancelled()) {
-                    if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
+                    if (proteu.isResponseHeaderStatusOk()) {
                         proteu.responseHTTPError(Proteu.HTTPStatus.ServiceUnavailable503, hili);
                     }
+                    service.defaultEmptyOutput();
                     return;
                 } else if (service.isDenied() || !service.isAllowed()) {
-                    if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
+                    if (proteu.isResponseHeaderStatusOk()) {
                         proteu.responseHTTPError(Proteu.HTTPStatus.Unauthorized401, hili);
                     }
+                    service.defaultEmptyOutput();
                     return;
                 }
                 JWT jwt = hili.resource().get(JWT.class);
                 if (!jwt.token().isEmpty() && !jwt.check()) {
                     proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
+                    service.defaultEmptyOutput();
                     return;
                 }
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
@@ -328,6 +332,12 @@ public class Service {
 
     public void notFoundDefaultError(boolean value) {
         setNotFoundDefaultError(value);
+    }
+
+    public void defaultEmptyOutput() throws IOException, ProteuException {
+        if (proteu.isRequestJSON() && proteu.getOutput().isEmpty()) {
+            proteu.outputJSON(new Values().forceMap());
+        }
     }
     
     public static Service getInstance(Proteu proteu) {

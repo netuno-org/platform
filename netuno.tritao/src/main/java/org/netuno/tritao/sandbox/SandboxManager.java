@@ -476,7 +476,7 @@ public class SandboxManager implements AutoCloseable {
                 .set("column", errorLine)
                 .set("throwable", t);
         hili.resource().get(org.netuno.tritao.resource.Error.class).data(errorData);
-        runScript(Config.getPathAppCore(proteu), "_request_error", false, true, false);
+        runScript(Config.getPathAppCore(proteu), "_request_error", false, true, true);
     }
 
     @Override
