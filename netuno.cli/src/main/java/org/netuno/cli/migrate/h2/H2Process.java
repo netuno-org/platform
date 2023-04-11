@@ -65,12 +65,12 @@ class H2Process {
                                 processInfo.type() == H2MigrationType.IMPORTATION ?
                                         "MODE=PostgreSQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;" :
                                         "")
-                        + "DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;",
+                        + "DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;MAX_LENGTH_INPLACE_LOB=1000000;",
                 "-user",
                 "sa",
                 "-sql",
                 (processInfo.type() == H2MigrationType.EXPORTATION ?
-                        "SCRIPT NOPASSWORDS NOSETTINGS TO" :
+                        "DELETE FROM netuno_log; SCRIPT NOPASSWORDS NOSETTINGS BLOCKSIZE 1000000 TO" :
                         processInfo.type() == H2MigrationType.IMPORTATION ?
                                 "RUNSCRIPT FROM" :
                                 ""
