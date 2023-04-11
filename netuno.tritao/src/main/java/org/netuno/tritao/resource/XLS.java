@@ -1033,7 +1033,14 @@ public class XLS extends ResourceBase {
                     || val instanceof Float
                     || val instanceof Double) {
                 cell.setCellValue(values.getDouble("value"));
-            } else if (val instanceof Date) {
+            } else if (val instanceof java.sql.Timestamp) {
+                cell.setCellValue(values.getSQLTimestamp("value").toLocalDateTime());
+            } else if (val instanceof java.time.LocalDateTime) {
+                cell.setCellValue(values.getLocalDateTime("value"));
+            } else if (val instanceof java.time.LocalDate) {
+                cell.setCellValue(values.getLocalDate("value"));
+            } if (val instanceof Date || val instanceof java.sql.Date || val instanceof java.sql.Time
+                || val instanceof java.time.Instant || val instanceof java.time.LocalTime) {
                 cell.setCellValue(values.getDate("value"));
             } else if (val instanceof Calendar) {
                 cell.setCellValue(values.getCalendar("value"));
@@ -2356,6 +2363,21 @@ public class XLS extends ResourceBase {
                     } else if (currentCell.getCellType() == CellType.NUMERIC) {
                         cell.set("type", "numeric");
                         cell.set("value", currentCell.getNumericCellValue());
+                        if (DateUtil.isCellDateFormatted(currentCell)) {
+                            try {
+                                cell.set("localDateTime", currentCell.getLocalDateTimeCellValue());
+                                cell.set("localDate", currentCell.getLocalDateTimeCellValue().toLocalDate());
+                                cell.set("localTime", currentCell.getLocalDateTimeCellValue().toLocalTime());
+                                cell.set("instant", currentCell.getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()));
+                                cell.set("date", currentCell.getDateCellValue());
+                            } catch (NullPointerException e) {
+                                cell.set("localDateTime", null);
+                                cell.set("localDate", null);
+                                cell.set("localTime", null);
+                                cell.set("instant", null);
+                                cell.set("date", null);
+                            }
+                        }
                     } else if (currentCell.getCellType() == CellType.BOOLEAN) {
                         cell.set("type", "boolean");
                         cell.set("value", currentCell.getBooleanCellValue());
