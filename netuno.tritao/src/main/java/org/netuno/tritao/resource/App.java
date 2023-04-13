@@ -107,8 +107,7 @@ public class App extends ResourceBase {
     public String name() {
         return Config.getApp(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -145,8 +144,7 @@ public class App extends ResourceBase {
     public String url() {
         return Config.getUrlApp(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -183,8 +181,7 @@ public class App extends ResourceBase {
     public String urlPublic() {
         return Config.getUrlAppPublic(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -221,8 +218,7 @@ public class App extends ResourceBase {
     public String urlStorage() {
         return Config.getUrlAppBaseStorage(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -259,8 +255,7 @@ public class App extends ResourceBase {
     public String urlFileSystem() {
         return Config.getUrlAppFileSystem(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -297,8 +292,7 @@ public class App extends ResourceBase {
     public String urlFileSystemPrivate() {
         return Config.getUrlAppFileSystemPrivate(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -335,8 +329,7 @@ public class App extends ResourceBase {
     public String urlFileSystemPublic() {
         return Config.getUrlAppFileSystemPublic(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -373,8 +366,7 @@ public class App extends ResourceBase {
     public String urlFileSystemServer() {
         return Config.getUrlAppFileSystemServer(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -485,8 +477,7 @@ public class App extends ResourceBase {
     public String urlServices() {
         return Config.getUrlServices(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -560,8 +551,7 @@ public class App extends ResourceBase {
     public String pathHome() {
         return Config.getPathAppBase(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -598,8 +588,7 @@ public class App extends ResourceBase {
     public String pathConfig() {
         return Config.getPathAppBaseConfig(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -636,8 +625,7 @@ public class App extends ResourceBase {
     public String pathPublic() {
         return Config.getPathAppBasePublic(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -675,7 +663,6 @@ public class App extends ResourceBase {
         return Config.getPathAppBaseServer(getProteu());
     }
 
-
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -712,7 +699,6 @@ public class App extends ResourceBase {
     public String pathStorage() {
         return Config.getPathAppBaseStorage(getProteu());
     }
-
 
     @MethodDoc(
     		translations = {
@@ -758,7 +744,6 @@ public class App extends ResourceBase {
     public Values config() {
         return config;
     }
-
 
     @MethodDoc(translations = {
     		@MethodTranslationDoc(
@@ -880,6 +865,10 @@ public class App extends ResourceBase {
                     )
             }
     )
+    public File getFile(String path) {
+		return file(path);
+	}
+
     public File file(String path) {
         File file = new File(
             SafePath.fileSystemPath(path),
@@ -893,6 +882,7 @@ public class App extends ResourceBase {
         }
         return file;
     }
+
 	@MethodDoc(
 			translations = {
 					@MethodTranslationDoc(
@@ -938,6 +928,7 @@ public class App extends ResourceBase {
         );
         return file.exists() && file.isFile();
     }
+
 	@MethodDoc(
 			translations = {
 					@MethodTranslationDoc(
@@ -977,6 +968,10 @@ public class App extends ResourceBase {
 					)
 			}
 	)
+    public File getFolder(String path) {
+		return folder(path);
+	}
+
     public File folder(String path) {
         File file = new File(
                 SafePath.fileSystemPath(path),
