@@ -1,3 +1,4 @@
+# coding: utf-8
 
 #
 #  EN: Export PDF
@@ -9,13 +10,13 @@
 
 _header.contentType('pdf')
 
-pdfDocument = _pdf.newDocument(_pdf.pageSize('A4'));
+pdfDocument = _pdf.newDocument(_pdf.pageSize('A4'))
 
-viksiScript = _pdf.font(_storage.filesystem('server', 'samples/export-pdf', 'viksi-script.ttf'), true);
-helvetica = _pdf.font('helvetica');
-helveticaBold = _pdf.font('helvetica-bold');
-helveticaBoldOblique = _pdf.font('helvetica-boldoblique');
-helveticaOblique = _pdf.font('helvetica-oblique');
+viksiScript = _pdf.font(_storage.filesystem('server', 'samples/export-pdf', 'viksi-script.ttf'), true)
+helvetica = _pdf.font('helvetica')
+helveticaBold = _pdf.font('helvetica-bold')
+helveticaBoldOblique = _pdf.font('helvetica-boldoblique')
+helveticaOblique = _pdf.font('helvetica-oblique')
 
 pdfDocument.add(
     _pdf.image(_storage.filesystem('server', 'samples/export-pdf', 'logo.png'))
@@ -147,31 +148,30 @@ pdfDocument.add(
                         .setFontSize(10)
                 )
         )
-
-.addCell(
-    _pdf.cell()
-        .add(
-            _pdf.paragraph('Clair')
-                .setFont(helvetica)
-                .setFontSize(10)
+        .addCell(
+            _pdf.cell()
+                .add(
+                    _pdf.paragraph('Clair')
+                        .setFont(helvetica)
+                        .setFontSize(10)
+                )
         )
-)
-     .addCell(
-         _pdf.cell()
-             .add(
-                 _pdf.paragraph('20')
-                     .setFont(helvetica)
-                     .setFontSize(10)
-             )
-     )
-     .addCell(
-         _pdf.cell()
-             .add(
-                 _pdf.paragraph('Surf')
-                     .setFont(helvetica)
-                     .setFontSize(10)
-             )
-     )
+        .addCell(
+            _pdf.cell()
+                .add(
+                    _pdf.paragraph('20')
+                        .setFont(helvetica)
+                        .setFontSize(10)
+                )
+        )
+        .addCell(
+            _pdf.cell()
+                .add(
+                    _pdf.paragraph('Surf')
+                        .setFont(helvetica)
+                        .setFontSize(10)
+                )
+        )
 )
 
 pdfDocument.add(
@@ -218,7 +218,7 @@ pdfDocument.add(
                         .setFontSize(10)
                 )
                 .setBorderBottom(_pdf.border('dashed', 2))
-                .setBorderRight(_pdf.border(_pdf.colorRGB(1, 0, 0), 'solid', 1))
+                .setBorderRight(_pdf.border('solid', _pdf.colorRGB(1, 0, 0), 1))
         )
 )
 
