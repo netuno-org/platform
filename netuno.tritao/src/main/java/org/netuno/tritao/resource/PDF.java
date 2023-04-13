@@ -183,7 +183,37 @@ public class PDF extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Obtém a definição do tamanho de página.",
+                    description = "Obtém a definição do tamanho de página, suporta:<br>"+
+                        "<ul>"+
+                        "<li>A0</li>"+
+                        "<li>A1</li>"+
+                        "<li>A2</li>"+
+                        "<li>A3</li>"+
+                        "<li>A4</li>"+
+                        "<li>A5</li>"+
+                        "<li>A6</li>"+
+                        "<li>A7</li>"+
+                        "<li>A8</li>"+
+                        "<li>A9</li>"+
+                        "<li>A10</li>"+
+                        "<li>B0</li>"+
+                        "<li>B1</li>"+
+                        "<li>B2</li>"+
+                        "<li>B3</li>"+
+                        "<li>B4</li>"+
+                        "<li>B5</li>"+
+                        "<li>B6</li>"+
+                        "<li>B7</li>"+
+                        "<li>B8</li>"+
+                        "<li>B9</li>"+
+                        "<li>B10</li>"+
+                        "<li>default</li>"+
+                        "<li>executive</li>"+
+                        "<li>ledger</li>"+
+                        "<li>legal</li>"+
+                        "<li>letter</li>"+
+                        "<li>tabloid</li>"+
+                        "</ul>",
                     howToUse = {
                     })
     }, parameters = {}, returns = {})
