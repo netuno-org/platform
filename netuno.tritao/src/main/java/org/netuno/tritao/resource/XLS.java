@@ -28,6 +28,7 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.io.File;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
@@ -1164,6 +1165,126 @@ public class XLS extends ResourceBase {
     }
 
     @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cria um novo estilo de fonte no workbook.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Creates a new font style in the workbook.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O novo estilo de fonte criado."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The new font style created."
+        )
+    })
+    public HSSFFont font() {
+        return this.workbook.createFont();
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cria um novo estilo de célula no workbook.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Creates a new cell style in the workbook.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O novo estilo de célula criado."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The new cell style created."
+        )
+    })
+    public HSSFCellStyle cellStyle() {
+        return this.workbook.createCellStyle();
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cria um novo formato de célula no workbook.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Creates a new cell format in the workbook.",
+                howToUse = { })
+    }, parameters = {
+        @ParameterDoc(name = "format", translations = {
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.PT,
+                        name = "formato",
+                        description = "Definição do padrão do formato."
+                ),
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.EN,
+                        description = "Format standard definition."
+                )
+        })
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Código identificador do novo formato."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Identifier code for the new format."
+        )
+    })
+    public short format(String format) {
+        return this.workbook.getCreationHelper().createDataFormat().getFormat(format);
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cria um novo estilo de célula com um formato associado no workbook.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Creates a new cell style with an associated format in the workbook.",
+                howToUse = { })
+    }, parameters = {
+        @ParameterDoc(name = "format", translations = {
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.PT,
+                        name = "formato",
+                        description = "Definição do padrão do formato."
+                ),
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.EN,
+                        description = "Format standard definition."
+                )
+        })
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O novo estilo de célula criado com o formato configurado."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The new cell style created with the configured format."
+        )
+    })
+    public HSSFCellStyle cellStyleFormat(String format) {
+        HSSFCellStyle cellStyle = cellStyle();
+        cellStyle.setDataFormat(format(format));
+        return cellStyle;
+    }
+
+    @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Gera o alinhamento horizontal.",
@@ -1523,6 +1644,153 @@ public class XLS extends ResourceBase {
 
     @MethodDoc(translations = {
             @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a mesclagem de células na região.",
+                howToUse = { }),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Performs the merging of cells in the region.",
+                howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "firstRow", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "primeiraLinha",
+                    description = "Número da primeira linha."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "First line number."
+                )
+            }),
+            @ParameterDoc(name = "lastRow", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "ultimaLinha",
+                    description = "Número da última linha."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Last line number."
+                )
+            }),
+            @ParameterDoc(name = "firstCol", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "primeiraColuna",
+                    description = "Número da primeira coluna."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "First column number."
+                )
+            }),
+            @ParameterDoc(name = "lastCol", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "ultimaColuna",
+                    description = "Número da última coluna."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Last column number."
+                )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "A referência da região de células mesclada."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The reference of the merged cell region."
+            )
+    })
+    public int mergedRegion(int firstRow, int lastRow, int firstCol, int lastCol) {
+        return this.sheet.addMergedRegion(this.cellRangeAddress(firstRow, lastRow, firstCol, lastCol));
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a mesclagem de células na região passada em uma folha de cálculos específica.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Performs the merging of cells in the passed region in a specific worksheet.",
+                howToUse = { })
+        }, parameters = {
+                @ParameterDoc(name = "sheet", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "folhaCalculos",
+                                description = "Folha de cálculos que será mesclada as células."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Spreadsheet that will be merged the cells."
+                        )
+                }),
+                @ParameterDoc(name = "firstRow", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "primeiraLinha",
+                                description = "Número da primeira linha."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "First line number."
+                        )
+                }),
+                @ParameterDoc(name = "lastRow", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "ultimaLinha",
+                                description = "Número da última linha."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Last line number."
+                        )
+                }),
+                @ParameterDoc(name = "firstCol", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "primeiraColuna",
+                                description = "Número da primeira coluna."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "First column number."
+                        )
+                }),
+                @ParameterDoc(name = "lastCol", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "ultimaColuna",
+                                description = "Número da última coluna."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Last column number."
+                        )
+                })
+        }, returns = {
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.PT,
+                        description = "A referência da região de células mesclada."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "The reference of the merged cell region."
+                )
+    })
+    public int mergedRegion(HSSFSheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
+        return sheet.addMergedRegion(this.cellRangeAddress(firstRow, lastRow, firstCol, lastCol));
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Gera o código da cor baseado em nomes pré definidos.",
                     howToUse = { }),
@@ -1705,13 +1973,93 @@ public class XLS extends ResourceBase {
                     )
             })
     }, returns = {})
-    public void output(Storage storage) throws IOException {
+    public void save(Storage storage) throws IOException {
         FileOutputStream fos = new FileOutputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage));
         try {
             workbook.write(fos);
         } finally {
             fos.close();
         }
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a escrita dos dados do ficheiro final.",
+                howToUse = { }),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Writes the data to the final file.",
+                howToUse = { })
+        }, parameters = {
+            @ParameterDoc(name = "file", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    description = "Ficheiro que será guardado."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "File that will be saved."
+                )
+            })
+    }, returns = {})
+    public void save(File file) throws IOException {
+        FileOutputStream fos = new FileOutputStream(file.fullPath());
+        try {
+            workbook.write(fos);
+        } finally {
+            fos.close();
+        }
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a escrita dos dados do ficheiro final para o output.",
+                howToUse = { }),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Writes the data from the final file to the output.",
+                howToUse = { })
+        }, parameters = {
+            @ParameterDoc(name = "output", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    description = "Output onde o ficheiro será guardado."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Output where the file will be saved."
+                )
+            })
+    }, returns = {})
+    public void save(OutputStream output) throws IOException {
+        workbook.write(output);
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a escrita dos dados do ficheiro final para o output.",
+                howToUse = { }),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Writes the data from the final file to the output.",
+                howToUse = { })
+        }, parameters = {
+            @ParameterDoc(name = "output", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    description = "Output onde o ficheiro será guardado."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Output where the file will be saved."
+                )
+        })
+    }, returns = {})
+    public void save(java.io.OutputStream output) throws IOException {
+        workbook.write(output);
     }
 
     @MethodDoc(dependency = "create", translations = {
