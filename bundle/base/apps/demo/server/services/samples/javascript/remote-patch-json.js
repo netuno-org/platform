@@ -11,9 +11,9 @@
  *
  */
 
-var client = _remote.init()
+const client = _remote.init()
 
-var response = client.asJSON().patch(
+const response = client.asJSON().patch(
     "http://httpbin.org/patch"
 )
 

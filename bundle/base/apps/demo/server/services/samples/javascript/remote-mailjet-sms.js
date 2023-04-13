@@ -9,15 +9,15 @@
  *
  */
 
-var sendSMS = _remote.init()
+const sendSMS = _remote.init()
 
 sendSMS.setAuthorization("Bearer YOUR_TOKEN")
 
-var sms = _val.init()
-        .set("From", "Netuno.org")
-        .set("To", "YOUR_INTERNATIONAL_PHONE_NUMBER")
-        .set("Text", "Hello from Netuno!")
+const sms = _val.init()
+  .set("From", "Netuno.org")
+  .set("To", "YOUR_INTERNATIONAL_PHONE_NUMBER")
+  .set("Text", "Hello from Netuno!")
 
 _out.json(
-    sendSMS.post("https://api.mailjet.com/v4/sms-send", sms)
+  sendSMS.post("https://api.mailjet.com/v4/sms-send", sms)
 )
