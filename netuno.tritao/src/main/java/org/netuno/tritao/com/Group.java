@@ -49,6 +49,7 @@ public class Group extends ComponentBase {
     private void init() {
     	super.getConfiguration().putParameter("GROUPS_MODE", ParameterType.CHOICE, "all|exclude|only"); // all|exclude|only
     	super.getConfiguration().putParameter("GROUPS", ParameterType.STRING, ""); // Group1,Group2...
+    	super.getConfiguration().putParameter("ALLOW_GROUP_LOGGED", ParameterType.BOOLEAN, "false");
     }
     
     public Component setDesignData(Values designData) {
@@ -88,7 +89,8 @@ public class Group extends ComponentBase {
             getDesignData().set("com.select.validation", getValidation(getDesignData()));
             getDesignData().set("com.select.service", "Group"+ org.netuno.proteu.Config.getExtension() +"?service=json"+
                     "&groups_mode="+ getConfiguration().getParameter("GROUPS_MODE").getValue() +
-                    "&groups="+ getConfiguration().getParameter("GROUPS").getValue());
+                    "&groups="+ getConfiguration().getParameter("GROUPS").getValue() +
+                    "&allow_group_logged="+ getConfiguration().getParameter("ALLOW_GROUP_LOGGED").getValue());
             TemplateBuilder.output(getProteu(), getHili(), "com/render/select", getDesignData());
             new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
