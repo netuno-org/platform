@@ -65,7 +65,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.export-excel.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.export-excel.intro` })}
                     name="export-excel"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
                 <li>
@@ -73,7 +73,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.export-pdf.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.export-pdf.intro` })}
                     name="export-pdf"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
                 <li>
@@ -191,7 +191,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.remote-delete-json.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.remote-delete-json.intro` })}
                     name="remote-delete-json"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
               </ul>
@@ -203,7 +203,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.remote-patch-json.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.remote-patch-json.intro` })}
                     name="remote-patch-json"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
                 <li>
@@ -211,7 +211,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.remote-post-json.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.remote-post-json.intro` })}
                     name="remote-post-json"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
                 <li>
@@ -219,7 +219,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.remote-put-json.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.remote-put-json.intro` })}
                     name="remote-put-json"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
                 <li>
@@ -227,7 +227,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.remote-get-json.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.remote-get-json.intro` })}
                     name="remote-get-json"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
                 <li>
@@ -235,7 +235,7 @@ function ListServices() {
                     title={intl.formatMessage({ id: `${messages}.services.remote-mailjet-sms.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.remote-mailjet-sms.intro` })}
                     name="remote-mailjet-sms"
-                    langs={["javascript", "kotlin"]}
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
                   />
                 </li>
               </ul>
