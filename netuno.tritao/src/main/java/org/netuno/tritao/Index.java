@@ -55,6 +55,13 @@ public class Index extends WebMaster {
         );
         */
         Req req = resource(Req.class);
+    	if (req.getString("action").equals("logout")) {
+            if (Auth.hasBackupSession(getProteu(), getHili())) {
+                Auth.restoreBackupedSession(getProteu(), getHili());
+            } else {
+                Auth.clearSession(getProteu(), getHili());
+            }
+        }
         Template template = resource(Template.class).initCore();
         if (req.getString("action").equals("login")) {
             Auth.clearSession(getProteu(), getHili());
@@ -68,13 +75,6 @@ public class Index extends WebMaster {
                 template.out("notification/login_empty");
             }
             return;
-        }
-    	if (req.getString("action").equals("logout")) {
-            if (Auth.hasBackupSession(getProteu(), getHili())) {
-                Auth.restoreBackupedSession(getProteu(), getHili());
-            } else {
-                Auth.clearSession(getProteu(), getHili());
-            }
         }
         if (!Auth.isAuthenticated(getProteu(), getHili())) {
             Values data = new Values();
