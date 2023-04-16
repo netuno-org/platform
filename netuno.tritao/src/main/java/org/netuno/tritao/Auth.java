@@ -304,6 +304,8 @@ public class Auth extends WebMaster {
         proteu.getSession().remove("_group_code");
         proteu.getSession().remove("_admin");
         proteu.getSession().remove("_dev");
+        proteu.getConfig().remove("_auth:session:db:user");
+        proteu.getConfig().remove("_auth:session:db:group");
     }
 
 
@@ -344,6 +346,8 @@ public class Auth extends WebMaster {
             proteu.getSession().remove("_group_code_backup");
             proteu.getSession().remove("_admin_backup");
             proteu.getSession().remove("_dev_backup");
+            proteu.getConfig().remove("_auth:session:db:user");
+            proteu.getConfig().remove("_auth:session:db:group");
             proteu.saveSession();
         }
     }
