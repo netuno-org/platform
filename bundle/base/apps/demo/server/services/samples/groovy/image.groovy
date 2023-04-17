@@ -11,9 +11,9 @@
 
 _header.contentType("png")
 
-const viksiScriptFont = _image.font(_storage.filesystem("server", "samples/export-pdf", "viksi-script.ttf"), _image.fontField("plain"), 20.0)
+viksiScriptFont = _image.font(_storage.filesystem("server", "samples/export-pdf", "viksi-script.ttf"), _image.fontField("plain"), 20.0)
 
-const logo = _image.init(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
+logo = _image.init(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
 
 logo.resize(500, 500)
 
@@ -41,8 +41,8 @@ logo.fillPolygon(
   [150, 200, 100]
 )
 
-const logoOther = _image.init(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
-logoOther.resize(logoOther.width() * 0.5, logoOther.height() * 0.5)
+logoOther = _image.init(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
+logoOther.resize(_convert.toInt(logoOther.width() * 0.5), _convert.toInt(logoOther.height() * 0.5))
 logo.drawImage(logoOther.getImage(), 150, 180, 45)
 logo.drawImage(logoOther.getImage(), 150, 225, -15)
 

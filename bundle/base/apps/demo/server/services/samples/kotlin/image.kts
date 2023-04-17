@@ -11,40 +11,40 @@
 
 _header.contentType("png")
 
-const viksiScriptFont = _image.font(_storage.filesystem("server", "samples/export-pdf", "viksi-script.ttf"), _image.fontField("plain"), 20.0)
+val viksiScriptFont = _image.font(_storage.filesystem("server", "samples/export-pdf", "viksi-script.ttf"), _image.fontField("plain"), 20.0f)
 
-const logo = _image.init(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
+val logo = _image.init(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
 
 logo.resize(500, 500)
 
 logo.crop(10, 10, 480, 480)
 
-logo.fillRect(_image.color(0, 0, 0, 0.75), 0, 0, 500, 500)
+logo.fillRect(_image.color(0f, 0f, 0f, 0.75f), 0, 0, 500, 500)
 
 logo.drawBackground(_image.color("black"))
 
 logo.drawLine(_image.color("red"), 20, 20, 50, 50)
 
-logo.fillRect(_image.color("orange"), 80, 20, 50, 50, -45)
+logo.fillRect(_image.color("orange"), 80, 20, 50, 50, -45.0)
 
 logo.fillOval(_image.color("red"), 140, 20, 50, 50)
 
 logo.fillPolygon(
-  _image.color(1, 0, 0, 0.5),
+  _image.color(1f, 0f, 0f, 0.5f),
   _val.list().add(350).add(400).add(450).add(400),
   _val.list().add(200).add(150).add(200).add(250)
 )
 
 logo.fillPolygon(
-  _image.color(1, 0.75, 0, 0.5),
-  [50, 100, 100],
-  [150, 200, 100]
+  _image.color(1f, 0.75f, 0f, 0.5f),
+  listOf(50, 100, 100),
+  listOf(150, 200, 100)
 )
 
-const logoOther = _image.init(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
-logoOther.resize(logoOther.width() * 0.5, logoOther.height() * 0.5)
-logo.drawImage(logoOther.getImage(), 150, 180, 45)
-logo.drawImage(logoOther.getImage(), 150, 225, -15)
+val logoOther = _image.init(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
+logoOther.resize(_convert.toInt(logoOther.width() * 0.5), _convert.toInt(logoOther.height() * 0.5))
+logo.drawImage(logoOther.getImage(), 150, 180, 45.0)
+logo.drawImage(logoOther.getImage(), 150, 225, -15.0)
 
 logo.drawText(
   "My Font Text 1!",
@@ -57,7 +57,7 @@ logo.drawText(
   "My Font Text 2!",
   viksiScriptFont,
   _image.color("pink"),
-  425, 405, 180
+  425, 405, 180.0
 )
 
 logo.drawText(
