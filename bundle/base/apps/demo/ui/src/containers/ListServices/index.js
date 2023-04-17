@@ -129,6 +129,14 @@ function ListServices() {
                 </li>
                 <li>
                   <ServiceSample
+                    title={intl.formatMessage({ id: `${messages}.services.image.title` })}
+                    intro={intl.formatMessage({ id: `${messages}.services.image.intro` })}
+                    name="image"
+                    langs={["groovy", "javascript", "kotlin", "python", "ruby"]}
+                  />
+                </li>
+                <li>
+                  <ServiceSample
                     title={intl.formatMessage({ id: `${messages}.services.query-parameter.title` })}
                     intro={intl.formatMessage({ id: `${messages}.services.query-parameter.intro` })}
                     name="query-parameter"
