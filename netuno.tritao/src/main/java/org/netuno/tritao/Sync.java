@@ -24,7 +24,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.resource.DB;
 import org.netuno.tritao.resource.util.ResourceException;

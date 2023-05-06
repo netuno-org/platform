@@ -19,7 +19,7 @@ package org.netuno.tritao.com;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -75,26 +75,13 @@ public class Text extends ComponentBase {
     public Component setValues(String prefix, Values values) {
         super.setValues(prefix, values);
         value = getDataStructure().get(0).getValue();
-        if (getDesignData().getString("type").equals("textfloat") && !value.isEmpty()) {
-            float floatValue = Float.valueOf(value);
-            if (floatValue != 0
-                    && getConfiguration().getParameter("MASK").getValue() != null
-                    && !getConfiguration().getParameter("MASK").getValue().isEmpty()
-                    && getConfiguration().getParameter("MASK").getValue().indexOf(',') > 0) {
-                int digits = getConfiguration().getParameter("MASK").getValue().substring(getConfiguration().getParameter("MASK").getValue().indexOf(',') + 1).length();
-                if (value.indexOf('.') == -1) {
-                    getDataStructure().get(0).setValue(Float.toString(floatValue / (float) Math.pow(10, digits)));
-                } else {
-                    value = Integer.toString((int) (floatValue * (float) Math.pow(10, digits)));
-                }
-            }
-        }
         return this;
     }
 
     public Component render() {
         try {
             new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
+            getDesignData().set("com.text.type", getDesignData().getString("type"));
             getDesignData().set("com.text.value", getMode() == Component.Mode.SearchForm ? "" : value);
             getDesignData().set("com.text.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             getDesignData().set("com.text.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
@@ -122,6 +109,7 @@ public class Text extends ComponentBase {
     public String getHtmlValue() {
         if (value != null && value.length() > 0) {
             try {
+                getDesignData().set("com.text.type", getDesignData().getString("type"));
                 getDesignData().set("com.text.value", value);
                 if (!getDesignData().getString("type").equals("email")) {
                     getDesignData().set("com.text.mask", getConfiguration().getParameter("MASK").getValue());

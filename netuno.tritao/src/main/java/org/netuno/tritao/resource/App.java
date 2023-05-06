@@ -21,9 +21,9 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
-import org.netuno.psamata.io.Path;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
 /**
@@ -107,8 +107,7 @@ public class App extends ResourceBase {
     public String name() {
         return Config.getApp(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -145,8 +144,7 @@ public class App extends ResourceBase {
     public String url() {
         return Config.getUrlApp(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -183,8 +181,7 @@ public class App extends ResourceBase {
     public String urlPublic() {
         return Config.getUrlAppPublic(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -221,8 +218,7 @@ public class App extends ResourceBase {
     public String urlStorage() {
         return Config.getUrlAppBaseStorage(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -259,8 +255,7 @@ public class App extends ResourceBase {
     public String urlFileSystem() {
         return Config.getUrlAppFileSystem(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -297,8 +292,7 @@ public class App extends ResourceBase {
     public String urlFileSystemPrivate() {
         return Config.getUrlAppFileSystemPrivate(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -335,8 +329,7 @@ public class App extends ResourceBase {
     public String urlFileSystemPublic() {
         return Config.getUrlAppFileSystemPublic(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -373,7 +366,80 @@ public class App extends ResourceBase {
     public String urlFileSystemServer() {
         return Config.getUrlAppFileSystemServer(getProteu());
     }
+	
+    @MethodDoc(
+    		translations = {
+		            @MethodTranslationDoc(
+		                    language = LanguageDoc.PT,
+		                    description = "Obtém o url da aplicação para a interface de administração.",
+		                    howToUse = {
+		                            @SourceCodeDoc(
+		                                    type = SourceCodeTypeDoc.JavaScript,
+		                                    code = "const urlAdmin = _app.urlAdmin();"
+		                            )
+		                    }),
+		            @MethodTranslationDoc(
+		                    language = LanguageDoc.EN,
+		                    description = "Gets the application url for the administration interface.",
+		                    howToUse = {
+		                            @SourceCodeDoc(
+		                                    type = SourceCodeTypeDoc.JavaScript,
+		                                    code = "const adminURL = _app.urlAdmin();"
+		                            )
+		                    })
+		    },
+    		parameters = {},
+    		returns = {
+    	            @ReturnTranslationDoc(
+    	                    language = LanguageDoc.PT,
+    	                    description = "Retorna o prefixo da localização de administração."
+    	            ),
+    	            @ReturnTranslationDoc(
+    	                    language = LanguageDoc.EN,
+    	                    description = "Returns the location prefix of the administration."
+    	            )
+    	    }
+    )
+    public String urlAdmin() {
+        return Config.getUrlAdmin(getProteu());
+    }
 
+	@MethodDoc(
+    		translations = {
+		            @MethodTranslationDoc(
+		                    language = LanguageDoc.PT,
+		                    description = "Obtém o prefixo da URL definido na configuração, como um prefixo de URL customizado.",
+		                    howToUse = {
+		                            @SourceCodeDoc(
+		                                    type = SourceCodeTypeDoc.JavaScript,
+		                                    code = "const urlCustom = _app.url('nome-da-minha-url-configurada');"
+		                            )
+		                    }),
+		            @MethodTranslationDoc(
+		                    language = LanguageDoc.EN,
+		                    description = "Gets the URL prefix defined in the configuration, as a custom URL prefix.",
+		                    howToUse = {
+		                            @SourceCodeDoc(
+		                                    type = SourceCodeTypeDoc.JavaScript,
+		                                    code = "const urlCustom = _app.url('name-of-my-configured-url');"
+		                            )
+		                    })
+		    },
+    		parameters = {},
+    		returns = {
+    	            @ReturnTranslationDoc(
+    	                    language = LanguageDoc.PT,
+    	                    description = "Retorna o prefixo da localização definida na configuração."
+    	            ),
+    	            @ReturnTranslationDoc(
+    	                    language = LanguageDoc.EN,
+    	                    description = "Returns the location prefix defined in the configuration."
+    	            )
+    	    }
+    )
+    public String url(String key) {
+        return Config.getUrl(getProteu(), key);
+    }
 
     @MethodDoc(
     		translations = {
@@ -411,8 +477,7 @@ public class App extends ResourceBase {
     public String urlServices() {
         return Config.getUrlServices(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -486,8 +551,7 @@ public class App extends ResourceBase {
     public String pathHome() {
         return Config.getPathAppBase(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -524,8 +588,7 @@ public class App extends ResourceBase {
     public String pathConfig() {
         return Config.getPathAppBaseConfig(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -562,8 +625,7 @@ public class App extends ResourceBase {
     public String pathPublic() {
         return Config.getPathAppBasePublic(getProteu());
     }
-
-
+	
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -601,7 +663,6 @@ public class App extends ResourceBase {
         return Config.getPathAppBaseServer(getProteu());
     }
 
-
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -638,7 +699,6 @@ public class App extends ResourceBase {
     public String pathStorage() {
         return Config.getPathAppBaseStorage(getProteu());
     }
-
 
     @MethodDoc(
     		translations = {
@@ -684,7 +744,6 @@ public class App extends ResourceBase {
     public Values config() {
         return config;
     }
-
 
     @MethodDoc(translations = {
     		@MethodTranslationDoc(
@@ -806,9 +865,13 @@ public class App extends ResourceBase {
                     )
             }
     )
+    public File getFile(String path) {
+		return file(path);
+	}
+
     public File file(String path) {
         File file = new File(
-            Path.safeFileSystemPath(path),
+            SafePath.fileSystemPath(path),
             Config.getPathAppBase(getProteu())
         );
         if (file.exists()) {
@@ -819,6 +882,7 @@ public class App extends ResourceBase {
         }
         return file;
     }
+
 	@MethodDoc(
 			translations = {
 					@MethodTranslationDoc(
@@ -859,11 +923,12 @@ public class App extends ResourceBase {
 	)
     public boolean isFile(String path) {
         File file = new File(
-                Path.safeFileSystemPath(path),
+                SafePath.fileSystemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         return file.exists() && file.isFile();
     }
+
 	@MethodDoc(
 			translations = {
 					@MethodTranslationDoc(
@@ -903,9 +968,13 @@ public class App extends ResourceBase {
 					)
 			}
 	)
+    public File getFolder(String path) {
+		return folder(path);
+	}
+
     public File folder(String path) {
         File file = new File(
-                Path.safeFileSystemPath(path),
+                SafePath.fileSystemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         if (file.exists()) {
@@ -957,7 +1026,7 @@ public class App extends ResourceBase {
 	)
     public boolean isFolder(String path) {
         File file = new File(
-                Path.safeFileSystemPath(path),
+                SafePath.fileSystemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         return file.exists() && file.isDirectory();
@@ -965,7 +1034,10 @@ public class App extends ResourceBase {
     
     @Override
     protected final void finalize() throws Throwable {
+		/*
+		GC TEST
     	config = null;
     	settings = null;
+		*/
     }
 }

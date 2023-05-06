@@ -26,7 +26,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -173,41 +173,41 @@ public class Manager {
 
     public void scriptSave(Proteu proteu, Hili hili, String tableName, DataItem dataItem) {
         try {
-            hili.bind("dataItem", dataItem);
+            hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.runScriptSandbox(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "save");
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "save");
         } finally {
-            hili.unbind("dataItem");
+            hili.sandbox().unbind("dataItem");
         }
     }
 
     public void scriptSaved(Proteu proteu, Hili hili, String tableName, DataItem dataItem) {
         try {
-            hili.bind("dataItem", dataItem);
+            hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.runScriptSandbox(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "saved");
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "saved");
         } finally {
-            hili.unbind("dataItem");
+            hili.sandbox().unbind("dataItem");
         }
     }
 
     public void scriptRemove(Proteu proteu, Hili hili, String tableName, DataItem dataItem) {
         try {
-            hili.bind("dataItem", dataItem);
+            hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.runScriptSandbox(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "remove");
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "remove");
         } finally {
-            hili.unbind("dataItem");
+            hili.sandbox().unbind("dataItem");
         }
     }
 
     public void scriptRemoved(Proteu proteu, Hili hili, String tableName, DataItem dataItem) {
         try {
-            hili.bind("dataItem", dataItem);
+            hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.runScriptSandbox(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "removed");
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "removed");
         } finally {
-            hili.unbind("dataItem");
+            hili.sandbox().unbind("dataItem");
         }
     }
 
@@ -239,7 +239,10 @@ public class Manager {
 
     @Override
     protected void finalize() throws Throwable {
+        /*
+        GC TEST
         closeConnections();
+        */
     }
 
     private class DBConnection {

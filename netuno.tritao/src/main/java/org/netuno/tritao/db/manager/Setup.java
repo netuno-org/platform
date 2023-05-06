@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DBError;
 
 import java.util.List;
@@ -187,6 +187,7 @@ public class Setup extends Base {
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("netuno_group").setType(Column.Type.INT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("login_allowed").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(true),
                     table.newColumn().setName("active").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(true),
                     table.newColumn().setName("report").setType(Column.Type.TEXT).setNotNull(false).setDefault(),
                     table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
@@ -195,6 +196,11 @@ public class Setup extends Base {
                     table.newColumn().setName("extra").setType(Column.Type.TEXT).setNotNull(false).setDefault()
             );
             sequence.create("netuno_group_id");
+
+            if (checkExists.table("netuno_providers")) {
+                table.rename("netuno_providers", "netuno_provider");
+                sequence.rename("netuno_providers_id", "netuno_provider_id");
+            }
 
             table.create("netuno_provider",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
@@ -213,6 +219,14 @@ public class Setup extends Base {
 
             if(getBuilder().selectProviderByName("discord").size() == 0){
                 getBuilder().insertProvider("discord", "ds");
+	    }
+            
+            if (getBuilder().selectProviderByName("local").size() == 0) {
+                getBuilder().insertProvider("Local", "lc");
+            }
+
+            if (getBuilder().selectProviderByName("ldap").size() == 0) {
+                getBuilder().insertProvider("LDAP", "ldap");
             }
 
             table.create("netuno_user",
@@ -251,7 +265,6 @@ public class Setup extends Base {
                     table.newColumn().setName("data").setType(Column.Type.TEXT).setNotNull(true).setDefault()
             );
             sequence.create("netuno_provider_data_id");
-
 
             table.create("netuno_group_rule",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
@@ -411,7 +424,7 @@ public class Setup extends Base {
             
             Values groupDev = getBuilder().getGroupByNetuno("-2");
             if (groupDev == null) {
-                int groupDevId = getBuilder().insertGroup("Developer", "-2", "", "1");
+                int groupDevId = getBuilder().insertGroup("Developer", "-2", "1", "", "1");
                 groupDev = new Values().set("id", groupDevId);
             }
             if (getBuilder().getUser("dev") == null) {
@@ -419,7 +432,7 @@ public class Setup extends Base {
             }
             Values groupAdmin = getBuilder().getGroupByNetuno("-1");
             if (groupAdmin == null) {
-                int groupAdminId = getBuilder().insertGroup("Administrator", "-1", "", "1");
+                int groupAdminId = getBuilder().insertGroup("Administrator", "-1", "1", "", "1");
                 groupAdmin = new Values().set("id", groupAdminId);
             }
             if (getBuilder().getUser("admin") == null) {
@@ -459,6 +472,12 @@ public class Setup extends Base {
                 table.create(
                         "netuno_design",
                         table.newColumn().setName("description").setType(Column.Type.TEXT)
+                );
+            }
+            if (!checkExists.column("netuno_group", "login_allowed")) {
+                table.create(
+                        "netuno_group",
+                        table.newColumn().setName("login_allowed").setType(Column.Type.BOOLEAN).setDefault(true)
                 );
             }
             List<Values> formTables = getManager().query("select * from netuno_table where report = "+ getBuilder().booleanFalse());

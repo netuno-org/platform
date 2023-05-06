@@ -11,13 +11,13 @@
 
 _header.contentType("pdf")
 
-var pdfDocument = _pdf.newDocument(_pdf.pageSize("A4"));
+const pdfDocument = _pdf.newDocument(_pdf.pageSize("A4"))
 
-var viksiScript = _pdf.font(_storage.filesystem("server", "samples/export-pdf", "viksi-script.ttf"), true);
-var helvetica = _pdf.font("helvetica");
-var helveticaBold = _pdf.font("helvetica-bold");
-var helveticaBoldOblique = _pdf.font("helvetica-boldoblique");
-var helveticaOblique = _pdf.font("helvetica-oblique");
+const viksiScript = _pdf.font(_storage.filesystem("server", "samples/export-pdf", "viksi-script.ttf"), true)
+const helvetica = _pdf.font("helvetica")
+const helveticaBold = _pdf.font("helvetica-bold")
+const helveticaBoldOblique = _pdf.font("helvetica-boldoblique")
+const helveticaOblique = _pdf.font("helvetica-oblique")
 
 pdfDocument.add(
     _pdf.image(_storage.filesystem("server", "samples/export-pdf", "logo.png"))

@@ -1,5 +1,5 @@
 
-powershell -Command "Invoke-WebRequest -Uri https://github.com/netuno-org/platform/releases/download/testing/netuno.jar -OutFile netuno.jar"
+powershell -Command "Invoke-WebRequest -Uri https://github.com/netuno-org/platform/releases/download/testing/netuno-setup.jar -OutFile netuno-setup.jar"
 
-java -jar netuno.jar install version=testing
+java -jar netuno-setup.jar install version=testing
 

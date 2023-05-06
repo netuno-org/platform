@@ -802,6 +802,8 @@ public class DB {
 
         @Override
         protected void finalize() throws Throwable {
+            /*
+            GC TEST
             if (stat != null) {
                 if (!stat.isClosed()) {
                     this.close();
@@ -814,6 +816,7 @@ public class DB {
                 }
                 this.preparedStat = null;
             }
+            */
         }
     }
 }

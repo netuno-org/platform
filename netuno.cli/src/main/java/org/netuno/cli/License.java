@@ -68,101 +68,101 @@ public class License implements MainArg {
             System.out.println();
             return;
         }
-        if (change) {
-            System.out.println();
-            System.out.println();
-            System.out.println();
-            System.out.println(OS.consoleOutput("@|yellow Paste your license registered on netuno.org here:|@"));
-            Scanner scanner = new Scanner(System.in);
-            String newLicense = scanner.nextLine();
-            if (newLicense.length() <= 100) {
-                System.err.println();
-                System.err.println(OS.consoleOutput("@|red Invalid license length...|@") );
-                System.err.println();
-            }
-            this.setLicense(newLicense);
-            this.save();
-            System.out.println();
-            System.out.println();
-            System.out.println();
-            System.out.println(OS.consoleOutput("@|green License saved with success! Please restart your Netuno server...|@") );
-            System.out.println();
-            System.out.println();
-            return;
-        }
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println(OS.consoleOutput("@|green Creating a new License...|@") );
-        System.out.println();
-        System.out.println();
-        while (true) {
-            if (mail.isEmpty()) {
-                System.out.print(OS.consoleOutput("@|yellow Your e-mail"+ (!getMail().isEmpty() ? " [ "+ getMail() +" ]" : "") +" :|@ ") );
-                Scanner scanner = new Scanner(System.in);
-                mail = scanner.nextLine();
-                if (mail.isEmpty() && !getMail().isEmpty()) {
-                    mail = getMail();
-                }
-            }
-            if (mail.matches("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,6}$")) {
-                setMail(mail);
-                break;
-            } else {
-                mail = "";
-                System.err.println();
-                System.err.println(OS.consoleOutput("@|red Invalid mail address.|@") );
-                System.err.println();
-            }
-        }
-        while (true) {
-            if (type.length() == 0) {
-                String option = "1";
-                type = getType();
-                if (type.equals("standard")) {
-                    option = "2";
-                } else if (type.equals("enterprise")) {
-                    option = "3";
-                }
+        try (Scanner scanner = new Scanner(System.in)) {
+            if (change) {
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|yellow License types available:|@ "));
-                System.out.println(OS.consoleOutput("\t@|green 1|@ - Community (free)"));
-                System.out.println(OS.consoleOutput("\t@|red 2|@ - Standard (coming soon)"));
-                System.out.println(OS.consoleOutput("\t@|red 3|@ - Enterprise (coming soon)"));
-                System.out.print(OS.consoleOutput("@|yellow Choose your license:|@ @|cyan ["+ option +"]|@ "));
-                //Scanner scanner = new Scanner(System.in);
-                String inputOption = "1"; //scanner.nextLine();
-                if (!inputOption.isEmpty()) {
-                    option = inputOption;
+                System.out.println();
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|yellow Paste your license registered on netuno.org here:|@"));
+                String newLicense = scanner.nextLine();
+                if (newLicense.length() <= 100) {
+                    System.err.println();
+                    System.err.println(OS.consoleOutput("@|red Invalid license length...|@") );
+                    System.err.println();
                 }
-                if (option.isEmpty() || option.equals("1")) {
-                    type = "community";
-                } /*else if (option.equals("2")) {
-                    type = "standard";
-                } else if (option.equals("3")) {
-                    type = "enterprise";
-                }*/
+                License.setLicense(newLicense);
+                License.save();
+                System.out.println();
+                System.out.println();
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|green License saved with success! Please restart your Netuno server...|@") );
+                System.out.println();
+                System.out.println();
+                return;
             }
-            if (type.equals("community") || type.equals("standard") || type.equals("enterprise")) {
-                setType(type);
-                save();
-                break;
-            } else {
-                type = "";
-                System.err.println(OS.consoleOutput("@|red Invalid license type. |@"));
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println(OS.consoleOutput("@|green Creating a new License...|@") );
+            System.out.println();
+            System.out.println();
+            while (true) {
+                if (mail.isEmpty()) {
+                    System.out.print(OS.consoleOutput("@|yellow Your e-mail"+ (!getMail().isEmpty() ? " [ "+ getMail() +" ]" : "") +" :|@ ") );
+                    mail = scanner.nextLine();
+                    if (mail.isEmpty() && !getMail().isEmpty()) {
+                        mail = getMail();
+                    }
+                }
+                if (mail.matches("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,6}$")) {
+                    setMail(mail);
+                    break;
+                } else {
+                    mail = "";
+                    System.err.println();
+                    System.err.println(OS.consoleOutput("@|red Invalid mail address.|@") );
+                    System.err.println();
+                }
             }
-        }
-        System.err.println();
-        System.err.println();
-        System.err.println(OS.consoleOutput("@|green License file created. |@"));
-        System.err.println();
-        if (!server) {
-            System.err.println(OS.consoleOutput("@|white Now you can start the server with the command below: |@"));
+            while (true) {
+                if (type.length() == 0) {
+                    String option = "1";
+                    type = getType();
+                    if (type.equals("standard")) {
+                        option = "2";
+                    } else if (type.equals("enterprise")) {
+                        option = "3";
+                    }
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|yellow License types available:|@ "));
+                    System.out.println(OS.consoleOutput("\t@|green 1|@ - Community (free)"));
+                    System.out.println(OS.consoleOutput("\t@|red 2|@ - Standard (coming soon)"));
+                    System.out.println(OS.consoleOutput("\t@|red 3|@ - Enterprise (coming soon)"));
+                    System.out.print(OS.consoleOutput("@|yellow Choose your license:|@ @|cyan ["+ option +"]|@ "));
+                    //Scanner scanner = new Scanner(System.in);
+                    String inputOption = "1"; //scanner.nextLine();
+                    if (!inputOption.isEmpty()) {
+                        option = inputOption;
+                    }
+                    if (option.isEmpty() || option.equals("1")) {
+                        type = "community";
+                    } /*else if (option.equals("2")) {
+                        type = "standard";
+                    } else if (option.equals("3")) {
+                        type = "enterprise";
+                    }*/
+                }
+                if (type.equals("community") || type.equals("standard") || type.equals("enterprise")) {
+                    setType(type);
+                    save();
+                    break;
+                } else {
+                    type = "";
+                    System.err.println(OS.consoleOutput("@|red Invalid license type. |@"));
+                }
+            }
             System.err.println();
-            System.err.println(OS.consoleNetunoCommand("server"));
+            System.err.println();
+            System.err.println(OS.consoleOutput("@|green License file created. |@"));
+            System.err.println();
+            if (!server) {
+                System.err.println(OS.consoleOutput("@|white Now you can start the server with the command below: |@"));
+                System.err.println();
+                System.err.println(OS.consoleNetunoCommand("server"));
+                System.err.println();
+            }
             System.err.println();
         }
-        System.err.println();
     }
 
     public static boolean load() {

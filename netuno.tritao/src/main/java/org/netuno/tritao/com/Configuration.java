@@ -129,7 +129,10 @@ public class Configuration {
     }
 
     protected final void finalize() throws Throwable {
+        /*
+        GC TEST
         parameters.clear();
         parameters = null;
+        */
     }
 }

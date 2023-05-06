@@ -23,13 +23,13 @@ import java.sql.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
 import org.netuno.tritao.resource.Out;
 import org.netuno.tritao.resource.Req;
@@ -38,7 +38,7 @@ import org.netuno.tritao.resource.Req;
  * SQL Client Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/api/dev/SQLClient")
+@Path("/org/netuno/tritao/api/dev/SQLClient")
 public class SQLClient extends WebMaster {
     private static Logger logger = LogManager.getLogger(SQLClient.class);
     

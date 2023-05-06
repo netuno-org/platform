@@ -28,7 +28,7 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.resource.util.ResourceException;
 
@@ -82,6 +82,11 @@ public class JWT extends ResourceBase {
     @AppEvent(type=AppEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         getProteu().getConfig().set("_jwt", getProteu().getConfig().getValues("_app:config").getValues("jwt"));
+    }
+    
+    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    private void beforeServiceConfiguration() {
+        init();
     }
 
     public JWT init() throws ResourceException {
@@ -332,7 +337,9 @@ public class JWT extends ResourceBase {
                             @ParameterTranslationDoc(
                                     language = LanguageDoc.EN,
                                     description = "Header value."
-                            ),
+                            )
+                    }),
+                    @ParameterDoc(name = "body", translations = {
                             @ParameterTranslationDoc(
                                     language=LanguageDoc.PT,
                                     name = "corpo",
@@ -351,7 +358,7 @@ public class JWT extends ResourceBase {
             ),
             @ReturnTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Returns the values enconded."
+                    description = "Returns the values encoded."
             )
     })
     public String encode(Values header, Values body) {
@@ -375,35 +382,26 @@ public class JWT extends ResourceBase {
                     howToUse = {})
     },
             parameters = {
-                    @ParameterDoc(name = "header", translations = {
-                            @ParameterTranslationDoc(
-                                    language = LanguageDoc.PT,
-                                    name = "cabeçalho",
-                                    description = "Valor do cabeçalho."
-                            ),
-                            @ParameterTranslationDoc(
-                                    language = LanguageDoc.EN,
-                                    description = "Header value."
-                            ),
+                    @ParameterDoc(name = "token", translations = {
                             @ParameterTranslationDoc(
                                     language=LanguageDoc.PT,
-                                    name = "corpo",
-                                    description = "Valor do corpo."
+                                    name = "token",
+                                    description = "Código de acesso."
                             ),
                             @ParameterTranslationDoc(
                                     language = LanguageDoc.EN,
-                                    description = "Body value."
+                                    description = "Acess code."
                             )
 
                     })
             }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna os valores codificados."
+                    description = "Retorna os valores decodificados."
             ),
             @ReturnTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Returns the values enconded."
+                    description = "Returns the values decoded."
             )
     })
     public Values decode(String token) {
@@ -507,7 +505,7 @@ public class JWT extends ResourceBase {
     )
 
     public boolean check(String token) {
-    	Time time = new Time(getProteu(), getHili());
+    	Time time = resource(Time.class);
         Data dbManagerData = new Data(getProteu(), getHili());
         List<Values> dbTokens = dbManagerData.find(
                 "netuno_auth_jwt_token",

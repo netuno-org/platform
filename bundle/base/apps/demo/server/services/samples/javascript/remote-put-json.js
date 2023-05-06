@@ -11,9 +11,9 @@
  *
  */
 
-var client = _remote.init()
+const client = _remote.init()
 
-var response = client.asJSON().put(
+const response = client.asJSON().put(
     'http://httpbin.org/put',
     _val.init()
         .set("name", "morpheus")

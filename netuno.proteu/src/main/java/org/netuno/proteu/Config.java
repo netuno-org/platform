@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class Config {
 
     public static final String VERSION = "7";
-    public static final String VERSION_YEAR = "2021";
+    public static final String VERSION_YEAR = "2023";
     
     public static String BUILD_NUMBER = "99999999.9999";
 
@@ -88,7 +88,7 @@ public final class Config {
     /**
      * Packages in white list to scan
      */
-    private static List<String> packagesWhiteList = Collections.synchronizedList(new ArrayList<>());
+    private static List<String> packagesScan = Collections.synchronizedList(new ArrayList<>());
     /**
      * Events
      */
@@ -184,7 +184,7 @@ public final class Config {
     private static boolean reduceErrors = true;
 
     static {
-        packagesWhiteList.add("org.netuno");
+        packagesScan.add("org.netuno");
     }
     /**
      * Configuration.
@@ -330,8 +330,8 @@ public final class Config {
      * Packages In White List to Class Scan
      * @return List of packages
      */
-    public static List<String> getPackagesWhiteList() {
-        return packagesWhiteList;
+    public static List<String> getPackagesScan() {
+        return packagesScan;
     }
 
     /**

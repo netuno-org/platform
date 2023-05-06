@@ -114,12 +114,12 @@ public class CoreData {
     }
     
     public static List<String> primaryKeys(Proteu proteu, String tableName) {
-        Builder builder = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDataBaseBuilder(proteu);
         return builder.primaryKeys(tableName);
     }
     
     public static List<String> notNulls(Proteu proteu, String tableName) {
-        Builder builder = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDataBaseBuilder(proteu);
         return builder.notNulls(tableName);
     }
 }

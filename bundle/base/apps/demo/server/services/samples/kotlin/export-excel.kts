@@ -56,9 +56,9 @@ styleTotal.setFont(fontTotal);
 excel.insertPicture(
     _storage.filesystem("server", "samples/export-excel", "logo.png"),
     1, 1
-).resize(2.3)
+).resize(0.35)
 
-excel.sheet.addMergedRegion(_xls.cellRangeAddress(1, 3, 1, 3))
+excel.mergedRegion(1, 3, 1, 3)
 
 /**
   *  Header

@@ -28,7 +28,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,9 +37,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.sandbox.ScriptResult;
 
 /**
  * Setup - Resource
@@ -58,7 +60,29 @@ public class Setup extends ResourceBase {
 
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Setup.class);
 
+    private static String GLOBAL_SECRET = null;
+
     private static boolean running = false;
+
+    public enum RunResult {
+        Running("running"),
+        Disabled("disabled"),
+        Error("error"),
+        Success("success");
+
+        private String code = "";
+
+        private RunResult(String code) {
+            this.code = code;
+        }
+
+        public String code() {
+            return code;
+        }
+        public String getCode() {
+            return code();
+        }
+    }
 
     public Setup(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -66,7 +90,22 @@ public class Setup extends ResourceBase {
     
     @AppEvent(type=AppEventType.BeforeEnvironment)
     private void beforeEnvironment() {
-        getProteu().getConfig().set("_setup", getProteu().getConfig().getValues("_app:config").getValues("setup"));
+        Values setupConfig = getProteu().getConfig().getValues("_app:config").getValues("setup");
+        getProteu().getConfig().set("_setup:config", setupConfig);
+        if (setupConfig != null) {
+            if (GLOBAL_SECRET == null) {
+                GLOBAL_SECRET = resource(Random.class).initString().nextString();
+            }
+            getProteu().getConfig().set("_setup:secret", setupConfig.getString("secret", GLOBAL_SECRET));
+        }
+    }
+
+    public String secret() {
+        return getProteu().getConfig().getString("_setup:secret");
+    }
+
+    public String getSecret() {
+        return secret();
     }
 
     public boolean running() {
@@ -77,18 +116,20 @@ public class Setup extends ResourceBase {
         return running;
     }
 
-    public void run() {
+    public RunResult run() {
         if (running) {
-            return;
+            return RunResult.Running;
         }
         running = true;
+        AtomicBoolean result = new AtomicBoolean(true);
         getProteu().getConfig().set("_setup:running", true);
         try {
-            Values setupConfig = getProteu().getConfig().asValues("_setup");
-            if (setupConfig != null && !setupConfig.getBoolean("enabled", true)) {
-                return;
+            Values setupConfig = getProteu().getConfig().asValues("_setup:config");
+            if (setupConfig == null || !setupConfig.getBoolean("enabled", true)) {
+                return RunResult.Disabled;
             }
-            getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), "_start");
+            ScriptResult scriptStartResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), "_start");
+            result.set(result.get() && scriptStartResult.isSuccess());
             Config.getDataBaseBuilder(getProteu(), "default").setup();
             if (setupConfig == null
                     || setupConfig.getValues("schema") == null
@@ -98,11 +139,13 @@ public class Setup extends ResourceBase {
                             (f) -> {
                                 String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
                                 if (fileName.startsWith("_schema-")) {
-                                    getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), fileName);
+                                    ScriptResult scriptSchemaResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
+                                    result.set(result.get() && scriptSchemaResult.isSuccess());
                                 }
                             }
                     );
                 } catch (IOException e) {
+                    result.set(false);
                     logger.fatal("When looking for setup schema scripts into the folder: " + Config.getPathAppSetup(getProteu()), e);
                 }
                 try (Stream<Path> files = Files.list(Paths.get(Config.getPathAppSetup(getProteu())))) {
@@ -110,11 +153,13 @@ public class Setup extends ResourceBase {
                             (f) -> {
                                 String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
                                 if (fileName.startsWith("_data-")) {
-                                    getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), fileName);
+                                    ScriptResult scriptDataResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
+                                    result.set(result.get() && scriptDataResult.isSuccess());
                                 }
                             }
                     );
                 } catch (IOException e) {
+                    result.set(false);
                     logger.fatal("When looking for setup data scripts into the folder: " + Config.getPathAppSetup(getProteu()), e);
                 }
             }
@@ -126,19 +171,30 @@ public class Setup extends ResourceBase {
                             (f) -> {
                                 String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
                                 if (!fileName.startsWith("_")) {
-                                    getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), fileName);
+                                    ScriptResult scriptGenericResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
+                                    result.set(result.get() && scriptGenericResult.isSuccess());
                                 }
                             }
                     );
                 } catch (IOException e) {
+                    result.set(false);
                     logger.fatal("When looking for setup scripts into the folder: " + Config.getPathAppSetup(getProteu()), e);
                 }
             }
-            getHili().runScriptSandbox(Config.getPathAppSetup(getProteu()), "_end");
+            ScriptResult scriptEndResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), "_end");
+            result.set(result.get() && scriptEndResult.isSuccess());
+            if (!result.get()) {
+                return RunResult.Error;
+            }
+            return RunResult.Success;
         } finally {
             getProteu().getConfig().set("_setup:running", false);
             running = false;
         }
+    }
+
+    public boolean isAutoCreateSchema() {
+        return autoCreateSchema();
     }
 
     public boolean autoCreateSchema() {

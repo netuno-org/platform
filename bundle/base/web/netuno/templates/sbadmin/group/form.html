@@ -14,7 +14,7 @@
 <form id="netuno_group_form" role="form">
     <div class="form-group">
         <h2>_{&lang=netuno.group.group}</h2>
-        <select name="uid" id="netuno_group_form_group_uid" value="_{data=group.uid.value}" netuno-select-service="Group_{netuno-config=extension}?service=json&allow_all=true" style="width: 100%;">
+        <select name="uid" id="netuno_group_form_group_uid" value="_{data=group.uid.value}" netuno-select-service="Group_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" style="width: 100%;">
         </select>
     </div>
     <hr>
@@ -23,9 +23,19 @@
         <label for="netuno_group_form_group_name">_{&lang=netuno.group.name}</label>
         <input type="text" name="name" id="netuno_group_form_group_name" value="_{&data=group.name.value}" size="50" maxlength="50" class="form-control" placeholder="_{&lang=netuno.group.name}" validation="required">
     </div>
-    <div class="form-group">
-        <label for="netuno_group_form_group_admin">_{&lang=netuno.group.admin}</label>
-        <input type="checkbox" name="admin" id="netuno_group_form_group_admin" value="1" _{data=group.admin.checked}>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="netuno_group_form_group_login_allowed">_{&lang=netuno.group.login_allowed}</label>
+                <input type="checkbox" name="login_allowed" id="netuno_group_form_group_login_allowed" value="1" _{data=group.login_allowed.checked}>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="netuno_group_form_group_admin">_{&lang=netuno.group.admin}</label>
+                <input type="checkbox" name="admin" id="netuno_group_form_group_admin" value="1" _{data=group.admin.checked}>
+            </div>
+        </div>
     </div>
     <div class="form-group">
         <label for="netuno_group_form_group_name">_{&lang=netuno.group.mail}</label>
@@ -150,6 +160,10 @@
         var reportRulesButton = $('a#netuno_group_report_rules_button');
 
         netuno.com.select.callbackForFieldId('netuno_group_form_group_uid', 'changed', function () {
+            var that = $('#netuno_group_form_group_uid');
+            if (netuno.com.select.netunoGroupChanged == that.val()) {
+                return;
+            }
             form.off("submit");
             form.ajaxForm({
                 url: url,
@@ -159,7 +173,7 @@
                     $('button#netuno_group_report_rules_button').fadeTo('fast', 1);
                     $('div#netuno_group_form_rules_container').hide();
                     $('div#netuno_group_report_rules_container').hide();
-                    netuno.com.select.netunoGroupChanged = true;
+                    netuno.com.select.netunoGroupChanged = that.val();
                     netuno.contentLoaded(container);
                 }
             }).submit();

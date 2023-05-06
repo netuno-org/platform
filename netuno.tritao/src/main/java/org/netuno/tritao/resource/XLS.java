@@ -28,8 +28,9 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.io.File;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
 
 import java.io.FileInputStream;
@@ -1033,7 +1034,14 @@ public class XLS extends ResourceBase {
                     || val instanceof Float
                     || val instanceof Double) {
                 cell.setCellValue(values.getDouble("value"));
-            } else if (val instanceof Date) {
+            } else if (val instanceof java.sql.Timestamp) {
+                cell.setCellValue(values.getSQLTimestamp("value").toLocalDateTime());
+            } else if (val instanceof java.time.LocalDateTime) {
+                cell.setCellValue(values.getLocalDateTime("value"));
+            } else if (val instanceof java.time.LocalDate) {
+                cell.setCellValue(values.getLocalDate("value"));
+            } if (val instanceof Date || val instanceof java.sql.Date || val instanceof java.sql.Time
+                || val instanceof java.time.Instant || val instanceof java.time.LocalTime) {
                 cell.setCellValue(values.getDate("value"));
             } else if (val instanceof Calendar) {
                 cell.setCellValue(values.getCalendar("value"));
@@ -1154,6 +1162,126 @@ public class XLS extends ResourceBase {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cria um novo estilo de fonte no workbook.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Creates a new font style in the workbook.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O novo estilo de fonte criado."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The new font style created."
+        )
+    })
+    public HSSFFont font() {
+        return this.workbook.createFont();
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cria um novo estilo de célula no workbook.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Creates a new cell style in the workbook.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O novo estilo de célula criado."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The new cell style created."
+        )
+    })
+    public HSSFCellStyle cellStyle() {
+        return this.workbook.createCellStyle();
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cria um novo formato de célula no workbook.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Creates a new cell format in the workbook.",
+                howToUse = { })
+    }, parameters = {
+        @ParameterDoc(name = "format", translations = {
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.PT,
+                        name = "formato",
+                        description = "Definição do padrão do formato."
+                ),
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.EN,
+                        description = "Format standard definition."
+                )
+        })
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Código identificador do novo formato."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Identifier code for the new format."
+        )
+    })
+    public short format(String format) {
+        return this.workbook.getCreationHelper().createDataFormat().getFormat(format);
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cria um novo estilo de célula com um formato associado no workbook.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Creates a new cell style with an associated format in the workbook.",
+                howToUse = { })
+    }, parameters = {
+        @ParameterDoc(name = "format", translations = {
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.PT,
+                        name = "formato",
+                        description = "Definição do padrão do formato."
+                ),
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.EN,
+                        description = "Format standard definition."
+                )
+        })
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O novo estilo de célula criado com o formato configurado."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The new cell style created with the configured format."
+        )
+    })
+    public HSSFCellStyle cellStyleFormat(String format) {
+        HSSFCellStyle cellStyle = cellStyle();
+        cellStyle.setDataFormat(format(format));
+        return cellStyle;
     }
 
     @MethodDoc(translations = {
@@ -1516,6 +1644,153 @@ public class XLS extends ResourceBase {
 
     @MethodDoc(translations = {
             @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a mesclagem de células na região.",
+                howToUse = { }),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Performs the merging of cells in the region.",
+                howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "firstRow", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "primeiraLinha",
+                    description = "Número da primeira linha."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "First line number."
+                )
+            }),
+            @ParameterDoc(name = "lastRow", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "ultimaLinha",
+                    description = "Número da última linha."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Last line number."
+                )
+            }),
+            @ParameterDoc(name = "firstCol", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "primeiraColuna",
+                    description = "Número da primeira coluna."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "First column number."
+                )
+            }),
+            @ParameterDoc(name = "lastCol", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "ultimaColuna",
+                    description = "Número da última coluna."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Last column number."
+                )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "A referência da região de células mesclada."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The reference of the merged cell region."
+            )
+    })
+    public int mergedRegion(int firstRow, int lastRow, int firstCol, int lastCol) {
+        return this.sheet.addMergedRegion(this.cellRangeAddress(firstRow, lastRow, firstCol, lastCol));
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a mesclagem de células na região passada em uma folha de cálculos específica.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Performs the merging of cells in the passed region in a specific worksheet.",
+                howToUse = { })
+        }, parameters = {
+                @ParameterDoc(name = "sheet", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "folhaCalculos",
+                                description = "Folha de cálculos que será mesclada as células."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Spreadsheet that will be merged the cells."
+                        )
+                }),
+                @ParameterDoc(name = "firstRow", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "primeiraLinha",
+                                description = "Número da primeira linha."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "First line number."
+                        )
+                }),
+                @ParameterDoc(name = "lastRow", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "ultimaLinha",
+                                description = "Número da última linha."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Last line number."
+                        )
+                }),
+                @ParameterDoc(name = "firstCol", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "primeiraColuna",
+                                description = "Número da primeira coluna."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "First column number."
+                        )
+                }),
+                @ParameterDoc(name = "lastCol", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "ultimaColuna",
+                                description = "Número da última coluna."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Last column number."
+                        )
+                })
+        }, returns = {
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.PT,
+                        description = "A referência da região de células mesclada."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "The reference of the merged cell region."
+                )
+    })
+    public int mergedRegion(HSSFSheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
+        return sheet.addMergedRegion(this.cellRangeAddress(firstRow, lastRow, firstCol, lastCol));
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Gera o código da cor baseado em nomes pré definidos.",
                     howToUse = { }),
@@ -1698,13 +1973,93 @@ public class XLS extends ResourceBase {
                     )
             })
     }, returns = {})
-    public void output(Storage storage) throws IOException {
+    public void save(Storage storage) throws IOException {
         FileOutputStream fos = new FileOutputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage));
         try {
             workbook.write(fos);
         } finally {
             fos.close();
         }
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a escrita dos dados do ficheiro final.",
+                howToUse = { }),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Writes the data to the final file.",
+                howToUse = { })
+        }, parameters = {
+            @ParameterDoc(name = "file", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    description = "Ficheiro que será guardado."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "File that will be saved."
+                )
+            })
+    }, returns = {})
+    public void save(File file) throws IOException {
+        FileOutputStream fos = new FileOutputStream(file.fullPath());
+        try {
+            workbook.write(fos);
+        } finally {
+            fos.close();
+        }
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a escrita dos dados do ficheiro final para o output.",
+                howToUse = { }),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Writes the data from the final file to the output.",
+                howToUse = { })
+        }, parameters = {
+            @ParameterDoc(name = "output", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    description = "Output onde o ficheiro será guardado."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Output where the file will be saved."
+                )
+            })
+    }, returns = {})
+    public void save(OutputStream output) throws IOException {
+        workbook.write(output);
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a escrita dos dados do ficheiro final para o output.",
+                howToUse = { }),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Writes the data from the final file to the output.",
+                howToUse = { })
+        }, parameters = {
+            @ParameterDoc(name = "output", translations = {
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    description = "Output onde o ficheiro será guardado."
+                ),
+                @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Output where the file will be saved."
+                )
+        })
+    }, returns = {})
+    public void save(java.io.OutputStream output) throws IOException {
+        workbook.write(output);
     }
 
     @MethodDoc(dependency = "create", translations = {
@@ -1767,8 +2122,6 @@ public class XLS extends ResourceBase {
         anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
         anchor.setCol1(column);
         anchor.setRow1(row);
-        anchor.setRow2(row);
-        anchor.setCol2(column + 1);
         return insertPicture(storage, anchor);
     }
 
@@ -1871,11 +2224,182 @@ public class XLS extends ResourceBase {
     })
     public Picture insertPicture(HSSFSheet sheet, Storage storage, ClientAnchor anchor) throws IOException {
         Drawing drawing = sheet.createDrawingPatriarch();
-
+        
         int pictureIndex = workbook.addPicture(
                 InputStream.readAllBytesFromFile(
                         FileSystemPath.absoluteFromStorage(getProteu(), storage)
-                ), Workbook.PICTURE_TYPE_PNG
+                ), storage.isExtension("png") ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG
+        );
+
+        Picture pict = drawing.createPicture(anchor, pictureIndex);
+        return pict;
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Insere a imagem na célula específicada.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Insert the image into the specified cell.",
+                howToUse = { })
+        }, parameters = {
+                @ParameterDoc(name = "file", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                description = "Ficheiro de imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Image file."
+                        )
+                }),
+                @ParameterDoc(name = "row", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "linha",
+                                description = "Número da linha."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                name = "linha",
+                                description = "Line number."
+                        )
+                }),
+                @ParameterDoc(name = "column", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "coluna",
+                                description = "Número da coluna."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                name = "coluna",
+                                description = "Column number."
+                        )
+                })
+        }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O objeto de referência da imagem inserida."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The reference object of the inserted image."
+        )
+    })
+    public Picture insertPicture(File file, int row, int column) throws IOException {
+        CreationHelper helper = workbook.getCreationHelper();
+        ClientAnchor anchor = helper.createClientAnchor();
+        anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
+        anchor.setCol1(column);
+        anchor.setRow1(row);
+        return insertPicture(file, anchor);
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Insere uma imagem associada à âncora.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Inserts an image associated with the anchor.",
+                howToUse = { })
+        }, parameters = {
+                @ParameterDoc(name = "file", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                description = "Ficheiro de imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Image file."
+                        )
+                }),
+                @ParameterDoc(name = "anchor", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "ancora",
+                                description = "Âncora para associar a imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Anchor to associate the image."
+                        )
+                })
+        }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O objeto de referência da imagem inserida."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The reference object of the inserted image."
+        )
+    })
+    public Picture insertPicture(File file, ClientAnchor anchor) throws IOException {
+        return insertPicture(sheet, file, anchor);
+    }
+    
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Insere uma imagem associada à âncora em uma folha de cálculos específica.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Inserts an image associated with the anchor in a specific spreadsheet.",
+                howToUse = { })
+        }, parameters = {
+                @ParameterDoc(name = "sheet", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "folhaCalculos",
+                                description = "Folha de cálculos que será utilizada para inserir a imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Spreadsheet that will be used to insert the image."
+                        )
+                }),
+                @ParameterDoc(name = "file", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                description = "Ficheiro de imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Image file."
+                        )
+                }),
+                @ParameterDoc(name = "anchor", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "ancora",
+                                description = "Âncora para associar a imagem."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Anchor to associate the image."
+                        )
+                })
+        }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O objeto de referência da imagem inserida."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The reference object of the inserted image."
+        )
+    })
+    public Picture insertPicture(HSSFSheet sheet, File file, ClientAnchor anchor) throws IOException {
+        Drawing drawing = sheet.createDrawingPatriarch();
+        
+        int pictureIndex = workbook.addPicture(
+                file.bytes(), file.isExtension("png") ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG
         );
 
         Picture pict = drawing.createPicture(anchor, pictureIndex);
@@ -2134,7 +2658,7 @@ public class XLS extends ResourceBase {
     }
     
     public Values read(InputStream in, int sheetNumber, boolean hiddenSheets) throws IOException {
-        return read(in, sheetNumber, hiddenSheets);
+        return read((java.io.InputStream)in, sheetNumber, hiddenSheets);
     }
     
     public Values read(java.io.InputStream in) throws IOException {
@@ -2187,6 +2711,21 @@ public class XLS extends ResourceBase {
                     } else if (currentCell.getCellType() == CellType.NUMERIC) {
                         cell.set("type", "numeric");
                         cell.set("value", currentCell.getNumericCellValue());
+                        if (DateUtil.isCellDateFormatted(currentCell)) {
+                            try {
+                                cell.set("localDateTime", currentCell.getLocalDateTimeCellValue());
+                                cell.set("localDate", currentCell.getLocalDateTimeCellValue().toLocalDate());
+                                cell.set("localTime", currentCell.getLocalDateTimeCellValue().toLocalTime());
+                                cell.set("instant", currentCell.getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()));
+                                cell.set("date", currentCell.getDateCellValue());
+                            } catch (NullPointerException e) {
+                                cell.set("localDateTime", null);
+                                cell.set("localDate", null);
+                                cell.set("localTime", null);
+                                cell.set("instant", null);
+                                cell.set("date", null);
+                            }
+                        }
                     } else if (currentCell.getCellType() == CellType.BOOLEAN) {
                         cell.set("type", "boolean");
                         cell.set("value", currentCell.getBooleanCellValue());

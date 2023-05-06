@@ -5,6 +5,13 @@ body {
     margin-top: 50px !important;
 }
 
+.netuno-toast-top-center {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
 .netuno-login .logo {
     margin-bottom: 40px;
 }

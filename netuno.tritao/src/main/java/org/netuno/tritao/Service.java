@@ -26,8 +26,8 @@ import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.config.HiliError;
+import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.hili.HiliError;
 
 import java.io.*;
 import java.util.Arrays;
@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.providers.HandlerProviders;
+import org.netuno.tritao.resource.JWT;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.event.EventExecutor;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -72,6 +73,7 @@ public class Service {
     public String path = "";
     public Boolean generatingOpenAPIDefinition = false;
     public Boolean allowed = false;
+    public Boolean denied = false;
     public Boolean cancelled = false;
     public Values errorData = null;
     
@@ -88,7 +90,7 @@ public class Service {
 			return;
 		}*/
 
-        hili.bind("service", this);
+        hili.sandbox().bind("service", this);
     }
 
     public List<String> getMethods() {
@@ -129,10 +131,12 @@ public class Service {
 
     public void allow() {
         this.allowed = true;
+        this.denied = false;
     }
 
     public void deny() {
         this.allowed = false;
+        this.denied = true;
     }
 
     public boolean isAllowed() {
@@ -140,7 +144,7 @@ public class Service {
     }
 
     public boolean isDenied() {
-        return this.allowed == false;
+        return this.denied;
     }
 
     @IgnoreDoc
@@ -181,26 +185,32 @@ public class Service {
 
             if (!schema.validateSchemaIn()) {
                 proteu.responseHTTPError(Proteu.HTTPStatus.BadRequest400, hili);
+                service.defaultEmptyOutput();
                 return;
             }
-            if (service.getPath().equalsIgnoreCase("_auth")) {
+            if (service.getPath().equalsIgnoreCase("_auth") || Auth.isAuthenticated(proteu, hili)) {
                 service.allow();
             }
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
             if (service.core("_service_config")) {
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
-                if (!service.wasCancelled()
-                        && !service.isAllowed()
-                        && !Auth.isAuthenticated(proteu, hili)) {
-                    if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
-                        proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
-                    }
-                    return;
-                }
                 if (service.wasCancelled()) {
-                    if (proteu.getResponseHeaderStatus() == Proteu.HTTPStatus.OK200) {
+                    if (proteu.isResponseHeaderStatusOk()) {
                         proteu.responseHTTPError(Proteu.HTTPStatus.ServiceUnavailable503, hili);
                     }
+                    service.defaultEmptyOutput();
+                    return;
+                } else if (service.isDenied() || !service.isAllowed()) {
+                    if (proteu.isResponseHeaderStatusOk()) {
+                        proteu.responseHTTPError(Proteu.HTTPStatus.Unauthorized401, hili);
+                    }
+                    service.defaultEmptyOutput();
+                    return;
+                }
+                JWT jwt = hili.resource().get(JWT.class);
+                if (!jwt.token().isEmpty() && !jwt.check()) {
+                    proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
+                    service.defaultEmptyOutput();
                     return;
                 }
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
@@ -241,25 +251,27 @@ public class Service {
     public boolean core(String file) {
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(proteu) + "/" + file);
         if (scriptPath != null) {
-            if (hili.runScriptSandbox(Config.getPathAppCore(proteu), file) == null) {
-                if (!file.equals("_service_error")) {
-                    core("_service_error");
-                }
-                return false;
-            }
-            return true;
-        } else {
-            proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
-            logger.warn("\n"
-                    + "\n#"
-                    + "\n# Core script not found: "
-                    + "\n#"
-                    + "\n# " + Config.getPathAppCore(proteu)
-                    + "\n# " + file
-                    + "\n#"
-                    + "\n"
-            );
+            return hili.sandbox()
+                    .runScript(Config.getPathAppCore(proteu), file)
+                    .whenError((t) -> {
+                        if (!file.equals("_service_error")) {
+                            core("_service_error");
+                        }
+                    })
+                    .isSuccess();
         }
+        proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
+        logger.warn("\n"
+                + "\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
+                + "\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":compass:") + " The core script was not found at: "
+                + "\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") + " " + Config.getPathAppCore(proteu)
+                + "\n# " + EmojiParser.parseToUnicode(":stop_sign:") + " " + file
+                + "\n#"
+                + "\n"
+        );
         return false;
     }
 
@@ -270,11 +282,10 @@ public class Service {
         }
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppServices(proteu) + "/" + file);
         if (scriptPath != null) {
-            if (hili.runScriptSandbox(Config.getPathAppServices(proteu), file) == null) {
-                core("_service_error");
-                return false;
-            }
-            return true;
+            return hili.sandbox()
+                    .runScript(Config.getPathAppServices(proteu), file)
+                    .whenError((t) -> core("_service_error"))
+                    .isSuccess();
         } else if (!file.equals("config")) {
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceNotFound);
             if (isNotFoundDefaultError()) {
@@ -283,10 +294,10 @@ public class Service {
                         + "\n#"
                         + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
                         + "\n#"
-                        + "\n# " + EmojiParser.parseToUnicode(":compass:") + " Service not found for " + proteu.getRequestHeader().getString("Method").toUpperCase() + " method: "
+                        + "\n# " + EmojiParser.parseToUnicode(":compass:") + " Service script was not found for the " + proteu.getRequestHeader().getString("Method").toUpperCase() + " method: "
                         + "\n#"
-                        + "\n# " + Config.getPathAppServices(proteu)
-                        + "\n# " + file
+                        + "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") + " " + Config.getPathAppServices(proteu)
+                        + "\n# " + EmojiParser.parseToUnicode(":stop_sign:") + " " + file
                         + "\n#"
                         + "\n"
                 );
@@ -312,6 +323,12 @@ public class Service {
     public void notFoundDefaultError(boolean value) {
         setNotFoundDefaultError(value);
     }
+
+    public void defaultEmptyOutput() throws IOException, ProteuException {
+        if (proteu.isRequestJSON() && proteu.getOutput().isEmpty()) {
+            proteu.outputJSON(new Values().forceMap());
+        }
+    }
     
     public static Service getInstance(Proteu proteu) {
         return (Service)proteu.getConfig().get("_service:instance");
@@ -319,6 +336,9 @@ public class Service {
     
     @Override
     protected void finalize() throws Throwable {
+        /*
+        GC TEST
         hili.unbind("service");
+        */
     }
 }

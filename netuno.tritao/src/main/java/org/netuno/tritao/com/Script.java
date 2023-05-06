@@ -20,12 +20,9 @@ package org.netuno.tritao.com;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
-import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
-
-import java.sql.SQLException;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Script Based - Form Field Component
@@ -40,7 +37,7 @@ public class Script extends ComponentBase {
     public Script(Proteu proteu, Hili hili, String type) {
         super(proteu, hili);
         this.type = type;
-        getHili().bind("component",
+        getHili().sandbox().bind("component",
                 new org.netuno.tritao.resource.Component(proteu, hili, this)
         );
         data.set("component.type", type);
@@ -63,7 +60,7 @@ public class Script extends ComponentBase {
     }
 
     private void runScript(String scriptName) {
-        getHili().runScriptSandbox(Config.getPathAppComponents(getProteu()), getType() +"/"+ scriptName);
+        getHili().sandbox().runScript(Config.getPathAppComponents(getProteu()), getType() +"/"+ scriptName);
     }
 
     public Component setDesignData(Values designData) {

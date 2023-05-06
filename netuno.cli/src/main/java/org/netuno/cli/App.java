@@ -17,14 +17,12 @@
 
 package org.netuno.cli;
 
-import org.apache.commons.lang3.SystemUtils;
+import org.netuno.cli.setup.GraalVMSetup;
+import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
-import org.netuno.cli.utils.RunCommand;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
-import org.netuno.psamata.crypto.RandomString;
-import org.netuno.psamata.net.Remote;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -409,7 +407,10 @@ public class App implements MainArg {
     protected String github = "";
 
     public void run() throws Exception {
-        Install.graalCheckAndSetup();
+        GraalVMSetup.checkAndSetup();
+        if (!ConfigScript.run()) {
+            return;
+        }
         System.err.println();
         System.err.println();
         if (!config.isEmpty()) {
@@ -420,234 +421,222 @@ public class App implements MainArg {
             installFromGitHub(github);
             System.exit(0);
         }
-        while (true) {
-            if (name.length() == 0) {
-                System.out.print(OS.consoleOutput("@|yellow App name:|@ "));
-                Scanner scanner = new Scanner(System.in);
-                name = scanner.nextLine();
-            }
-            name = name.toLowerCase();
-            if (checkAppName(name)) {
-                break;
-            } else {
-                name = "";
-                System.err.println(OS.consoleOutput("@|red Invalid application name.|@"));
-            }
-        }
-        while (true) {
-            if (dbEngine.length() == 0) {
-                System.out.println();
-                System.out.println(OS.consoleOutput("@|yellow Type of databases available:|@ "));
-                System.out.println(OS.consoleOutput("\t@|green 1|@ - H2 Database (only for Test or Development)"));
-                System.out.println(OS.consoleOutput("\t@|green 2|@ - PostgreSQL"));
-                System.out.println(OS.consoleOutput("\t@|green 3|@ - MariaDB"));
-                System.out.println(OS.consoleOutput("\t@|green 4|@ - Microsoft SQL Server"));
-                System.out.print(OS.consoleOutput("@|yellow Choose your database:|@ @|cyan [1]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                String option = scanner.nextLine();
-                if (option.isEmpty() || option.equals("1")) {
-                    dbEngine = "h2";
-                } else if (option.equals("2")) {
-                    dbEngine = "pg";
-                } else if (option.equals("3")) {
-                    dbEngine = "mariadb";
-                } else if (option.equals("4")) {
-                    dbEngine = "mssql";
-                }
-            }
-            if (!dbEngine.isEmpty()) {
-                break;
-            } else {
-                dbEngine = "";
-                System.err.println(OS.consoleOutput("@|red Invalid database engine.|@"));
-            }
-        }
-        if (!dbEngine.equals("h2")) {
+        try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
-                if (dbHost.length() == 0) {
-                    System.out.println();
-                    System.out.print(OS.consoleOutput("@|yellow Database host name or ip:|@ @|cyan [localhost]|@ "));
-                    Scanner scanner = new Scanner(System.in);
-                    dbHost = scanner.nextLine();
-                    if (dbHost.isEmpty()) {
-                        dbHost = "localhost";
-                    }
+                if (name.length() == 0) {
+                    System.out.print(OS.consoleOutput("@|yellow App name:|@ "));
+                    name = scanner.nextLine();
                 }
-                if (dbPort.length() == 0) {
-                    System.out.println();
-                    System.out.print(OS.consoleOutput("@|yellow Database host port number:|@ @|cyan ["+
-                            (dbEngine.equals("pg") ? "5432" :
-                                    dbEngine.equals("mariadb") ? "3306" :
-                                            dbEngine.equals("mssql") ? "1433" :
-                                                    "")
-                            +"]|@ "));
-                    Scanner scanner = new Scanner(System.in);
-                    dbPort = scanner.nextLine();
-                    if (dbPort.isEmpty()) {
-                        if (dbEngine.equals("pg")) {
-                            dbPort = "5432";
-                        } else if (dbEngine.equals("mariadb")) {
-                            dbPort = "3306";
-                        } else if (dbEngine.equals("mssql")) {
-                            dbPort = "1433";
-                        }
-                    }
-                }
-                if (dbPort.matches("^[0-9]+$")) {
+                name = name.toLowerCase();
+                if (checkAppName(name)) {
                     break;
                 } else {
-                    dbPort = "";
-                    System.err.println(OS.consoleOutput("@|red Invalid port number.|@"));
+                    name = "";
+                    System.err.println(OS.consoleOutput("@|red Invalid application name.|@"));
                 }
             }
-        }
-        while (true) {
-            if (dbName.length() == 0) {
-                System.out.println();
-                System.out.print(OS.consoleOutput("@|yellow Database name:|@ @|cyan ["+ name +"]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                dbName = scanner.nextLine();
-                if (dbName.isEmpty()) {
-                    dbName = name;
+            while (true) {
+                if (dbEngine.length() == 0) {
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|yellow Type of databases available:|@ "));
+                    System.out.println(OS.consoleOutput("\t@|green 1|@ - H2 Database (only for Test or Development)"));
+                    System.out.println(OS.consoleOutput("\t@|green 2|@ - PostgreSQL"));
+                    System.out.println(OS.consoleOutput("\t@|green 3|@ - MariaDB"));
+                    System.out.println(OS.consoleOutput("\t@|green 4|@ - Microsoft SQL Server"));
+                    System.out.print(OS.consoleOutput("@|yellow Choose your database:|@ @|cyan [1]|@ "));
+                    String option = scanner.nextLine();
+                    if (option.isEmpty() || option.equals("1")) {
+                        dbEngine = "h2";
+                    } else if (option.equals("2")) {
+                        dbEngine = "pg";
+                    } else if (option.equals("3")) {
+                        dbEngine = "mariadb";
+                    } else if (option.equals("4")) {
+                        dbEngine = "mssql";
+                    }
                 }
-            }
-            dbName = dbName.toLowerCase();
-            if (checkAppName(dbName)) {
-                break;
-            } else {
-                dbName = "";
-                System.err.println(OS.consoleOutput("@|red Invalid database name.|@"));
-            }
-        }
-        if (dbEngine.equalsIgnoreCase("pg")) {
-            System.out.println();
-            System.out.println("When using PostgreSQL execute this command below in your database before start the Netuno Server:");
-            System.out.println();
-            System.out.println(OS.consoleOutput("@|yellow CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";|@"));
-            System.out.println();
-        }
-        if (!dbEngine.equals("h2")) {
-            if (dbUsername.length() == 0 && silent == false) {
-                System.out.println();
-                System.out.print(OS.consoleOutput("@|yellow Database user name:|@ @|cyan ["+ name +"]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                dbUsername = scanner.nextLine();
-                if (dbUsername.isEmpty()) {
-                    dbUsername = name;
-                }
-            }
-            if (dbPassword.length() == 0 && silent == false) {
-                System.out.println();
-                System.out.print(OS.consoleOutput("@|yellow Database password:|@ "));
-                if (false) { // (Config.getCommand().hasKey("psql") && !Config.getCommand().getString("psql").isEmpty()) {
-                    dbPassword = new RandomString(16).nextString();
-                    System.err.println();
+                if (!dbEngine.isEmpty()) {
+                    break;
                 } else {
-                    Scanner scanner = new Scanner(System.in);
+                    dbEngine = "";
+                    System.err.println(OS.consoleOutput("@|red Invalid database engine.|@"));
+                }
+            }
+            if (!dbEngine.equals("h2")) {
+                while (true) {
+                    if (dbHost.length() == 0) {
+                        System.out.println();
+                        System.out.print(OS.consoleOutput("@|yellow Database host name or ip:|@ @|cyan [localhost]|@ "));
+                        dbHost = scanner.nextLine();
+                        if (dbHost.isEmpty()) {
+                            dbHost = "localhost";
+                        }
+                    }
+                    if (dbPort.length() == 0) {
+                        System.out.println();
+                        System.out.print(OS.consoleOutput("@|yellow Database host port number:|@ @|cyan ["+
+                                (dbEngine.equals("pg") ? "5432" :
+                                        dbEngine.equals("mariadb") ? "3306" :
+                                                dbEngine.equals("mssql") ? "1433" :
+                                                        "")
+                                +"]|@ "));
+                        dbPort = scanner.nextLine();
+                        if (dbPort.isEmpty()) {
+                            if (dbEngine.equals("pg")) {
+                                dbPort = "5432";
+                            } else if (dbEngine.equals("mariadb")) {
+                                dbPort = "3306";
+                            } else if (dbEngine.equals("mssql")) {
+                                dbPort = "1433";
+                            }
+                        }
+                    }
+                    if (dbPort.matches("^[0-9]+$")) {
+                        break;
+                    } else {
+                        dbPort = "";
+                        System.err.println(OS.consoleOutput("@|red Invalid port number.|@"));
+                    }
+                }
+            }
+            while (true) {
+                if (dbName.length() == 0) {
+                    System.out.println();
+                    System.out.print(OS.consoleOutput("@|yellow Database name:|@ @|cyan ["+ name +"]|@ "));
+                    dbName = scanner.nextLine();
+                    if (dbName.isEmpty()) {
+                        dbName = name;
+                    }
+                }
+                dbName = dbName.toLowerCase();
+                if (checkAppName(dbName)) {
+                    break;
+                } else {
+                    dbName = "";
+                    System.err.println(OS.consoleOutput("@|red Invalid database name.|@"));
+                }
+            }
+            if (dbEngine.equalsIgnoreCase("pg")) {
+                System.out.println();
+                System.out.println("When using PostgreSQL execute this command below in your database before start the Netuno Server:");
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|yellow CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";|@"));
+                System.out.println();
+            }
+            if (!dbEngine.equals("h2")) {
+                if (dbUsername.length() == 0 && silent == false) {
+                    System.out.println();
+                    System.out.print(OS.consoleOutput("@|yellow Database user name:|@ @|cyan ["+ name +"]|@ "));
+                    dbUsername = scanner.nextLine();
+                    if (dbUsername.isEmpty()) {
+                        dbUsername = name;
+                    }
+                }
+                if (dbPassword.length() == 0 && silent == false) {
+                    System.out.println();
+                    System.out.print(OS.consoleOutput("@|yellow Database password:|@ "));
                     dbPassword = scanner.nextLine();
-                }
-                System.out.println();
-            }
-        }
-
-        while (true) {
-            if (language.length() == 0) {
-                System.out.println();
-                System.out.println(OS.consoleOutput("@|yellow Languages available:|@ "));
-                System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazilian Portuguese (pt_BR)"));
-                System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
-                System.out.println(OS.consoleOutput("\t@|green GB|@ - British English (en_GB)"));
-                System.out.println(OS.consoleOutput("\t@|green PT|@ - Portuguese (pt_PT)"));
-                System.out.println(OS.consoleOutput("\t@|green US|@ - American English (en_US)"));
-                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [GB]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                String option = scanner.nextLine();
-                if (option.equalsIgnoreCase("BR")) {
-                    language = "pt_BR";
-                } else if (option.equalsIgnoreCase("ES")) {
-                    language = "es_ES";
-                } else if (option.isEmpty() || option.equalsIgnoreCase("GB")) {
-                    language = "en_GB";
-                } else if (option.equalsIgnoreCase("PT")) {
-                    language = "pt_PT";
-                } else if (option.equalsIgnoreCase("US")) {
-                    language = "en_US";
+                    System.out.println();
                 }
             }
-            if (language.equals("pt_BR")
-                    || language.equals("es_ES")
-                    || language.equals("pt_PT")
-                    || language.equals("en_GB")
-                    || language.equals("en_US")) {
-                break;
-            } else {
-                language = "";
-                System.err.println(OS.consoleOutput("@|red Invalid application language.|@"));
-            }
-        }
 
-        while (true) {
-            if (locale.length() == 0) {
-                System.out.println();
-                System.out.println(OS.consoleOutput("@|yellow Locale available:|@ "));
-                System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazil (pt_BR)"));
-                System.out.println(OS.consoleOutput("\t@|green CN|@ - China (zh_CN)"));
-                System.out.println(OS.consoleOutput("\t@|green DE|@ - Germany (de_DE)"));
-                System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
-                System.out.println(OS.consoleOutput("\t@|green FR|@ - French (fr_FR)"));
-                System.out.println(OS.consoleOutput("\t@|green GB|@ - Great Britain (en_GB)"));
-                System.out.println(OS.consoleOutput("\t@|green IT|@ - Italy (it_IT)"));
-                System.out.println(OS.consoleOutput("\t@|green JP|@ - Japan (jp_JP)"));
-                System.out.println(OS.consoleOutput("\t@|green KR|@ - Korea (ko_KR)"));
-                System.out.println(OS.consoleOutput("\t@|green PT|@ - Portugal (pt_PT)"));
-                System.out.println(OS.consoleOutput("\t@|green US|@ - United States (en_US)"));
-
-                System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan ["+ language.substring(3) +"]|@ "));
-                Scanner scanner = new Scanner(System.in);
-                String option = scanner.nextLine();
-                if (option.equalsIgnoreCase("BR") ||
-                        (option.isEmpty() && language.equalsIgnoreCase("pt_BR"))) {
-                    locale = "pt_BR";
-                } else if (option.equalsIgnoreCase("CN")) {
-                    locale = "zh_CN";
-                } else if (option.equalsIgnoreCase("DE")) {
-                    locale = "de_DE";
-                } else if (option.equalsIgnoreCase("ES")) {
-                    locale = "es_ES";
-                } else if (option.equalsIgnoreCase("FR")) {
-                    locale = "fr_FR";
-                } else if (option.equalsIgnoreCase("GB") ||
-                        (option.isEmpty() && language.equalsIgnoreCase("en_GB"))) {
-                    locale = "en_GB";
-                } else if (option.equalsIgnoreCase("IT")) {
-                    locale = "it_IT";
-                } else if (option.equalsIgnoreCase("JP")) {
-                    locale = "jp_JP";
-                } else if (option.equalsIgnoreCase("KR")) {
-                    locale = "ko_KR";
-                } else if (option.equalsIgnoreCase("PT") ||
-                        (option.isEmpty() && language.equalsIgnoreCase("pt_PT"))) {
-                    locale = "pt_PT";
-                } else if (option.equalsIgnoreCase("US") ||
-                        (option.isEmpty() && language.equalsIgnoreCase("en_US"))) {
-                    locale = "en_US";
+            while (true) {
+                if (language.length() == 0) {
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|yellow Languages available:|@ "));
+                    System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazilian Portuguese (pt_BR)"));
+                    System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
+                    System.out.println(OS.consoleOutput("\t@|green GB|@ - British English (en_GB)"));
+                    System.out.println(OS.consoleOutput("\t@|green PT|@ - Portuguese (pt_PT)"));
+                    System.out.println(OS.consoleOutput("\t@|green US|@ - American English (en_US)"));
+                    System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [GB]|@ "));
+                    String option = scanner.nextLine();
+                    if (option.equalsIgnoreCase("BR")) {
+                        language = "pt_BR";
+                    } else if (option.equalsIgnoreCase("ES")) {
+                        language = "es_ES";
+                    } else if (option.isEmpty() || option.equalsIgnoreCase("GB")) {
+                        language = "en_GB";
+                    } else if (option.equalsIgnoreCase("PT")) {
+                        language = "pt_PT";
+                    } else if (option.equalsIgnoreCase("US")) {
+                        language = "en_US";
+                    }
+                }
+                if (language.equals("pt_BR")
+                        || language.equals("es_ES")
+                        || language.equals("pt_PT")
+                        || language.equals("en_GB")
+                        || language.equals("en_US")) {
+                    break;
+                } else {
+                    language = "";
+                    System.err.println(OS.consoleOutput("@|red Invalid application language.|@"));
                 }
             }
-            if (locale.equals("pt_BR")
-                    || locale.equals("zh_CN")
-                    || locale.equals("de_DE")
-                    || locale.equals("es_ES")
-                    || locale.equals("fr_FR")
-                    || locale.equals("it_IT")
-                    || locale.equals("jp_JP")
-                    || locale.equals("ko_KR")
-                    || locale.equals("pt_PT")
-                    || locale.equals("en_GB")
-                    || locale.equals("en_US")) {
-                break;
-            } else {
-                locale = "";
-                System.err.println(OS.consoleOutput("@|red Invalid application locale.|@"));
+
+            while (true) {
+                if (locale.length() == 0) {
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|yellow Locale available:|@ "));
+                    System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazil (pt_BR)"));
+                    System.out.println(OS.consoleOutput("\t@|green CN|@ - China (zh_CN)"));
+                    System.out.println(OS.consoleOutput("\t@|green DE|@ - Germany (de_DE)"));
+                    System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
+                    System.out.println(OS.consoleOutput("\t@|green FR|@ - French (fr_FR)"));
+                    System.out.println(OS.consoleOutput("\t@|green GB|@ - Great Britain (en_GB)"));
+                    System.out.println(OS.consoleOutput("\t@|green IT|@ - Italy (it_IT)"));
+                    System.out.println(OS.consoleOutput("\t@|green JP|@ - Japan (jp_JP)"));
+                    System.out.println(OS.consoleOutput("\t@|green KR|@ - Korea (ko_KR)"));
+                    System.out.println(OS.consoleOutput("\t@|green PT|@ - Portugal (pt_PT)"));
+                    System.out.println(OS.consoleOutput("\t@|green US|@ - United States (en_US)"));
+
+                    System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan ["+ language.substring(3) +"]|@ "));
+                    String option = scanner.nextLine();
+                    if (option.equalsIgnoreCase("BR") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("pt_BR"))) {
+                        locale = "pt_BR";
+                    } else if (option.equalsIgnoreCase("CN")) {
+                        locale = "zh_CN";
+                    } else if (option.equalsIgnoreCase("DE")) {
+                        locale = "de_DE";
+                    } else if (option.equalsIgnoreCase("ES")) {
+                        locale = "es_ES";
+                    } else if (option.equalsIgnoreCase("FR")) {
+                        locale = "fr_FR";
+                    } else if (option.equalsIgnoreCase("GB") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("en_GB"))) {
+                        locale = "en_GB";
+                    } else if (option.equalsIgnoreCase("IT")) {
+                        locale = "it_IT";
+                    } else if (option.equalsIgnoreCase("JP")) {
+                        locale = "jp_JP";
+                    } else if (option.equalsIgnoreCase("KR")) {
+                        locale = "ko_KR";
+                    } else if (option.equalsIgnoreCase("PT") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("pt_PT"))) {
+                        locale = "pt_PT";
+                    } else if (option.equalsIgnoreCase("US") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("en_US"))) {
+                        locale = "en_US";
+                    }
+                }
+                if (locale.equals("pt_BR")
+                        || locale.equals("zh_CN")
+                        || locale.equals("de_DE")
+                        || locale.equals("es_ES")
+                        || locale.equals("fr_FR")
+                        || locale.equals("it_IT")
+                        || locale.equals("jp_JP")
+                        || locale.equals("ko_KR")
+                        || locale.equals("pt_PT")
+                        || locale.equals("en_GB")
+                        || locale.equals("en_US")) {
+                    break;
+                } else {
+                    locale = "";
+                    System.err.println(OS.consoleOutput("@|red Invalid application locale.|@"));
+                }
             }
         }
 

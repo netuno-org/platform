@@ -33,7 +33,7 @@ import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.ComponentData.Type;
 import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.manager.Base;
 import org.netuno.tritao.db.manager.CheckExists;
 import org.netuno.tritao.db.manager.Column;
@@ -196,7 +196,9 @@ public class CoreBusiness extends Base {
     }
 
     public List<Values> selectUserSearch(String term) {
-        String select = " *, (select netuno_group.name from netuno_group where netuno_group.id = netuno_user.group_id) as group_name ";
+        String select = " *, "
+            + "(select netuno_group.name from netuno_group where netuno_group.id = netuno_user.group_id) as group_name, "
+            + "(select netuno_group.netuno_group from netuno_group where netuno_group.id = netuno_user.group_id) as netuno_group ";
         String from = " netuno_user ";
         String where = "where 1 = 1 ";
         if (!term.isEmpty()) {
@@ -718,6 +720,7 @@ public class CoreBusiness extends Base {
                 .set("code", code);
         return insertProvider(data);
     }
+    
     public boolean deleteAuth(String id) {
         id = "" + DB.sqlInjectionInt(id);
         Values dataRecord = getProviderById(id);
@@ -743,7 +746,6 @@ public class CoreBusiness extends Base {
         if (values.hasKey("id") || values.getInt("id") > 0) {
             return 0;
         }
-
         DataItem dataItem = new DataItem(getProteu(), "0", "");
         dataItem.setTable("netuno_provider");
         dataItem.setValues(values);
@@ -771,6 +773,7 @@ public class CoreBusiness extends Base {
         getManager().scriptSaved(getProteu(), getHili(), "netuno_provider", dataItem);
         return id;
     }
+
     public List<Values> selectGroupOther(String id, String name) {
         String select = " * ";
         String from = " netuno_group ";
@@ -867,12 +870,13 @@ public class CoreBusiness extends Base {
         return getManager().query(sql);
     }
 
-    public boolean updateGroup(String id, String name, String netuno_group, String mail, String active) {
+    public boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String active) {
         return updateGroup(
             new Values()
                     .set("id", id)
                     .set("name", name)
                     .set("netuno_group", netuno_group)
+                    .set("login_allowed", login_allowed)
                     .set("mail", mail)
                     .set("active", active)
         );
@@ -917,6 +921,9 @@ public class CoreBusiness extends Base {
         if (values.hasKey("netuno_group")) {
             update += ", netuno_group = " + DB.sqlInjectionInt(values.getString("netuno_group")) + "";
         }
+        if (values.hasKey("login_allowed")) {
+            update += ", login_allowed = " + getBuilder().booleanValue(values.getBoolean("login_allowed")) + "";
+        }
         if (values.hasKey("active")) {
             update += ", active = " + getBuilder().booleanValue(values.getBoolean("active")) + "";
         }
@@ -935,11 +942,12 @@ public class CoreBusiness extends Base {
         return true;
     }
 
-    public int insertGroup(String name, String netuno_group, String mail, String active) {
+    public int insertGroup(String name, String netuno_group, String login_allowed, String mail, String active) {
         return insertGroup(
                 new Values()
                         .set("name", name)
                         .set("netuno_group", netuno_group)
+                        .set("login_allowed", login_allowed)
                         .set("mail", mail)
                         .set("active", active)
         );
@@ -977,6 +985,9 @@ public class CoreBusiness extends Base {
         }
         if (values.hasKey("netuno_group")) {
             data.set("netuno_group", DB.sqlInjectionInt(values.getString("netuno_group")));
+        }
+        if (values.hasKey("login_allowed")) {
+            data.set("login_allowed", values.getBoolean("login_allowed"));
         }
         if (values.hasKey("mail")) {
             data.set("mail", "'" + DB.sqlInjection(values.getString("mail")) + "'");

@@ -78,12 +78,12 @@ public class WSServletContextHandler extends ServletContextHandler {
 
             @Override
             public List<String> getSubprotocols() {
-                return new ArrayList();
+                return new ArrayList<>();
             }
 
             @Override
             public List<Extension> getExtensions() {
-                return new ArrayList();
+                return new ArrayList<>();
             }
 
             @Override
@@ -104,17 +104,17 @@ public class WSServletContextHandler extends ServletContextHandler {
 
             @Override
             public List<Class<? extends Encoder>> getEncoders() {
-                return new ArrayList();
+                return new ArrayList<>();
             }
 
             @Override
             public List<Class<? extends Decoder>> getDecoders() {
-                return new ArrayList();
+                return new ArrayList<>();
             }
 
             @Override
             public Map<String, Object> getUserProperties() {
-                return new HashMap();
+                return new HashMap<>();
             }
         });
 

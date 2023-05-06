@@ -11,19 +11,19 @@
  *
  */
 
-var excel = _xls.create()
+const excel = _xls.create()
 
-var fontTitle = excel.workbook.createFont()
+const fontTitle = excel.workbook.createFont()
 fontTitle.setBold(true)
 fontTitle.setFontHeightInPoints(14)
 fontTitle.setColor(_xls.color("yellow"))
 
-var fontTotal = excel.workbook.createFont()
+const fontTotal = excel.workbook.createFont()
 fontTotal.setBold(true)
 fontTotal.setFontHeightInPoints(12)
 fontTotal.setColor(_xls.color("grey-50-percent"))
 
-var styleHeader = excel.workbook.createCellStyle()
+const styleHeader = excel.workbook.createCellStyle()
 
 styleHeader.setFillPattern(_xls.fillPattern("solid-foreground"))
 styleHeader.setFillBackgroundColor(_xls.color("black"))
@@ -31,13 +31,13 @@ styleHeader.setAlignment(_xls.horizontalAlignment("center"))
 
 styleHeader.setFont(fontTitle);
 
-var styleData = excel.workbook.createCellStyle()
+const styleData = excel.workbook.createCellStyle()
 styleData.setBorderBottom(_xls.borderStyle("thin"))
 styleData.setBorderTop(_xls.borderStyle("thin"))
 styleData.setBorderLeft(_xls.borderStyle("thin"))
 styleData.setBorderRight(_xls.borderStyle("thin"))
 
-var styleTotal = excel.workbook.createCellStyle()
+const styleTotal = excel.workbook.createCellStyle()
 
 styleTotal.setBorderBottom(_xls.borderStyle("thin"))
 styleTotal.setBorderTop(_xls.borderStyle("thin"))
@@ -56,112 +56,108 @@ styleTotal.setFont(fontTotal);
 excel.insertPicture(
     _storage.filesystem("server", "samples/export-excel", "logo.png"),
     1, 1
-).resize(2.3)
+).resize(0.35)
 
-excel.sheet.addMergedRegion(_xls.cellRangeAddress(1, 3, 1, 3))
+excel.mergedRegion(1, 3, 1, 3)
 
-var dataTitle = _val.init()
+const dataTitle = [
+  {
+    value: "Name",
+    style: styleHeader
+  }, {
+    value: "Age",
+    style: styleHeader
+  }, {
+    value: "Weight",
+    style: styleHeader
+  }
+]
+
+const data = _val.list()
     .add(
-        _val.init()
-            .set("value", "Name")
-            .set("style", styleHeader)
-    ).add(
-        _val.init()
-            .set("value", "Age")
-            .set("style", styleHeader)
-    ).add(
-        _val.init()
-            .set("value", "Weight")
-            .set("style", styleHeader)
-    )
-
-var data = _val.init()
-    .add(
-        _val.init()
+        _val.list()
             .add(
-                _val.init()
+                _val.map()
                     .set("value", "Briana")
                     .set("style", styleData)
             )
             .add(
-                _val.init()
+                _val.map()
                     .set("value", 24)
                     .set("style", styleData)
             )
             .add(
-                _val.init()
+                _val.map()
                     .set("value", 73.2)
                     .set("style", styleData)
             )
     ).add(
-        _val.init()
+        _val.list()
             .add(
-                _val.init()
+                _val.map()
                     .set("value", "Kelly")
                     .set("style", styleData)
             )
             .add(
-                _val.init()
+                _val.map()
                     .set("value", 27)
                     .set("style", styleData)
             )
             .add(
-                _val.init()
+                _val.map()
                     .set("value", 79.5)
                     .set("style", styleData)
             )
     ).add(
-        _val.init()
+        _val.list()
             .add(
-                _val.init()
+                _val.map()
                     .set("value", "Peter")
                     .set("style", styleData)
             )
             .add(
-                _val.init()
+                _val.map()
                     .set("value", 28)
                     .set("style", styleData)
             )
             .add(
-                _val.init()
+                _val.map()
                     .set("value", 84.9)
                     .set("style", styleData)
             )
     ).add(
-        _val.init()
+        _val.list()
             .add(
-                _val.init()
+                _val.map()
                     .set("value", "Simon")
                     .set("style", styleData)
             )
             .add(
-                _val.init()
+                _val.map()
                     .set("value", 21)
                     .set("style", styleData)
             )
             .add(
-                _val.init()
+                _val.map()
                     .set("value", 68.3)
                     .set("style", styleData)
             )
     )
 
-var dataResult = _val.init()
-    .add(
-        _val.init()
-            .set("value", "Result")
-            .set("style", styleTotal)
-    ).add(
-        _val.init()
-            .set("formula", "ROUND(SUM(C8:C11)/COUNT(C8:C11), 2)")
-            .set("style", styleTotal)
-    ).add(
-        _val.init()
-            .set("formula", "ROUND(SUM(D8:D11)/COUNT(D8:D11), 2)")
-            .set("style", styleTotal)
-    )
+const dataResult = [
+  {
+    value: "Result",
+    style: styleTotal
+  }, {
+    formula: "ROUND(SUM(C8:C11)/COUNT(C8:C11), 2)",
+    style: styleTotal
+  }, {
+    formula: "ROUND(SUM(D8:D11)/COUNT(D8:D11), 2)",
+    style: styleTotal
+  }
+]
 
-var endPosition = excel.addDataTable(6, 1, dataTitle)
+let endPosition = excel.addDataTable(6, 1, dataTitle)
 
 endPosition = excel.addDataTable(endPosition.row, 1, data)
 

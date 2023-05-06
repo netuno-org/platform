@@ -30,7 +30,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
 
@@ -94,16 +94,47 @@ public class CORS extends ResourceBase {
             }
         }
     }
-    
+
     @MethodDoc(
         translations = {
                     @MethodTranslationDoc(
                             language = LanguageDoc.PT,
-                            description = "Desativa uma origem que já foi definida.",
+                            description = "Obtém todas as configurações de CORS.",
                             howToUse = {  }),
                     @MethodTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Disable a origin that has already been defined.",
+                            description = "Gets all CORS settings.",
+                            howToUse = {  })
+            },
+        parameters = { },
+        returns = {
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.PT,
+                        description = "Todas as definições de CORS configuradas."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "All CORS settings configured."
+                )
+        }
+    )
+    public Values all() {
+        return getAll();
+    }
+
+    public Values getAll() {
+        return getProteu().getConfig().getValues("_cors");
+    }
+
+    @MethodDoc(
+        translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Remove a origem em todas as configuração que ela existir.",
+                            howToUse = {  }),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Removes the origin in every configuration it exists.",
                             howToUse = {  })
             },
         parameters = {
@@ -130,74 +161,25 @@ public class CORS extends ResourceBase {
                 )
         }
     )
-    public boolean disable(String origin) {
+    public CORS removeOrigin(String origin) {
         Values cors = getProteu().getConfig().getValues("_cors");
-        if (cors != null) {
-            Values entry = cors.find("origin", origin);
-            if (entry != null) {
-                entry.set("enabled", false);
-                return true;
+        if (cors != null && !cors.isEmpty()) {
+            for (Values entry : cors.listOfValues()) {
+                entry.getValues().remove(origin);
             }
         }
-        return false;
+        return this;
     }
     
     @MethodDoc(
         translations = {
                     @MethodTranslationDoc(
                             language = LanguageDoc.PT,
-                            description = "Ativa uma origem que já foi definida.",
+                            description = "Verifica se uma origem já foi definida e se está ativa.",
                             howToUse = {  }),
                     @MethodTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Enables a origin that has already been defined.",
-                            howToUse = {  })
-            },
-        parameters = {
-            @ParameterDoc(name = "origin", translations = {
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.PT,
-                        name = "origem",
-                        description = "Origem que vem no cabeçalho HTTP."
-                ),
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "Origin that comes in the HTTP header."
-                )
-            })
-        },
-        returns = {
-                @ReturnTranslationDoc(
-                        language = LanguageDoc.PT,
-                        description = "Se a origem foi ativada com sucesso."
-                ),
-                @ReturnTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "If the origin was successfully enabled."
-                )
-        }
-    )
-    public boolean enable(String origin) {
-        Values cors = getProteu().getConfig().getValues("_cors");
-        if (cors != null) {
-            Values entry = cors.find("origin", origin);
-            if (entry != null) {
-                entry.set("enabled", true);
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    @MethodDoc(
-        translations = {
-                    @MethodTranslationDoc(
-                            language = LanguageDoc.PT,
-                            description = "Verifica se uma origem que já foi definida está ativa.",
-                            howToUse = {  }),
-                    @MethodTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Enables a source that has already been defined.",
+                            description = "Checks if a origin has already been defined and is active.d.",
                             howToUse = {  })
             },
         parameters = {
@@ -224,15 +206,13 @@ public class CORS extends ResourceBase {
                 )
         }
     )
-    public boolean isEnabled(String origin) {
+    public boolean isOriginEnabled(String origin) {
         Values cors = getProteu().getConfig().getValues("_cors");
-        if (cors != null) {
-            Values entry = cors.find("origin", origin);
-            if (entry != null) {
-                if (!entry.hasKey("enabled")) {
+        if (cors != null && !cors.isEmpty()) {
+            for (Values entry : cors.listOfValues()) {
+                if (entry.getBoolean("enabled") && entry.getValues("origins").contains(origin)) {
                     return true;
                 }
-                return entry.getBoolean("enabled");
             }
         }
         return false;
@@ -242,23 +222,23 @@ public class CORS extends ResourceBase {
         translations = {
                     @MethodTranslationDoc(
                             language = LanguageDoc.PT,
-                            description = "Adiciona as configurações para uma nova origem.",
+                            description = "Adiciona as configurações para uma definição de CORS.",
                             howToUse = {  }),
                     @MethodTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Adds the settings for a new source.",
+                            description = "Adds the settings for a new CORS definition.",
                             howToUse = {  })
             },
         parameters = {
-            @ParameterDoc(name = "origin", translations = {
+            @ParameterDoc(name = "config", translations = {
                 @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        name = "origem",
-                        description = "Origem que vem no cabeçalho HTTP."
+                        name = "config",
+                        description = "A nova configuração de CORS."
                 ),
                 @ParameterTranslationDoc(
                         language = LanguageDoc.EN,
-                        description = "Origin that comes in the HTTP header."
+                        description = "The new CORS configuration"
                 )
             })
         },
@@ -273,125 +253,9 @@ public class CORS extends ResourceBase {
                 )
         }
     )
-    public CORS add(String origin) {
-        return add(origin, null, true);
-    }
-    
-    @MethodDoc(
-        translations = {
-                    @MethodTranslationDoc(
-                            language = LanguageDoc.PT,
-                            description = "Adiciona as configurações para uma nova origem.",
-                            howToUse = {  }),
-                    @MethodTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Adds the settings for a new source.",
-                            howToUse = {  })
-            },
-        parameters = {
-            @ParameterDoc(name = "origin", translations = {
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.PT,
-                        name = "origem",
-                        description = "Origem que vem no cabeçalho HTTP."
-                ),
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "Origin that comes in the HTTP header."
-                )
-            }),
-            @ParameterDoc(name = "header", translations = {
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.PT,
-                        name = "cabecalho",
-                        description = "Definição do cabeçalho que será carregado para a origem."
-                ),
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "Definition of the header that will be loaded to the source."
-                )
-            })
-        },
-        returns = {
-                @ReturnTranslationDoc(
-                        language = LanguageDoc.PT,
-                        description = "Atual instância do CORS."
-                ),
-                @ReturnTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "Current CORS instance."
-                )
-        }
-    )
-    public CORS add(String origin, Values header) {
-        return add(origin, header, true);
-    }
-    
-    @MethodDoc(
-        translations = {
-                    @MethodTranslationDoc(
-                            language = LanguageDoc.PT,
-                            description = "Adiciona as configurações para uma nova origem.",
-                            howToUse = {  }),
-                    @MethodTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Adds the settings for a new source.",
-                            howToUse = {  })
-            },
-        parameters = {
-            @ParameterDoc(name = "origin", translations = {
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.PT,
-                        name = "origem",
-                        description = "Origem que vem no cabeçalho HTTP."
-                ),
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "Origin that comes in the HTTP header."
-                )
-            }),
-            @ParameterDoc(name = "header", translations = {
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.PT,
-                        name = "cabecalho",
-                        description = "Definição do cabeçalho que será carregado para a origem."
-                ),
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "Definition of the header that will be loaded to the source."
-                )
-            }),
-            @ParameterDoc(name = "enabled", translations = {
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.PT,
-                        name = "ativa",
-                        description = "Define se está origem está ativada."
-                ),
-                @ParameterTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "Defines whether this source is enabled."
-                )
-            })
-        },
-        returns = {
-                @ReturnTranslationDoc(
-                        language = LanguageDoc.PT,
-                        description = "Atual instância do CORS."
-                ),
-                @ReturnTranslationDoc(
-                        language = LanguageDoc.EN,
-                        description = "Current CORS instance."
-                )
-        }
-    )
-    public CORS add(String origin, Values header, boolean enabled) {
+    public CORS add(Values config) {
         Values cors = getProteu().getConfig().getValues("_cors", new Values());
-        cors.add(
-                new Values()
-                    .set("enabled", enabled)
-                    .set("origin", origin)
-                    .set("header", header)
-        );
+        cors.add(config);
         return this;
     }
     

@@ -27,7 +27,7 @@ import org.netuno.tritao.com.Configuration;
 import org.netuno.tritao.com.Parameter;
 import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Lang;
 import org.netuno.tritao.util.TemplateBuilder;
 

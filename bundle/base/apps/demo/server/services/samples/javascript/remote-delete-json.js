@@ -11,9 +11,9 @@
  *
  */
 
-var client = _remote.init()
+const client = _remote.init()
 
-var response = client.asJSON().delete(
+const response = client.asJSON().delete(
     "http://httpbin.org/delete",
     _val.init()
         .set("name", "morpheus")

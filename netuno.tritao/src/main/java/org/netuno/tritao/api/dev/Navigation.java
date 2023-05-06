@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.util.List;
 import org.json.JSONException;
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
 import org.netuno.tritao.resource.Out;
 
@@ -34,7 +34,7 @@ import org.netuno.tritao.resource.Out;
  * Navigation Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/api/dev/Navigation")
+@Path("/org/netuno/tritao/api/dev/Navigation")
 public class Navigation extends WebMaster {
     public Navigation() {
         super();

@@ -20,6 +20,8 @@ package org.netuno.cli;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.netuno.cli.setup.GraalVMSetup;
+import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
 import org.netuno.cli.utils.RunCommand;
 import org.netuno.psamata.Values;
@@ -38,8 +40,6 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static org.fusesource.jansi.Ansi.ansi;
-
 /**
  * Clone the applications.
  * 
@@ -56,56 +56,58 @@ public class Clone implements MainArg {
     protected String target = "";
 
     public void run() throws IOException, SQLException, ClassNotFoundException, ScriptException {
-        Install.graalCheckAndSetup();
+        GraalVMSetup.checkAndSetup();
+        if (!ConfigScript.run()) {
+            return;
+        }
         System.err.println();
         System.out.print(OS.consoleOutput("@|yellow Clone Application|@ "));
         System.err.println();
 
-        while (true) {
-            if (source.length() == 0) {
-                System.out.print(OS.consoleOutput("@|yellow Source app name:|@ "));
-                Scanner scanner = new Scanner(System.in);
-                source = scanner.nextLine();
-                System.err.println();
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (true) {
+                if (source.length() == 0) {
+                    System.out.print(OS.consoleOutput("@|yellow Source app name:|@ "));
+                    source = scanner.nextLine();
+                    System.err.println();
+                }
+                source = source.toLowerCase();
+                if (App.checkAppName(source)) {
+                    break;
+                } else {
+                    source = "";
+                    System.err.println(OS.consoleOutput("@|red Invalid application name.|@"));
+                    System.err.println();
+                }
             }
-            source = source.toLowerCase();
-            if (App.checkAppName(source)) {
-                break;
-            } else {
-                source = "";
-                System.err.println(OS.consoleOutput("@|red Invalid application name.|@"));
+            while (true) {
+                if (target.length() == 0) {
+                    System.out.print(OS.consoleOutput("@|yellow Target app name:|@ "));
+                    target = scanner.nextLine();
+                    System.err.println();
+                }
+                target = target.toLowerCase();
+                if (App.checkAppName(target)) {
+                    break;
+                } else {
+                    target = "";
+                    System.err.println(OS.consoleOutput("@|red Invalid application name.|@"));
+                    System.err.println();
+                }
+            }
+            Values result = Values.fromJSON(clone(source, target, Config.getClone().getSecret()));
+            if (result.getBoolean("error")) {
+                if (result.getString("code").equalsIgnoreCase("exists")) {
+                    System.err.println();
+                    System.err.println(OS.consoleOutput("@|red Unable to clone because "+ target +" already exists.|@"));
+                    System.err.println();
+                }
+            } else if (result.getBoolean("result")) {
+                System.err.println();
+                System.err.println(OS.consoleOutput("@|green Successfully cloned.|@ "));
                 System.err.println();
             }
         }
-        while (true) {
-            if (target.length() == 0) {
-                System.out.print(OS.consoleOutput("@|yellow Target app name:|@ "));
-                Scanner scanner = new Scanner(System.in);
-                target = scanner.nextLine();
-                System.err.println();
-            }
-            target = target.toLowerCase();
-            if (App.checkAppName(target)) {
-                break;
-            } else {
-                target = "";
-                System.err.println(OS.consoleOutput("@|red Invalid application name.|@"));
-                System.err.println();
-            }
-        }
-        Values result = Values.fromJSON(clone(source, target, Config.getClone().getSecret()));
-        if (result.getBoolean("error")) {
-            if (result.getString("code").equalsIgnoreCase("exists")) {
-                System.err.println();
-                System.err.println(OS.consoleOutput("@|red Unable to clone because "+ target +" already exists.|@"));
-                System.err.println();
-            }
-        } else if (result.getBoolean("result")) {
-            System.err.println();
-            System.err.println(OS.consoleOutput("@|green Successfully cloned.|@ "));
-            System.err.println();
-        }
-
     }
 
     public static String clone(String fromAppName, String toAppName, String secret) throws IOException, SQLException, ClassNotFoundException, ScriptException {

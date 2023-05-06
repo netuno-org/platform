@@ -22,10 +22,11 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.com.Active;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.Label;
-import org.netuno.tritao.config.Config;
+
 import java.util.List;
 
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DataSelected;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.util.Translation;

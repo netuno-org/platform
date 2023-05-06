@@ -15,13 +15,15 @@ chmod +x netuno.tritao/protect/run.sh
 #
 ###########################################
 
-curl -L -o proguard.zip https://sourceforge.net/projects/proguard/files/latest/download
+curl -L -O https://github.com/Guardsquare/proguard/releases/download/v7.2.2/proguard-7.2.2.zip
 
-unzip proguard.zip 
+unzip proguard-7.2.2.zip 
 
-mv `unzip -Z -1 proguard.zip | head -1 | rev | cut -c 2- | rev` proguard
+mv `unzip -Z -1 proguard-7.2.2.zip | head -1 | rev | cut -c 2- | rev` proguard
 
-rm -f proguard.zip
+rm -rf proguard/examples
+
+rm -f proguard-7.2.2.zip
 
 ###########################################
 #
@@ -29,7 +31,7 @@ rm -f proguard.zip
 #
 ###########################################
 
-cd netuno.bundle && npm install && cd ..
+cd bundle && npm install && cd ..
 
 ###########################################
 #

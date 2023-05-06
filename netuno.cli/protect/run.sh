@@ -1,6 +1,6 @@
 #/bin/sh
 
-cp -rf ../target/netuno-cli-*-jar-with-dependencies.jar out/artifacts/netuno-cli.jar
+cp -f ../target/netuno-cli.jar out/artifacts/netuno-cli.jar
 
 PROGUARD_HOME=../../proguard
 

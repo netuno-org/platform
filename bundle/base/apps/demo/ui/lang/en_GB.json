@@ -69,6 +69,10 @@
                     "title": "Templates",
                     "intro": "<p>Serves to generate HTML and keep the code clean and tidy, check the contents of the templates in <i>server/templates/samples</i>.</p>"
                 },
+                "image": {
+                    "title": "Image",
+                    "intro": "<p>A dynamic image is generated programmatically.</p>"
+                },
                 "query-parameter": {
                     "title": "Parameters in Database Queries",
                     "intro": "<p>Uses the passed URL parameters as filters and returns the data found in the database matching the parameters in <i>JSON</i> format.</p>"

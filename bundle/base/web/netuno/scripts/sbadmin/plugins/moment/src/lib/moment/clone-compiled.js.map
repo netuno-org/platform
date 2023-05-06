@@ -1,0 +1,1 @@
+{"version":3,"sources":["clone.js"],"names":[],"mappings":"AAAA,SAAS,MAAM,QAAQ,eAAe,CAAC;;AAEvC,OAAO,SAAS,KAAK,GAAI;AACrB,WAAO,IAAI,MAAM,CAAC,IAAI,CAAC,CAAC;CAC3B","file":"clone-compiled.js","sourcesContent":["import { Moment } from './constructor';\n\nexport function clone () {\n    return new Moment(this);\n}\n"]}

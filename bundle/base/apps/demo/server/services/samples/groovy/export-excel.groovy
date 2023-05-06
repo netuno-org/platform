@@ -15,12 +15,12 @@ excel = _xls.create()
 
 fontTitle = excel.workbook.createFont()
 fontTitle.setBold(true)
-fontTitle.setFontHeightInPoints(14)
+fontTitle.setFontHeightInPoints(_convert.toShort(14))
 fontTitle.setColor(_xls.color('yellow'))
 
 fontTotal = excel.workbook.createFont()
 fontTotal.setBold(true)
-fontTotal.setFontHeightInPoints(12)
+fontTotal.setFontHeightInPoints(_convert.toShort(12))
 fontTotal.setColor(_xls.color('grey-50-percent'))
 
 styleHeader = excel.workbook.createCellStyle()
@@ -54,96 +54,110 @@ styleTotal.setAlignment(_xls.horizontalAlignment('center'))
 styleTotal.setFont(fontTotal);
 
 excel.insertPicture(
-        _storage.filesystem('server', 'samples/export-excel', 'logo.png'),
-        1, 1
-).resize(2.3)
+    _storage.filesystem('server', 'samples/export-excel', 'logo.png'),
+    1, 1
+).resize(0.35)
 
-excel.sheet.addMergedRegion(_xls.cellRangeAddress(1, 3, 1, 3))
+excel.mergedRegion(1, 3, 1, 3)
 
 dataTitle = [
-        {
-            value: 'Name',
-            style: styleHeader
-        },
-        {
-            value: 'Age',
-            style: styleHeader
-        },
-        {
-            value: 'Weight',
-            style: styleHeader
-        }
+    [
+        value: 'Name',
+        style: styleHeader
+    ], [
+        value: 'Age',
+        style: styleHeader
+    ], [
+        value: 'Weight',
+        style: styleHeader
+    ]
 ]
 
-data = [
-        [
-                {
-                    value: 'Briana',
-                    style: styleData
-                },
-                {
-                    value: 24,
-                    style: styleData
-                },
-                {
-                    value: 73.2,
-                    style: styleData
-                }
-        ], [
-                {
-                    value: 'Kelly',
-                    style: styleData
-                },
-                {
-                    value: 27,
-                    style: styleData
-                },
-                {
-                    value: 79.5,
-                    style: styleData
-                }
-        ], [
-                {
-                    value: 'Peter',
-                    style: styleData
-                },
-                {
-                    value: 28,
-                    style: styleData
-                },
-                {
-                    value: 84.9,
-                    style: styleData
-                }
-        ],[
-                {
-                    value: 'Simon',
-                    style: styleData
-                },
-                {
-                    value: 21,
-                    style: styleData
-                },
-                {
-                    value: 68.3,
-                    style: styleData
-                }
-        ]
-]
+data = _val.list()
+    .add(
+        _val.list()
+            .add(
+                _val.map()
+                    .set('value', 'Briana')
+                    .set('style', styleData)
+            )
+            .add(
+                _val.map()
+                    .set('value', 24)
+                    .set('style', styleData)
+            )
+            .add(
+                _val.map()
+                    .set('value', _convert.toFloat(73.2))
+                    .set('style', styleData)
+            )
+    )
+    .add(
+        _val.list()
+            .add(
+                _val.map()
+                    .set('value', 'Kelly')
+                    .set('style', styleData)
+            )
+            .add(
+                _val.map()
+                    .set('value', 27)
+                    .set('style', styleData)
+            )
+            .add(
+                _val.map()
+                    .set('value', _convert.toFloat(79.5))
+                    .set('style', styleData)
+            )
+    )
+    .add(
+        _val.list()
+            .add(
+                _val.map()
+                    .set('value', 'Peter')
+                    .set('style', styleData)
+            )
+            .add(
+                _val.map()
+                    .set('value', 28)
+                    .set('style', styleData)
+            )
+            .add(
+                _val.map()
+                    .set('value', _convert.toFloat(84.9))
+                    .set('style', styleData)
+            )
+    )
+    .add(
+        _val.list()
+            .add(
+                _val.map()
+                    .set('value', 'Simon')
+                    .set('style', styleData)
+            )
+            .add(
+                _val.map()
+                    .set('value', 21)
+                    .set('style', styleData)
+            )
+            .add(
+                _val.map()
+                    .set('value', _convert.toFloat(68.3))
+                    .set('style', styleData)
+            )
+    )
 
 dataResult = [
-        {
-            value: 'Result',
-            style: styleTotal
-        },
-        {
-            formula: 'ROUND(SUM(C8:C11)/COUNT(C8:C11), 2)',
-            style: styleTotal
-        },
-        {
-            formula: 'ROUND(SUM(D8:D11)/COUNT(D8:D11), 2)',
-            style: styleTotal
-        }
+    [
+        value: 'Result',
+        style: styleTotal
+    ], [
+        formula: 'ROUND(SUM(C8:C11)/COUNT(C8:C11), 2)',
+        style: styleTotal
+    ], [
+        formula: 'ROUND(SUM(D8:D11)/COUNT(D8:D11), 2)',
+        style: styleTotal
+    ]
 ]
 
 endPosition = excel.addDataTable(6, 1, dataTitle)

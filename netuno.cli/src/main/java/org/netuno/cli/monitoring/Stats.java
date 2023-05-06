@@ -31,6 +31,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.MainArg;
+import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
@@ -79,6 +80,9 @@ public class Stats implements MainArg {
     }
     
     public void run() throws IOException {
+        if (!ConfigScript.run()) {
+            return;
+        }
         execute();
     }
     

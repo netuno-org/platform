@@ -14,7 +14,7 @@
 <form id="netuno_user_form" role="form">
     <div class="form-group">
         <h2>_{&lang=netuno.user.user}</h2>
-        <select name="uid" id="netuno_user_form_user_uid" value="_{data=user.uid.value}" netuno-select-service="User_{netuno-config=extension}?service=json&allow_all=true" style="width: 100%;">
+        <select name="uid" id="netuno_user_form_user_uid" value="_{data=user.uid.value}" netuno-select-service="User_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" style="width: 100%;">
         </select>
     </div>
     <hr>
@@ -39,7 +39,7 @@
     </div>
     <div class="form-group">
         <label for="netuno_user_form_user_group">_{&lang=netuno.user.group}</label>
-        <select name="group_uid" id="netuno_user_form_user_group" value="_{data=user.group_uid.value}" netuno-select-service="Group_{netuno-config=extension}?service=json" validation="required" style="width: 100%;">
+        <select name="group_uid" id="netuno_user_form_user_group" value="_{data=user.group_uid.value}" netuno-select-service="Group_{netuno-config=extension}?service=json&no_devs=true" validation="required" style="width: 100%;">
         </select>
     </div>
     <div class="form-group">
@@ -173,6 +173,10 @@
         var reportRulesButton = $('a#netuno_user_report_rules_button');
 
         netuno.com.select.callbackForFieldId('netuno_user_form_user_uid', 'changed', function () {
+            var that = $('#netuno_user_form_user_uid');
+            if (netuno.com.select.netunoUserChanged == that.val()) {
+                return;
+            }
             form.off("submit");
             form.ajaxForm({
                 url: url,
@@ -182,7 +186,7 @@
                     $('button#netuno_user_report_rules_button').fadeTo('fast', 1);
                     $('div#netuno_user_form_rules_container').hide();
                     $('div#netuno_user_report_rules_container').hide();
-                    netuno.com.select.netunoUserChanged = true;
+                    netuno.com.select.netunoUserChanged = that.val();
                     netuno.contentLoaded(container);
                 }
             }).submit();

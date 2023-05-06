@@ -21,7 +21,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.text.StringEscapeUtils;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.hili.Hili;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -1290,7 +1291,7 @@ public class Convert extends ResourceBase {
     )
     public File toFile(String fileName, String contentType, byte[] bytes) {
         return new File(fileName, contentType, new java.io.ByteArrayInputStream(bytes))
-                .ensureJail(org.netuno.tritao.config.Config.getPathAppBase(getProteu()));
+                .ensureJail(Config.getPathAppBase(getProteu()));
     }
 
 	@MethodDoc(

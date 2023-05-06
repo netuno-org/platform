@@ -22,7 +22,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -41,13 +41,15 @@ import java.nio.file.Paths;
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
             title = "CSV",
-            introduction = "Processa ficheiros do tipo CSV.",
+            introduction = "Processa ficheiros do tipo CSV.\n"+
+            "Este recurso utiliza a biblioteca [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/ \"Apache Commons CSV\").",
             howToUse = {}
     ),
     @LibraryTranslationDoc(
             language = LanguageDoc.EN,
             title = "CSV",
-            introduction = "Processes CSV type files.",
+            introduction = "Processes CSV type files.\n"+
+            "This feature uses the [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/ \"Apache Commons CSV\") library.",
             howToUse = {}
     )
 })

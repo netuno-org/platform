@@ -19,7 +19,7 @@ package org.netuno.tritao.resource;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Resource Base Values
@@ -44,6 +44,6 @@ public class ResourceBaseValues extends Values {
     }
 
     protected<T> T resource(Class<T> resourceClass) {
-        return getHili().resource(resourceClass);
+        return getHili().resource().get(resourceClass);
     }
 }

@@ -22,7 +22,7 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Download;
 import org.netuno.proteu.Proteu;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * URL - Resource

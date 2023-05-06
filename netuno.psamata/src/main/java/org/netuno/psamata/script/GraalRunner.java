@@ -26,7 +26,7 @@ import java.util.*;
  * Manage GraalVM script executions.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class GraalRunner {
+public class GraalRunner implements AutoCloseable {
     private static boolean graal = false;
     
     private static Engine engine = null;
@@ -66,7 +66,7 @@ public class GraalRunner {
                         (v) -> transformArray(v)
                 )
                 .build();
-            
+
             graal = true;
         } catch (Throwable t) {
             graal = false;
@@ -125,15 +125,19 @@ public class GraalRunner {
     }
     
     public void closeContext() {
-        contexts.get(contexts.size() - 1).close(true);
-        contexts.remove(contexts.size() - 1);
+        if (contexts.size() > 0) {
+            contexts.get(contexts.size() - 1).close(true);
+            contexts.remove(contexts.size() - 1);
+        }
         context = null;
         if (contexts.size() > 0) {
             context = contexts.get(contexts.size() - 1);
+        } else {
+            newContext();
         }
     }
     
-    public void close() {
+    public void close() throws Exception {
         if (contexts != null) {
             for (Context context : contexts) {
                 context.close(true);
@@ -204,6 +208,11 @@ public class GraalRunner {
         } catch (Exception e) { }
         try {
             return context.eval(language, code);
+        } catch (org.graalvm.polyglot.PolyglotException e) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("Context execution was cancelled.")) {
+                return null;
+            }
+            throw e;
         } finally {
             try {
                 //context.leave();
@@ -211,8 +220,8 @@ public class GraalRunner {
         }
     }
 
-    public static Map transformMembers(Value v) {
-        Map map = new HashMap();
+    public static Map<String, Object> transformMembers(Value v) {
+        Map<String, Object> map = new HashMap<>();
         for (String key : v.getMemberKeys()) {
             Value member = v.getMember(key);
             if (member.hasArrayElements() && !member.isHostObject()) {
@@ -226,8 +235,8 @@ public class GraalRunner {
         return map;
     }
 
-    public static List transformArray(Value v) {
-        List list = new ArrayList();
+    public static List<Object> transformArray(Value v) {
+        List<Object> list = new ArrayList<>();
         for (int i = 0; i < v.getArraySize(); ++i) {
             Value element = v.getArrayElement(i);
             if (element.hasArrayElements() && !element.isHostObject()) {
@@ -306,6 +315,9 @@ public class GraalRunner {
     
     @Override
     protected void finalize() throws Throwable {
+        /*
+        GC TEST
         close();
+        */
     }
 }

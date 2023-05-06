@@ -4,7 +4,7 @@ toastr.options = {
   "debug": false,
   "newestOnTop": true,
   "progressBar": false,
-  "positionClass": "toast-top-center",
+  "positionClass": "netuno-toast-top-center",
   "preventDuplicates": true,
   "onclick": null,
   "showDuration": "300",
@@ -179,6 +179,7 @@ netuno.loadFormSearchDataTable = (table) ->
       "processing": false
       "serverSide": true
       "destroy": true
+      "order": if container.data().sorting then container.data().sorting else []
       "displayStart": if container.data().pageNumber > 0 then container.data().pageNumber * 25 else null
       "ajax": {
         "url": "#{ netuno.config.urlAdmin }Search#{ netuno.config.extension }?netuno_action=datasource&"+ containerSearchForm.serialize()
@@ -210,7 +211,8 @@ netuno.loadFormSearchDataTable = (table) ->
               container.data({
                 pageNumber: tr.data().pageNumber,
                 pageLength: tr.data().pageLength,
-                rowIndex: tr.data().rowIndex
+                rowIndex: tr.data().rowIndex,
+                sorting: table.dataTableSettings[0].aaSorting
               })
               netuno.loadFormEdit(table, uid)
         )
@@ -340,6 +342,9 @@ netuno.loadReport = (container) ->
       success: (response) ->
         container.html(response);
         netuno.contentLoaded(container)
+        containerForm = container.find("form[name=netuno_report_#{ container.attr('netuno-report-name') }_form]")
+        if (containerForm.length > 0)
+          netuno.loadValidation(containerForm)
     )
   container.show()
 
@@ -348,8 +353,10 @@ netuno.buildReport = (report) ->
   container = report.parents("[netuno-report][netuno-report-uid]:first")
   containerResult = container.children("[netuno-report-result=#{ container.attr('netuno-report-name') }]")
   containerForm = container.find("form[name=netuno_report_#{ container.attr('netuno-report-name') }_form]:first")
+  netuno.unmask containerForm
   containerForm.ajaxForm().submit()
   if containerForm.validate().valid()
+    netuno.mask containerForm
     containerForm.ajaxForm(
       url: "#{ netuno.config.urlAdmin }ReportBuilder#{ netuno.config.extension }"
       iframe: false
@@ -359,6 +366,7 @@ netuno.buildReport = (report) ->
     ).submit()
     return true
   else
+    netuno.mask containerForm
     return false
 
 netuno.loadValidation = (form) ->
@@ -482,9 +490,44 @@ netuno.mask = (container)->
   container.find('[data-mask]').each(()->
     o = $(this)
     if (o.attr('data-mask') != null and o.attr('data-mask') != '')
+      if (o.attr('data-type') is 'textfloat')
+        value = if o.is(':input') then o.val() else o.text()
+        maskDecimals = o.attr('data-mask').match(/0[.,](0+)/)
+        if maskDecimals?
+          maskDecimalsLen = maskDecimals[1].length
+          decimalsMultiple = 10
+          for i in [1 .. maskDecimalsLen - 1]
+            decimalsMultiple *= 10
+          o.attr('data-mask-clean-value', value)
+          if value.indexOf('.') > 0
+            valFloat = parseFloat(value)
+            valFloat = Math.round(valFloat * decimalsMultiple) / decimalsMultiple
+            val = "#{valFloat}"
+            for j in [(val.length - (if val.indexOf('.') > 0 then val.indexOf('.') + 1 else val.length)) .. maskDecimalsLen]
+              if j < maskDecimalsLen
+                val += '0'
+            if o.is(':input')
+              o.val(val)
+            else
+              o.text(val)
+          else if value isnt ''
+            val = value
+            val += '0' for j in [1 .. maskDecimalsLen]
+            if o.is(':input')
+              o.val(val)
+            else
+              o.text(val)
       o.mask(o.attr('data-mask'), {
         reverse: o.attr('data-mask-reverse') is 'true'
         selectOnFocus: o.attr('data-mask-selectonfocus') is 'true'
+        onChange: (val)->
+          if (o.attr('data-type') is 'textfloat')
+            decimals = o.attr('data-mask').match(/0[.,](0+)/)
+            if decimals?
+              decimalsLen = decimals[1].length
+              val = o.cleanVal()
+              val = "#{val.substring(0, val.length - decimalsLen)}.#{val.substring(val.length - decimalsLen)}"
+              o.attr('data-mask-clean-value', val)
       })
   )
 
@@ -498,6 +541,8 @@ netuno.unmask = (container)->
         o.data(data)
       else
         o.unmask()
+      if (o.attr('data-mask-clean-value')? && o.attr('data-mask-clean-value') isnt '')
+        o.val(o.attr('data-mask-clean-value'))
   )
 
 netuno.addContentLoad (container)->
@@ -818,7 +863,8 @@ netuno.com['select'] =
     if fieldId? and fieldId.length > 0 and not netuno.com.select.callbacks[fieldId]?
       netuno.com.select.callbacks[fieldId] = {}
   load: (fieldId, comUid, service)->
-    $("\##{ fieldId }").select2(netuno.com.select.getConfig(fieldId, service, { com_uid: comUid }))
+    select2 = $("\##{ fieldId }").select2(netuno.com.select.getConfig(fieldId, service, { com_uid: comUid }))
+    return select2
   loadInContainer: (container)->
     container.find("select[netuno-select-uid]").each(()->
       select = $(this)
@@ -829,7 +875,7 @@ netuno.com['select'] =
       if comUid? and comUid isnt ''
         select2 = select.select2(netuno.com.select.getConfig(select.attr('id'), service, { com_uid: comUid }))
         if value? and value isnt ''
-          option = $('<option selected>Loading...</option>').val(value)
+          option = $("<option selected>#{netuno.config.com.lang.select["searching"]}</option>").val(value)
           select.append(option)
           select.trigger('change')
           $.ajax({
@@ -841,16 +887,25 @@ netuno.com['select'] =
               option.removeData()
               select.trigger('change')
               selectId = select.attr('id')
-              selectContainer = $("\#select2-#{ selectId }-container");
-              selectContainer.html(data.label)
-              selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', (e)->
-                select = $("\##{ selectId }")
-                select.attr("value", "")
-                select.empty()
-                netuno.com.select.loadInContainer(select.parent())
-                e.preventDefault()
-              ))
-              selectContainer.find('.select2-selection__clear').data(data)
+              selectContainer = $("\#select2-#{ selectId }-container")
+              selectContainer.contents().filter(()->
+                this.nodeType == 3
+              )[0].nodeValue = $('<div />').html(data.label).text()
+              #selectContainer.html(data.label)
+              #selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', (e)->
+              #  select = $("\##{ selectId }")
+              #  select.attr("value", "")
+              #  select.empty()
+              #  netuno.com.select.loadInContainer(select.parent())
+              #  e.preventDefault()
+              #))
+              #selectContainer.find('.select2-selection__clear').data(data)
+            else
+              selectId = select.attr('id')
+              selectContainer = $("\#select2-#{ selectId }-container")
+              selectContainer.contents().filter(()->
+                this.nodeType == 3
+              )[0].nodeValue = $('<div />').html(netuno.config.com.lang.select["defaulttext"]).text()
           )
     )
     container.find("select[netuno-select-link]").each(()->
@@ -860,12 +915,12 @@ netuno.com['select'] =
       onlyActives = $(this).attr('netuno-select-only-actives')
       service = $(this).attr('netuno-select-service')
       if link? and link isnt ''
-        $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service, {
+        select2 = $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service, {
           link: link,
           column_separator: columnSeparator,
           max_column_length: maxColumnLength,
           only_actives: onlyActives
-        }));
+        }))
     )
     container.find("select[netuno-select-service]:not([netuno-select-uid],[netuno-select-link])").each(()->
       service = $(this).attr('netuno-select-service')
@@ -876,8 +931,9 @@ netuno.com['select'] =
         service = select.attr('netuno-select-service')
         select2 = $(this).select2(netuno.com.select.getConfig($(this).attr('id'), service))
         if value? and value isnt ''
-          option = $('<option selected>Loading...</option>').val(value)
-          select.append(option).trigger('change')
+          option = $("<option selected>#{netuno.config.com.lang.select["searching"]}</option>").val(value)
+          select.append(option)
+          select.trigger('change')
           $.ajax({
             dataType: "jsonp"
             url: "#{ service }&data_uid=#{ value }"
@@ -887,13 +943,10 @@ netuno.com['select'] =
               option.removeData()
               select.trigger('change')
               selectId = select.attr('id')
-              selectContainer = $("\#select2-#{ selectId }-container");
-              selectContainer.html(data.label)
-              selectContainer.prepend($(document.createElement("span")).addClass('select2-selection__clear').text('×').data(data).on('click', ()->
-                $("\##{ selectId }").val('')
-                $(this).parent().empty()
-              ))
-              selectContainer.find('.select2-selection__clear').data(data)
+              selectContainer = $("\#select2-#{ selectId }-container")
+              selectContainer.contents().filter(()->
+                this.nodeType == 3
+              )[0].nodeValue = $('<div />').html(data.label).text()
           )
     )
   setValue: (select, uid) ->

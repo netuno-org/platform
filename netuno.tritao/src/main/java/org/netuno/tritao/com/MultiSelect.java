@@ -29,7 +29,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.util.Link;
 import org.netuno.tritao.util.LinkDataShow;
@@ -220,7 +220,7 @@ public class MultiSelect extends ComponentBase {
 
     public Component onSaved() {
         super.onSaved();
-        if (getHili().isScriptsRunning()) {
+        if (getHili().sandbox().isScriptsRunning()) {
             return this;
         }
         Values currentItem = Config.getDataBaseBuilder(getProteu()).getItemByUId(getTableData().getString("name"), getValuesUid());
@@ -411,8 +411,11 @@ public class MultiSelect extends ComponentBase {
     }
 
     protected final void finalize() throws Throwable {
+        /*
+        GC TEST
         items.removeAll();
         items = null;
         super.finalize();
+        */
     }
 }

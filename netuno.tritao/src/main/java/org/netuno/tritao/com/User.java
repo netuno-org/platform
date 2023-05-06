@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -109,7 +109,7 @@ public class User extends ComponentBase {
     	String dataShow = "";
         Values tritaoUser = Config.getDataBaseBuilder(getProteu()).getUserByUId(value);
     	if (tritaoUser != null) {
-            dataShow = tritaoUser.getHtmlEncode("user") +" - "+ tritaoUser.getHtmlEncode("name");
+            dataShow = tritaoUser.getHTMLEncode("user") +" - "+ tritaoUser.getHTMLEncode("name");
     	}
         return dataShow;
     }
@@ -121,7 +121,7 @@ public class User extends ComponentBase {
                 String dataShow = "";
                 Values tritaoUser = Config.getDataBaseBuilder(getProteu()).getUserByUId(value);
                 if (tritaoUser != null) {
-                    dataShow = tritaoUser.getHtmlEncode("user") +" - "+ tritaoUser.getHtmlEncode("name");
+                    dataShow = tritaoUser.getHTMLEncode("user") +" - "+ tritaoUser.getHTMLEncode("name");
                 }
                 getDesignData().set("com.select.datashow", dataShow);
                 return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/select", getDesignData());

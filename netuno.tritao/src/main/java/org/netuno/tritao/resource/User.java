@@ -24,7 +24,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -35,6 +35,8 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
+import org.netuno.tritao.resource.event.AppEvent;
+import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 
 /**
@@ -60,19 +62,23 @@ public class User extends ResourceBase {
 
     public int id = 0;
     public String uid = "";
+    public String user = "";
     public String name = "";
     public String code = "";
 
     public User(Proteu proteu, Hili hili) {
         super(proteu, hili);
-        if (!Config.isAppConfigLoaded(proteu)) {
-            return;
-        }
-        if (Auth.getUser(getProteu(), getHili()) != null) {
-            id = Auth.getUser(getProteu(), getHili()).getInt("id");
-            uid = Auth.getUser(getProteu(), getHili()).getString("uid");
-            name = Auth.getUser(getProteu(), getHili()).getString("name");
-            code = Auth.getUser(getProteu(), getHili()).getString("code");
+    }
+    
+    @AppEvent(type=AppEventType.AfterConfiguration)
+    private void beforeConfiguration() {
+        Values userData = Auth.getUser(getProteu(), getHili());
+        if (userData != null) {
+             id = userData.getInt("id");
+             uid = userData.getString("uid");
+             user = userData.getString("user");
+             name = userData.getString("name");
+             code = userData.getString("code");
         }
     }
 
@@ -153,6 +159,46 @@ public class User extends ResourceBase {
             return user.getString("uid");
         } else {
             throw new ResourceException("user.uid():\nIs not authenticated.");
+        }
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o nome de utilizador de quem está autenticado.",
+                howToUse = {
+                    @SourceCodeDoc(
+                            type = SourceCodeTypeDoc.JavaScript,
+                            code = "// Nome do utilizador autenticado.\n"
+                            + "_log.info(`Nome completo do Utilizador: ${_user.name()}`)"
+                    )}
+        ),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the full username of who is authenticated.",
+                howToUse = {
+                    @SourceCodeDoc(
+                            type = SourceCodeTypeDoc.JavaScript,
+                            code = "// Authenticated username.\n"
+                            + "_log.info(`Full name of the User: ${_user.user()}`)"
+                    )}
+        )
+    }, parameters = { }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Nome de utilizador logado."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Username of the logged in user."
+        )
+    })
+    public String user() {
+        Values user = Auth.getUser(getProteu(), getHili());
+        if (user != null) {
+            return user.getString("user");
+        } else {
+            throw new ResourceException("user.user():\nIs not authenticated.");
         }
     }
 

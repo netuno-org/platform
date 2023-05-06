@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Form Field Component Interface

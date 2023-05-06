@@ -20,7 +20,6 @@ package org.netuno.cli.ws;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.Level;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -208,11 +207,20 @@ public class WSEndpoint {
                                 dataRemote.toJSON(),
                                 response.toString());
                 }
-                session.getAsyncRemote().sendText(
-                        result
-                                .set("content", response.isJSON() ? response.json() : response.toString())
-                                .toJSON()
-                );
+                try {
+                    session.getAsyncRemote().sendText(
+                            result
+                                    .set("content", response.isJSON() ? response.json() : response.toString())
+                                    .toJSON()
+                    );
+                } catch (Throwable e) {
+                    if (e instanceof org.eclipse.jetty.io.EofException
+                        || e instanceof java.io.IOException) {
+                        logger.trace("Sending text message to session: "+ session.getId(), e);
+                    } else {
+                        throw e;
+                    }
+                }
             }
         }
         //logger.trace("Received "+ this.toString() +" TEXT message: " + message);

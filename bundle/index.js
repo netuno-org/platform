@@ -44,7 +44,9 @@ fs.removeSync(config.output.bundle +'.zip')
 
 fs.copySync(config.base.root, config.output.bundle, {
     filter: (src, dest) => {
-        return src.indexOf('graalvm') < 0 && src.indexOf('node_modules') < 0 
+        return src.indexOf('graalvm') < 0
+            && src.indexOf('node_modules') < 0
+            && src.indexOf('classes') < 0
             && src.endsWith('~') == false
             && src.endsWith('#') == false
             && src.endsWith('.swp') == false
@@ -58,13 +60,14 @@ fs.copySync(config.base.root, config.output.bundle, {
 
 fs.readdir(config.output.bundle +'/apps/', (err, files) => {
     files.forEach(file => {
-        if(file.includes('.json'))
-        fs.unlink(config.output.bundle + '/apps/' + file, function (err) {
-            if (err) {
-                console.log('Cant delete this file ' + file)
-            };
-            console.log('File deleted! ' + file);
-        });
+        if (file.includes('.json')) {
+            fs.unlink(config.output.bundle + '/apps/' + file, function (err) {
+                if (err) {
+                    console.log('Cant delete this file ' + file)
+                };
+                console.log('File deleted! ' + file);
+            });
+        }
     });
 });
 

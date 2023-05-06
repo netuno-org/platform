@@ -23,7 +23,8 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.psamata.PsamataException;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
-import org.netuno.psamata.io.Path;
+import org.netuno.psamata.io.MimeTypes;
+import org.netuno.psamata.io.SafePath;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -216,10 +217,6 @@ public class Proteu {
      */
     public Values session = new Values();
     /**
-     * Mime Types
-     */
-    public Values mimeTypes = new Values();
-    /**
      * GZip Extensions
      */
     public Values gzipExtensions = new Values();
@@ -317,7 +314,7 @@ public class Proteu {
                 data.clear();
             }
             if (request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
-                Http.buildPostMultipart(new org.netuno.psamata.io.InputStream(request.getInputStream()), requestHeader, requestPost);
+                HTTP.buildPostMultipart(new org.netuno.psamata.io.InputStream(request.getInputStream()), requestHeader, requestPost);
             }
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
@@ -395,84 +392,11 @@ public class Proteu {
         }
         requestHeader.set("URL", url);
         if (queryString != null && !queryString.equals("")) {
-            requestGet = new Values(Http.buildForm(queryString), "&", "="); // "UTF-8", Http.getCharset(requestHead)
+            requestGet = new Values(HTTP.buildForm(queryString), "&", "="); // "UTF-8", Http.getCharset(requestHead)
         }
     }
     
     private void init() {
-        mimeTypes.put("aac", "audio/aac");
-        mimeTypes.put("abw", "application/x-abiword");
-        mimeTypes.put("arc", "application/octet-stream");
-        mimeTypes.put("avi", "video/x-msvideo");
-        mimeTypes.put("azw", "application/vnd.amazon.ebook");
-        mimeTypes.put("bin", "application/octet-stream");
-        mimeTypes.put("bz", "application/x-bzip");
-        mimeTypes.put("bz2", "application/x-bzip2");
-        mimeTypes.put("csh", "application/x-csh");
-        mimeTypes.put("css", "text/css");
-        mimeTypes.put("csv", "text/csv");
-        mimeTypes.put("doc", "application/msword");
-        mimeTypes.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        mimeTypes.put("eot", "application/vnd.ms-fontobject");
-        mimeTypes.put("epub", "application/epub+zip");
-        mimeTypes.put("es", "application/ecmascript");
-        mimeTypes.put("gif", "image/gif");
-        mimeTypes.put("htm", "text/html");
-        mimeTypes.put("html", "text/html");
-        mimeTypes.put("ico", "image/x-icon");
-        mimeTypes.put("ics", "text/calendar");
-        mimeTypes.put("jar", "application/java-archive");
-        mimeTypes.put("jpeg", "image/jpeg");
-        mimeTypes.put("jpg", "image/jpeg");
-        mimeTypes.put("js", "application/javascript");
-        mimeTypes.put("json", "application/json");
-        mimeTypes.put("map", "application/json");
-        mimeTypes.put("mid", "audio/midi");
-        mimeTypes.put("midi", "audio/midi");
-        mimeTypes.put("mpeg", "video/mpeg");
-        mimeTypes.put("mpkg", "application/vnd.apple.installer+xml");
-        mimeTypes.put("odp", "application/vnd.oasis.opendocument.presentation");
-        mimeTypes.put("ods", "application/vnd.oasis.opendocument.spreadsheet");
-        mimeTypes.put("odt", "application/vnd.oasis.opendocument.text");
-        mimeTypes.put("oga", "audio/ogg");
-        mimeTypes.put("ogv", "video/ogg");
-        mimeTypes.put("ogx", "application/ogg");
-        mimeTypes.put("otf", "font/otf");
-        mimeTypes.put("png", "image/png");
-        mimeTypes.put("pdf", "application/pdf");
-        mimeTypes.put("ppt", "application/vnd.ms-powerpoint");
-        mimeTypes.put("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
-        mimeTypes.put("rar", "application/x-rar-compressed");
-        mimeTypes.put("rtf", "application/rtf");
-        mimeTypes.put("sh", "application/x-sh");
-        mimeTypes.put("svg", "image/svg+xml");
-        mimeTypes.put("swf", "application/x-shockwave-flash");
-        mimeTypes.put("tar", "application/x-tar");
-        mimeTypes.put("tif", "image/tiff");
-        mimeTypes.put("tiff", "image/tiff");
-        mimeTypes.put("ts", "application/typescript");
-        mimeTypes.put("ttf", "font/ttf");
-        mimeTypes.put("txt", "text/plain");
-        mimeTypes.put("vsd", "application/vnd.visio");
-        mimeTypes.put("wav", "audio/wav");
-        mimeTypes.put("weba", "audio/webm");
-        mimeTypes.put("webm", "video/webm");
-        mimeTypes.put("webp", "image/webp");
-        mimeTypes.put("woff", "font/woff");
-        mimeTypes.put("woff2", "font/woff2");
-        mimeTypes.put("xhtml", "application/xhtml+xml");
-        mimeTypes.put("xls", "application/vnd.ms-excel");
-        mimeTypes.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        mimeTypes.put("xml", "application/xml");
-        mimeTypes.put("xul", "application/vnd.mozilla.xul+xml");
-        mimeTypes.put("zip", "application/zip");
-        mimeTypes.put("3gp", "video/3gpp");
-        mimeTypes.put("3g2", "video/3gpp2");
-        mimeTypes.put("7z", "application/x-7z-compressed");
-
-        mimeTypes.put("plain", "text/plain");
-        mimeTypes.put("text", "text/plain");
-        
         gzipExtensions
                 .add("htm")
                 .add("html")
@@ -648,14 +572,6 @@ public class Proteu {
     }
 
     /**
-     * Get mime types.
-     * @return Mime types
-     */
-    public Values getMimeTypes() {
-        return mimeTypes;
-    }
-
-    /**
      * Get GZip Extensions.
      * @return List of the GZip Extensions
      */
@@ -820,8 +736,7 @@ public class Proteu {
     private boolean loadSession() {
         if (isEnterprise()) {
             HttpSession httpSession = getServletRequest().getSession();
-            @SuppressWarnings("unchecked")
-			Enumeration<String> httpSessionAttributeNames = httpSession.getAttributeNames();
+            Enumeration<String> httpSessionAttributeNames = httpSession.getAttributeNames();
             while (httpSessionAttributeNames.hasMoreElements()) {
                 String name = httpSessionAttributeNames.nextElement();
                 if (name.equals("netuno")) {
@@ -1194,7 +1109,7 @@ public class Proteu {
     }
 
     public void setResponseHeaderContentType(String contentType) {
-        getResponseHeader().set("Content-Type", getMimeTypes().hasKey(contentType) ? getMimeTypes().getString(contentType) : contentType);
+        getResponseHeader().set("Content-Type", MimeTypes.getMimeTypes().hasKey(contentType) ? MimeTypes.getMimeTypes().getString(contentType) : contentType);
     }
 
     public void setResponseHeader(ContentType contentType) {
@@ -1203,6 +1118,10 @@ public class Proteu {
 
     public HTTPStatus getResponseHeaderStatus() {
         return responseHeaderStatus;
+    }
+
+    public boolean isResponseHeaderStatusOk() {
+        return responseHeaderStatus.getCode() >= 200 && responseHeaderStatus.getCode() < 299;
     }
 
     public void responseHTTPError(int code, Object faros) {
@@ -1217,12 +1136,12 @@ public class Proteu {
         if (o instanceof Values) {
             outputJSON((Values)o);
         } else if (o instanceof Map) {
-            outputJSON(new Values((Map) o).toJSON());
+            outputJSON(new Values((Map<?, ?>) o).toJSON());
         } else if (o instanceof List) {
             List<Values> list = new ArrayList<>();
-            for (Object item : (List)o) {
+            for (Object item : (List<?>)o) {
                 if (item instanceof Map) {
-                    list.add(new Values((Map)item));
+                    list.add(new Values((Map<?, ?>)item));
                 } else if (item instanceof Values) {
                     list.add((Values)o);
                 }
@@ -1276,15 +1195,15 @@ public class Proteu {
     }
 
     public String safePath(String path) {
-        return Path.safePath(path);
+        return SafePath.path(path);
     }
 
     public String safeFileName(String fileName) {
-        return Path.safeFileName(fileName);
+        return SafePath.fileName(fileName);
     }
 
     public String safeFileSystemPath(String path) {
-        return Path.safeFileSystemPath(path);
+        return SafePath.fileSystemPath(path);
     }
 
     public Values newValues() {
@@ -1295,15 +1214,15 @@ public class Proteu {
         return new Values(o);
     }
     
-    public Values newValues(Map m) {
+    public Values newValues(Map<?, ?> m) {
         return new Values(m);
     }
 
-    public Values newValues(List l) {
+    public Values newValues(List<?> l) {
         return new Values(l);
     }
 
-    public Values newValues(Iterable i) {
+    public Values newValues(Iterable<?> i) {
         return new Values(i);
     }
 
@@ -1315,36 +1234,42 @@ public class Proteu {
         clientHttp = null;
         out = null;
 
+        config.clear();
         config = null;
+
+        requestHeader.clear();
         requestHeader = null;
+
+        requestPost.clear();
         requestPost = null;
+
+        requestPostCache.clear();
         requestPostCache = null;
+
+        requestGet.clear();
         requestGet = null;
+
+        requestCookie.clear();
         requestCookie = null;
+
+        requestBody.clear();
         requestBody = null;
+
+        requestAll.clear();
         requestAll = null;
+
+        responseHeader.clear();
         responseHeader = null;
+
+        responseCookie.clear();
         responseCookie = null;
+
+        session.clear();
         session = null;
-        mimeTypes = null;
-    }
 
-    
-    @Override
-    protected void finalize() throws Throwable {
-        clear();
+        gzipExtensions.clear();
+        gzipExtensions = null;
     }
-
-    /*protected void finalize() throws Throwable {
-        if (isEnterprise()) {
-            if (httpUploads != null) {
-                for (String file : httpUploads) {
-                    org.netuno.psamata.io.File.delete(file);
-                }
-                httpUploads.clear();
-            }
-        }
-    }*/
     
     class OutputNotify implements org.netuno.psamata.io.OutputStreamNotify {
         private Proteu proteu = null;

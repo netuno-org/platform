@@ -122,15 +122,15 @@ public class Enterprise extends HttpServlet {
     @Override
     public void init() {
         try {
-            Class cls = Class.forName("org.netuno.cli.Main");
-            Config.BUILD_NUMBER = (String)cls.getMethod("buildNumber").invoke(null);
+            Class<?> cls = Class.forName("org.netuno.cli.utils.Build");
+            Config.BUILD_NUMBER = (String)cls.getMethod("getNumber").invoke(null);
         } catch (ClassNotFoundException e) {
         } catch (Exception e) {
             logger.fatal("Error loading build number.", e);
         }
         
         System.out.println();
-        System.out.println("    © "+ Config.VERSION_YEAR +" netuno.org // PROTEU // v"+ Config.VERSION +":"+ Config.BUILD_NUMBER);
+        System.out.println("    PROTEU IN ORBIT // v"+ Config.VERSION +":"+ Config.BUILD_NUMBER);
         System.out.println();
 
         try {
@@ -145,13 +145,11 @@ public class Enterprise extends HttpServlet {
         }
 
         try {
-            List<String> packagesWhiteList = (List<String>)Class.forName("org.netuno.cli.Config")
-                    .getMethod("getPackagesWhiteList")
-                    .invoke(
-                            null
-                    );
-            Config.getPackagesWhiteList().addAll(
-                    packagesWhiteList
+            Method method = Class.forName("org.netuno.cli.Config")
+                    .getMethod("getPackagesScan");
+            List<?> packagesScan = (List<?>)method.invoke(null);
+            Config.getPackagesScan().addAll(
+                packagesScan.stream().map(o -> o.toString()).toList()
             );
         } catch (Throwable e) {
             logger.error("Loading Netuno Server packages white list: "+ e.getMessage());
@@ -159,17 +157,17 @@ public class Enterprise extends HttpServlet {
 
         ScanResult scanResult = new ClassGraph()
                 .disableRuntimeInvisibleAnnotations()
-                .whitelistPackages(Config.getPackagesWhiteList().toArray(new String[0]))
+                .acceptPackages(Config.getPackagesScan().toArray(new String[0]))
                 .enableAllInfo()
                 .scan();
         String initClassPath = "";
         try {
-            ClassInfoList initClasses = scanResult.getClassesWithAnnotation(_Init.class.getName());
+            ClassInfoList initClasses = scanResult.getClassesWithAnnotation(Initialization.class.getName());
             for (String _initClassPath : initClasses.getNames()) {
                 initClassPath = _initClassPath;
                 logger.info("Loading init classes in "+ initClassPath);
-                Class clazz = Class.forName(initClassPath);
-                Method init = clazz.getMethod("_init", null);
+                Class<?> clazz = Class.forName(initClassPath);
+                Method init = clazz.getMethod("onInitialize");
                 init.invoke(null);
                 logger.info("Init class "+ clazz.getName() +" invoked.");
             }
@@ -178,14 +176,14 @@ public class Enterprise extends HttpServlet {
         }
         String webClassPath = "";
         try {
-            ClassInfoList webClasses = scanResult.getClassesWithAnnotation(_Web.class.getName());
+            ClassInfoList webClasses = scanResult.getClassesWithAnnotation(Path.class.getName());
             for (String _webClassPath : webClasses.getNames()) {
                 webClassPath = _webClassPath;
                 logger.info("Loading web classes in "+ webClassPath);
                 Class<?> clazz = Class.forName(webClassPath);
-                _Web _web = clazz.getAnnotation(_Web.class);
-                logger.info("Web class "+ clazz.getName() +" loaded with link "+ _web.url());
-                Config.getWebs().put(_web.url(), clazz);
+                Path path = clazz.getAnnotation(Path.class);
+                logger.info("Web class "+ clazz.getName() +" linked with path "+ path.value() +".");
+                Config.getWebs().put(path.value(), clazz);
             }
         } catch (Throwable e) {
             logger.fatal("Trying web "+ webClassPath +"...", e);
@@ -196,12 +194,12 @@ public class Enterprise extends HttpServlet {
             for (String _event : eventsClasses.getNames()) {
                 eventsClassPath = _event;
                 logger.info("Loading events in "+ eventsClassPath);
-                Class clazz = Class.forName(eventsClassPath);
+                Class<?> clazz = Class.forName(eventsClassPath);
                 logger.info("Events class "+ clazz.getName() +" loaded.");
                 Config.getEvents().add(
                         ((Events)clazz
-                                .getConstructor(null)
-                                .newInstance(null))
+                                .getConstructor()
+                                .newInstance())
                 );
             }
             Collections.sort(
@@ -217,11 +215,11 @@ public class Enterprise extends HttpServlet {
             for (String _enterpriseEvent : enterpriseEventsClasses.getNames()) {
                 enterpriseEventsClassPath = _enterpriseEvent;
                 logger.info("Loading enterprise events "+ enterpriseEventsClassPath);
-                Class clazz = Class.forName(enterpriseEventsClassPath);
+                Class<?> clazz = Class.forName(enterpriseEventsClassPath);
                 getEvents().add(
                         ((EnterpriseEvents)clazz
-                                .getConstructor(null)
-                                .newInstance(null))
+                                .getConstructor()
+                                .newInstance())
                 );
             }
         } catch (Throwable e) {
@@ -331,7 +329,7 @@ public class Enterprise extends HttpServlet {
                 return;
             }
             out = null;
-            Class farosClass = Class.forName(Config.getFarosClassPath());
+            Class<?> farosClass = Class.forName(Config.getFarosClassPath());
             faros = farosClass.getConstructor(Proteu.class).newInstance(proteu);
             try {
                 for (EnterpriseEvents enterpriseEvents : getEvents()) {
@@ -463,7 +461,6 @@ public class Enterprise extends HttpServlet {
                     }
                 } catch (Throwable t) {
                     logger.error("Script \"" + SCRIPT_END + "\": " + scriptClosePath, t);
-                    throw new Error(t);
                 } finally {
                     try {
                         Config.setStarting(false);
@@ -557,11 +554,24 @@ public class Enterprise extends HttpServlet {
                         throw new Error(t);
                     } finally {
                         try {
-                            if (proteu != null) {
-                                //proteu.clear();
+
+                            try {
+                                if (faros != null && faros instanceof AutoCloseable) {
+                                    ((AutoCloseable)faros).close();
+                                }
+                            } catch (Throwable t) {
+                                logger.error("Enterprise Cleaning Faros", t);
+                            }
+                            try {
+                                if (proteu != null) {
+                                    proteu.clear();
+                                }
+                            } catch (Throwable t) {
+                                logger.error("Enterprise Cleaning Proteu", t);
                             }
                             //System.gc();
                         } finally {
+                            faros = null;
                             proteu = null;
                             Config.initialized();
                         }
@@ -575,17 +585,15 @@ public class Enterprise extends HttpServlet {
         if (scriptPath != null && proteu != null) {
             if (GraalRunner.isGraal() && scriptPath.toLowerCase().endsWith(".js")) {
                 String script = org.netuno.psamata.io.InputStream.readFromFile(scriptPath);
-                GraalRunner graalRunner = null;
-                try {
-                    graalRunner = new GraalRunner("js");
+                try (GraalRunner graalRunner = new GraalRunner("js")) {
                     graalRunner
                         .set("js", "_proteu", proteu)
                         .set("js", "_servlet", this)
                         .set("js", "_request", request)
                         .set("js", "_response", response)
                         .eval("js", script);
-                } finally {
-                    graalRunner.close();
+                } catch (Exception e) {
+                    throw new ScriptException(e);
                 }
             } else {
                 scriptRunner.getBindings().put("_proteu", proteu);

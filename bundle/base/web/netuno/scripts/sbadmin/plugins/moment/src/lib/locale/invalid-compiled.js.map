@@ -1,0 +1,1 @@
+{"version":3,"sources":["invalid.js"],"names":[],"mappings":"AAAA,OAAO,IAAI,kBAAkB,GAAG,cAAc,CAAC;;AAE/C,OAAO,SAAS,WAAW,GAAI;AAC3B,WAAO,IAAI,CAAC,YAAY,CAAC;CAC5B","file":"invalid-compiled.js","sourcesContent":["export var defaultInvalidDate = 'Invalid date';\n\nexport function invalidDate () {\n    return this._invalidDate;\n}\n"]}

@@ -317,6 +317,7 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">_{data=parameter.displayname}</h4>
+        <p data-link></p>
       </div>
       <div class="modal-body"></div>
       <div class="modal-footer">
@@ -350,40 +351,52 @@
     });
     netuno.componentConfig.load("form", "_{request=netuno_table_uid}");
     $('#buttonFormDesign__{data=table.name}_new,#buttonFormDesign__{data=table.name}_clear').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#fieldFormDesign__{data=table.name}_execute').val('new');
       $('#fieldFormDesign__{data=table.name}_uid').val('');
       if (!netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false)) {
+        that.prop('disabled', false);
         $('#fieldFormDesign__{data=table.name}_execute').val('');
       }
     });
     $('#buttonFormDesign__{data=table.name}_save').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#fieldFormDesign__{data=table.name}_execute').val('save');
       if (!netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', true)) {
+        that.prop('disabled', false);
         $('#fieldFormDesign__{data=table.name}_execute').val('');
       }
     });
     $('#buttonFormDesign__{data=table.name}_delete_yes').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#fieldFormDesign__{data=table.name}_execute').val('delete');
-      $('#buttonFormDesign__{data=table.name}_delete').modal('hide');
-      if (!netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false, function () {
-          $('body').removeClass('modal-open');
-          $('.modal-backdrop').remove();
-      })) {
+      $('#modalFormDesign__{data=table.name}_delete').modal('hide');
+      if (!netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false)) {
+        that.prop('disabled', false);
         $('#fieldFormDesign__{data=table.name}_execute').val('');
       }
     });
     $('#buttonFormDesign__{data=table.name}_copy').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#fieldFormDesign__{data=table.name}_execute').val('new');
       $('#fieldFormDesign__{data=table.name}_uid').val('');
-      netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false, function () {
+      if (!netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false, function () {
+        that.prop('disabled', false);
         $('#fieldFormDesign__{data=table.name}_execute').val('');
         netuno.componentConfig.link.select('_{request=netuno_table_uid}', function (field, uid) {
-            $('#fieldFormDesign__{data=table.name}_execute').val('copy');
-            $('#fieldFormDesign__{data=table.name}_copy').val(uid);
-            $('#fieldFormDesign__{data=table.name}_uid').val('');
-            netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false);
+          $('#fieldFormDesign__{data=table.name}_execute').val('copy');
+          $('#fieldFormDesign__{data=table.name}_copy').val(uid);
+          $('#fieldFormDesign__{data=table.name}_uid').val('');
+          netuno.componentConfig.link.close();
+          netuno.submitDev('netuno_form_design__{data=table.name}', 'formDesign__{data=table.uid}', false);
         });
-      });
+      })) {
+        that.prop('disabled', false);
+      }
     });
     netuno.loadValidationDev('formDesign__{data=table.uid}');
     $("#fieldFormDesign__{data=table.name}_description").summernote({

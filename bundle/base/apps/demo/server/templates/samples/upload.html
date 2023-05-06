@@ -9,56 +9,89 @@ _{include=_|includes/head}
   <div class="row">
     <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
       <h1>Upload Sample</h1>
-      #if ($data.getString('serverAppFilePath').isEmpty())
-      <form action="upload.netuno" method="post" enctype="multipart/form-data">
+      #if ($data.getString('filePath').isEmpty())
+      <form action="upload.netuno" method="post" enctype="multipart/form-data" style="display: none;">
         <div class="form-group">
-          <label>Select image to upload:</label>
-          <input type="file" name="fileToUpload" id="fileToUpload"/>
+          <label>Select a file to upload:</label>
+          <input type="file" name="fileUpload" id="fileUpload"/>
         </div>
         <div class="form-group">
           <label>AJAX mode:</label>
           <input type="checkbox" name="ajax" value="true" class="form-control"/>
         </div>
-        <div id="ajaxSavedAlert" class="alert alert-info text-center" role="alert" style="display: none;">
-          <p>File saved inside your App:</p>
-          <p><span></span></p>
+        <div id="ajaxReady" style="display: none;">
+          <div class="alert alert-info text-center" role="alert">
+            <p>File uploaded:</p>
+            <p><span></span></p>
+          </div>
+          <a data-extra-toggle href="javascript: void(0);"></a>
+          <div data-extra>
+            <pre>$data.getString('extra')</pre>
+          </div>
         </div>
-        <p><button type="submit" class="btn btn-default">Save</button></p>
+        <br/>
+        <p><button type="submit" class="btn btn-default">Upload</button></p>
       </form>
       #else
       <div class="alert alert-warning text-center" role="alert">
-        <p>File saved:</p>
-        <p><strong>$data.getString('serverAppFilePath')</strong></p>
+        <p>File uploaded:</p>
+        <p><strong>$data.getString('filePath')</strong></p>
       </div>
+      #if (!$data.getString('extra').isEmpty())
+      <a data-extra-toggle href="javascript: void(0);"></a>
+      <div data-extra>
+        <pre>$data.getString('extra')</pre>
+      </div>
+      #end
       #end
     </div>
   </div>
 </div>
 <script>
- netuno.addPageLoad(function() {
-   var ajaxSwitch = $("input[type=checkbox]");
-   ajaxSwitch.bootstrapSwitch({
-     size: "small",
-     onText: "<i class=\"fa fa-check\"></i>",
-     offText: "<i class=\"fa fa-close\"></i>"
-   });
-   var form = $('form');
-   form.find('button').on('click', function () {
-     form.off('submit'); // Without this code form will not submit
-     if (ajaxSwitch.is(":checked")) {
-       form.ajaxForm({
-         iframe: false,
-         type: 'post',
-         success: function (response) {
-           $('#ajaxSavedAlert')
-             .show()
-             .find('span').text(response.filePath);
-         }
-       }).submit();
-     } else {
-       form.submit();
-     }
-   });
- });
+  netuno.addPageLoad(function() {
+    var ajaxSwitch = $("input[type=checkbox]");
+    ajaxSwitch.bootstrapSwitch({
+      size: "small",
+      onText: "<i class=\"fa fa-check\"></i>",
+      offText: "<i class=\"fa fa-close\"></i>"
+    });
+    var form = $('form').fadeIn();
+    form.find('button').on('click', function () {
+      form.off('submit'); // Without this code form will not submit
+      if (ajaxSwitch.is(":checked")) {
+        form.ajaxForm({
+          iframe: false,
+          type: 'post',
+          success: function (response) {
+            var ajaxReady = $('#ajaxReady').show();
+            ajaxReady.find('span').text(response.filePath);
+            if (response.extra && response.extra != '') {
+              ajaxReady.find('a[data-extra-toggle]').show();
+              ajaxReady.find('div[data-extra]')
+                .show()
+                .find('pre')
+                .text(response.extra);
+            } else {
+              ajaxReady.find('a[data-extra-toggle]').hide();
+              ajaxReady.find('div[data-extra]').hide();
+            }
+          }
+        }).submit();
+      } else {
+        form.submit();
+      }
+    });
+    $('a[data-extra-toggle]').on('click', function () {
+      var that = $(this);
+      var divExtra = $('div[data-extra]')
+      if (divExtra.is(':visible')) {
+        divExtra.hide();
+        that.text('Show Informations Extracted');
+      } else {
+        divExtra.show();
+        that.text('Hide Informations Extracted');
+      }
+    }).trigger('click');
+  });
 </script>
 _{include=_|includes/foot}

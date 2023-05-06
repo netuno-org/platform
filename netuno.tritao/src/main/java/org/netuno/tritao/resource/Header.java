@@ -25,7 +25,8 @@ import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Header - Resource
@@ -208,11 +209,11 @@ public class Header extends ResourceBaseValues {
     }
 
     public String host() {
-        return org.netuno.tritao.config.Config.getRequestHost(getProteu());
+        return Config.getRequestHost(getProteu());
     }
     
     public String port() {
-        return org.netuno.tritao.config.Config.getRequestPort(getProteu());
+        return Config.getRequestPort(getProteu());
     }
     
     public String method() {

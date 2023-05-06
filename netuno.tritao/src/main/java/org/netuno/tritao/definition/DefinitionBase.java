@@ -19,7 +19,7 @@ package org.netuno.tritao.definition;
 
 
 import org.netuno.proteu.Proteu;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /*
 _form.find("cliente")
@@ -69,7 +69,7 @@ public class DefinitionBase {
     }
 
     protected<T> T definition(Class<T> definitionClass) {
-        return getHili().resource(definitionClass);
+        return getHili().resource().get(definitionClass);
     }
 
     protected String enumValueOf(String key) {

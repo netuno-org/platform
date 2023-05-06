@@ -20,7 +20,7 @@ package org.netuno.tritao.manage;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Application Service
@@ -35,7 +35,7 @@ public class App {
         if (proteu.getRequestAll().hasKey("configs")) {
             org.netuno.proteu.Config.getDataSources().clear();
             try {
-                Class.forName("org.netuno.cli.Server")
+                Class.forName("org.netuno.cli.Config")
                         .getMethod("loadAppConfigs")
                         .invoke(
                                 null
@@ -46,7 +46,7 @@ public class App {
         }
         if (proteu.getRequestAll().hasKey("default")) {
             try {
-                Class.forName("org.netuno.cli.Script")
+                Class.forName("org.netuno.cli.Config")
                         .getMethod("setAppDefault", String.class)
                         .invoke(
                                 null,
@@ -58,7 +58,7 @@ public class App {
         }
         if (proteu.getRequestAll().hasKey("force")) {
             try {
-                Class.forName("org.netuno.cli.Script")
+                Class.forName("org.netuno.cli.Config")
                         .getMethod("setAppForce", String.class)
                         .invoke(
                                 null,

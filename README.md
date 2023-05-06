@@ -6,6 +6,18 @@ Quickly build applications adapted to your business logic.
 
 In here you can find the source of all the Netuno core capabilities, such as CLI and Web Server.
 
+Join [Netuno’s Discord](https://discord.gg/4sfXG6YWFu) for help and to know more, you are welcome.
+
+You can follow to not lose the news, tips, and tutorials:
+
+- [YouTube](https://www.youtube.com/channel/UCYY1Nz6T2NJtP29vba2fqkg)
+- [Twitter](https://twitter.com/netuno_org)
+- [LinkedIn](https://www.linkedin.com/company/netuno-org/)
+- [Facebook](https://www.facebook.com/netuno.org/)
+- [Instagram](https://www.instagram.com/netuno_org/)
+
+[Netuno.org](https://www.netuno.org/) is the official website.
+
 ![Overview](https://raw.githubusercontent.com/netuno-org/platform/main/docs/overview.png)
 
 Find more in [netuno.org](https://www.netuno.org/)
@@ -75,33 +87,18 @@ Run the setup script:
 You need to run PowerShell as an administrator, then follow the steps.
 
 ```ps1
- $ Set-ExecutionPolicy Unrestricted
-```
-
-```ps1
  $ .\setup.ps1
 ```
-`Select option y if need to confirm something.`
 
-After running this command will open the one menu.
+After running the script in PowerShell as an administrator, it will verify if all dependencies are installed. If there are dependencies to be installed, it will prompt to ask if you want to install them.
+
+<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/checking.png" width="300" style="border-radius: 10px;"/>
+
+Depending on the dependencies, it will ask if you allow restarting the computer, as this is necessary to proceed.
 
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/menu.png" width="300" style="border-radius: 10px;"/>
 
-Now you need to run option 1 to install Java JDK 11 and configure to use in JAVA_HOME.
-
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/java-install.png" width="300" style="border-radius: 10px;"/>
-
-After install Java JDK 11 select option 2 to install Maven.
-
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/maven-install.png" width="300" style="border-radius: 10px;"/>
-
-Now you need to run option 3 to install ProGuard.
-
-<img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/proguard-install.png" width="300" style="border-radius: 10px;"/>
-
-After installing ProGuard, Java and Maven you need to **reboot computer**.
-Select option 4 and at the end also select option 5.
-
+After installation and following the steps indicated by the script, run option 1 to configure the project and option 2 to generate a bundle.
 
 ## Bundle
 

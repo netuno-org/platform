@@ -24,7 +24,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -35,6 +35,8 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
+import org.netuno.tritao.resource.event.AppEvent;
+import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 
 /**
@@ -65,9 +67,10 @@ public class Group extends ResourceBase {
 
     public Group(Proteu proteu, Hili hili) {
         super(proteu, hili);
-        if (!Config.isAppConfigLoaded(proteu)) {
-            return;
-        }
+    }
+    
+    @AppEvent(type=AppEventType.AfterConfiguration)
+    private void beforeConfiguration() {
         if (Auth.getGroup(getProteu(), getHili()) != null) {
             id = Auth.getGroup(getProteu(), getHili()).getInt("id");
             uid = Auth.getGroup(getProteu(), getHili()).getString("uid");

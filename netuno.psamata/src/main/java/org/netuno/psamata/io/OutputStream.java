@@ -96,6 +96,10 @@ public class OutputStream extends java.io.OutputStream {
         return this;
     }
 
+    public boolean isEmpty() {
+        return this.getLength() == 0;
+    }
+
     /**
      * Start.
      */

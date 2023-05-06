@@ -29,12 +29,13 @@ import org.leadpony.justify.api.ProblemHandler;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.config.HiliError;
+import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.hili.HiliError;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -166,7 +167,7 @@ public class Schema extends WebMaster {
                 JsonSchema schema = jsonValidationService.readSchema(loadSchemaAsInputStream(pathSchema));
                 ProblemHandler handler = jsonValidationService.createProblemPrinter(this::validateSchemaOutProblem);
                 String outContent = new String(outStream.toByteArray());
-                try ( JsonReader reader = jsonValidationService.createReader(new StringReader(outContent), schema, handler)) {
+                try (JsonReader reader = jsonValidationService.createReader(new StringReader(outContent), schema, handler)) {
                     JsonValue value = reader.readValue();
                     if (validateSchemaOutProblems.isEmpty()) {
                         return true;
@@ -179,6 +180,16 @@ public class Schema extends WebMaster {
                             + "\n#"
                             + "\n"
                             + validateSchemaOutProblems + "\n#\n");
+                    return false;
+                } catch (Exception e) {
+                    logger.warn("\n"
+                            + "\n#"
+                            + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(getProteu())
+                            + "\n#"
+                            + "\n# Invalid JSON output " + getProteu().getResponseHeaderStatus().getCode() + " to service " + service.getPath() + ""
+                            + "\n#"
+                            + "\n"
+                            + outContent + "\n#\n");
                     return false;
                 }
             } catch (Exception e) {
@@ -270,15 +281,15 @@ public class Schema extends WebMaster {
     }
 
     private void loadDataWithSchema(Values data, String path) {
-        path = org.netuno.psamata.io.Path.safeFileSystemPath(path);
-        String scriptPath = "/_schema/" + org.netuno.psamata.io.Path.safeFileSystemPath(path);
+        path = SafePath.fileSystemPath(path);
+        String scriptPath = "/_schema/" + SafePath.fileSystemPath(path);
         if (ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + scriptPath) != null) {
             data.unset("_schema");
             try {
-                getHili().bind("dataSchema", createDataSchema(data));
-                getHili().runScriptSandbox(Config.getPathAppServices(getProteu()), scriptPath);
+                getHili().sandbox().bind("dataSchema", createDataSchema(data));
+                getHili().sandbox().runScript(Config.getPathAppServices(getProteu()), scriptPath);
             } finally {
-                getHili().unbind("dataSchema");
+                getHili().sandbox().unbind("dataSchema");
             }
             return;
         }

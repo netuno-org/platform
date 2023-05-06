@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.util.List;
 
@@ -126,7 +126,7 @@ public class Data extends Base {
             where += " and ";
             if ((key.equalsIgnoreCase("or") && values.getList("or") != null)
                     || (key.equalsIgnoreCase("_or") && values.getList("_or") != null)) {
-                List<Values> conditions = key.equalsIgnoreCase("or") ? values.getList("or") : values.getList("_or");
+                List<Values> conditions = key.equalsIgnoreCase("or") ? values.getList("or", Values.class) : values.getList("_or", Values.class);
                 if (conditions.size() > 0) {
                     where += "(1 = 2";
                     for (Values condition : conditions) {

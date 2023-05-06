@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Lang;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -50,10 +50,11 @@ public class User {
 	        	JSONObject jsonObject = new JSONObject();
 	        	if (user != null) {
 	                jsonObject.put("id", dataId);
-	                jsonObject.put("label", user.getHtmlEncode("user") +" - "+ user.getHtmlEncode("name"));
+	                jsonObject.put("label", user.getHTMLEncode("user") +" - "+ user.getHTMLEncode("name"));
 	            }
 	        	json = jsonObject.toString();
 	        } else {
+				boolean noDevs = proteu.getRequestAll().getBoolean("no_devs");
 				boolean allowAll = proteu.getRequestAll().getBoolean("allow_all");
 		        List<Values> rsQuery = Config.getDataBaseBuilder(proteu).selectUserSearch(proteu.getRequestAll().getString("q"));
 		        JSONArray jsonArray = new JSONArray();
@@ -64,6 +65,9 @@ public class User {
 	            java.util.Arrays.sort(users);
 	            java.util.Arrays.sort(groups);
 		        for (Values queryRow : rsQuery) {
+					if (noDevs && queryRow.getInt("netuno_group") == -2) {
+						continue;
+					}
 		        	String id = queryRow.getString("uid");
 		        	if (queryRow.getString("id").equals(Auth.getUser(proteu, hili, Auth.Type.SESSION).getString("id"))) {
 		        		if (!proteu.getRequestAll().getBoolean("allow_user_logged")) {
@@ -84,7 +88,7 @@ public class User {
 			        		&& Arrays.binarySearch(users, queryRow.getString("user")) < 0) {
 			        	continue;
 		        	}
-		        	String label = queryRow.getHtmlEncode("user") + " - " + queryRow.getHtmlEncode("name");
+		        	String label = queryRow.getHTMLEncode("user") + " - " + queryRow.getHTMLEncode("name");
 					JSONObject jsonObject = new JSONObject();
 		            jsonObject.put("id", id);
 		            jsonObject.put("label", label);
@@ -223,7 +227,7 @@ public class User {
         	data.set("user.id.value", proteu.getRequestAll().getString("id"));
 			data.set("user.uid.value", proteu.getRequestAll().getString("uid"));
         	data.set("user.name.value", proteu.getRequestAll().getString("name"));
-        	data.set("user.username.value", proteu.getRequestAll().getString("user"));
+        	data.set("user.username.value", proteu.getRequestAll().getString("username"));
 			data.set("user.mail.value", proteu.getRequestAll().getString("mail"));
         	data.set("user.group_id.value", proteu.getRequestAll().getString("group_id"));
 			data.set("user.group_uid.value", proteu.getRequestAll().getString("group_uid"));

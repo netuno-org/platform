@@ -20,7 +20,7 @@ package org.netuno.tritao.com;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.com.Component.Mode;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.Translation;
 import org.netuno.tritao.util.TemplateBuilder;
 

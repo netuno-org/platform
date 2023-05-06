@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.RunEvent;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.io.File;
 

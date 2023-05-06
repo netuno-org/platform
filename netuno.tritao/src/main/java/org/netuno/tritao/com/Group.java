@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -49,6 +49,7 @@ public class Group extends ComponentBase {
     private void init() {
     	super.getConfiguration().putParameter("GROUPS_MODE", ParameterType.CHOICE, "all|exclude|only"); // all|exclude|only
     	super.getConfiguration().putParameter("GROUPS", ParameterType.STRING, ""); // Group1,Group2...
+    	super.getConfiguration().putParameter("ALLOW_GROUP_LOGGED", ParameterType.BOOLEAN, "false");
     }
     
     public Component setDesignData(Values designData) {
@@ -88,7 +89,8 @@ public class Group extends ComponentBase {
             getDesignData().set("com.select.validation", getValidation(getDesignData()));
             getDesignData().set("com.select.service", "Group"+ org.netuno.proteu.Config.getExtension() +"?service=json"+
                     "&groups_mode="+ getConfiguration().getParameter("GROUPS_MODE").getValue() +
-                    "&groups="+ getConfiguration().getParameter("GROUPS").getValue());
+                    "&groups="+ getConfiguration().getParameter("GROUPS").getValue() +
+                    "&allow_group_logged="+ getConfiguration().getParameter("ALLOW_GROUP_LOGGED").getValue());
             TemplateBuilder.output(getProteu(), getHili(), "com/render/select", getDesignData());
             new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
@@ -101,7 +103,7 @@ public class Group extends ComponentBase {
     	String dataShow = "";
         Values tritaoGroup = Config.getDataBaseBuilder(getProteu()).getGroupByUId(value);
     	if (tritaoGroup != null) {
-            dataShow = tritaoGroup.getHtmlEncode("name");
+            dataShow = tritaoGroup.getHTMLEncode("name");
     	}
         return dataShow;
     }
@@ -113,7 +115,7 @@ public class Group extends ComponentBase {
                 String dataShow = "";
                 Values tritaoGroup = Config.getDataBaseBuilder(getProteu()).getGroupByUId(value);
                 if (tritaoGroup != null) {
-                    dataShow = tritaoGroup.getHtmlEncode("name");
+                    dataShow = tritaoGroup.getHTMLEncode("name");
                 }
                 getDesignData().set("com.select.datashow", dataShow);
                 return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/select", getDesignData());

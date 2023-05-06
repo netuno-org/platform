@@ -21,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import java.util.List;
 
@@ -47,11 +47,11 @@ public class H2 implements Builder {
     }
 
     public String escapeStart() {
-        return "\"";
+        return "`";
     }
 
     public String escapeEnd() {
-        return "\"";
+        return "`";
     }
 
     public String escape(String data) {
@@ -301,8 +301,8 @@ public class H2 implements Builder {
         return coreBusiness.selectGroupCounter();
     }
 
-    public boolean updateGroup(String id, String name, String netuno_group, String mail, String active) {
-        return coreBusiness.updateGroup(id, name, netuno_group, mail, active);
+    public boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String active) {
+        return coreBusiness.updateGroup(id, name, netuno_group, login_allowed, mail, active);
     }
 
     public boolean updateGroup(Values values) {
@@ -313,8 +313,8 @@ public class H2 implements Builder {
         return coreBusiness.updateGroup(id, values);
     }
 
-    public int insertGroup(String name, String netuno_group, String mail, String active) {
-        return coreBusiness.insertGroup(name, netuno_group, mail, active);
+    public int insertGroup(String name, String netuno_group, String login_allowed, String mail, String active) {
+        return coreBusiness.insertGroup(name, netuno_group, login_allowed, mail, active);
     }
 
     public int insertGroup(Values values) {

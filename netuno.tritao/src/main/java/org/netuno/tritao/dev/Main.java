@@ -22,7 +22,7 @@ import org.netuno.proteu.Proteu;
 import java.io.IOException;
 
 import org.netuno.proteu.ProteuException;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
@@ -30,10 +30,8 @@ import org.netuno.tritao.config.Config;
 
 import java.util.List;
 
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.resource.Lang;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Template;
-import org.netuno.tritao.util.TemplateBuilder;
 
 import javax.script.ScriptException;
 
@@ -41,7 +39,7 @@ import javax.script.ScriptException;
  * Main Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/dev/Main")
+@Path("/org/netuno/tritao/dev/Main")
 public class Main extends WebMaster {
 
     public Main(Proteu proteu, Hili hili) {

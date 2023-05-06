@@ -20,9 +20,8 @@ package org.netuno.tritao;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 
-import java.util.List;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.resource.Lang;
 import org.netuno.tritao.util.TemplateBuilder;

@@ -27,10 +27,9 @@ import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
-import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Log - Resource
@@ -91,7 +90,9 @@ public class Logger extends ResourceBase {
 
     private String message(String type, String message, Object o) {
         String content = "";
-        if (o instanceof Values) {
+        if (o == null) {
+            content = "null";
+        } else if (o instanceof Values) {
             content = Arrays.stream(((Values)o).toJSON(2).split("\\n")).collect(Collectors.joining("\n# "));
         } else {
             content = o.toString();

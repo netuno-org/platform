@@ -36,7 +36,7 @@ import org.netuno.library.doc.LibraryTranslationDoc;
 public class SMTPConfig {
     private boolean enabled = true;
     private boolean debug = false;
-    private String protocol = "";
+    private String protocol = "smtps";
     private String host = "";
     private int port = 465;
     private boolean ssl = true;
@@ -53,6 +53,7 @@ public class SMTPConfig {
     private String to = "";
     private String cc = "";
     private String bcc = "";
+    private String replyTo = "";
     private String subjectPrefix = "";
     private String subject = "";
     private String text = "";
@@ -227,6 +228,15 @@ public class SMTPConfig {
 
     public SMTPConfig setBcc(String bcc) {
         this.bcc = bcc;
+        return this;
+    }
+
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    public SMTPConfig setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
         return this;
     }
 

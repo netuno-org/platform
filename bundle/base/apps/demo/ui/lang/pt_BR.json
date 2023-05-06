@@ -69,6 +69,10 @@
                     "title": "Templates",
                     "intro": "<p>Serve para gerar HTML e manter o código limpo e organizado, verifique o conteúdo dos templates em <i>server/templates/samples</i>.</p>"
                 },
+                "image": {
+                    "title": "Imagem",
+                    "intro": "<p>Imagem dinâmica que é gerada programaticamente.</p>"
+                },
                 "query-parameter": {
                     "title": "Parâmetros em Consulta de Dados",
                     "intro": "<p>Retorna em <i>JSON</i> os registos encontrados em base de dados a partir dos filtros passados em parâmetros no endereço (URL).</p>"

@@ -28,7 +28,7 @@ import org.netuno.psamata.crypto.AES256;
 import org.netuno.psamata.crypto.BCrypt;
 import org.netuno.psamata.crypto.DES;
 import org.netuno.psamata.crypto.MD5;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -40,14 +40,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
-import java.util.Base64;
+
 import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
-import org.netuno.library.doc.SourceCodeDoc;
-import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.psamata.crypto.HMAC;
 
 /**

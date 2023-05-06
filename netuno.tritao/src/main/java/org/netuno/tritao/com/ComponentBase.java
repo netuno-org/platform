@@ -24,7 +24,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.LangResource;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 
 /**
@@ -83,6 +83,10 @@ public class ComponentBase implements Component {
 
     protected Hili getHili() {
         return hili;
+    }
+
+    protected<T> T resource(Class<T> resourceClass) {
+        return getHili().resource().get(resourceClass);
     }
 
     @Override
@@ -292,6 +296,8 @@ public class ComponentBase implements Component {
     }
 
     protected void finalize() throws Throwable {
+        /*
+        GC TEST
         proteu = null;
         hili = null;
         configuration = null;
@@ -299,6 +305,7 @@ public class ComponentBase implements Component {
         designData = null;
         tableData = null;
         values = null;
+        */
     }
 
     public static Component getInstance(Proteu proteu, Hili hili, String tableName, String fieldName) throws ComponentNotFoundException {

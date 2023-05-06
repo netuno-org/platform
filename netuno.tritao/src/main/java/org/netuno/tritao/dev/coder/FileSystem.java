@@ -21,12 +21,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
-import org.netuno.psamata.PsamataException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.dev.Index;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
 
 import java.io.File;

@@ -9,13 +9,13 @@
 
 _header.contentType('pdf')
 
-pdfDocument = _pdf.newDocument(_pdf.pageSize('A4'));
+pdfDocument = _pdf.newDocument(_pdf.pageSize('A4'))
 
-viksiScript = _pdf.font(_storage.filesystem('server', 'samples/export-pdf', 'viksi-script.ttf'), true);
-helvetica = _pdf.font('helvetica');
-helveticaBold = _pdf.font('helvetica-bold');
-helveticaBoldOblique = _pdf.font('helvetica-boldoblique');
-helveticaOblique = _pdf.font('helvetica-oblique');
+viksiScript = _pdf.font(_storage.filesystem('server', 'samples/export-pdf', 'viksi-script.ttf'), True)
+helvetica = _pdf.font('helvetica')
+helveticaBold = _pdf.font('helvetica-bold')
+helveticaBoldOblique = _pdf.font('helvetica-boldoblique')
+helveticaOblique = _pdf.font('helvetica-oblique')
 
 pdfDocument.add(
     _pdf.image(_storage.filesystem('server', 'samples/export-pdf', 'logo.png'))
@@ -181,45 +181,45 @@ pdfDocument.add(
 )
 
 pdfDocument.add(
-    _pdf.table([150, 150])
+    _pdf.table(_val.list().add(150).add(150))
         .addCell(
-        _pdf.cell()
-            .add(
-            _pdf.paragraph('Cell 1')
-                .setFont(helvetica)
-                .setFontSize(10)
+            _pdf.cell()
+                .add(
+                    _pdf.paragraph('Cell 1')
+                        .setFont(helvetica)
+                        .setFontSize(10)
+                )
+                .setBorderTop(_pdf.border('dotted', 1))
         )
-            .setBorderTop(_pdf.border('dotted', 1))
-    )
         .addCell(
-        _pdf.cell()
-            .add(
-            _pdf.paragraph('Cell 2')
-                .setFont(helvetica)
-                .setFontSize(10)
+            _pdf.cell()
+                .add(
+                    _pdf.paragraph('Cell 2')
+                        .setFont(helvetica)
+                        .setFontSize(10)
+                )
+                .setBorderTop(_pdf.border('double', 2))
+                .setBorderRight(_pdf.border('round-dots', 2))
         )
-            .setBorderTop(_pdf.border('double', 2))
-            .setBorderRight(_pdf.border('round-dots', 2))
-    )
         .addCell(
-        _pdf.cell()
-            .add(
-            _pdf.paragraph('Cell 3')
-                .setFont(helvetica)
-                .setFontSize(10)
+            _pdf.cell()
+                .add(
+                    _pdf.paragraph('Cell 3')
+                        .setFont(helvetica)
+                        .setFontSize(10)
+                )
+                .setBorderLeft(_pdf.border('no-border'))
         )
-            .setBorderLeft(_pdf.border('no-border'))
-    )
         .addCell(
-        _pdf.cell()
-            .add(
-            _pdf.paragraph('Cell 4')
-                .setFont(helvetica)
-                .setFontSize(10)
+            _pdf.cell()
+                .add(
+                    _pdf.paragraph('Cell 4')
+                        .setFont(helvetica)
+                        .setFontSize(10)
+                )
+                .setBorderBottom(_pdf.border('dashed', 2))
+                .setBorderRight(_pdf.border('solid', _pdf.colorRGB(1, 0, 0), 1))
         )
-            .setBorderBottom(_pdf.border('dashed', 2))
-            .setBorderRight(_pdf.border(_pdf.colorRGB(1, 0, 0), 'solid', 1))
-    )
 )
 
 

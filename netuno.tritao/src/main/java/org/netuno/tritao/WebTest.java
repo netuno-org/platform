@@ -20,8 +20,8 @@ package org.netuno.tritao;
 import org.netuno.proteu.DynamicURL;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.io.OutputStream;
-import org.netuno.tritao.config.Hili;
-import org.netuno.tritao.config.ProteuEvents;
+import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.proteu.ProteuEvents;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -164,7 +164,10 @@ public class WebTest {
 
     @Override
     protected void finalize() throws Throwable {
+        /*
+        GC TEST
         end();
+        */
     }
 
     public interface OnStart {

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-curl -L https://github.com/netuno-org/platform/releases/download/testing/netuno.jar -o netuno.jar
+curl -L https://github.com/netuno-org/platform/releases/download/testing/netuno-setup.jar -o netuno-setup.jar
 
-java -jar netuno.jar install version=testing
+java -jar netuno-setup.jar install version=testing
 

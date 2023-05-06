@@ -21,7 +21,7 @@ import com.vdurmont.emoji.EmojiParser;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuError;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 
 /**
  * Generic Errors

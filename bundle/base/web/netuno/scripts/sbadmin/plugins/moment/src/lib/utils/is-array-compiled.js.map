@@ -1,0 +1,1 @@
+{"version":3,"sources":["is-array.js"],"names":[],"mappings":"AAAA,eAAe,SAAS,OAAO,CAAC,KAAK,EAAE;AACnC,WAAO,MAAM,CAAC,SAAS,CAAC,QAAQ,CAAC,IAAI,CAAC,KAAK,CAAC,KAAK,gBAAgB,CAAC;CACrE","file":"is-array-compiled.js","sourcesContent":["export default function isArray(input) {\n    return Object.prototype.toString.call(input) === '[object Array]';\n}\n"]}

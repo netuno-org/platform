@@ -132,6 +132,7 @@ public interface Builder {
     int insertProvider(String name, String code);
 
     boolean deleteProvider(String id);
+    
     List<Values> selectGroupOther(String id, String name);
 
     List<Values> selectGroupSearch(String term);
@@ -144,13 +145,13 @@ public interface Builder {
 
     List<Values> selectGroupCounter();
 
-    boolean updateGroup(String id, String name, String netuno_group, String mail, String active);
+    boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String active);
 
     boolean updateGroup(Values values);
 
     boolean updateGroup(String id, Values values);
 
-    int insertGroup(String name, String netuno_group, String mail, String active);
+    int insertGroup(String name, String netuno_group, String login_allowed, String mail, String active);
 
     int insertGroup(Values values);
 

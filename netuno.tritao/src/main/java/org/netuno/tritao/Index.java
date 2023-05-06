@@ -19,12 +19,12 @@ package org.netuno.tritao;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.proteu.Path;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
-import org.netuno.proteu._Web;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Req;
 import org.netuno.tritao.resource.Template;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -37,7 +37,7 @@ import java.util.List;
  * Index Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/Index")
+@Path("/org/netuno/tritao/Index")
 public class Index extends WebMaster {
 
     private static Logger logger = LogManager.getLogger(Index.class);
@@ -55,6 +55,13 @@ public class Index extends WebMaster {
         );
         */
         Req req = resource(Req.class);
+    	if (req.getString("action").equals("logout")) {
+            if (Auth.hasBackupSession(getProteu(), getHili())) {
+                Auth.restoreBackupedSession(getProteu(), getHili());
+            } else {
+                Auth.clearSession(getProteu(), getHili());
+            }
+        }
         Template template = resource(Template.class).initCore();
         if (req.getString("action").equals("login")) {
             Auth.clearSession(getProteu(), getHili());
@@ -68,13 +75,6 @@ public class Index extends WebMaster {
                 template.out("notification/login_empty");
             }
             return;
-        }
-    	if (req.getString("action").equals("logout")) {
-            if (Auth.hasBackupSession(getProteu(), getHili())) {
-                Auth.restoreBackupedSession(getProteu(), getHili());
-            } else {
-                Auth.clearSession(getProteu(), getHili());
-            }
         }
         if (!Auth.isAuthenticated(getProteu(), getHili())) {
             Values data = new Values();

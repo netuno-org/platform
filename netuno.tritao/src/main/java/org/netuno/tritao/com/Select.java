@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import org.netuno.tritao.config.Config;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.Link;
 import org.netuno.tritao.util.TemplateBuilder;
 
@@ -184,7 +184,15 @@ public class Select extends ComponentBase {
         if (proteu.getRequestAll().hasKey("data_uid")) {
             String dataUid = proteu.getRequestAll().getString("data_uid");
             if (dataUid.isEmpty() || dataUid.equals("0")) {
-                return;
+                String callback = proteu.getRequestAll().getString("callback");
+                if (callback.length() > 0) {
+                    proteu.getOutput().print(callback);
+                    proteu.getOutput().print("(");
+                }
+                proteu.getOutput().print("[]");
+                if (callback.length() > 0) {
+                    proteu.getOutput().print(")");
+                }
             }
             Values item = Config.getDataBaseBuilder(proteu).getItemByUId(Link.getTableName(valueLink), dataUid);
             JSONObject jsonObject = new JSONObject();

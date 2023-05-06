@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import _service from '@netuno/service-client';
 import DashboardContainer from "./containers/DashboardContainer";
 
@@ -9,7 +9,11 @@ _service.config({
 
 const dashboardDiv = document.getElementById("app-dashboard");
 
-const dashboardContainer = dashboardDiv ? ReactDOM.render(<DashboardContainer />, dashboardDiv) : false;
+const dashboardContainer = dashboardDiv ? ReactDOM.createRoot(dashboardDiv) : false;
+
+if (dashboardContainer) {
+  dashboardContainer.render(<DashboardContainer/>);
+}
 
 netuno.addNavigationLoad(() => {
   $('[netuno-navigation]').find('a').on('netuno:click', (e)=> {

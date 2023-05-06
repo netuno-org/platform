@@ -30,7 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -157,9 +157,9 @@ public class Image extends ComponentBase {
                     String path = FilenameUtils.getPath(databasePath);
                     String file = FilenameUtils.getName(databasePath);
                     String fileName = FilenameUtils.getBaseName(file);
-                    File fileImage = new File(org.netuno.tritao.config.Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + File.separator + fileName + "___search." + fileExt);
+                    File fileImage = new File(Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + File.separator + fileName + "___search." + fileExt);
                     if (fileImage.exists()) {
-                        org.netuno.psamata.ImageTools imgTools = new org.netuno.psamata.ImageTools(org.netuno.tritao.config.Config.getPathAppStorageDatabase(getProteu()) + "/" + path + fileName + "___search." + fileExt);
+                        org.netuno.psamata.ImageTools imgTools = new org.netuno.psamata.ImageTools(Config.getPathAppStorageDatabase(getProteu()) + "/" + path + fileName + "___search." + fileExt);
                         getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + path + fileName + "___search." + fileExt + "\" width=\"" + (imgTools.getWidth() / 2) + "\" height=\"" + (imgTools.getHeight() / 2) + "\"/>");
                         return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/image", getDesignData());
                     }
@@ -181,14 +181,16 @@ public class Image extends ComponentBase {
 
     public Component onSave() {
         String requestName = getValuesPrefix().concat(getDesignData().getString("name"));
-        if (getValues().hasKey(requestName + ":value")
-                || (getValues().hasKey(requestName) && getValues().getFile(requestName) != null)) {
-            try {
-                org.netuno.psamata.io.File file = null;
+        if ((getValues().hasKey(requestName + ":value") || getValues().hasKey(requestName))
+                && !getValues().getString(requestName + ":null").equals("true")) {
+            org.netuno.psamata.io.File file = null;
+            if (getValues().getFile(requestName) != null) {
                 if (getValues().get(requestName) instanceof org.netuno.psamata.io.File) {
                     file = (org.netuno.psamata.io.File) getValues().get(requestName);
                 }
-                if (file != null && file.available() > 0 && !getValues().getString(requestName + ":null").equals("true")) {
+            }
+            if (file != null && file.available() > 0) {
+                try {
                     String tableName = getTableData().getString("name");
                     String fieldName = getDesignData().getString("name");
                     String oldValue = "";
@@ -227,7 +229,7 @@ public class Image extends ComponentBase {
                     }
                     getValues().set(fieldName, fileName);
                     if (fileExt.equals("png") || fileExt.equals("gif") || fileExt.equals("jpg") || fileExt.equals("jpeg")) {
-                        String filePath = org.netuno.tritao.config.Config.getPathAppStorageDatabase(getProteu()) + File.separator;
+                        String filePath = Config.getPathAppStorageDatabase(getProteu()) + File.separator;
                         org.netuno.psamata.ImageTools imgTools = new org.netuno.psamata.ImageTools(filePath + fileFullName);
                         if (imgTools.getHeight() > 400 || imgTools.getWidth() > 400) {
                             if (imgTools.getHeight() > imgTools.getWidth()) {
@@ -249,9 +251,9 @@ public class Image extends ComponentBase {
                     getValues().set(requestName + ":value", fileName);
                     getValues().set(requestName + ":new", fileName);
                     getValues().set(requestName + ":path", fileFullName);
+                } catch (IOException e) {
+                    throw new Error(e);
                 }
-            } catch (IOException e) {
-                throw new Error(e);
             }
         }
         return this;

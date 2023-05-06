@@ -18,17 +18,17 @@
 package org.netuno.tritao.api.dev;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu._Web;
+import org.netuno.proteu.Path;
 import org.netuno.tritao.Auth;
 import org.netuno.tritao.WebMaster;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
 
 /**
  * Report Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@_Web(url = "/org/netuno/tritao/api/dev/Report")
+@Path("/org/netuno/tritao/api/dev/Report")
 public class Report extends WebMaster {
     public Report() {
         super();

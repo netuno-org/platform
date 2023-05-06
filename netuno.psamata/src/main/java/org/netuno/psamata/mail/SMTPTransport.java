@@ -24,12 +24,13 @@ import java.io.IOException;
 import java.security.Security;
 import java.util.*;
 import jakarta.mail.Session;
+import jakarta.activation.DataHandler;
+import jakarta.mail.Address;
+import jakarta.mail.Header;
 import jakarta.mail.Message;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.InternetAddress;
-import jakarta.activation.DataHandler;
-import jakarta.activation.DataSource;
 import jakarta.mail.Multipart;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.internet.MimeBodyPart;
@@ -41,6 +42,7 @@ import org.netuno.psamata.io.File;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class SMTPTransport {
+    private Session session = null;
     private Properties properties = new Properties();
     private boolean enabled = true;
     private boolean debug = false;
@@ -61,6 +63,7 @@ public class SMTPTransport {
     private String to = "";
     private String cc = "";
     private String bcc = "";
+    private String replyTo = "";
     private String subjectPrefix = "";
     private String subject = "";
     private String text = "";
@@ -97,11 +100,12 @@ public class SMTPTransport {
         setTo(config.getTo());
         setCc(config.getCc());
         setBcc(config.getBcc());
+        setReplyTo(config.getReplyTo());
         setSubjectPrefix(config.getSubjectPrefix());
         setSubject(config.getSubject());
         setText(config.getText());
         setHTML(config.getHTML());
-        setMultipartSubtype(config.getHTML());
+        setMultipartSubtype(config.getMultipartSubtype());
     }
 
     private void init() {
@@ -119,36 +123,33 @@ public class SMTPTransport {
      */
     public final void send() {
         try {
-            Session session = null;
-            if (getUsername().length() > 0) {
-                session = Session.getDefaultInstance(getProperties(), new jakarta.mail.Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(getUsername(), getPassword());
-                    }
-                });
-            } else {
-                session = Session.getInstance(getProperties(), null);
-            }
-            session.setDebug(isDebug());
+            Session session = getSession();
             MimeMessage msg = new MimeMessage(session);
             if (!getHTML().isEmpty()) {
                 msg.setHeader("X-Mailer", "sendhtml");
             }
-            if (!getFrom().equals("")) {
+            if (!getFrom().isEmpty()) {
                 msg.setFrom(new InternetAddress(getFrom()));
             }
-            if (!getTo().equals("")) {
+            if (!getTo().isEmpty()) {
                 msg.addRecipients(Message.RecipientType.TO,
                 getTo());
             }
-            if (!getCc().equals("")) {
+            if (!getCc().isEmpty()) {
                 msg.addRecipients(Message.RecipientType.CC,
                 getCc());
             }
-            if (!getBcc().equals("")) {
+            if (!getBcc().isEmpty()) {
                 msg.addRecipients(Message.RecipientType.BCC,
                 getBcc());
+            }
+            if (!getReplyTo().isEmpty()) {
+                String[] mails = getReplyTo().split("[,;]+");
+                Address[] addresses = new Address[mails.length];
+                for (int i = 0; i < mails.length; i++) {
+                    addresses[i] = new InternetAddress(mails[i]);
+                }
+                msg.setReplyTo(addresses);
             }
             msg.setSentDate(getSentDate());
             msg.setSubject(getSubjectPrefix() + getSubject());
@@ -180,31 +181,137 @@ public class SMTPTransport {
                     multipart.addBodyPart(mimeBodyPart);
                 }
                 msg.setContent(multipart);
-            } else {
+            } else if (!getHTML().isEmpty()) {
             	MimeBodyPart body = new MimeBodyPart();
-                if (!getHTML().isEmpty()) {
-                	body.setDataHandler(new DataHandler(
-                            new StringDataSource("", "text/html", getHTML())
-                    ));
-                }
+                body.setDataHandler(new DataHandler(
+                        new StringDataSource("", "text/html", getHTML())
+                ));
                 Multipart multipart = new MimeMultipart(getMultipartSubtype());
                 multipart.addBodyPart(body);
                 msg.setContent(multipart);
             }
             if (isEnabled()) {
-                Transport.send(msg);
+                Transport.send(msg, msg.getAllRecipients());
             }
         } catch (Exception e) {
             throw new Error(e);
         }
     }
 
+    /**
+     * Send Mail.
+     */
+    public final void send(Mail mail) {
+        try {
+            Session session = getSession();
+            MimeMessage msg = new MimeMessage(session);
+            if (!getHTML().isEmpty()) {
+                msg.setHeader("X-Mailer", "sendhtml");
+            }
+            if (!mail.getFrom().equals("")) {
+                msg.setFrom(new InternetAddress(mail.getFrom()));
+            }
+            if (!mail.getTo().isEmpty()) {
+                for (String address : mail.getTo().list(String.class)) {
+                    msg.addRecipients(Message.RecipientType.TO, address);
+                }
+            }
+            if (!mail.getCc().isEmpty()) {
+                for (String address : mail.getCc().list(String.class)) {
+                    msg.addRecipients(Message.RecipientType.CC, address);
+                }
+            }
+            if (!mail.getBcc().isEmpty()) {
+                for (String address : mail.getBcc().list(String.class)) {
+                    msg.addRecipients(Message.RecipientType.BCC, address);
+                }
+            }
+            if (!mail.getReplyTo().isEmpty()) {
+                Address[] addresses = new Address[mail.getReplyTo().size()];
+                int i = 0;
+                for (String address : mail.getReplyTo().toList(String.class)) {
+                    addresses[i] = new InternetAddress(address);
+                    i++;
+                }
+                msg.setReplyTo(addresses);
+            }
+            msg.setSentDate(mail.getSentDate());
+            msg.setSubject(getSubjectPrefix() + mail.getSubject());
+            if (!mail.getText().isEmpty()) {
+                msg.setText(mail.getText());
+            }
+            if (mail.attachments().size() > 0) {
+                MimeBodyPart body = new MimeBodyPart();
+                if (!mail.getHTML().isEmpty()) {
+                    body.setDataHandler(new DataHandler(
+                            new StringDataSource("", "text/html", mail.getHTML())
+                    ));
+                }
+                Multipart multipart = new MimeMultipart(mail.getMultipartSubtype());
+                multipart.addBodyPart(body);
+                for (Attachment attachment : mail.getAttachments()) {
+                    MimeBodyPart mimeBodyPart = new MimeBodyPart();
+                    AttachmentDataSource dataSource = new AttachmentDataSource(attachment);
+                    if (!attachment.getContentId().isEmpty()) {
+                        mimeBodyPart.setHeader("Content-ID", "<" + attachment.getContentId() + ">");
+                    }
+                    mimeBodyPart.setDataHandler(new DataHandler(dataSource));
+                    mimeBodyPart.setFileName(attachment.getName());
+                    if (attachment.isInline()) {
+                        mimeBodyPart.setDisposition(MimeBodyPart.INLINE);
+                    } else {
+                        mimeBodyPart.setDisposition(MimeBodyPart.ATTACHMENT);
+                    }
+                    multipart.addBodyPart(mimeBodyPart);
+                }
+                msg.setContent(multipart);
+            } else if (!getHTML().isEmpty()) {
+            	MimeBodyPart body = new MimeBodyPart();
+                body.setDataHandler(new DataHandler(
+                        new StringDataSource("", "text/html", mail.getHTML())
+                ));
+                Multipart multipart = new MimeMultipart(mail.getMultipartSubtype());
+                multipart.addBodyPart(body);
+                msg.setContent(multipart);
+            }
+            if (isEnabled()) {
+                Transport.send(msg, msg.getAllRecipients());
+            }
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+
+    public Session getSession() {
+        if (session == null) {
+            session = SessionFactory.create(
+                getProperties(),
+                getUsername(),
+                getPassword(),
+                isDebug()
+            );
+        }
+        return session;
+    }
+
+    public SMTPTransport setSession(Session session) {
+        this.session = session;
+        return this;
+    }
+
     public Properties getProperties() {
         return properties;
     }
 
-    public void setProperties(Properties properties) {
+    public SMTPTransport setProperties(Properties properties) {
         this.properties = properties;
+        return setSession(null);
+    }
+
+    public SMTPTransport with(IMAPClient other) {
+        getProperties().putAll(other.getProperties());
+        other.getProperties().putAll(getProperties());
+        return setSession(other.getSession());
     }
 
     public boolean isEnabled() {
@@ -213,7 +320,7 @@ public class SMTPTransport {
 
     public SMTPTransport setEnabled(boolean enabled) {
         this.enabled = enabled;
-        return this;
+        return setSession(null);
     }
 
     public boolean isDebug() {
@@ -222,7 +329,7 @@ public class SMTPTransport {
 
     public SMTPTransport setDebug(boolean debug) {
         this.debug = debug;
-        return this;
+        return setSession(null);
     }
 
     /**
@@ -237,9 +344,10 @@ public class SMTPTransport {
      * Set Protocol. The default value is "smtp". Value to <i>mail.transport.protocol</i>.
      * @param protocol Protocol
      */
-    public void setProtocol(String protocol) {
+    public SMTPTransport setProtocol(String protocol) {
         this.protocol = protocol;
         properties.setProperty("mail.transport.protocol", getProtocol());
+        return setSession(null);
     }
 
     /**
@@ -254,9 +362,10 @@ public class SMTPTransport {
      * Set Host. The default value is "localhost". Value to <i>mail.host</i>.
      * @param host Host
      */
-    public final void setHost(final String host) {
+    public final SMTPTransport setHost(final String host) {
         this.host = host;
         properties.put("mail.host", getHost());
+        return setSession(null);
     }
 
     /**
@@ -271,10 +380,11 @@ public class SMTPTransport {
      * Get Server Port. Value to <i>mail.smtp.port</i>.
      * @param port Port number
      */
-    public void setPort(int port) {
+    public SMTPTransport setPort(int port) {
         this.port = port;
         properties.put("mail.smtp.port", Integer.toString(getPort()));
         properties.put("mail.smtps.port", Integer.toString(getPort()));
+        return setSession(null);
     }
 
     /**
@@ -293,7 +403,7 @@ public class SMTPTransport {
      * <i>Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());</i>
      * @param SSL
      */
-    public void setSSL(boolean SSL) {
+    public SMTPTransport setSSL(boolean SSL) {
         this.ssl = SSL;
         if (isSSL()) {
             properties.put("mail.smtp.ssl.enable", "true");
@@ -301,10 +411,17 @@ public class SMTPTransport {
             // Deprecated in JDK 11:
             // Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
             setSocketFactoryClass("javax.net.ssl.SSLSocketFactory");
+        } else {
+            properties.put("mail.smtp.ssl.enable", "false");
+            properties.put("mail.smtps.ssl.enable", "false");
+            // Deprecated in JDK 11:
+            // Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+            setSocketFactoryClass("");
         }
         if (getSocketFactoryClass().length() > 0) {
 
         }
+        return setSession(null);
     }
 
     /**
@@ -325,7 +442,7 @@ public class SMTPTransport {
      * <i>Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());</i>
      * @param TLS
      */
-    public void setTLS(boolean TLS) {
+    public SMTPTransport setTLS(boolean TLS) {
         this.tls = TLS;
         if (isTLS()) {
             properties.put("mail.smtp.starttls.enable","true");
@@ -334,6 +451,7 @@ public class SMTPTransport {
         	properties.put("mail.smtp.starttls.enable","false");
             properties.put("mail.smtps.starttls.enable","false");
         }
+        return setSession(null);
     }
 
     /**
@@ -348,7 +466,7 @@ public class SMTPTransport {
      * Set Socket Factory Fallback. Value to <i>mail.smtp.socketFactory.fallback</i>.
      * @param socketFactoryFallback Socket Factory Fallback
      */
-    public void setSocketFactoryFallback(boolean socketFactoryFallback) {
+    public SMTPTransport setSocketFactoryFallback(boolean socketFactoryFallback) {
         this.socketFactoryFallback = socketFactoryFallback;
         if (isSocketFactoryFallback()) {
             properties.put("mail.smtp.socketFactory.fallback", "true");
@@ -357,6 +475,7 @@ public class SMTPTransport {
             properties.put("mail.smtp.socketFactory.fallback", "false");
             properties.put("mail.smtps.socketFactory.fallback", "false");
         }
+        return setSession(null);
     }
 
     /**
@@ -371,10 +490,16 @@ public class SMTPTransport {
      * Set Socket Factory Class. Value to <i>mail.smtp.socketFactory.class</i>.
      * @param socketFactoryClass Socket Factory Class
      */
-    public void setSocketFactoryClass(String socketFactoryClass) {
+    public SMTPTransport setSocketFactoryClass(String socketFactoryClass) {
         this.socketFactoryClass = socketFactoryClass;
-        properties.put("mail.smtp.socketFactory.class", getSocketFactoryClass());
-        properties.put("mail.smtps.socketFactory.class", getSocketFactoryClass());
+        if (socketFactoryClass == null || socketFactoryClass.isEmpty()) {
+            properties.remove("mail.smtp.socketFactory.class");
+            properties.remove("mail.smtps.socketFactory.class");
+        } else {
+            properties.put("mail.smtp.socketFactory.class", getSocketFactoryClass());
+            properties.put("mail.smtps.socketFactory.class", getSocketFactoryClass());
+        }
+        return setSession(null);
     }
 
     /**
@@ -389,10 +514,11 @@ public class SMTPTransport {
      * Set Socket Factory Port. Value to <i>mail.smtp.socketFactory.port</i>.
      * @param socketFactoryPort Socket Factory Port
      */
-    public void setSocketFactoryPort(int socketFactoryPort) {
+    public SMTPTransport setSocketFactoryPort(int socketFactoryPort) {
         this.socketFactoryPort = socketFactoryPort;
         properties.put("mail.smtp.socketFactory.port", Integer.toString(getSocketFactoryPort()));
         properties.put("mail.smtps.socketFactory.port", Integer.toString(getSocketFactoryPort()));
+        return setSession(null);
     }
 
     /**
@@ -407,7 +533,7 @@ public class SMTPTransport {
      * Set Quit Wait. Value to <i>mail.smtp.quitwait</i>.
      * @param quitWait Quit Wait
      */
-    public void setQuitWait(boolean quitWait) {
+    public SMTPTransport setQuitWait(boolean quitWait) {
         this.quitWait = quitWait;
         if (isQuitWait()) {
             properties.put("mail.smtp.quitwait", "true");
@@ -416,6 +542,7 @@ public class SMTPTransport {
             properties.put("mail.smtp.quitwait", "false");
             properties.put("mail.smtps.quitwait", "false");
         }
+        return setSession(null);
     }
 
     public String getAuthMechanisms() {
@@ -431,7 +558,7 @@ public class SMTPTransport {
             getProperties().remove("mail.smtp.auth.mechanisms");
             getProperties().remove("mail.smtps.auth.mechanisms");
         }
-        return this;
+        return setSession(null);
     }
 
     public String getAuthNTLMDomain() {
@@ -447,7 +574,7 @@ public class SMTPTransport {
             getProperties().remove("mail.smtp.auth.ntlm.domain");
             getProperties().remove("mail.smtps.auth.ntlm.domain");
         }
-        return this;
+        return setSession(null);
     }
 
     /**
@@ -464,7 +591,7 @@ public class SMTPTransport {
      * <i>false</i> (if the user name is empty).
      * @param username User Name
      */
-    public void setUsername(String username) {
+    public SMTPTransport setUsername(String username) {
         this.username = username;
         if (getUsername().length() > 0) {
             properties.put("mail.smtp.auth", "true");
@@ -473,6 +600,7 @@ public class SMTPTransport {
             properties.put("mail.smtp.auth", "false");
             properties.put("mail.smtps.auth", "false");
         }
+        return setSession(null);
     }
 
     /**
@@ -487,8 +615,9 @@ public class SMTPTransport {
      * Set Password.
      * @param password Password
      */
-    public void setPassword(String password) {
+    public SMTPTransport setPassword(String password) {
         this.password = password;
+        return setSession(null);
     }
 
     /**
@@ -520,8 +649,9 @@ public class SMTPTransport {
      * Set To.
      * @param to To
      */
-    public final void setTo(final String to) {
+    public final SMTPTransport setTo(final String to) {
         this.to = to;
+        return this;
     }
     
     /**
@@ -536,8 +666,9 @@ public class SMTPTransport {
      * Set Cc.
      * @param cc Cc
      */
-    public void setCc(String cc) {
+    public SMTPTransport setCc(String cc) {
         this.cc = cc;
+        return this;
     }
 
     /**
@@ -552,8 +683,26 @@ public class SMTPTransport {
      * Set Bcc.
      * @param bcc Bcc
      */
-    public void setBcc(String bcc) {
+    public SMTPTransport setBcc(String bcc) {
         this.bcc = bcc;
+        return this;
+    }
+
+    /**
+     * Get Reply To.
+     * @return Reply To
+     */
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    /**
+     * Set Reply To.
+     * @param bcc Reply To
+     */
+    public SMTPTransport setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
+        return this;
     }
 
     public String getSubjectPrefix() {
@@ -577,8 +726,9 @@ public class SMTPTransport {
      * Set Subject.
      * @param subject Subject
      */
-    public final void setSubject(final String subject) {
+    public final SMTPTransport setSubject(final String subject) {
         this.subject = subject;
+        return this;
     }
 
     /**
@@ -593,8 +743,9 @@ public class SMTPTransport {
      * Set Text.
      * @param text Text
      */
-    public final void setText(final String text) {
+    public final SMTPTransport setText(final String text) {
         this.text = text;
+        return this;
     }
 
     /**
@@ -609,27 +760,31 @@ public class SMTPTransport {
      * Set Html.
      * @param html Html
      */
-    public final void setHTML(final String html) {
+    public final SMTPTransport setHTML(final String html) {
         this.html = html;
+        return this;
     }
 
     public String getMultipartSubtype() {
         return multipartSubtype;
     }
 
-    public final void setMultipartSubtype(String multipartSubtype) {
+    public final SMTPTransport setMultipartSubtype(String multipartSubtype) {
         this.multipartSubtype = multipartSubtype;
+        return this;
     }
 
-    public void addAttachment(Attachment attachment) {
+    public SMTPTransport addAttachment(Attachment attachment) {
         this.attachments.add(attachment);
+        return this;
     }
 
-    public void addAttachment(String name, String type, File file) {
+    public SMTPTransport addAttachment(String name, String type, File file) {
         addAttachment(name, type, file, "");
+        return this;
     }
 
-    public void addAttachment(String name, String type, File file, String contentId) {
+    public SMTPTransport addAttachment(String name, String type, File file, String contentId) {
         this.attachments.add(
                 new Attachment()
                         .setName(name)
@@ -637,9 +792,10 @@ public class SMTPTransport {
                         .setFile(file)
                         .setContentId(contentId)
         );
+        return this;
     }
 
-    public void addAttachment(String name, String type, File file, String contentId, boolean inline) {
+    public SMTPTransport addAttachment(String name, String type, File file, String contentId, boolean inline) {
         this.attachments.add(
                 new Attachment()
                         .setName(name)
@@ -648,18 +804,21 @@ public class SMTPTransport {
                         .setContentId(contentId)
                         .setInline(inline)
         );
+        return this;
     }
 
     public List<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(List<Attachment> attachments) {
+    public SMTPTransport setAttachments(List<Attachment> attachments) {
         this.attachments = attachments;
+        return this;
     }
 
-    public void setAttachments(Attachment... attachments) {
+    public SMTPTransport setAttachments(Attachment... attachments) {
         this.attachments = Arrays.asList(attachments);
+        return this;
     }
 
     /**
@@ -674,132 +833,8 @@ public class SMTPTransport {
      * Set sent date.
      * @param sentDate Sent date
      */
-    public void setSentDate(Date sentDate) {
+    public SMTPTransport setSentDate(Date sentDate) {
         this.sentDate = sentDate;
-    }
-
-    public static class Attachment {
-        private String name = "";
-        private String type = "";
-        private File file = null;
-        private String contentId = "";
-        private boolean inline = false;
-
-        public Attachment() {
-            super();
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Attachment setName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public Attachment setType(String type) {
-            this.type = type;
-            return this;
-        }
-
-        public File getFile() {
-            return file;
-        }
-
-        public Attachment setFile(File file) {
-            this.file = file;
-            return this;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public Attachment setContentId(String contentId) {
-            this.contentId = contentId;
-            return this;
-        }
-        
-        public boolean isInline() {
-            return inline;
-        }
-        
-        public Attachment setInline(boolean inline) {
-            this.inline = inline;
-            return this;
-        }
-    }
-}
-/**
-* Byte Array Data Source.
-*/
-class AttachmentDataSource implements DataSource {
-    private String name;
-    private String type;
-    private byte[] data;
-
-    public AttachmentDataSource(final SMTPTransport.Attachment attachment) {
-        name = attachment.getName();
-        type = attachment.getType();
-        if (attachment.getFile() != null) {
-            data = attachment.getFile().getBytes();
-        }
-    }
-
-    public final InputStream getInputStream() throws IOException {
-        if (data == null) {
-            throw new IOException("The "+ name +" attachment ("+ type +") has no bytes.");
-        }
-        return new ByteArrayInputStream(data);
-    }
-
-    public final OutputStream getOutputStream() throws IOException {
-        throw new IOException("Not supported.");
-    }
-
-    public final String getContentType() {
-        return type;
-    }
-
-    public final String getName() {
-        return name;
-    }
-}
-
-class StringDataSource implements DataSource {
-    private String name;
-    private String type;
-    private String content = "";
-
-    public StringDataSource() {
-
-    }
-
-    public StringDataSource(String name, String type, String content) {
-        this.name = name;
-        this.type = type;
-        this.content = content;
-    }
-
-    public InputStream getInputStream() throws IOException {
-        return new ByteArrayInputStream(content.getBytes());
-    }
-
-    public OutputStream getOutputStream() throws IOException {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    public String getContentType() {
-        return type;
-    }
-
-    @Override
-    public String getName() {
-        return name;
+        return this;
     }
 }

@@ -32,8 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Manage global configurations.
@@ -44,14 +44,9 @@ public final class Config {
     private static Logger logger = LogManager.getLogger(Config.class);
 
     public static final String VERSION = "7";
+    public static final String VERSION_YEAR = "2023";
 
     public static final String OS = System.getProperty("os.name").toLowerCase();
-
-    static {
-        List<String> permittedLanguages = new ArrayList<>();
-        permittedLanguages.add("js");
-        setPermittedLanguages(permittedLanguages);
-    }
 
     /**
      * Configuration.
@@ -127,7 +122,9 @@ public final class Config {
      */
     public static int maxMemory = 10 * (1024 * 1024);
 
-    public static List<String> permittedLanguages = new ArrayList<>();
+    public static List<String> extraLibs = new ArrayList<>(Arrays.asList("lib"));
+
+    public static List<String> permittedLanguages = new ArrayList<>(Arrays.asList("js"));
 
     /**
      * Download Default Cache
@@ -206,7 +203,7 @@ public final class Config {
     /**
      * Packages in white list to scan
      */
-    public static List<String> packagesWhiteList = new ArrayList<>();
+    public static List<String> packagesScan = new ArrayList<>();
 
     /**
      * Reduce Errors.
@@ -335,6 +332,14 @@ public final class Config {
 
     public static void setMaxMemory(int maxMemory) {
         Config.maxMemory = maxMemory;
+    }
+
+    public static List<String> getExtraLibs() {
+        return Config.extraLibs;
+    }
+
+    public static void setExtraLibs(List<String> extraLibs) {
+        Config.extraLibs = extraLibs;
     }
 
     public static List<String> getPermittedLanguages() {
@@ -617,12 +622,12 @@ public final class Config {
         Config.cronThreadCount = cronThreadCount;
     }
 
-    public static List<String> getPackagesWhiteList() {
-        return packagesWhiteList;
+    public static List<String> getPackagesScan() {
+        return packagesScan;
     }
 
-    public static void setPackagesWhiteList(List<String> packagesWhiteList) {
-        Config.packagesWhiteList = packagesWhiteList;
+    public static void setPackagesScan(List<String> packagesScan) {
+        Config.packagesScan = packagesScan;
     }
 
     /**

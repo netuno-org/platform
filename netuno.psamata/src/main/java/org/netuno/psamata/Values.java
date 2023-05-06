@@ -25,6 +25,7 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.library.doc.LanguageDoc;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
@@ -33,6 +34,7 @@ import java.util.*;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -44,6 +46,8 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
+import org.netuno.psamata.io.MimeTypes;
+import org.netuno.psamata.net.Remote;
 import org.netuno.psamata.script.GraalRunner;
 
 /**
@@ -68,7 +72,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     /**
      * Array.
      */
-    private List<Object> array = Collections.synchronizedList(new LinkedList<>());
+    private List<Object> array = Collections.synchronizedList(new ArrayList<>());
 	/**
      * Reference to Original Keys.
      */
@@ -107,17 +111,17 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         merge(object);
     }
 
-    public Values(Iterable list) {
+    public Values(Iterable<?> list) {
         this.forceList = true;
         merge(list);
     }
 
-    public Values(List list) {
+    public Values(List<?> list) {
         this.forceList = true;
         merge(list);
     }
 
-    public Values(Map map) {
+    public Values(Map<?, ?> map) {
         this.forceMap = true;
         merge(map);
     }
@@ -410,11 +414,11 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Obtém o objeto original associado a chave convertido para o tipo da classe especificada.",
+                description = "Obtém o objeto original associado a chave, mas convertido para o tipo da classe especificada.",
                 howToUse = {}),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Gets the original object associated with the cast key for the specified class type.",
+                description = "Gets the original object associated with the key, but cast for the specified class type.",
                 howToUse = {}),
         },
         parameters = {
@@ -422,11 +426,11 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
                     name = "chave",
-                    description = "Chave para obter o objeto para associado."
+                    description = "Chave para obter o objeto associado."
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Key to get the object to associate."
+                    description = "Key to get the associated object."
                 )
             }),
             @ParameterDoc(name = "type", translations = {
@@ -460,10 +464,91 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o objeto associado à chave e converte para Valores (Dicionário ou Lista).",
+                howToUse = {}),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the object associated with the key and then casts to Values (Dictionary or List).",
+                howToUse = {}),
+        },
+        parameters = {
+            @ParameterDoc(name = "key", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    name = "chave",
+                    description = "A chave para obter o objeto associado."
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The key to get the associated object."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto convertido para Values."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Object converted to Values."
+            )
+        }
+    )
     public Values asValues(String key) {
         return getValues(key);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o objeto associado à chave e converte para Valores (Dicionário ou Lista).",
+                howToUse = {}),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the object associated with the key and then casts to Values (Dictionary or List).",
+                howToUse = {}),
+        },
+        parameters = {
+            @ParameterDoc(name = "key", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    name = "chave",
+                    description = "A chave para obter o objeto associado."
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The key to get the associated object."
+                )
+            }),
+            @ParameterDoc(name = "defaultValue", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    name = "valorPadrao",
+                    description = "Caso não consiga obter o valor como um objeto em Values então retorna este valor padrão como alternativa."
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "If it fails to get the value as an object in Values then it returns this default value instead."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto convertido para Values."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Object converted to Values."
+            )
+        }
+    )
     public Values asValues(String key, Object defaultValue) {
         return getValues(key, defaultValue);
     }
@@ -492,67 +577,99 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return as(get(index), defaultValue);
     }
 
-    public List asList(String key) {
+    public List<?> asList(String key) {
         return getList(key);
     }
 
-    public List asList(String key, Object defaultValue) {
+    public <T> List<T> asList(String key, Class<T> claz) {
+        return getList(key, claz);
+    }
+
+    public List<?> asList(String key, Object defaultValue) {
         return getList(key, defaultValue);
     }
 
-    public List getList(String key) {
+    public <T> List<T> asList(String key, Object defaultValue, Class<T> claz) {
+        return getList(key, defaultValue, claz);
+    }
+
+    public List<?> getList(String key) {
         return as(get(key)).toList();
     }
 
-    public List getList(String key, Object defaultValue) {
+    public <T> List<T> getList(String key, Class<T> claz) {
+        return as(get(key)).list(claz);
+    }
+
+    public List<?> getList(String key, Object defaultValue) {
         return as(get(key), defaultValue).toList();
     }
 
-    public List asList(int index) {
+    public <T> List<T> getList(String key, Object defaultValue, Class<T> claz) {
+        return as(get(key), defaultValue).toList(claz);
+    }
+
+    public List<?> asList(int index) {
         return getList(index);
     }
 
-    public List asList(int index, Object defaultValue) {
+    public <T> List<T> asList(int index, Class<T> claz) {
+        return getList(index, claz);
+    }
+
+    public List<?> asList(int index, Object defaultValue) {
         return getList(index, defaultValue);
     }
 
-    public List getList(int index) {
+    public <T> List<T> asList(int index, Object defaultValue, Class<T> claz) {
+        return getList(index, defaultValue, claz);
+    }
+
+    public List<?> getList(int index) {
         return as(get(index)).toList();
     }
 
-    public List getList(int index, Object defaultValue) {
+    public <T> List<T> getList(int index, Class<T> claz) {
+        return as(get(index)).toList(claz);
+    }
+
+    public List<?> getList(int index, Object defaultValue) {
         return as(get(index), defaultValue).toList();
     }
 
-    public Map asMap(String key) {
+    public <T> List<T> getList(int index, Object defaultValue, Class<T> claz) {
+        return as(get(index), defaultValue).toList(claz);
+    }
+
+    public Map<?, ?> asMap(String key) {
         return getMap(key);
     }
 
-    public Map asMap(String key, Object defaultValue) {
+    public Map<?, ?> asMap(String key, Object defaultValue) {
         return getMap(key, defaultValue);
     }
 
-    public Map getMap(String key) {
+    public Map<?, ?> getMap(String key) {
         return as(get(key)).toMap();
     }
 
-    public Map getMap(String key, Object defaultValue) {
+    public Map<?, ?> getMap(String key, Object defaultValue) {
         return as(get(key), defaultValue).toMap();
     }
 
-    public Map asMap(int index) {
+    public Map<?, ?> asMap(int index) {
         return getMap(index);
     }
 
-    public Map asMap(int index, Object defaultValue) {
+    public Map<?, ?> asMap(int index, Object defaultValue) {
         return getMap(index, defaultValue);
     }
 
-    public Map getMap(int index) {
+    public Map<?, ?> getMap(int index) {
         return as(get(index)).toMap();
     }
 
-    public Map getMap(int index, Object defaultValue) {
+    public Map<?, ?> getMap(int index, Object defaultValue) {
         return as(get(index), defaultValue).toMap();
     }
 
@@ -649,19 +766,55 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         }
     }
 
+    public UUID asUID(String key) {
+        return getUUID(key);
+    }
+
+    public final UUID getUID(final String key) {
+        return getUUID(key);
+    }
+
+    public UUID asUID(String key, UUID defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+
+    public UUID asUID(String key, String defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+    
+    public final UUID getUID(final String key, final UUID defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+    
+    public final UUID getUID(final String key, final String defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+
     public UUID asUUID(String key) {
         return getUUID(key);
     }
 
     public final UUID getUUID(final String key) {
-        return getUUID(key, null);
+        return getUUIDImplementation(key, null);
     }
 
     public UUID asUUID(String key, UUID defaultValue) {
         return getUUID(key, defaultValue);
     }
 
+    public UUID asUUID(String key, String defaultValue) {
+        return getUUID(key, defaultValue);
+    }
+
+    public final UUID getUUID(final String key, final String defaultValue) {
+        return getUUIDImplementation(key, UUID.fromString(defaultValue));
+    }
+
     public final UUID getUUID(final String key, final UUID defaultValue) {
+        return getUUIDImplementation(key, defaultValue);
+    }
+
+    private final UUID getUUIDImplementation(final String key, final UUID defaultValue) {
         String value = getString(key);
         if (value.isEmpty()) {
             return defaultValue;
@@ -670,29 +823,29 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         }
     }
 
-    public String asHtmlEncode(String key) {
-        return getHtmlEncode(key);
+    public String asHTMLEncode(String key) {
+        return getHTMLEncode(key);
     }
     
-    public final String getHtmlEncode(final String key) {
+    public final String getHTMLEncode(final String key) {
         String value = getString(key);
         return StringEscapeUtils.escapeHtml4(value);
     }
 
-    public String asHtmlDecode(String key) {
-        return getHtmlDecode(key);
+    public String asHTMLDecode(String key) {
+        return getHTMLDecode(key);
     }
     
-    public final String getHtmlDecode(final String key) {
+    public final String getHTMLDecode(final String key) {
         String value = getString(key);
         return StringEscapeUtils.unescapeHtml4(value);
     }
 
-    public byte asByte(byte index) {
+    public byte asByte(int index) {
         return getByte(index);
     }
 
-    public byte getByte(byte index) {
+    public byte getByte(int index) {
         return getByte(index, (byte)-1);
     }
 
@@ -1088,7 +1241,36 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final java.util.Calendar getCalendar(final String key, final Calendar defaultValue) {
         if (hasKey(key)) {
             try {
-                return (java.util.Calendar) get(key);
+                Object o = get(key);
+                if (o == null) {
+                    return defaultValue;
+                }
+                if (o instanceof java.util.Date) {
+                    java.util.Calendar c = Calendar.getInstance();
+                    c.setTime(getDate(key));
+                    return c;
+                }
+                if (o instanceof java.sql.Date) {
+                    java.util.Calendar c = Calendar.getInstance();
+                    c.setTimeInMillis(getSQLDate(key).getTime());
+                    return c;
+                }
+                if (o instanceof java.sql.Time) {
+                    java.util.Calendar c = Calendar.getInstance();
+                    c.setTimeInMillis(getSQLTime(key).getTime());
+                    return c;
+                }
+                if (o instanceof java.sql.Timestamp) {
+                    java.util.Calendar c = Calendar.getInstance();
+                    c.setTimeInMillis(getSQLTimestamp(key).getTime());
+                    return c;
+                }
+                if (o instanceof java.time.Instant || o instanceof java.time.LocalDateTime || o instanceof java.time.LocalTime) {
+                    java.util.Calendar c = Calendar.getInstance();
+                    c.setTime(java.util.Date.from(getInstant(key)));
+                    return c;
+                }
+                return (java.util.Calendar)o;
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1122,7 +1304,26 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final java.util.Date getDate(final String key, final java.util.Date defaultValue) {
         if (hasKey(key)) {
             try {
-                return (java.util.Date)get(key);
+                Object o = get(key);
+                if (o == null) {
+                    return defaultValue;
+                }
+                if (o instanceof java.sql.Date) {
+                    return new java.util.Date(getSQLDate(key).getTime());
+                }
+                if (o instanceof java.sql.Time) {
+                    return new java.util.Date(getSQLTime(key).getTime());
+                }
+                if (o instanceof java.sql.Timestamp) {
+                    return new java.util.Date(getSQLTimestamp(key).getTime());
+                }
+                if (o instanceof java.time.Instant || o instanceof java.time.LocalDateTime || o instanceof java.time.LocalTime) {
+                    return java.util.Date.from(getInstant(key));
+                }
+                if (o instanceof java.util.Calendar) {
+                    return getCalendar(key).getTime();
+                }
+                return (java.util.Date)o;
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1155,9 +1356,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      */
     public final java.sql.Date getSQLDate(final String key, final java.sql.Date defaultValue) {
         try {
-            Object value = this.get(key);
-            if (value instanceof java.sql.Date) {
-                return (java.sql.Date)value;
+            Object o = this.get(key);
+            if (o == null) {
+                return defaultValue;
+            }
+            if (o instanceof java.sql.Date) {
+                return (java.sql.Date)o;
+            }
+            if (o instanceof java.sql.Timestamp) {
+                return new java.sql.Date(getSQLTimestamp(key).getTime());
+            }
+            if (o instanceof java.time.LocalDate) {
+                return java.sql.Date.valueOf(getLocalDate(key));
+            }
+            if (o instanceof java.time.LocalDateTime) {
+                return java.sql.Date.valueOf(getLocalDateTime(key).toLocalDate());
+            }
+            if (o instanceof java.time.Instant) {
+                return new java.sql.Date(java.util.Date.from(getInstant(key)).getTime());
+            }
+            if (o instanceof java.util.Date) {
+                return new java.sql.Date(getDate(key).getTime());
+            }
+            if (o instanceof java.util.Calendar) {
+                return new java.sql.Date(getCalendar(key).getTime().getTime());
             }
             return java.sql.Date.valueOf(this.getString(key));
         } catch (Exception e) {
@@ -1190,10 +1412,28 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      */
     public final java.sql.Timestamp getSQLTimestamp(final String key, final java.sql.Timestamp defaultValue) {
         try {
-            Object value = this.get(key);
-            if (value instanceof java.sql.Timestamp) {
-                return (java.sql.Timestamp)value;
+            Object o = this.get(key);
+            if (o == null) {
+                return defaultValue;
             }
+            if (o instanceof java.sql.Timestamp) {
+                return (java.sql.Timestamp)o;
+            }
+            if (o instanceof java.sql.Date) {
+                return new java.sql.Timestamp(getSQLDate(key).getTime());
+            }
+            if (o instanceof java.time.LocalDateTime) {
+                return java.sql.Timestamp.valueOf(getLocalDateTime(key));
+            }
+            if (o instanceof java.time.Instant) {
+                return java.sql.Timestamp.from(getInstant(key));
+            }
+            if (o instanceof java.util.Date) {
+                return new java.sql.Timestamp(getDate(key).getTime());
+            }
+            if (o instanceof java.util.Calendar) {
+                return new java.sql.Timestamp(getCalendar(key).getTime().getTime());
+            } 
             return java.sql.Timestamp.valueOf(this.getString(key));
         } catch (Exception e) {
             return defaultValue;
@@ -1226,8 +1466,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final java.sql.Time getSQLTime(final String key, final java.sql.Time defaultValue) {
         try {
             Object value = this.get(key);
-            if (value instanceof java.sql.Time) {
+            Object o = get(key);
+            if (o == null) {
+                return defaultValue;
+            }
+            if (o instanceof java.sql.Time) {
                 return (java.sql.Time)value;
+            }
+            if (o instanceof java.sql.Timestamp) {
+                return new java.sql.Time(getSQLTimestamp(key).getTime());
+            }
+            if (o instanceof java.time.LocalTime) {
+                return java.sql.Time.valueOf(getLocalTime(key));
+            }
+            if (o instanceof java.time.LocalDateTime) {
+                return java.sql.Time.valueOf(getLocalDateTime(key).toLocalTime());
+            }
+            if (o instanceof java.time.Instant) {
+                return new java.sql.Time(java.sql.Time.from(getInstant(key)).getTime());
+            }
+            if (o instanceof java.util.Date) {
+                return new java.sql.Time(getDate(key).getTime());
+            }
+            if (o instanceof java.util.Calendar) {
+                return new java.sql.Time(getCalendar(key).getTime().getTime());
             }
             return java.sql.Time.valueOf(this.getString(key));
         } catch (Exception e) {
@@ -1250,7 +1512,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final java.time.LocalDate getLocalDate(final String key, final java.time.LocalDate defaultValue) {
         if (hasKey(key)) {
             try {
-                return (java.time.LocalDate)get(key);
+                Object o = get(key);
+                if (o == null) {
+                    return defaultValue;
+                }
+                if (o instanceof java.sql.Date) {
+                    return getSQLDate(key).toLocalDate();
+                }
+                if (o instanceof java.sql.Timestamp) {
+                    return getSQLTimestamp(key).toLocalDateTime().toLocalDate();
+                }
+                if (o instanceof java.time.Instant) {
+                    return java.time.LocalDate.ofInstant(getInstant(key), java.time.ZoneId.systemDefault());
+                }
+                if (o instanceof java.util.Date) {
+                    return java.time.Instant.ofEpochMilli(getDate(key).getTime())
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalDate();
+                }
+                if (o instanceof java.util.Calendar) {
+                    return java.time.Instant.ofEpochMilli(getCalendar(key).getTime().getTime())
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalDate();
+                }
+                return (java.time.LocalDate)o;
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1274,7 +1559,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final java.time.LocalTime getLocalTime(final String key, final java.time.LocalTime defaultValue) {
         if (hasKey(key)) {
             try {
-                return (java.time.LocalTime)get(key);
+                Object o = get(key);
+                if (o == null) {
+                    return defaultValue;
+                }
+                if (o instanceof java.sql.Time) {
+                    return getSQLTime(key).toLocalTime();
+                }
+                if (o instanceof java.sql.Timestamp) {
+                    return getSQLTimestamp(key).toLocalDateTime().toLocalTime();
+                }
+                if (o instanceof java.time.Instant) {
+                    return java.time.LocalTime.ofInstant(getInstant(key), java.time.ZoneId.systemDefault());
+                }
+                if (o instanceof java.util.Date) {
+                    return java.time.Instant.ofEpochMilli(getDate(key).getTime())
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalTime();
+                }
+                if (o instanceof java.util.Calendar) {
+                    return java.time.Instant.ofEpochMilli(getCalendar(key).getTime().getTime())
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalTime();
+                }
+                return (java.time.LocalTime)o;
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1298,6 +1606,26 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final java.time.LocalDateTime getLocalDateTime(final String key, final java.time.LocalDateTime defaultValue) {
         if (hasKey(key)) {
             try {
+                Object o = get(key);
+                if (o == null) {
+                    return defaultValue;
+                }
+                if (o instanceof java.sql.Timestamp) {
+                    return getSQLTimestamp(key).toLocalDateTime();
+                }
+                if (o instanceof java.time.Instant) {
+                    return java.time.LocalDateTime.ofInstant(getInstant(key), java.time.ZoneId.systemDefault());
+                }
+                if (o instanceof java.util.Date) {
+                    return java.time.Instant.ofEpochMilli(getDate(key).getTime())
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalDateTime();
+                }
+                if (o instanceof java.util.Calendar) {
+                    return java.time.Instant.ofEpochMilli(getCalendar(key).getTime().getTime())
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalDateTime();
+                }
                 return (java.time.LocalDateTime)get(key);
             } catch (Exception e) {
                 return defaultValue;
@@ -1322,7 +1650,32 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final java.time.Instant getInstant(final String key, final java.time.Instant defaultValue) {
         if (hasKey(key)) {
             try {
-                return (java.time.Instant)get(key);
+                Object o = get(key);
+                if (o == null) {
+                    return defaultValue;
+                }
+                if (o instanceof java.sql.Date) {
+                    return getSQLDate(key).toInstant();
+                }
+                if (o instanceof java.sql.Timestamp) {
+                    return getSQLTimestamp(key).toInstant();
+                }
+                if (o instanceof java.sql.Time) {
+                    return getSQLTime(key).toInstant();
+                }
+                if (o instanceof java.time.LocalDateTime) {
+                    return getLocalDateTime(key).atZone(java.time.ZoneId.systemDefault()).toInstant();
+                }
+                if (o instanceof java.time.LocalDate) {
+                    return getLocalDate(key).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant();
+                }
+                if (o instanceof java.util.Date) {
+                    return java.time.Instant.ofEpochMilli(getDate(key).getTime());
+                }
+                if (o instanceof java.util.Calendar) {
+                    return java.time.Instant.ofEpochMilli(getCalendar(key).getTime().getTime());
+                }
+                return (java.time.Instant)o;
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1342,7 +1695,34 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      */
     public final org.netuno.psamata.io.File getFile(final String key) {
         try {
-            return (org.netuno.psamata.io.File)get(key);
+            Object value = get(key);
+            if (value instanceof org.netuno.psamata.io.File) {
+                return (org.netuno.psamata.io.File)value;
+            } else if (value instanceof String) {
+                String content = getString(key);
+                if (content.startsWith("data:")) {
+                    int colonPosition = content.indexOf(':');
+                    int semicolonPosition = content.indexOf(';');
+                    int commaPosition = content.indexOf(',');
+                    if (colonPosition > 0
+                            && semicolonPosition > colonPosition
+                            && commaPosition > semicolonPosition
+                            && commaPosition < content.length() - 1) {
+                        String mimeType = content.substring(colonPosition + 1, semicolonPosition);
+                        String encoding = content.substring(semicolonPosition + 1, commaPosition);
+                        if (encoding.equalsIgnoreCase("base64")) {
+                            String fileName = key +"."+ MimeTypes.getExtensionFromMimeType(mimeType);
+                            byte[] bytes = Base64.getDecoder().decode(content.substring(commaPosition + 1));
+                            org.netuno.psamata.io.File file = new org.netuno.psamata.io.File(fileName, mimeType, new ByteArrayInputStream(bytes));
+                            if (!jail.isEmpty()) {
+                                file.ensureJail(jail);
+                            }
+                            return file;
+                        }
+                    }
+                }
+            }
+            return null;
         } catch (Exception e) {
             return null;
         }
@@ -1851,7 +2231,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param set Set sign of the key and value
      * @return Formatted values
      */
-    public static String toString(final Iterable list, final String splitter, final String set) {
+    public static String toString(final Iterable<?> list, final String splitter, final String set) {
         return toString(list, splitter, set, null, new Values());
     }
 
@@ -1863,7 +2243,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param excludes Keys to excluded
      * @return Formatted values
      */
-    public static String toString(final Iterable list, final String splitter, final String set, final String[] excludes) {
+    public static String toString(final Iterable<?> list, final String splitter, final String set, final String[] excludes) {
         return toString(list, splitter, set, excludes);
     }
 
@@ -1875,7 +2255,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param config Configurations
      * @return Formatted values
      */
-    public static String toString(final Iterable list, final String splitter, final String set, final Values config) {
+    public static String toString(final Iterable<?> list, final String splitter, final String set, final Values config) {
         return toString(list, splitter, set, null, config);
     }
 
@@ -1888,7 +2268,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param config Configurations
      * @return Formatted values
      */
-    public static String toString(final Iterable list, final String splitter, final String set, final String[] excludes, Values config) {
+    public static String toString(final Iterable<?> list, final String splitter, final String set, final String[] excludes, Values config) {
         boolean urlEncode = config.getBoolean("urlEncode", false);
         String booleanTrue = config.getString("booleanTrue", "true");
         String booleanFalse = config.getString("booleanFalse", "false");
@@ -1930,7 +2310,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param set Set sign of the key and value
      * @return Formatted values
      */
-    public static String toString(final Map map, final String splitter, final String set) {
+    public static String toString(final Map<?, ?> map, final String splitter, final String set) {
         return toString(map, splitter, set, null, new Values());
     }
 
@@ -1942,7 +2322,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param excludes Keys to excluded
      * @return Formatted values
      */
-    public static String toString(final Map map, final String splitter, final String set, final String[] excludes) {
+    public static String toString(final Map<?, ?> map, final String splitter, final String set, final String[] excludes) {
         return toString(map, splitter, set, excludes);
     }
 
@@ -1954,7 +2334,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param config Configurations
      * @return Formatted values
      */
-    public static String toString(final Map map, final String splitter, final String set, final Values config) {
+    public static String toString(final Map<?, ?> map, final String splitter, final String set, final Values config) {
         return toString(map, splitter, set, null, config);
     }
 
@@ -1967,7 +2347,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param config Configurations
      * @return Formatted values
      */
-    public static String toString(final Map map, final String splitter, final String set, final String[] excludes, Values config) {
+    public static String toString(final Map<?, ?> map, final String splitter, final String set, final String[] excludes, Values config) {
         boolean urlEncode = config.getBoolean("urlEncode", false);
         String booleanTrue = config.getString("booleanTrue", "true");
         String booleanFalse = config.getString("booleanFalse", "false");
@@ -2138,7 +2518,6 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     }
 
     public final String toString(String splitter) {
-        new ArrayList();
         String result = null;
         if (isList()) {
             for (Object item : this) {
@@ -2212,6 +2591,10 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return result;
     }
 
+    public static synchronized Values fromJSON(Remote.Response content) {
+        return fromJSON(content.toString());
+    }
+
     public static synchronized Values fromJSON(String content) {
         if (content == null || content.isEmpty()) {
             return new Values();
@@ -2223,7 +2606,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     private static Object fromJSONUnescape(Object object) {
         if (object instanceof Map) {
-            Map map = (Map) object;
+            Map<?, ?> map = (Map<?, ?>)object;
             Values values = new Values().forceMap();
             for (Object key : map.keySet()) {
                 values.set(key.toString(), fromJSONUnescape(map.get(key)));
@@ -2237,7 +2620,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             }
             return values;
         } else if (object instanceof List) {
-            List list = (List)object;
+            List<?> list = (List<?>)object;
             Values values = new Values().forceList();
             for (Object i : list) {
                 values.add(fromJSONUnescape(i));
@@ -2484,6 +2867,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final void removeAll() {
         clear();
     }
+
     /**
      * Finalize.
      * @throws Throwable Throwable
@@ -2496,9 +2880,13 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
          * objects.clear();
          * array.clear();
          */
+
+        /*
+        GC TEST
         keysRef = null;
         objects = null;
         array = null;
+        */
     }
 
     public int sizeOfMap() {
@@ -2550,12 +2938,21 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     }
 
     @Override
-    public void forEach(Consumer action) {
+    public void forEach(Consumer<? super Object> action) {
         array.forEach(action);
+    }
+
+    @Override
+    public void forEach(BiConsumer<? super String, ? super Object> action) {
+        objects.forEach(action);
     }
     
     public void forEach(Value function) {
-        array.forEach((i) -> function.execute(i));
+        if (isList()) {
+            array.forEach((i) -> function.execute(i));
+        } else if (isMap()) {
+            objects.forEach((k, v) -> function.execute(k, v));
+        }
     }
 
     @Override
@@ -2569,6 +2966,62 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     public <T> T[] toArray(T[] a) {
         return array.toArray(a);
+    }
+
+    public byte[] toByteArray() {
+        byte[] bytes = new byte[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            bytes[i] = getByte(i);
+        }
+        return bytes;
+    }
+
+    public short[] toShortArray() {
+        short[] shorts = new short[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            shorts[i] = getShort(i);
+        }
+        return shorts;
+    }
+
+    public int[] toIntArray() {
+        int[] ints = new int[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            ints[i] = getInt(i);
+        }
+        return ints;
+    }
+
+    public long[] toLongArray() {
+        long[] longs = new long[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            longs[i] = getLong(i);
+        }
+        return longs;
+    }
+
+    public float[] toFloatArray() {
+        float[] floats = new float[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            floats[i] = getFloat(i);
+        }
+        return floats;
+    }
+
+    public double[] toDoubleArray() {
+        double[] doubles = new double[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            doubles[i] = getDouble(i);
+        }
+        return doubles;
+    }
+
+    public String[] toStringArray() {
+        String[] doubles = new String[array.size()];
+        for (int i = 0; i < array.size(); i++) {
+            doubles[i] = getString(i);
+        }
+        return doubles;
     }
 
     public Values add(Object o) {
@@ -2812,12 +3265,12 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return this.forceMap;
     }
 
-    public Map toMap() {
+    public Map<?, ?> toMap() {
     	forceMap();
         return map();
     }
 
-    public Map map() {
+    public Map<String, Object> map() {
         return new Values(objects).objects;
     }
 
@@ -2837,13 +3290,18 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return this.forceList;
     }
 
-    public List toList() {
+    public List<?> toList() {
     	forceList();
         return list();
     }
 
-    public List list() {
-        return new Values(array).array;
+    public <T> List<T> toList(Class<T> cls) {
+    	forceList();
+        return list(cls);
+    }
+
+    public List<?> list() {
+        return List.copyOf(new Values(array).array);
     }
     
     public<T> List<T> list(Class<T> cls) {
@@ -2854,9 +3312,9 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         List<Values> list = new ArrayList<>();
         for (Object item : array) {
             if (item instanceof Map) {
-                list.add(new Values((Map)item));
+                list.add(new Values((Map<?, ?>)item));
             } else if (item instanceof Iterable) {
-                Values values = new Values((Iterable)item);
+                Values values = new Values((Iterable<?>)item);
                 list.add(values);
             }
         }
@@ -2899,7 +3357,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return objects.keySet();
     }
     
-    public Collection getValues() {
+    public Collection<?> getValues() {
         if (isList()) {
             return array;
         }
@@ -2907,7 +3365,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     }
 
     @Override
-    public Collection values() {
+    public Collection<Object> values() {
         if (isList()) {
             return array;
         }
@@ -2936,10 +3394,10 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     		throw new Error(new PsamataException("Unable to merge values locked as read-only."));
     	}
     	checkLockAsReadOnly();
-        Collection forceList = null;
+        Collection<?> forceList = null;
         if ((object instanceof Values && ((Values)object).isMap())
                 || (!(object instanceof Values) && object instanceof Map)) {
-            Map map = (Map)object;
+            Map<?, ?> map = (Map<?, ?>)object;
             for (Object key : map.keySet()) {
                 if (key == null) {
                     continue;
@@ -2965,7 +3423,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             if (forceList != null) {
                 object = forceList;
             }
-            for (Object o : (Iterable) object) {
+            for (Object o : (Iterable<?>) object) {
                 if (isMergeable(o)) {
                     if (o instanceof Values) {
                         add(o);
@@ -3064,14 +3522,46 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         if (o instanceof Values) {
             return (Values) o;
         } else if (isMap(o) && o instanceof Map) {
-            return new Values((Map)o);
+            return new Values((Map<?, ?>)o);
         } else if (isList(o) && o instanceof Iterable) {
-            return new Values((Iterable)o);
+            return new Values((Iterable<?>)o);
         } else if (o instanceof JSONObject || o instanceof JSONArray) {
             return new Values(o);
         }
         if (oDefault != null) {
             return as(oDefault);
+        }
+        return null;
+    }
+
+    public static Values ofList(Object o) {
+        if (isList(o)) {
+            return as(o);
+        }
+        return null;
+    }
+
+    public static Values ofMap(Object o) {
+        if (isMap(o)) {
+            return as(o);
+        }
+        return null;
+    }
+
+    public static <T> Values of(T... array) {
+        return of(Arrays.asList(array));
+    }
+
+    public static Values of(List<?> list) {
+        if (isList(list)) {
+            return as(list);
+        }
+        return null;
+    }
+
+    public static Values of(Map<?, ?> map) {
+        if (isMap(map)) {
+            return as(map);
         }
         return null;
     }
