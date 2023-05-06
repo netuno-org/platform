@@ -422,7 +422,6 @@ public class Auth extends WebMaster {
                                 getHili().sandbox().unbind("userDataProvider");
                             }
                         }
-
                         return;
                     }
                 }

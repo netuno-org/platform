@@ -197,18 +197,27 @@ public class Setup extends Base {
             );
             sequence.create("netuno_group_id");
 
-            table.create("netuno_providers",
+            if (checkExists.table("netuno_providers")) {
+                table.rename("netuno_providers", "netuno_provider");
+                sequence.rename("netuno_providers_id", "netuno_provider_id");
+            }
+
+            table.create("netuno_provider",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(true).setDefault()
             );
-            sequence.create("netuno_providers_id");
+            sequence.create("netuno_provider_id");
 
-            if(getBuilder().selectProviderByName("local").size() == 0){
+            if (getBuilder().selectProviderByName("local").size() == 0) {
                 getBuilder().insertProvider("Local", "lc");
             }
 
-            if(getBuilder().selectProviderByName("google").size() == 0){
+            if (getBuilder().selectProviderByName("ldap").size() == 0) {
+                getBuilder().insertProvider("LDAP", "ldap");
+            }
+
+            if (getBuilder().selectProviderByName("google").size() == 0) {
                 getBuilder().insertProvider("Google", "gl");
             }
 
