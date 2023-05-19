@@ -14,8 +14,9 @@ show-netuno
 
 $isChocoInstalled = Get-Command choco -ErrorAction SilentlyContinue
 
-$javaVersion = & java -version 2>&1 | Out-String
-$javaVersion = $javaVersion.Contains("version `"11.")
+$javaVersion = Get-Command java | Select-Object -ExpandProperty Version | Select-Object -ExpandProperty Major
+$javaVersion = [Convert]::ToInt32($javaVersion)
+$javaVersion = ($javaVersion -ge 17)
 
 $mvnInstalled = Get-Command mvn -ErrorAction SilentlyContinue
 $nodejsInstalled = Get-Command node.exe -ErrorAction SilentlyContinue
