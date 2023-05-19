@@ -23,6 +23,7 @@ Write-Host ""
 Write-Host ""
 Write-Host "MVN Package"
 Write-Host ""
+copy netuno.cli/pom-base.xml netuno.cli/pom.xml
 ./mvn-package.ps1
 
 cd ./netuno.cli/protect
@@ -31,7 +32,7 @@ cd ../..
 
 Move-Item -Path "./netuno.cli/protect/out/proguard/netuno.jar" -Destination "./netuno.cli/protect/out/proguard/netuno-base.jar"
 
-copy "./netuno.cli/pom-install.xml" "./netuno.cli/pom.xml"
+copy "./netuno.cli/pom-setup.xml" "./netuno.cli/pom.xml"
 
 cd netuno.cli
 mvn clean
@@ -42,7 +43,7 @@ cd ./netuno.cli/protect
 ./run.ps1
 cd ../..
 
-Move-Item -Path "./netuno.cli/protect/out/proguard/netuno.jar" -Destination "./netuno.cli/protect/out/proguard/netuno-install.jar"
+Move-Item -Path "./netuno.cli/protect/out/proguard/netuno.jar" -Destination "./netuno.cli/protect/out/proguard/netuno-setup.jar"
 
 copy "./netuno.cli/pom-base.xml" "./netuno.cli/pom.xml"
 
@@ -59,7 +60,7 @@ cd ..
 
 mkdir -p bundle/dist
 
-copy "./netuno.cli/protect/out/proguard/netuno-install.jar" "./bundle/dist/netuno.jar"
+copy "./netuno.cli/protect/out/proguard/netuno-setup.jar" "./bundle/dist/netuno-setup.jar"
 
 Move-Item -Path "./bundle/out/netuno.zip" -Destination "./bundle/dist/netuno.zip"
 cd bundle
