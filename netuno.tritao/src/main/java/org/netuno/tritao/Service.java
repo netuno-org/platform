@@ -176,7 +176,7 @@ public class Service {
                 return;
             }
 
-            if(service.getPath().toLowerCase().contains("_provider")){
+            if(service.getPath().toLowerCase().contains("_auth_provider")){
                 HandlerProviders providers = new HandlerProviders(service, proteu, hili);
                 providers.run();
                 return;

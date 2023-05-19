@@ -9,7 +9,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.config.Hili;
+import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.providers.entities.Discord;
 import org.netuno.tritao.providers.entities.Github;
@@ -33,22 +33,32 @@ public class HandlerProviders extends WebMaster {
     }
 
     public void run() throws Exception {
-        String provider = null;
+        String requestProvider = null;
         String method = null;
 
         String[] args = service.getPath().split("/");
         if (args.length >= 2) {
-            provider = args[1];
+            requestProvider = args[1];
             if(args.length > 2){
                 method = args[2];
             }
         }
 
-        if (proteu.getConfig().getValues("_app:config").has("provider") && proteu.getConfig().getValues("_app:config").getValues("provider").has(provider)) {
-            if (provider.equalsIgnoreCase("google")) {
-                Values googleSetting = proteu.getConfig().getValues("_app:config").getValues("provider").getValues("google");
+        if (!proteu.getConfig().getValues("_app:config").has("auth")) {
+            return;
+        }
+
+        if (!proteu.getConfig().getValues("_app:config").getValues("auth", new Values()).has("providers")) {
+            return;
+        }
+
+        Values configAuthProviders = proteu.getConfig().getValues("_app:config").getValues("auth").getValues("providers");
+
+        if (configAuthProviders.has(requestProvider)) {
+            if (requestProvider.equalsIgnoreCase("google")) {
+                Values googleSetting = configAuthProviders.getValues("google");
                 Google google = new Google(googleSetting.getString("id"), googleSetting.getString("secret"), googleSetting.getString("callback"));
-                if (googleSetting.getBoolean("enable") == false) {
+                if (googleSetting.getBoolean("enabled") == false) {
                     return;
                 }
                 else if (method == null) {
@@ -73,10 +83,10 @@ public class HandlerProviders extends WebMaster {
                     callBack("google", googleSetting.getString("redirect"), userData);
                 }
             }
-            else if (provider.equalsIgnoreCase("github")) {
-                Values settings = proteu.getConfig().getValues("_app:config").getValues("provider").getValues("github");
+            else if (requestProvider.equalsIgnoreCase("github")) {
+                Values settings = configAuthProviders.getValues("github");
                 Github github = new Github(settings.getString("id"), settings.getString("secret"), settings.getString("callback"));
-                if (settings.getBoolean("enable") == false) {
+                if (settings.getBoolean("enabled") == false) {
                     return;
                 } else if (method == null) {
                     proteu.redirect(github.getUrlAuthenticator());
@@ -99,10 +109,10 @@ public class HandlerProviders extends WebMaster {
                     callBack("github", settings.getString("redirect"), userData);
                 }
             }
-            else if (provider.equalsIgnoreCase("discord")) {
-                Values settings = proteu.getConfig().getValues("_app:config").getValues("provider").getValues("discord");
+            else if (requestProvider.equalsIgnoreCase("discord")) {
+                Values settings = configAuthProviders.getValues("discord");
                 Discord discord = new Discord(settings.getString("id"), settings.getString("secret"), settings.getString("callback"));
-                if (settings.getBoolean("enable") == false) {
+                if (settings.getBoolean("enabled") == false) {
                     return;
                 } else if (method == null) {
                     proteu.redirect(discord.getUrlAuthenticator());

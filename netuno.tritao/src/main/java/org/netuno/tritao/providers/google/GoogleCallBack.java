@@ -33,6 +33,7 @@ import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.openapi.Schema;
+import org.netuno.tritao.providers.entities.Google;
 import org.netuno.tritao.providers.entities.UserDataProvider;
 import org.netuno.tritao.resource.Random;
 

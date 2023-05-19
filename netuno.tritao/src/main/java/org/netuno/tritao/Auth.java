@@ -24,11 +24,9 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.providers.entities.UserDataProvider;
 import org.netuno.tritao.resource.*;
 import org.netuno.tritao.util.Rule;
 
