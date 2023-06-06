@@ -73,27 +73,35 @@ public class GraalVMSetup {
     public static boolean graalCheck(String path, String graalVMVersion) throws IOException {
         File graalVMFolder = new File(path, Constants.GRAALVM_FOLDER);
         if (graalVMFolder.exists()) {
-            ProcessBuilder builder = new ProcessBuilder();
-            builder.command(new String[]{
-                    (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX ? "./" : "")
-                            + "java",
-                    "-version"
-            });
-            builder.directory(new File(graalVMFolder, "bin"));
             StringBuilder versionOutput = new StringBuilder();
             StringBuilder versionError = new StringBuilder();
-            //int exitCode = 0;
-            try {
-                Process process = builder.start();
-                StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), versionOutput::append);
-                Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-                StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), versionError::append);
-                Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-                //exitCode = process.waitFor();
-                process.waitFor();
-            } catch (Exception e) {
-                logger.debug("Fail getting the GraalVM version.", e);
-                FileUtils.deleteDirectory(graalVMFolder);
+            for (int i = 0; i < 2; i++) {
+                ProcessBuilder builder = new ProcessBuilder();
+                builder.command(new String[]{
+                        (i == 0 ? "./" : "")
+                                + "java",
+                        "-version"
+                });
+                builder.directory(new File(graalVMFolder, "bin"));
+                //int exitCode = 0;
+                try {
+                    Process process = builder.start();
+                    StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), versionOutput::append);
+                    Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
+                    StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), versionError::append);
+                    Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
+                    //exitCode = process.waitFor();
+                    process.waitFor();
+                    process.destroy();
+                    break;
+                } catch (Exception e) {
+                    if (i == 0 && SystemUtils.IS_OS_WINDOWS) {
+                        continue;
+                    }
+                    logger.debug("Fail getting the GraalVM version.", e);
+                    FileUtils.deleteDirectory(graalVMFolder);
+                    break;
+                }
             }
             /*
             logger.debug("GraalVM Version - Exit Code: "+ exitCode);
@@ -294,19 +302,29 @@ public class GraalVMSetup {
         File graalVMFolder = new File(path, Constants.GRAALVM_FOLDER);
         if (graalVMFolder.exists()) {
             System.out.println();
-            ProcessBuilder builder = new ProcessBuilder();
-            builder.command(new String[] {
-                    SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX ? "./gu" : "gu.cmd",
-                    "install", "nodejs"
-            });
-            builder.directory(new File(graalVMFolder, "bin"));
-            Process process = builder.start();
-            StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
-            Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-            StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err::println);
-            Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-            process.waitFor();
-            process.destroy();
+            for (int i = 0; i < 2; i++) {
+                ProcessBuilder builder = new ProcessBuilder();
+                builder.command(new String[] {
+                        i == 0 ? "./gu" : "gu.cmd",
+                        "install", "nodejs"
+                });
+                builder.directory(new File(graalVMFolder, "bin"));
+                try {
+                    Process process = builder.start();
+                    StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
+                    Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
+                    StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err::println);
+                    Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
+                    process.waitFor();
+                    process.destroy();
+                    break;
+                } catch (IOException e) {
+                    if (i == 0 && SystemUtils.IS_OS_WINDOWS) {
+                        continue;
+                    }
+                    throw e;
+                }
+            }
         }
     }
 }
