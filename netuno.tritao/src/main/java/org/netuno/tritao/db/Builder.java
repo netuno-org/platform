@@ -72,13 +72,13 @@ public interface Builder {
     
     void insertClientHit(String clientId, String userId, String identifier);
 
-    List<Values> selectUserLogin(String user, String pass);
+    Values selectUserLogin(String user, String pass);
 
     void setUserPassword(String user, String pass);
 
     List<Values> selectUserSearch(String term);
 
-    List<Values> selectUser(String user_id);
+    Values selectUser(String term);
 
     List<Values> selectUserByEmail(String email);
 
@@ -87,19 +87,19 @@ public interface Builder {
     Values getUserById(String id);
     Values getUserByUId(String uid);
 
-    List<Values> selectUser(String user_id, String group_id);
+    List<Values> selectUsersByIdAndGroupId(String user_id, String group_id);
 
     List<Values> selectUserOther(String id, String name, String user);
 
     int selectUsersCount();
 
-    boolean updateUser(String id, String name, String user, String pass, String mail, String group, String active);
+    boolean updateUser(String id, String name, String user, String pass, String nopass, String mail, String group, String active);
 
     boolean updateUser(Values values);
 
     boolean updateUser(String id, Values values);
 
-    int insertUser(String name, String user, String pass, String mail, String group, String active);
+    int insertUser(String name, String user, String pass, String nopass, String mail, String group, String active);
 
     int insertUser(Values values);
 
@@ -111,21 +111,29 @@ public interface Builder {
 
     Values getUserDataProviderByID(String id);
 
-    Values getUserDataProvider(String nonce);
+    Values getUserDataProviderByNonce(String nonce);
 
     boolean deleteUserDataProvider(String id);
 
-    List<Values> isAssociate(Values values);
+    Values selectUserProviderByCode(String userId, String providerCode);
 
-    Values getAssociateById(String id);
+    boolean hasUserProviderByCode(String userId, String providerCode);
 
-    int associate(Values values);
+    List<Values> selectUserProviders(String userId);
 
-    boolean disassociate(String id);
+    boolean isProviderUserAssociate(Values values);
 
-    List<Values> selectProviderByName(String provider_name);
+    Values getProviderUserById(String id);
 
-    List<Values> selectProvider(String provider_id);
+    int insertProviderUser(Values values);
+
+    boolean deleteProviderUser(String id);
+
+    Values selectProviderByCode(String providerCode);
+
+    List<Values> selectProviderSearch(String term);
+
+    List<Values> selectProvider(String providerId);
 
     Values getProviderById(String id);
 

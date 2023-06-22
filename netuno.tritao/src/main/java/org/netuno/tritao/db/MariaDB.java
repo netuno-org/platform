@@ -141,7 +141,7 @@ public class MariaDB implements Builder {
         return coreBusiness.selectClientsByToken(clientToken);
     }
 
-    public List<Values> selectUserLogin(String user, String pass) {
+    public Values selectUserLogin(String user, String pass) {
         return coreBusiness.selectUserLogin(user, pass);
     }
 
@@ -161,12 +161,12 @@ public class MariaDB implements Builder {
         return coreBusiness.selectUserSearch(term);
     }
 
-    public List<Values> selectUser(String user_id) {
-        return coreBusiness.selectUser(user_id, "");
+    public Values selectUser(String term) {
+        return coreBusiness.selectUser(term);
     }
 
-    public List<Values> selectUser(String user_id, String group_id) {
-        return coreBusiness.selectUser(user_id, group_id);
+    public List<Values> selectUsersByIdAndGroupId(String user_id, String group_id) {
+        return coreBusiness.selectUsersByIdAndGroupId(user_id, group_id);
     }
 
     public List<Values> selectUserByEmail(String email) {
@@ -196,8 +196,8 @@ public class MariaDB implements Builder {
         return coreBusiness.selectUsersCount();
     }
 
-    public boolean updateUser(String id, String name, String user, String pass, String mail, String group, String active) {
-        return coreBusiness.updateUser(id, name, user, pass, mail, group, active);
+    public boolean updateUser(String id, String name, String user, String pass, String noPass, String mail, String group, String active) {
+        return coreBusiness.updateUser(id, name, user, pass, noPass, mail, group, active);
     }
 
     public boolean updateUser(Values values) {
@@ -208,8 +208,8 @@ public class MariaDB implements Builder {
         return coreBusiness.updateUser(id, values);
     }
 
-    public int insertUser(String name, String user, String pass, String mail, String group, String active) {
-        return coreBusiness.insertUser(name, user, pass, mail, group, active);
+    public int insertUser(String name, String user, String pass, String noPass, String mail, String group, String active) {
+        return coreBusiness.insertUser(name, user, pass, noPass, mail, group, active);
     }
 
     public int insertUser(Values values) {
@@ -231,32 +231,48 @@ public class MariaDB implements Builder {
         return coreBusiness.getUserDataProviderByID(id);
     }
 
-    public Values getUserDataProvider(String nonce) {
-        return coreBusiness.getUserDataProvider(nonce);
+    public Values getUserDataProviderByNonce(String nonce) {
+        return coreBusiness.getUserDataProviderByNonce(nonce);
     }
 
     public boolean deleteUserDataProvider(String id) {
         return coreBusiness.deleteUserDataProvider(id);
     }
 
-    public List<Values> isAssociate(Values values){
-        return coreBusiness.isAssociate(values);
+    public Values selectUserProviderByCode(String userId, String providerCode) {
+        return coreBusiness.selectUserProviderByCode(userId, providerCode);
     }
 
-    public Values getAssociateById(String id) {
-        return coreBusiness.getAssociateById(id);
+    public boolean hasUserProviderByCode(String userId, String providerCode) {
+        return coreBusiness.hasUserProviderByCode(userId, providerCode);
     }
 
-    public int associate(Values values){
-        return coreBusiness.associate(values);
+    public List<Values> selectUserProviders(String userId) {
+        return coreBusiness.selectUserProviders(userId);
     }
 
-    public boolean disassociate(String id){
-        return coreBusiness.disassociate(id);
+    public boolean isProviderUserAssociate(Values values){
+        return coreBusiness.isProviderUserAssociate(values);
     }
 
-    public List<Values> selectProviderByName(String provider_name) {
-        return coreBusiness.selectProviderByName(provider_name);
+    public Values getProviderUserById(String id) {
+        return coreBusiness.getProviderUserById(id);
+    }
+
+    public int insertProviderUser(Values values){
+        return coreBusiness.insertProviderUser(values);
+    }
+
+    public boolean deleteProviderUser(String id){
+        return coreBusiness.deleteProviderUser(id);
+    }
+
+    public Values selectProviderByCode(String providerCode) {
+        return coreBusiness.selectProviderByCode(providerCode);
+    }
+
+    public List<Values> selectProviderSearch(String term) {
+        return coreBusiness.selectProviderSearch(term);
     }
 
     public List<Values> selectProvider(String provider_id) {

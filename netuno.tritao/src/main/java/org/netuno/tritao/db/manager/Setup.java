@@ -209,25 +209,29 @@ public class Setup extends Base {
             );
             sequence.create("netuno_provider_id");
 
-            if(getBuilder().selectProviderByName("google").size() == 0){
-                getBuilder().insertProvider("google", "gl");
+
+            if (getBuilder().selectProviderByCode("gl") != null
+                || getBuilder().selectProviderByCode("gh") != null
+                || getBuilder().selectProviderByCode("ds") != null) {
+                getManager().execute("DELETE FROM netuno_provider");
+                sequence.restart("netuno_provider_id", 1);
             }
 
-            if(getBuilder().selectProviderByName("github").size() == 0){
-                getBuilder().insertProvider("github", "gh");
-            }
-
-            if(getBuilder().selectProviderByName("discord").size() == 0){
-                getBuilder().insertProvider("discord", "ds");
-	    }
-            
-            if (getBuilder().selectProviderByName("local").size() == 0) {
-                getBuilder().insertProvider("Local", "lc");
-            }
-
-            if (getBuilder().selectProviderByName("ldap").size() == 0) {
+            if (getBuilder().selectProviderByCode("ldap") == null) {
                 getBuilder().insertProvider("LDAP", "ldap");
             }
+
+            if (getBuilder().selectProviderByCode("google") == null) {
+                getBuilder().insertProvider("Google", "google");
+            }
+
+            if (getBuilder().selectProviderByCode("github") == null) {
+                getBuilder().insertProvider("GitHub", "github");
+            }
+
+            if (getBuilder().selectProviderByCode("discord") == null) {
+                getBuilder().insertProvider("Discord", "discord");
+	        }
 
             table.create("netuno_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
@@ -239,6 +243,7 @@ public class Setup extends Base {
                     table.newColumn().setName("user").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("pass").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("active").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(true),
+                    table.newColumn().setName("no_pass").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
                     table.newColumn().setName("report").setType(Column.Type.TEXT).setNotNull(false).setDefault(),
                     table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
                     table.newColumn().setName("mail").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
@@ -250,11 +255,10 @@ public class Setup extends Base {
 
             table.create("netuno_provider_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
-                    table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("provider_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(true).setDefault()
             );
-
             sequence.create("netuno_provider_user_id");
             index.create("netuno_provider_user", "user_id");
             index.create("netuno_provider_user", "provider_id");
@@ -428,7 +432,7 @@ public class Setup extends Base {
                 groupDev = new Values().set("id", groupDevId);
             }
             if (getBuilder().getUser("dev") == null) {
-                getBuilder().insertUser("Developer", "dev", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "dev", "dev"), "", groupDev.getString("id"), getBuilder().booleanTrue());
+                getBuilder().insertUser("Developer", "dev", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "dev", "dev"), getBuilder().booleanFalse(), "", groupDev.getString("id"), getBuilder().booleanTrue());
             }
             Values groupAdmin = getBuilder().getGroupByNetuno("-1");
             if (groupAdmin == null) {
@@ -436,7 +440,7 @@ public class Setup extends Base {
                 groupAdmin = new Values().set("id", groupAdminId);
             }
             if (getBuilder().getUser("admin") == null) {
-                getBuilder().insertUser("Administrator", "admin", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "admin", "admin"), "", ""+ groupAdmin.getString("id"), getBuilder().booleanTrue());
+                getBuilder().insertUser("Administrator", "admin", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "admin", "admin"), getBuilder().booleanFalse(), "", ""+ groupAdmin.getString("id"), getBuilder().booleanTrue());
             }
             if (checkExists.column("netuno_design", "search")) {
                 getManager().execute(
