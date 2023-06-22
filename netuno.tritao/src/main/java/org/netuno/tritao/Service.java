@@ -176,13 +176,6 @@ public class Service {
                 return;
             }
 
-            if(service.getPath().toLowerCase().contains("_auth_provider")){
-                HandlerProviders providers = new HandlerProviders(service, proteu, hili);
-                providers.run();
-                return;
-
-            }
-
             if (!schema.validateSchemaIn()) {
                 proteu.responseHTTPError(Proteu.HTTPStatus.BadRequest400, hili);
                 service.defaultEmptyOutput();
@@ -221,7 +214,12 @@ public class Service {
                     outStream = new ByteArrayOutputStream();
                     proteu.getOutput().getMirrors().add(outStream);
                 }
-                service.execute(service.getPath());
+                if (service.getPath().toLowerCase().contains("_auth_provider")) {
+                    HandlerProviders providers = new HandlerProviders(service, proteu, hili);
+                    providers.run();
+                } else {
+                    service.execute(service.getPath());
+                }
                 if (outStream != null) {
                     schema.validateSchemaOut(outStream);
                 }
