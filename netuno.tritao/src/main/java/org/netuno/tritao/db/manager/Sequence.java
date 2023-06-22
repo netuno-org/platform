@@ -150,7 +150,9 @@ public class Sequence extends Base {
 
     public Sequence restart(String sequenceName, int nextValue) {
         try {
-            getManager().execute("alter sequence "+ getBuilder().escape(sequenceName) + " restart with "+ nextValue +";");
+            if (isH2() || isPostgreSQL()) {
+                getManager().execute("alter sequence " + getBuilder().escape(sequenceName) + " restart with " + nextValue + ";");
+            }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Restarting sequence "+ sequenceName +" with "+ nextValue +".");
 
@@ -160,10 +162,12 @@ public class Sequence extends Base {
 
     public Sequence restart(String sequenceName, String tableName, String column) {
         try {
-            List<Values> result = getManager().query("select max("+ getBuilder().escape(column) +") from "+ getBuilder().escape(tableName));
-            if (result.size() == 1) {
-                int total = Integer.parseInt(result.get(0).values().iterator().next().toString());
-                restart(sequenceName, total + 1);
+            if (isH2() || isPostgreSQL()) {
+                List<Values> result = getManager().query("select max(" + getBuilder().escape(column) + ") from " + getBuilder().escape(tableName));
+                if (result.size() == 1) {
+                    int total = Integer.parseInt(result.get(0).values().iterator().next().toString());
+                    restart(sequenceName, total + 1);
+                }
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Restart sequence "+ sequenceName +" with "+ tableName +"."+ column +".");
