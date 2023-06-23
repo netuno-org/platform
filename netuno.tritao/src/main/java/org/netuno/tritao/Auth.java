@@ -27,6 +27,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.providers.LDAPAuthenticator;
 import org.netuno.tritao.resource.*;
 import org.netuno.tritao.util.Rule;
 
@@ -239,14 +240,23 @@ public class Auth extends WebMaster {
     }
 
     public static boolean signIn(Proteu proteu, Hili hili, String username, String password, Type type, Profile profile) {
-        List<Values> dbUsers = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUserLogin(
-                username,
-                org.netuno.tritao.config.Config.getPasswordBuilder(proteu).getCryptPassword(
-                        proteu, hili, username, password
-                )
-        );
-        if (dbUsers.size() == 1) {
-            Values dbUser = dbUsers.get(0);
+        Values dbUser = null;
+        Values dbUserBase = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUser(username);
+        if (!dbUserBase.getBoolean("no_pass")) {
+            dbUser = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUserLogin(
+                    username,
+                    org.netuno.tritao.config.Config.getPasswordBuilder(proteu).getCryptPassword(
+                            proteu, hili, username, password
+                    )
+            );
+        }
+        if (dbUser == null) {
+            LDAPAuthenticator ldapAuthenticator = new LDAPAuthenticator(proteu, hili);
+            if (ldapAuthenticator.authenticate(username, password) != null) {
+                dbUser = dbUserBase;
+            }
+        }
+        if (dbUser != null) {
             if (type == Type.SESSION) {
                 List<Values> dbGroups = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectGroup(dbUser.getString("group_id"));
                 if (dbGroups.size() != 1) {
@@ -372,12 +382,15 @@ public class Auth extends WebMaster {
         return false;
     }
 
-    public static void AuthenticatorProviders(Proteu proteu, Hili hili, Req req, Header header, Out out) throws ProteuException, IOException {
-        if(req.hasKey("secret") && req.hasKey("provider")){
+    public void authenticatorProviders(Proteu proteu, Hili hili) throws ProteuException, IOException {
+        Header header = resource(Header.class);
+        Out out = resource(Out.class);
+        Req req = resource(Req.class);
+        if (req.hasKey("secret") && req.hasKey("provider")) {
             String secret = req.getString("secret"), provider = req.getString("provider");
             Builder DBManager = Config.getDataBaseBuilder(proteu);
 
-            Values userDataProvider = DBManager.getUserDataProvider(secret);
+            Values userDataProvider = DBManager.getUserDataProviderByNonce(secret);
             if (userDataProvider == null) {
                 header.status(Proteu.HTTPStatus.Forbidden403);
                 out.json(
@@ -397,13 +410,13 @@ public class Auth extends WebMaster {
             if (users.size() > 0) {
                 Values user = users.get(0);
                 if (user.getString("nonce").equals(secret) && user.getString("nonce_generator").equals(provider)) {
-                    int providerId = DBManager.selectProviderByName(jsonData.getString("provider")).get(0).getInt("id");
-                    boolean isAssociated = DBManager.isAssociate(
+                    int providerId = DBManager.selectProviderByCode(jsonData.getString("provider")).getInt("id");
+                    boolean isAssociated = DBManager.isProviderUserAssociate(
                             new Values()
-                                    .set("user", user.getString("id"))
-                                    .set("provider", providerId)
+                                    .set("provider_id", providerId)
+                                    .set("user_id", user.getString("id"))
                                     .set("code", jsonData.getString("secret"))
-                    ).size() > 0;
+                    );
                     if (isAssociated) {
                         DBManager.clearOldUserDataProvider(jsonData.getString("id"));
                         user.set("nonce", "");
@@ -420,10 +433,10 @@ public class Auth extends WebMaster {
                         if (req.hasKey("password")) {
                             String passwordEncrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), req.getString("password"));
                             if (DBManager.selectUserLogin(user.getString("user"), passwordEncrypted).size() > 0) {
-                                DBManager.associate(
+                                DBManager.insertProviderUser(
                                         new Values()
-                                                .set("user", user.getString("id"))
-                                                .set("provider", providerId)
+                                                .set("user_id", user.getString("id"))
+                                                .set("provider_id", providerId)
                                                 .set("code", jsonData.getString("secret"))
                                 );
                                 DBManager.clearOldUserDataProvider(jsonData.getString("id"));
@@ -480,10 +493,10 @@ public class Auth extends WebMaster {
 
                 int id = DBManager.insertUser(user);
                 Values values = DBManager.getUserById(id + "");
-                DBManager.associate(
+                DBManager.insertProviderUser(
                         new Values()
-                                .set("user", id)
-                                .set("provider", DBManager.selectProviderByName(jsonData.getString("provider")).get(0).getString("id"))
+                                .set("provider_id", DBManager.selectProviderByCode(jsonData.getString("provider")).getString("id"))
+                                .set("user_id", id)
                                 .set("code", jsonData.getString("secret"))
                 );
                 DBManager.clearOldUserDataProvider(jsonData.getString("id"));
@@ -528,7 +541,7 @@ public class Auth extends WebMaster {
         Credentials credentials = getCredentials(getProteu(), getHili());
         
         if (req.hasKey("secret") && req.hasKey("provider")){
-            AuthenticatorProviders(getProteu(), getHili(), req, header, out);
+            authenticatorProviders(getProteu(), getHili());
         } else if (credentials != null) {
             if (jwtRequest) {
                 if (signIn(getProteu(), getHili(), Type.JWT, profile)) {
