@@ -78,6 +78,11 @@ body {
     margin-top: 20px;
 }
 
+.netuno-user-providers-container > div:first-child {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .netuno-rules-container > div:first-child {
     margin-top: 20px;
     margin-bottom: 20px;

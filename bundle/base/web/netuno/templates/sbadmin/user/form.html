@@ -25,13 +25,28 @@
         <label for="netuno_user_form_user_name">_{&lang=netuno.user.name}</label>
         <input type="text" name="name" id="netuno_user_form_user_name" value="_{&data=user.name.value}" size="50" maxlength="250" class="form-control" placeholder="_{&lang=netuno.user.name}" validation="required">
     </div>
-    <div class="form-group">
-        <label for="netuno_user_form_user_username">_{&lang=netuno.user.username}</label>
-        <input type="text" name="username" id="netuno_user_form_user_username" value="_{&data=user.username.value}" size="25" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.username}" validation="required">
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="form-group">
+                <label for="netuno_user_form_user_username">_{&lang=netuno.user.username}</label>
+                <input type="text" name="username" id="netuno_user_form_user_username" value="_{&data=user.username.value}" size="25" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.username}" validation="required">
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="netuno_user_form_user_password">_{&lang=netuno.user.password}</label>
-        <input type="password" name="password" id="netuno_user_form_user_password" value="" size="25" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.password}" validation="_{data=user.password.validation}">
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="form-group">
+                <label for="netuno_user_form_user_password">_{&lang=netuno.user.password}</label>
+                <input type="password" name="password" id="netuno_user_form_user_password" value="" size="25" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.password}" validation="_{data=user.password.validation}" autocomplete="off">
+            </div>
+        </div>
+        <div class="col-xs-4">
+            &nbsp;<br>
+            <div class="form-group">
+                <label for="netuno_user_form_no-pass">_{&lang=netuno.user.no_password}</label>
+                <input type="checkbox" name="no_pass" id="netuno_user_form_no-pass" value="1" _{data=user.no_pass.checked}>
+            </div>
+        </div>
     </div>
     <div class="form-group">
         <label for="netuno_user_form_user_mail">_{&lang=netuno.user.mail}</label>
@@ -46,6 +61,23 @@
         <label for="netuno_user_form_user_active">_{&lang=netuno.form.field.active.label}</label>
         <input type="checkbox" name="active" id="netuno_user_form_user_active" value="1" _{data=user.active.checked}>
     </div>
+    <br>
+    <h2>_{&lang=netuno.user.providers.title}</h2>
+    <ul class="nav nav-tabs nav-justified">
+        <li role="presentation"><a href="javascript: void(0);" id="netuno_user_providers_ldap_button">LDAP</a></li>
+        <li role="presentation"><a href="javascript: void(0);" id="netuno_user_providers_google_button">Google</a></li>
+        <li role="presentation"><a href="javascript: void(0);" id="netuno_user_providers_github_button">GitHub</a></li>
+        <li role="presentation"><a href="javascript: void(0);" id="netuno_user_providers_discord_button">Discord</a></li>
+    </ul>
+    <div id="netuno_user_providers_ldap_container" class="netuno-user-providers-container" style="display: none;">
+        <div class="form-group">
+            <label for="netuno_user_providers_ldap_active">_{&lang=netuno.user.providers.ldap.active.label}</label>
+            <input type="checkbox" name="provider_ldap_active" id="netuno_user_providers_ldap_active" value="1" _{data=user.providers.ldap.active.checked}>
+        </div>
+    </div>
+    <div id="netuno_user_providers_google_container" class="netuno-providers-container" style="display: none;">Google</div>
+    <div id="netuno_user_providers_github_container" class="netuno-providers-container" style="display: none;">GitHub</div>
+    <div id="netuno_user_providers_discord_container" class="netuno-providers-container" style="display: none;">Discord</div>
     <br>
     <h2>_{&lang=netuno.user.rules.title}</h2>
     <ul class="nav nav-tabs nav-justified">
@@ -166,6 +198,33 @@
                 success: function() {
                     window.location = 'Index_{netuno-config=extension}?impersonate='+ new Date().getTime();
                 }
+            });
+        });
+
+        var noPassCheckbox = $('#netuno_user_form_no-pass');
+        $('#netuno_user_form_user_password').prop('disabled', noPassCheckbox.is(':checked'));
+        noPassCheckbox.on('switchChange.bootstrapSwitch', function(event, state) {
+            var that = $(this);
+            $('#netuno_user_form_user_password').prop('disabled', state);
+        });
+        
+
+        var providersCodes = ['ldap', 'google', 'github', 'discord'];
+        providersCodes.forEach(function (providerCode) {
+            var providerButton = $('a#netuno_user_providers_'+ providerCode +'_button');
+            console.log(providerCode)
+            providerButton.click
+            providerButton.click(function (e) {
+                providersCodes.forEach(function (hideProviderCode) {
+                    if (hideProviderCode == providerCode) {
+                        return;
+                    }
+                    $('a#netuno_user_providers_'+ hideProviderCode +'_button').parent().removeClass('active');
+                    $('div#netuno_user_providers_'+ hideProviderCode +'_container').hide();
+                });
+                console.log('x', providerCode)
+                $('a#netuno_user_providers_'+ providerCode +'_button').parent().addClass('active');
+                $('div#netuno_user_providers_'+ providerCode +'_container').fadeIn();
             });
         });
 

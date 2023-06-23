@@ -630,12 +630,14 @@
           $("#containers > div").hide();
           netuno.loadReport($(`\#containers > div[netuno-report-name=${reportName}]`));
           return false;
-        } else if (element.attr("href") !== "#") {
+        } else if (element.attr("href") !== "#" && element.attr("href").substring('javascript:') === -1) {
           container = $(element.attr("href"));
-          $("#containers > div").hide();
-          container.show();
-          return false;
+          if (container.length) {
+            $("#containers > div").hide();
+            container.show();
+          }
         }
+        return false;
       }
     });
   };
