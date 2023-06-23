@@ -22,6 +22,8 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.event.AppEvent;
+import org.netuno.tritao.resource.event.AppEventType;
 
 import java.util.List;
 
@@ -60,8 +62,148 @@ import java.util.List;
 })
 public class Auth extends ResourceBase {
 
+    public Values providersConfig = new Values();
+
+    public Values providerLDAPConfig = new Values();
+
+    public Values providerGoogleConfig = new Values();
+
+    public Values providerGitHubConfig = new Values();
+
+    public Values providerDiscordConfig = new Values();
+
+    public boolean providerLDAPEnabled = false;
+
+    public boolean providerGoogleEnabled = false;
+
+    public boolean providerGitHubEnabled = false;
+
+    public boolean providerDiscordEnabled = false;
+
     public Auth(Proteu proteu, Hili hili) {
         super(proteu, hili);
+    }
+
+    @AppEvent(type= AppEventType.BeforeEnvironment)
+    private void beforeEnvironment() {
+        Values authConfig = getProteu().getConfig().getValues("_app:config").getValues("auth");
+        if (authConfig != null) {
+            getProteu().getConfig().set("_auth", authConfig);
+        }
+    }
+
+    @AppEvent(type=AppEventType.AfterConfiguration)
+    private void afterConfiguration() {
+        load();
+    }
+
+    @AppEvent(type=AppEventType.AfterServiceConfiguration)
+    private void afterServiceConfiguration() {
+        load();
+    }
+
+    public Auth load() {
+        Values auth = getProteu().getConfig().getValues("_auth");
+        if (auth == null) {
+            return this;
+        }
+        providersConfig = auth.getValues("providers");
+        if (providersConfig == null) {
+            return this;
+        }
+        providerLDAPConfig = providersConfig.getValues("ldap", new Values());
+        providerGoogleConfig = providersConfig.getValues("google", new Values());
+        providerGitHubConfig = providersConfig.getValues("github", new Values());
+        providerDiscordConfig = providersConfig.getValues("discord", new Values());
+        providerLDAPEnabled = providerLDAPConfig.getBoolean("enabled");
+        providerGoogleEnabled = providerGoogleConfig.getBoolean("enabled");
+        providerGitHubEnabled = providerGitHubConfig.getBoolean("enabled");
+        providerDiscordEnabled = providerDiscordConfig.getBoolean("enabled");
+        return this;
+    }
+
+    public Values providersConfig() {
+        return providersConfig;
+    }
+
+    public Values getProvidersConfig() {
+        return providersConfig;
+    }
+
+    public Values providerLDAPConfig() {
+        return providerLDAPConfig;
+    }
+
+    public Values getProviderLDAPConfig() {
+        return providerLDAPConfig;
+    }
+
+    public Values providerGoogleConfig() {
+        return providerGoogleConfig;
+    }
+
+    public Values getProviderGoogleConfig() {
+        return providerGoogleConfig;
+    }
+
+    public Values providerGitHubConfig() {
+        return providerGitHubConfig;
+    }
+
+    public Values getProviderGitHubConfig() {
+        return providerGitHubConfig;
+    }
+
+    public Values providerDiscordConfig() {
+        return providerDiscordConfig;
+    }
+
+    public Values getProviderDiscordConfig() {
+        return providerDiscordConfig;
+    }
+
+    public boolean providerLDAPEnabled() {
+        return providerLDAPEnabled;
+    }
+
+    public boolean isProviderLDAPEnabled() {
+        return providerLDAPEnabled;
+    }
+
+    public boolean providerGoogleEnabled() {
+        return providerGoogleEnabled;
+    }
+
+    public boolean isProviderGoogleEnabled() {
+        return providerGoogleEnabled;
+    }
+
+    public boolean providerGitHubEnabled() {
+        return providerGitHubEnabled;
+    }
+
+    public boolean isProviderGitHubEnabled() {
+        return providerGitHubEnabled;
+    }
+
+    public boolean providerDiscordEnabled() {
+        return providerDiscordEnabled;
+    }
+
+    public boolean isProviderDiscordEnabled() {
+        return providerDiscordEnabled;
+    }
+
+    public boolean providerEnabled(String providerKey) {
+        Values providerConfig = providersConfig.getValues(providerKey);
+        if (providerConfig == null) {
+            return false;
+        }
+        return providerConfig.getValues(providerKey).getBoolean("enabled");
+    }
+
+    public boolean isProviderEnabled(String providerKey) {
+        return providerEnabled(providerKey);
     }
 
     @MethodDoc(translations = {
@@ -193,7 +335,7 @@ public class Auth extends ResourceBase {
     )
     public boolean check(String password) {
         String username = resource(User.class).data().getString("user");
-        List<Values> users = Config.getDataBaseBuilder(getProteu()).selectUserLogin(
+        Values user = Config.getDataBaseBuilder(getProteu()).selectUserLogin(
                 username,
                 Config.getPasswordBuilder(getProteu()).getCryptPassword(
                         getProteu(),
@@ -202,7 +344,7 @@ public class Auth extends ResourceBase {
                         password
                 )
         );
-        if (users.size() == 1) {
+        if (user != null) {
             return true;
         } else {
             return false;
@@ -248,7 +390,7 @@ public class Auth extends ResourceBase {
             }
     )
     public boolean check(String username, String password) {
-        List<Values> users = Config.getDataBaseBuilder(getProteu()).selectUserLogin(
+        Values user = Config.getDataBaseBuilder(getProteu()).selectUserLogin(
                 username,
                 Config.getPasswordBuilder(getProteu()).getCryptPassword(
                         getProteu(),
@@ -257,11 +399,19 @@ public class Auth extends ResourceBase {
                         password
                 )
         );
-        if (users.size() == 1) {
+        if (user != null) {
             return true;
         } else {
             return false;
         }
     }
-    
+
+    public String crypt(String username, String password) {
+        return Config.getPasswordBuilder(getProteu()).getCryptPassword(
+                getProteu(),
+                getHili(),
+                username,
+                password
+        );
+    }
 }
