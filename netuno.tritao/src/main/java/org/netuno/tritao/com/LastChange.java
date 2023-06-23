@@ -62,9 +62,9 @@ public class LastChange extends ComponentBase {
     	String userId = DB.sqlInjectionInt(getDataStructure().get(1).getValue());
         if (!userId.equals("0")) {
             getDesignData().set("com.lastchange.user_id", userId);
-            List<Values> rsUsers = Config.getDataBaseBuilder(getProteu()).selectUser(userId);
-            if (rsUsers.size() > 0) {
-            	getDesignData().set("com.lastchange.user", rsUsers.get(0).getString("name"));
+            Values rsUser = Config.getDataBaseBuilder(getProteu()).getUserById(userId);
+            if (rsUser != null) {
+            	getDesignData().set("com.lastchange.user", rsUser.getString("name"));
             }
         }
     }

@@ -84,7 +84,7 @@ public class Index extends WebMaster {
             data.set("auto", Config.isLoginAuto(getProteu()));
             TemplateBuilder.output(getProteu(), getHili(), "includes/head_login", data);
             String outputUsers = "";
-            for (Values rowTritaoUser : Config.getDataBaseBuilder(getProteu()).selectUser("")) {
+            for (Values rowTritaoUser : Config.getDataBaseBuilder(getProteu()).selectUserSearch("")) {
                 if (rowTritaoUser.getBoolean("active") && rowTritaoUser.getInt("group_id") >= -1) {
                     List<Values> groups = Config.getDataBaseBuilder(getProteu()).selectGroup(rowTritaoUser.getString("group_id"));
                     if (groups.size() == 1 && groups.get(0).getBoolean("active")) {

@@ -349,7 +349,7 @@ public class User extends ResourceBase {
         )
     })
     public List<Values> all() {
-        List<Values> users = Config.getDataBaseBuilder(getProteu()).selectUser("");
+        List<Values> users = Config.getDataBaseBuilder(getProteu()).selectUserSearch("");
         return users;
     }
     
@@ -507,13 +507,7 @@ public class User extends ResourceBase {
         )
     })
     public Values get(int user) {
-        List<Values> users = Config.getDataBaseBuilder(getProteu()).selectUser(
-                Integer.toString(user)
-        );
-        if (users.size() == 1) {
-            return users.get(0);
-        }
-        return null;
+        return Config.getDataBaseBuilder(getProteu()).getUserById(Integer.toString(user));
     }
 
     @MethodDoc(translations = {
@@ -562,8 +556,8 @@ public class User extends ResourceBase {
         )
     })
     public Values get(String idOrUidOrUsername) {
-        if (!idOrUidOrUsername.matches("^\\d+$")) {
-            return get(Integer.parseInt(idOrUidOrUsername));
+        if (idOrUidOrUsername.matches("^\\d+$")) {
+            return Config.getDataBaseBuilder(getProteu()).getUserById(idOrUidOrUsername);
         }
         Values user = Config.getDataBaseBuilder(getProteu()).getUser(idOrUidOrUsername);
         if (user == null) {
@@ -1211,5 +1205,41 @@ public class User extends ResourceBase {
         return Config.getDataBaseBuilder(getProteu()).deleteUser(
                 Integer.toString(id)
         );
+    }
+
+    public Values providers() {
+        return new Values(Config.getDataBaseBuilder(getProteu()).selectUserProviders(Integer.toString(id)));
+    }
+
+    public boolean hasProviderLDAP() {
+        return hasProviderLDAP(id);
+    }
+
+    public boolean hasProviderLDAP(int userId) {
+        return Config.getDataBaseBuilder(getProteu()).hasUserProviderByCode(Integer.toString(userId), "ldap");
+    }
+
+    public boolean hasProviderGoogle() {
+        return hasProviderGoogle(id);
+    }
+
+    public boolean hasProviderGoogle(int userId) {
+        return Config.getDataBaseBuilder(getProteu()).hasUserProviderByCode(Integer.toString(userId), "google");
+    }
+
+    public boolean hasProviderGitHub() {
+        return hasProviderGitHub(id);
+    }
+
+    public boolean hasProviderGitHub(int userId) {
+        return Config.getDataBaseBuilder(getProteu()).hasUserProviderByCode(Integer.toString(userId), "github");
+    }
+
+    public boolean hasProviderDiscord() {
+        return hasProviderDiscord(id);
+    }
+
+    public boolean hasProviderDiscord(int userId) {
+        return Config.getDataBaseBuilder(getProteu()).hasUserProviderByCode(Integer.toString(userId), "discord");
     }
 }

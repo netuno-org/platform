@@ -151,12 +151,10 @@ public class Rule {
     	if (user_id.isEmpty() || group_id.isEmpty() || table_id.isEmpty()) {
     		return new Rule();
     	}
-        List<Values> users = dbBuilder.selectUser(user_id);
-        List<Values> groups = dbBuilder.selectGroup(group_id);
+        Values user = dbBuilder.getUserById(user_id);
+        Values group = dbBuilder.getGroupById(group_id);
         List<Values> tables = dbBuilder.selectTable(table_id);
-        if (users.size() > 0 && groups.size() > 0 && tables.size() > 0) {
-            Values user = users.get(0);
-            Values group = groups.get(0);
+        if (user != null && group != null && tables.size() > 0) {
             Values table = tables.get(0);
             Values tableGroup = null;
             if (table.getInt("group_id") > 0) {
@@ -198,9 +196,7 @@ public class Rule {
                         , rule.getDelete() > 0 ? rule.getDelete() : groupRule.getInt("rule_delete"));
             }
             return rule;
-        } else if (users.size() > 0 && groups.size() > 0) {
-            Values user = users.get(0);
-            Values group = groups.get(0);
+        } else if (user != null && group != null) {
             return new Rule(user, group);
         }
         logger.info("RULE # NOT FOUND");

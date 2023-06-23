@@ -24,6 +24,7 @@ import org.netuno.psamata.Values;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
@@ -44,65 +45,78 @@ public class User {
     	Lang lang = new Lang(proteu, hili);
     	if (proteu.getRequestAll().getString("service").equals("json")) {
 	    	String json = "";
-	        if (proteu.getRequestAll().hasKey("data_uid")) {
-	        	String dataId = proteu.getRequestAll().getString("data_uid");
-	        	Values user = Config.getDataBaseBuilder(proteu).getUserByUId(dataId);
-	        	JSONObject jsonObject = new JSONObject();
-	        	if (user != null) {
-	                jsonObject.put("id", dataId);
-	                jsonObject.put("label", user.getHTMLEncode("user") +" - "+ user.getHTMLEncode("name"));
-	            }
-	        	json = jsonObject.toString();
-	        } else {
-				boolean noDevs = proteu.getRequestAll().getBoolean("no_devs");
-				boolean allowAll = proteu.getRequestAll().getBoolean("allow_all");
-		        List<Values> rsQuery = Config.getDataBaseBuilder(proteu).selectUserSearch(proteu.getRequestAll().getString("q"));
-		        JSONArray jsonArray = new JSONArray();
-		        String usersMode = proteu.getRequestAll().getString("users_mode");
-	            String[] users = proteu.getRequestAll().getString("users").split(",");
-	            String groupsMode = proteu.getRequestAll().getString("groups_mode");
-	            String[] groups = proteu.getRequestAll().getString("groups").split(",");
-	            java.util.Arrays.sort(users);
-	            java.util.Arrays.sort(groups);
-		        for (Values queryRow : rsQuery) {
-					if (noDevs && queryRow.getInt("netuno_group") == -2) {
-						continue;
-					}
-		        	String id = queryRow.getString("uid");
-		        	if (queryRow.getString("id").equals(Auth.getUser(proteu, hili, Auth.Type.SESSION).getString("id"))) {
-		        		if (!proteu.getRequestAll().getBoolean("allow_user_logged")) {
-		        			continue;
-		        		}
-		        	}
-		        	if (groupsMode.equals("exclude")
-		        			&& Arrays.binarySearch(groups, queryRow.getString("group_name")) > -1) {
-			        	continue;
-		        	} else if (groupsMode.equals("only")
-		        			&& Arrays.binarySearch(groups, queryRow.getString("group_name")) < 0) {
-			        	continue;
-		        	}
-		        	if (usersMode.equals("exclude")
-		        			&& Arrays.binarySearch(users, queryRow.getString("user")) > -1) {
-			        	continue;
-			        } else if (usersMode.equals("only")
-			        		&& Arrays.binarySearch(users, queryRow.getString("user")) < 0) {
-			        	continue;
-		        	}
-		        	String label = queryRow.getHTMLEncode("user") + " - " + queryRow.getHTMLEncode("name");
+			if (proteu.getRequestAll().hasKey("providers")) {
+				List<Values> dbProviders = Config.getDataBaseBuilder(proteu).selectProviderSearch(proteu.getRequestAll().getString("q"));
+				Values providers = new Values();
+				for (Values dbProvider : dbProviders) {
+					providers.add(
+							new Values()
+									.set("code", dbProvider.getString("code"))
+									.set("name", dbProvider.getString("name"))
+					);
+				}
+				proteu.outputJSON(providers);
+			} else {
+				if (proteu.getRequestAll().hasKey("data_uid")) {
+					String dataId = proteu.getRequestAll().getString("data_uid");
+					Values user = Config.getDataBaseBuilder(proteu).getUserByUId(dataId);
 					JSONObject jsonObject = new JSONObject();
-		            jsonObject.put("id", id);
-		            jsonObject.put("label", label);
-		            if (allowAll == false && (queryRow.getString("active").length() == 0
-							|| queryRow.getString("active").equals("false")
-							|| queryRow.getString("active").equals("0"))) {
-		                jsonObject.put("disabled", true);
-		            } else {
-		            	jsonObject.put("disabled", false);
-		            }
-		            jsonArray.put(jsonObject);
-		        }
-		        json = jsonArray.toString();
-	        }
+					if (user != null) {
+						jsonObject.put("id", dataId);
+						jsonObject.put("label", user.getHTMLEncode("user") + " - " + user.getHTMLEncode("name"));
+					}
+					json = jsonObject.toString();
+				} else {
+					boolean noDevs = proteu.getRequestAll().getBoolean("no_devs");
+					boolean allowAll = proteu.getRequestAll().getBoolean("allow_all");
+					List<Values> rsQuery = Config.getDataBaseBuilder(proteu).selectUserSearch(proteu.getRequestAll().getString("q"));
+					JSONArray jsonArray = new JSONArray();
+					String usersMode = proteu.getRequestAll().getString("users_mode");
+					String[] users = proteu.getRequestAll().getString("users").split(",");
+					String groupsMode = proteu.getRequestAll().getString("groups_mode");
+					String[] groups = proteu.getRequestAll().getString("groups").split(",");
+					java.util.Arrays.sort(users);
+					java.util.Arrays.sort(groups);
+					for (Values queryRow : rsQuery) {
+						if (noDevs && queryRow.getInt("netuno_group") == -2) {
+							continue;
+						}
+						String id = queryRow.getString("uid");
+						if (queryRow.getString("id").equals(Auth.getUser(proteu, hili, Auth.Type.SESSION).getString("id"))) {
+							if (!proteu.getRequestAll().getBoolean("allow_user_logged")) {
+								continue;
+							}
+						}
+						if (groupsMode.equals("exclude")
+								&& Arrays.binarySearch(groups, queryRow.getString("group_name")) > -1) {
+							continue;
+						} else if (groupsMode.equals("only")
+								&& Arrays.binarySearch(groups, queryRow.getString("group_name")) < 0) {
+							continue;
+						}
+						if (usersMode.equals("exclude")
+								&& Arrays.binarySearch(users, queryRow.getString("user")) > -1) {
+							continue;
+						} else if (usersMode.equals("only")
+								&& Arrays.binarySearch(users, queryRow.getString("user")) < 0) {
+							continue;
+						}
+						String label = queryRow.getHTMLEncode("user") + " - " + queryRow.getHTMLEncode("name");
+						JSONObject jsonObject = new JSONObject();
+						jsonObject.put("id", id);
+						jsonObject.put("label", label);
+						if (allowAll == false && (queryRow.getString("active").length() == 0
+								|| queryRow.getString("active").equals("false")
+								|| queryRow.getString("active").equals("0"))) {
+							jsonObject.put("disabled", true);
+						} else {
+							jsonObject.put("disabled", false);
+						}
+						jsonArray.put(jsonObject);
+					}
+					json = jsonArray.toString();
+				}
+			}
 	        String callback = proteu.getRequestAll().getString("callback");
 	        if (callback.length() > 0) {
 	        	proteu.getOutput().print(callback);
@@ -155,6 +169,7 @@ public class User {
         			proteu.getRequestAll().getString("name"), 
         			proteu.getRequestAll().getString("username"), 
         			proteu.getRequestAll().getString("password").isEmpty() ? "" : Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, proteu.getRequestAll().getString("username"), proteu.getRequestAll().getString("password")),
+					proteu.getRequestAll().getString("no_pass"),
 					proteu.getRequestAll().getString("mail"),
 					group != null ? group.getString("id") : "0",
         			proteu.getRequestAll().getString("active"));
@@ -181,14 +196,25 @@ public class User {
 				if (!user.getString("id").equals(Auth.getUser(proteu, hili, Auth.Type.SESSION).getString("id"))) {
 					saveRules(proteu, hili, user);
 					Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("group_uid"));
-
 					if (Config.getDataBaseBuilder(proteu).updateUser(
 							user.getString("id"), proteu.getRequestAll().getString("name"),
 							proteu.getRequestAll().getString("username"),
 							proteu.getRequestAll().getString("password").isEmpty() ? "" : Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, proteu.getRequestAll().getString("username"), proteu.getRequestAll().getString("password")),
+							proteu.getRequestAll().getString("no_pass"),
 							proteu.getRequestAll().getString("mail"),
 							group != null ? group.getString("id") : "0",
 							proteu.getRequestAll().getString("active"))) {
+						Values dbUserProviderLDAP = Config.getDataBaseBuilder(proteu).selectUserProviderByCode(user.getString("id"), "ldap");
+						if (proteu.getRequestAll().getBoolean("provider_ldap_active") && dbUserProviderLDAP == null) {
+							Config.getDataBaseBuilder(proteu).insertProviderUser(
+									new Values()
+											.set("user_id", user.getInt("id"))
+											.set("provider_id", Config.getDataBaseBuilder(proteu).selectProviderByCode("ldap").getInt("id"))
+											.set("code", "")
+							);
+						} else if (!proteu.getRequestAll().getBoolean("provider_ldap_active") && dbUserProviderLDAP != null) {
+							Config.getDataBaseBuilder(proteu).deleteProviderUser(dbUserProviderLDAP.getString("id"));
+						}
 						TemplateBuilder.output(proteu, hili, "user/notification/saved", data);
 					} else {
 						TemplateBuilder.output(proteu, hili, "user/notification/error_exists", data);
@@ -242,6 +268,11 @@ public class User {
 			data.set("user.uid.value", user.getString("uid"));
         	data.set("user.name.value", user.getString("name"));
         	data.set("user.username.value", user.getString("user"));
+			if (user.getString("no_pass").equals("1") || user.getString("no_pass").equals("true")) {
+				data.set("user.no_pass.checked", "checked");
+			} else {
+				data.set("user.no_pass.checked", "");
+			}
 			data.set("user.mail.value", user.getString("mail"));
         	data.set("user.group_id.value", user.getString("group_id"));
 			Values group = Config.getDataBaseBuilder(proteu).getGroupById(user.getString("group_id"));
@@ -254,6 +285,11 @@ public class User {
         	} else {
         		data.set("user.active.checked", "");
         	}
+			if (Config.getDataBaseBuilder(proteu).hasUserProviderByCode(user.getString("id"), "ldap")) {
+				data.set("user.providers.ldap.active.checked", "checked");
+			} else {
+				data.set("user.providers.ldap.active.checked", "");
+			}
         } else {
 			data.set("user.password.validation", "required");
 		}
