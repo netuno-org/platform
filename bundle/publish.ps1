@@ -27,6 +27,11 @@ copy netuno.cli/pom-base.xml netuno.cli/pom.xml
 ./mvn-package.ps1
 
 cd ./netuno.cli/protect
+
+if (Test-Path -Path "out/proguard") {
+    rm -r "out/proguard"
+}
+
 ./run.ps1
 cd ../..
 
