@@ -76,6 +76,11 @@ public class Requests {
         String response;
         try(InputStream inputStream = http.getInputStream()) {
             response = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            try(InputStream errorStream = http.getErrorStream()) {
+                System.out.println(new String(errorStream.readAllBytes(), StandardCharsets.UTF_8));
+            }
+            throw e;
         }
         http.disconnect();
 

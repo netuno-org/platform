@@ -63,7 +63,7 @@ public class GoogleCallBack extends WebMaster {
             return;
         }
 
-        int provider_id = Config.getDataBaseBuilder(proteu).selectProviderByName("Google").get(0).getInt("id");
+        int provider_id = Config.getDataBaseBuilder(proteu).selectProviderByCode("google").getInt("id");
 
         Values settings = proteu.getConfig().getValues("_app:config").getValues("provider");
         JSONObject user = google.getUserDetails(accessTokens);

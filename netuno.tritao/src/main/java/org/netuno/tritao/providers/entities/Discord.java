@@ -30,6 +30,7 @@ public class Discord {
         params.set("client_secret", secret);
         params.set("redirect_uri", callbackUrl);
         params.set("grant_type", "authorization_code");
+        params.set("scope", "identify");
         return Requests.makePost(url, params);
     }
 

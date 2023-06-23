@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
+import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.WebMaster;
@@ -14,7 +15,11 @@ import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.providers.entities.Discord;
 import org.netuno.tritao.providers.entities.Github;
 import org.netuno.tritao.providers.entities.Google;
+import org.netuno.tritao.resource.Auth;
+import org.netuno.tritao.resource.Header;
+import org.netuno.tritao.resource.Out;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +38,13 @@ public class HandlerProviders extends WebMaster {
     }
 
     public void run() throws Exception {
+        Header header = resource(Header.class);
+        Out out = resource(Out.class);
+        Auth auth = resource(Auth.class);
+        if (header.isOptions()) {
+            out.json("{}");
+            return;
+        }
         String requestProvider = null;
         String method = null;
 
@@ -44,21 +56,11 @@ public class HandlerProviders extends WebMaster {
             }
         }
 
-        if (!proteu.getConfig().getValues("_app:config").has("auth")) {
-            return;
-        }
-
-        if (!proteu.getConfig().getValues("_app:config").getValues("auth", new Values()).has("providers")) {
-            return;
-        }
-
-        Values configAuthProviders = proteu.getConfig().getValues("_app:config").getValues("auth").getValues("providers");
-
-        if (configAuthProviders.has(requestProvider)) {
+        if (auth.isProviderEnabled(requestProvider)) {
             if (requestProvider.equalsIgnoreCase("google")) {
-                Values googleSetting = configAuthProviders.getValues("google");
-                Google google = new Google(googleSetting.getString("id"), googleSetting.getString("secret"), googleSetting.getString("callback"));
-                if (googleSetting.getBoolean("enabled") == false) {
+                Values setting = auth.getProviderGoogleConfig();
+                Google google = new Google(setting.getString("id"), setting.getString("secret"), setting.getString("callback"));
+                if (setting.getBoolean("enabled") == false) {
                     return;
                 }
                 else if (method == null) {
@@ -80,11 +82,11 @@ public class HandlerProviders extends WebMaster {
                     userData.put("picture", user.get("picture"));
                     userData.put("provider", "google");
                     userData.put("secret", user.get("id").toString());
-                    callBack("google", googleSetting.getString("redirect"), userData);
+                    callBack("google", setting.getString("redirect"), userData);
                 }
             }
             else if (requestProvider.equalsIgnoreCase("github")) {
-                Values settings = configAuthProviders.getValues("github");
+                Values settings = auth.getProviderGitHubConfig();
                 Github github = new Github(settings.getString("id"), settings.getString("secret"), settings.getString("callback"));
                 if (settings.getBoolean("enabled") == false) {
                     return;
@@ -110,7 +112,7 @@ public class HandlerProviders extends WebMaster {
                 }
             }
             else if (requestProvider.equalsIgnoreCase("discord")) {
-                Values settings = configAuthProviders.getValues("discord");
+                Values settings = auth.getProviderDiscordConfig();
                 Discord discord = new Discord(settings.getString("id"), settings.getString("secret"), settings.getString("callback"));
                 if (settings.getBoolean("enabled") == false) {
                     return;
@@ -137,7 +139,7 @@ public class HandlerProviders extends WebMaster {
             }
         }
     }
-    public void callBack(String provider, String redirect, Values data){
+    public void callBack(String provider, String redirect, Values data) throws ProteuException, IOException {
         if (!data.has("email")) {
             //TODO: RUN ERROR
             return;
@@ -151,26 +153,29 @@ public class HandlerProviders extends WebMaster {
                 new Values().set("nonce", secret).set("data", data.toJSON())
         );
 
+        Out out = resource(Out.class);
         List<Values> users = DBManager.selectUserByEmail(data.getString("email"));
         if (users.size() == 0) {
-            getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=true");
+            out.json(
+                    new Values()
+                            .set("redirect", redirect + "?secret="+secret+"&provider="+provider+"&new=true")
+            );
         } else {
-            int idProvider = DBManager.selectProviderByName(provider).get(0).getInt("id");
-
-            boolean isAssociate =
-                    DBManager.isAssociate(
-                        new Values()
-                                .set("provider", idProvider)
-                                .set("user", users.get(0).get("id"))
-                                .set("code", data.getString("secret"))
-                    ).size() > 0;
-
+            int idProvider = DBManager.selectProviderByCode(provider).getInt("id");
+            boolean isAssociate = DBManager.isProviderUserAssociate(
+                    new Values()
+                            .set("provider_id", idProvider)
+                            .set("user_id", users.get(0).get("id"))
+                            .set("code", data.getString("secret"))
+            );
             Values user = users.get(0);
             user.set("nonce", secret);
             user.set("nonce_generator", provider);
             DBManager.updateUser(user);
-
-            getProteu().redirect(redirect + "?secret="+secret+"&provider="+provider+"&new=false&associate="+isAssociate);
+            out.json(
+                    new Values()
+                            .set("redirect", redirect + "?secret="+secret+"&provider="+provider+"&new=false&associate="+isAssociate)
+            );
         }
     }
 
