@@ -16,7 +16,7 @@ $isChocoInstalled = Get-Command choco -ErrorAction SilentlyContinue
 
 $javaVersion = Get-Command java | Select-Object -ExpandProperty Version | Select-Object -ExpandProperty Major
 $javaVersion = [Convert]::ToInt32($javaVersion)
-$javaVersion = ($javaVersion -ge 17)
+$javaVersion = ($javaVersion -ge 11)
 
 $mvnInstalled = Get-Command mvn -ErrorAction SilentlyContinue
 $nodejsInstalled = Get-Command node.exe -ErrorAction SilentlyContinue
