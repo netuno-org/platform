@@ -167,6 +167,16 @@ do {
             }
 
             Write-Host ""
+            Write-Host "Checking if NTFSSecurity module exists..."
+            if (Get-Module -ListAvailable -Name NTFSSecurity) {
+                Write-Host "Module exists, proceeding..."
+            }
+            else {
+                Write-Host "Module hasn't been found, running the install..."
+                Install-Module -Name NTFSSecurity -Force
+            }
+
+            Write-Host ""
             Write-Host "To update files permissions..."
             $User = Read-Host -Prompt 'Enter your normal user: '
             Get-ChildItem -Path . -Recurse -Force | Set-NTFSOwner -Account $User
