@@ -201,7 +201,7 @@ public class Setup extends ResourceBase {
         if (running) {
             return false;
         }
-        Values setupConfig = getProteu().getConfig().asValues("_setup");
+        Values setupConfig = getProteu().getConfig().asValues("_setup:config");
         if (setupConfig == null) {
             return false;
         }
