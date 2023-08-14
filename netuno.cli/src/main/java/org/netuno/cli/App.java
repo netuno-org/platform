@@ -691,10 +691,11 @@ public class App implements MainArg {
         Path.copyApp(appPath, Path.PUBLIC_IMAGES, "logo.png");
         Path.copyApp(appPath, Path.PUBLIC_IMAGES, "logo-main.png");
 
-        Path.copyApp(appPath, Path.PUBLIC_SCRIPTS, "main.js");
-        Path.copyApp(appPath, Path.PUBLIC_SCRIPTS, "main.js.map");
+        Path.copyApp(appPath, Path.PUBLIC_SCRIPTS, "ui.js");
+        Path.copyApp(appPath, Path.PUBLIC_SCRIPTS, "ui.js.map");
 
         Path.copyApp(appPath, Path.PUBLIC_STYLES, "main.css");
+        Path.copyApp(appPath, Path.PUBLIC_STYLES, "ui.css");
 
         /*
         Path.copyApp(appPath, Path.SERVER_ACTIONS_SAMPLE, "delete.js");
@@ -774,18 +775,17 @@ public class App implements MainArg {
         */
         Path.copyApp(appPath, Path.STORAGE_FILESYSTEM_SERVER, "info.txt");
 
-        Path.copyApp(appPath, Path.UI_SRC_CONTAINERS_DASHBOARDCONTAINER, "index.js");
+        Path.copyApp(appPath, Path.UI_SRC_CONTAINERS_DASHBOARDCONTAINER, "index.jsx");
         Path.copyApp(appPath, Path.UI_SRC_CONTAINERS_DASHBOARDCONTAINER, "index.less");
-        Path.copyApp(appPath, Path.UI_SRC_COMPONENTS_MYBUTTON, "index.js");
+        Path.copyApp(appPath, Path.UI_SRC_COMPONENTS_MYBUTTON, "index.jsx");
         Path.copyApp(appPath, Path.UI_SRC_STYLES, "main.less");
 
-        Path.copyApp(appPath, Path.UI_SRC, "index.js");
+        Path.copyApp(appPath, Path.UI_SRC, "index.jsx");
 
-        Path.copyApp(appPath, Path.UI, ".babelrc");
-        Path.copyApp(appPath, Path.UI, "package.json");
-        Path.copyApp(appPath, Path.UI, "webpack.config.js");
-        Path.copyApp(appPath, Path.UI, "README.md");
         Path.copyApp(appPath, Path.UI, ".gitignore");
+        Path.copyApp(appPath, Path.UI, "package.json");
+        Path.copyApp(appPath, Path.UI, "README.md");
+        Path.copyApp(appPath, Path.UI, "vite.config.js");
 
         Path.copyApp(appPath, null, ".gitignore");
         Path.copyApp(appPath, null, ".editor.config");
