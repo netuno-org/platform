@@ -302,14 +302,27 @@ public class GraalVMSetup {
         File graalVMFolder = new File(path, Constants.GRAALVM_FOLDER);
         if (graalVMFolder.exists()) {
             System.out.println();
-            for (int i = 0; i < 2; i++) {
+            String[] guCommands = null;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                guCommands = new String[] { "gu.cmd" };
+            } else {
+                guCommands = new String[] { "./gu", "gu", ".\\gu" };
+            }
+            for (int i = 0; i < guCommands.length; i++) {
                 ProcessBuilder builder = new ProcessBuilder();
-                builder.command(new String[] {
-                        i == 0 ? "./gu" : "gu.cmd",
-                        "install", "nodejs"
-                });
+                String[] finalCommand = null;
+                if (SystemUtils.IS_OS_WINDOWS) {
+                    finalCommand = new String[] { "cmd.exe", "/C", guCommands[i], "install", "nodejs" };
+                } else {
+                    finalCommand = new String[] { guCommands[i], "install", "nodejs" };
+                }
+                builder.command(finalCommand);
                 builder.directory(new File(graalVMFolder, "bin"));
                 try {
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|white Inside the folder: "+ graalVMFolder +" |@ "));
+                    System.out.println(OS.consoleOutput("@|yellow Executing: "+ String.join(" ", finalCommand) +" |@ "));
+                    System.out.println();
                     Process process = builder.start();
                     StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
                     Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
@@ -319,7 +332,7 @@ public class GraalVMSetup {
                     process.destroy();
                     break;
                 } catch (IOException e) {
-                    if (i == 0 && SystemUtils.IS_OS_WINDOWS) {
+                    if (i < guCommands.length - 1 && SystemUtils.IS_OS_WINDOWS) {
                         continue;
                     }
                     throw e;
