@@ -139,7 +139,7 @@ public class Run implements AutoCloseable {
                     throw (ProteuError) e;
                 }
                 if (e.getCause() instanceof ProteuError) {
-                    logger.trace(e);
+                    logger.trace(e, e.getCause());
                     throw (ProteuError) e.getCause();
                 }
                 if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException().getClass().getName().endsWith("org.eclipse.jetty.io.EofException")) {
