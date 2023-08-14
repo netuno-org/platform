@@ -160,7 +160,7 @@ Configure the fields like this:
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-configurations.png" width="525"/>
 
 Make sure of:
-- [GraalVM with Java 11](https://github.com/graalvm/graalvm-ce-builds/releases/)
+- [GraalVM with Java 17](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.0)
 - Module is `netuno-cli`
 - Main class is `org.netuno.cli.Main`
 - Working directory is `bundle/base`
