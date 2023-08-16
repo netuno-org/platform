@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.Setup;
 
 /**
  * Application Service
@@ -66,6 +67,14 @@ public class App {
                         );
             } catch (Exception e) {
                 logger.debug(e);
+            }
+        }
+        if (proteu.getRequestAll().hasKey("setup") && !proteu.getRequestAll().getString("setup").isEmpty()) {
+            Setup.RunResult runResult = hili.resource().get(Setup.class).run();
+            if (runResult != Setup.RunResult.Success) {
+                proteu.outputJSON(new Values()
+                        .set("result", false)
+                );
             }
         }
         proteu.outputJSON(new Values()

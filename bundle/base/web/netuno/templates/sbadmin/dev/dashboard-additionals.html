@@ -1,0 +1,24 @@
+<hr/>
+<button id="dashboard_setupButton" type="button" class="btn btn-default">
+    _{&lang=netuno.dev.dashboard.setup.button}
+</button>
+<script>
+    netuno.addPageLoad(function () {
+        $('#dashboard_setupButton').on("click", function () {
+            var that = $(this);
+            that.prop('disabled', true);
+            $.post("app/SetupRunner"+ netuno.config.extension, { }, function(data, textStatus) {
+                if (data.result) {
+                    toastr["success"]("_{&lang=netuno.dev.dashboard.setup.msg.success}");
+                } else {
+                    toastr["error"]("_{&lang=netuno.dev.dashboard.setup.msg.error}");
+                }
+                that.prop('disabled', false);
+            }, "json")
+            .fail(function(error) {
+                toastr["error"]("_{&lang=netuno.dev.dashboard.setup.msg.error}");
+                that.prop('disabled', false);
+            });
+        });
+    });
+</script>

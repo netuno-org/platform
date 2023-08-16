@@ -62,7 +62,7 @@
                 <div id="netuno-side-before-nav" class="netuno-hook"></div>
                 <ul class="nav navbar-nav side-nav" style="display: none;">
                     <li class="nav-dashboard">
-                        <a href="#dashboard" data-content="Dashboard_{netuno-config=extension}"><i class="fa fa-fw fa-dashboard"></i> _{&lang=netuno.menu.dashboard}</a>
+                        <a href="#dashboard" netuno-dev-content="Dashboard_{netuno-config=extension}"><i class="fa fa-fw fa-dashboard"></i> _{&lang=netuno.menu.dashboard}</a>
                     </li>
                     <li class="nav-management">
                         <a href="#" data-toggle="collapse"><i class="fa fa-fw fa-wrench"></i> _{&lang=netuno.dev.menu.management} <i class="fa fa-fw fa-caret-down"></i></a>
@@ -98,6 +98,7 @@
         <div id="containers" class="container-fluid">
             <div id="dashboard">
                 _{include=dev/dashboard}
+                _{include=_|dev/dashboard-additionals}
             </div>
             <div id="management_form"></div>
             <div id="management_report"></div>
