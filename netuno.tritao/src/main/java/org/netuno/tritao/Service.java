@@ -252,6 +252,7 @@ public class Service {
             return hili.sandbox()
                     .runScript(Config.getPathAppCore(proteu), file)
                     .whenError((t) -> {
+                        proteu.setResponseHeader(Proteu.HTTPStatus.InternalServerError500);
                         if (!file.equals("_service_error")) {
                             core("_service_error");
                         }
@@ -282,7 +283,10 @@ public class Service {
         if (scriptPath != null) {
             return hili.sandbox()
                     .runScript(Config.getPathAppServices(proteu), file)
-                    .whenError((t) -> core("_service_error"))
+                    .whenError((t) -> {
+                        proteu.setResponseHeader(Proteu.HTTPStatus.InternalServerError500);
+                        core("_service_error");
+                    })
                     .isSuccess();
         } else if (!file.equals("config")) {
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceNotFound);
