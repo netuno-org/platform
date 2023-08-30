@@ -1526,7 +1526,10 @@ public class DB extends ResourceBase {
         } catch (PsamataException e) {
             throw new ResourceException("db.get(" + table + ", " + uid + ")", e);
         }
-        return queryFirst("select * from " + table + " where uid = ?", UUID.fromString(uid));
+        if (isH2DataBase() || isPostgreSQL()) {
+            return queryFirst("select * from " + table + " where uid = ?", UUID.fromString(uid));
+        }
+        return queryFirst("select * from " + table + " where uid = ?", uid);
     }
 
     public List<Values> all(String tableName) throws ResourceException {
@@ -2304,7 +2307,11 @@ public class DB extends ResourceBase {
             int insertedId = Integer.parseInt(dataItem.getId());
             dataItem = null;
             if (!id.matches("^\\d+$")) {
-                execute("update " + escape(table) + " set uid = ? where id = ?", UUID.fromString(id), insertedId);
+                if (isH2DataBase() || isPostgreSQL()) {
+                    execute("update " + escape(table) + " set uid = ? where id = ?", UUID.fromString(id), insertedId);
+                } else {
+                    execute("update " + escape(table) + " set uid = ? where id = ?", id, insertedId);
+                }
             }
             return insertedId;
         }
