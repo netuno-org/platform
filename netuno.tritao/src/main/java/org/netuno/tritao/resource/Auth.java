@@ -217,6 +217,17 @@ public class Auth extends ResourceBase {
                             + "    _log.info('Desenvolvedor Logado!');\n"
                             + "}"
                     )
+                }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Checks if the user authenticated is a **dev**_eloper_.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "if (_auth.isDev()) {\n"
+                                        + "    _log.info('Developer logged in!');\n"
+                                        + "}"
+                        )
                 })
     },
             parameters = {},
@@ -224,6 +235,10 @@ public class Auth extends ResourceBase {
                 @ReturnTranslationDoc(
                         language = LanguageDoc.PT,
                         description = "Se o utilizador que está autenticado é **dev** (desenvolvedor) então retorna _true_."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "if the user authenticated is a **dev** (developer) returns _true_."
                 )
             }
     )
@@ -242,6 +257,17 @@ public class Auth extends ResourceBase {
                             + "    _log.info('Administrador Logado!');\n"
                             + "}"
                     )
+                }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Checks if the user that is authenticated is **admin**_istrator_.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "if (_auth.isAdmin()) {\n"
+                                        + "    _log.info('Admin logged in!');\n"
+                                        + "}"
+                        )
                 })
     },
             parameters = {},
@@ -249,6 +275,10 @@ public class Auth extends ResourceBase {
                 @ReturnTranslationDoc(
                         language = LanguageDoc.PT,
                         description = "Se o utilizador que está autenticado é **admin** (administrador) então retorna _true_."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "If the user that is authenticated is an **admin** (administrator) returns _true_."
                 )
             }
     )
@@ -267,13 +297,29 @@ public class Auth extends ResourceBase {
                             + "    _log.info('Logado com JWT!');\n"
                             + "}"
                     )
+                }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Indicates whether the user is authenticated with JSON Web Token.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "if (_auth.isJWT()) {\n"
+                                        + "    _log.info('Logged in with JWT!');\n"
+                                        + "}"
+                        )
                 })
+
     },
             parameters = {},
             returns = {
                 @ReturnTranslationDoc(
                         language = LanguageDoc.PT,
                         description = "Se o utilizador está autenticado com JSON Web Token retorna _true_."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "If the user is authenticated with Session returns _true_."
                 )
             }
     )
@@ -292,10 +338,30 @@ public class Auth extends ResourceBase {
                             + "    _log.info('Logado com sessão!');\n"
                             + "}"
                     )
+                }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Indicates whether the user is authenticated with session.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "if (_auth.isSession()) {\n"
+                                        + "    _log.info('Logged in with session!');\n"
+                                        + "}"
+                        )
                 })
     },
             parameters = {},
-            returns = {}
+            returns = {
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.PT,
+                        description = "Se o utilizador está autenticado com JSON Web Token retorna _true_."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "If the user is authenticated with JSON Web Token returns _true_."
+                )
+            }
     )
     public boolean isSession() {
         return org.netuno.tritao.Auth.isAuthenticated(getProteu(), getHili(), org.netuno.tritao.Auth.Type.SESSION);
@@ -315,6 +381,19 @@ public class Auth extends ResourceBase {
                                 + "    _log.info('Senha inválida!');\n"
                                 + "}"
                         )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks if the password is valid for the authenticated user.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (_auth.check(_req.getString('pass'))) {\n"
+                                            + "    _log.info('Valid password!');\n"
+                                            + "} else {\n"
+                                            + "    _log.info('Invalid password!');\n"
+                                            + "}"
+                            )
                     })
         },
         parameters = {
@@ -323,6 +402,10 @@ public class Auth extends ResourceBase {
                     language = LanguageDoc.PT,
                     name = "senha",
                     description = "Senha."
+                ),
+                @ParameterTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "Password."
                 )
             })
         },
@@ -330,6 +413,10 @@ public class Auth extends ResourceBase {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Retorna o resultado da validação dos dados de autenticação."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the result of validating authentication data."
             )
         }
     )
@@ -364,30 +451,55 @@ public class Auth extends ResourceBase {
                             + "    _log.info('Login inválido!');\n"
                             + "}"
                     )
+                }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Checks if the authentication data, user and password, are valid.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "if (_auth.check(_req.getString('user'), _req.getString('pass'))) {\n"
+                                        + "    _log.info('Valid login!');\n"
+                                        + "} else {\n"
+                                        + "    _log.info('Invalid login!');\n"
+                                        + "}"
+                        )
                 })
     },
-            parameters = {
-                @ParameterDoc(name = "username", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "utilizador",
-                    description = "Utilizador."
-            )
-        }),
-                @ParameterDoc(name = "password", translations = {
-            @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    name = "senha",
-                    description = "Senha."
-            )
-        })
-            },
-            returns = {
-                @ReturnTranslationDoc(
+        parameters = {
+            @ParameterDoc(name = "username", translations = {
+                @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        description = "Retorna o resultado da validação dos dados de autenticação."
+                        name = "utilizador",
+                        description = "Utilizador."
+                ),
+                @ParameterTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "Username."
                 )
-            }
+        }),
+            @ParameterDoc(name = "password", translations = {
+                @ParameterTranslationDoc(
+                        language = LanguageDoc.PT,
+                        name = "senha",
+                        description = "Senha."
+                ),
+                @ParameterTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "Password."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o resultado da validação dos dados de autenticação."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the result of the validating authentication data."
+            )
+        }
     )
     public boolean check(String username, String password) {
         Values user = Config.getDataBaseBuilder(getProteu()).selectUserLogin(

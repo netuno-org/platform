@@ -68,10 +68,74 @@ public class Error extends ResourceBase {
         super(proteu, hili);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se um objeto é de tipo Error, Exception ou Throwable.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks if an object is from type Error, Exception or Throwable.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "o", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "objeto",
+                            description = "Objeto que será verificado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            name = "object",
+                            description = "Object that will be checked."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna **true** caso o objeto seja do tipo Error, Exception ou Throwable."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns **true** if the object is of type Error, Exception or Throwable."
+            )
+    })
     public boolean is(Object o) {
         return isError(o) || isException(o) || isThrowable(o);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se um objeto é de tipo Error.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks if an object is from type Error.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "o", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "objeto",
+                            description = "Objeto que será verificado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            name = "object",
+                            description = "Object that will be checked."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna **true** caso o objeto seja do tipo Error."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns **true** if the object is of type Error."
+            )
+    })
     public boolean isError(Object o) {
         if (o == null) {
             return false;
@@ -82,6 +146,38 @@ public class Error extends ResourceBase {
         return false;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se um objeto é de tipo Exception.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks if an object is from type Exception.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "o", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "objeto",
+                            description = "Objeto que será verificado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            name = "object",
+                            description = "Object that will be checked."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna **true** caso o objeto seja do tipo Exception."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns **true** if the object is of type Exception."
+            )
+    })
     public boolean isException(Object o) {
         if (o == null) {
             return false;
@@ -92,6 +188,38 @@ public class Error extends ResourceBase {
         return false;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se um objeto é de tipo Throwable.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks if an object is from type Throwable.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "o", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "objeto",
+                            description = "Objeto que será verificado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            name = "object",
+                            description = "Object that will be checked."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna **true** caso o objeto seja do tipo Throwable."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns **true** if the object is of type Throwable."
+            )
+    })
     public boolean isThrowable(Object o) {
         if (o == null) {
             return false;
@@ -102,6 +230,28 @@ public class Error extends ResourceBase {
         return false;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria um erro com uma mensagem de descrição.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates an error with an description message",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "message", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "mensagem",
+                            description = "Mensagem que será apresentada em log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Message that will be presented in the log."
+                    )
+            })
+    }, returns = {})
     public ErrorException create(String message) {
         return new ErrorException(getProteu(), getHili(), message);
     }
@@ -184,6 +334,29 @@ public class Error extends ResourceBase {
         return new java.lang.Throwable(message);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Lança um erro de acordo com o tipo de objeto passado (Error, Exception ou Throwable).",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Throws an error according to the type of object passed (Error, Exception or Throwable).",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "o", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "objeto",
+                            description = "Objeto de erro."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            name = "object",
+                            description = "Error object."
+                    )
+            })
+    }, returns = {})
     public void raise(Object o) throws Throwable {
         if (o instanceof java.lang.Error) {
             throw (java.lang.Error) o;
@@ -213,6 +386,7 @@ public class Error extends ResourceBase {
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
+                            name = "return",
                             description = "Values."
                     )
             })
@@ -290,6 +464,18 @@ public class Error extends ResourceBase {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
                             description = "Message that will be presented in log."
+                    )
+
+            }),
+            @ParameterDoc(name = "throwable", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "auxiliar",
+                            description = "Throwable alternativo para incluir na mensagem de log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative throwable to include in the log message."
                     )
 
             })
@@ -389,6 +575,17 @@ public class Error extends ResourceBase {
                             language = LanguageDoc.EN,
                             description = "Message that will be presented in the log."
                     )
+            }),
+            @ParameterDoc(name = "cause", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "causa",
+                            description = "Throwable alternativo para incluir na mensagem de debug."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative throwable to include in the debug message."
+                    )
             })
     }, returns = {})
 
@@ -487,6 +684,17 @@ public class Error extends ResourceBase {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
                             description = "Message that will be presented in the log."
+                    )
+            }),
+            @ParameterDoc(name = "cause", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "causa",
+                            description = "Throwable alternativo para incluir na mensagem de log."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Alternative throwable to include in the info message."
                     )
             })
     }, returns = {})
@@ -635,7 +843,7 @@ public class Error extends ResourceBase {
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Print a message of erro",
+                    description = "Print a message of error.",
                     howToUse = {})
     }, parameters = {
             @ParameterDoc(name = "message", translations = {

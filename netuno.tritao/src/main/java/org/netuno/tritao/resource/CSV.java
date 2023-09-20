@@ -231,6 +231,28 @@ public class CSV extends ResourceBase {
                             language = LanguageDoc.EN,
                             description = "Name of the format to be used."
                     )
+                }),
+                @ParameterDoc(name = "characterOffset", translations = {
+                        @ParameterTranslationDoc(
+                                language = LanguageDoc.PT,
+                                name = "offsetCaracteres",
+                                description = "Offset dos caracteres que serão utilizados."
+                        ),
+                        @ParameterTranslationDoc(
+                                language = LanguageDoc.EN,
+                                description = "Character offset that will be used."
+                        )
+                }),
+                @ParameterDoc(name = "recordNumber", translations = {
+                        @ParameterTranslationDoc(
+                                language = LanguageDoc.PT,
+                                name = "numeroRegistos",
+                                description = "Número de registos."
+                        ),
+                        @ParameterTranslationDoc(
+                                language = LanguageDoc.EN,
+                                description = "Record number."
+                        )
                 })
             },
             returns = {
@@ -318,6 +340,61 @@ public class CSV extends ResourceBase {
         return CSVParser.parse(content, format);
     }
 
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Obtém o printer do CSV.",
+                            howToUse = {}),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Gets the CSV printer.",
+                            howToUse = {})
+            },
+            parameters = {
+                    @ParameterDoc(name = "writer", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Escritor para o ficheiro CSV."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Writer for the CSV file."
+                            )
+                    }),
+                    @ParameterDoc(name = "format", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "nomeFormato",
+                                    description = "Nome do formato que será utilizado."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Name of the format to be used."
+                            )
+                    }),
+                    @ParameterDoc(name = "storage", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Caminho do ficheiro em storage que deverá ser processado."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Path of the file in storage that is to be processed."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "O printer inicializado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The printer initialized."
+                    )
+            }
+    )
     public CSVPrinter printer(Writer writer, CSVFormat format) throws IOException {
         return new CSVPrinter(writer, format);
     }

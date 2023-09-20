@@ -301,14 +301,34 @@ public class DB extends ResourceBase {
                 language = LanguageDoc.PT,
                 description = "Certifica que o conteúdo passado é um caminho válido para ser utilizado em queries diretas à base de dados, se não for então retorna um erro.\n"
                 + "Por exemplo válida se o caminho é compatível com `nome_da_tabela`.`nome_da_coluna`.",
-                howToUse = {}),
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "var rawPath = _db.toRawPath('worker.name')"
+                        )
+                }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
                 description = "It certifies that the content passed is a valid path to be used in direct queries to the database, if it is not then an error is returned.\n"
                 + "For example, valid if the path is compatible with `table_name`.`column_name`.",
-                howToUse = {}),},
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "var rawPath = _db.toRawPath('worker.name')"
+                        )
+                }),},
             parameters = {
-                @ParameterDoc(name = "text", translations = {})
+                    @ParameterDoc(name = "text", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "texto",
+                                    description = "String que será verificada para utilizar como caminho em queries à BD."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "String that will be checked to be used as path in queries to the DB."
+                            )
+                    })
             },
             returns = {
                 @ReturnTranslationDoc(
@@ -330,14 +350,34 @@ public class DB extends ResourceBase {
                 language = LanguageDoc.PT,
                 description = "Certifica que o conteúdo passado é um nome válido para ser utilizado em queries diretas à base de dados, se não for então retorna um erro.\n"
                 + "Por exemplo válida se o nome está no formato para ser um nome de `nome_da_tabela` ou de `nome_da_coluna`.",
-                howToUse = {}),
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "var toRawName = _db.toRawName('worker')"
+                        )
+                }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
                 description = "It certifies that the content passed is a valid name to be used in direct queries to the database, if it is not then an error is returned.\n"
                 + "For example valid if the name is in the format to be a name of `table_name` or of` column_name`.",
-                howToUse = {}),},
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "var toRawName = _db.toRawName('worker.name')"
+                        )
+                }),},
             parameters = {
-                @ParameterDoc(name = "text", translations = {})
+                    @ParameterDoc(name = "text", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "texto",
+                                    description = "Nome que será verificado se pode ser utilizado como nome de tabela ou nome de coluna."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Name that will be checked to be used as table name or column name."
+                            )
+                    })
             },
             returns = {
                 @ReturnTranslationDoc(
@@ -390,7 +430,17 @@ public class DB extends ResourceBase {
                             + ")"
                     )}),},
             parameters = {
-                @ParameterDoc(name = "text", translations = {})
+                    @ParameterDoc(name = "text", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "texto",
+                                    description = "String que será verificada para utilizar diretamente em queries à BD."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "String that will be verified to be used directly in queries to the DB."
+                            )
+                    })
             },
             returns = {
                 @ReturnTranslationDoc(
@@ -439,7 +489,17 @@ public class DB extends ResourceBase {
                             + ")"
                     )}),},
             parameters = {
-                @ParameterDoc(name = "text", translations = {})
+                    @ParameterDoc(name = "text", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "texto",
+                                    description = "Número que será verificado se é inteiro para utilizar na query."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Number that will be checked if it's integer to use in the query."
+                            )
+                    })
             },
             returns = {
                 @ReturnTranslationDoc(
@@ -494,7 +554,17 @@ public class DB extends ResourceBase {
                             + ")"
                     )}),},
             parameters = {
-                @ParameterDoc(name = "text", translations = {})
+                    @ParameterDoc(name = "text", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "texto",
+                                    description = "Números que serão verificados se são inteiros para utilizar na query."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Numbers that will be checked if they are integers to use in the query."
+                            )
+                    })
             },
             returns = {
                 @ReturnTranslationDoc(
@@ -543,7 +613,17 @@ public class DB extends ResourceBase {
                             + ")"
                     )}),},
             parameters = {
-                @ParameterDoc(name = "text", translations = {})
+                @ParameterDoc(name = "text", translations = {
+                        @ParameterTranslationDoc(
+                                language = LanguageDoc.PT,
+                                name = "texto",
+                                description = "Número que será verificado se é float para utilizar na query."
+                        ),
+                        @ParameterTranslationDoc(
+                                language = LanguageDoc.EN,
+                                description = "Number that will be checked if it's float to use in the query."
+                        )
+                })
             },
             returns = {
                 @ReturnTranslationDoc(
@@ -692,7 +772,80 @@ public class DB extends ResourceBase {
     public List<Values> find(String table, Values params) throws ResourceException {
         return new Data(getProteu(), getHili(), key).find(table, params);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A partir de um objeto que tem a estrutura parecida com uma consulta SQL, gera uma query para ser efectuado um select.\n"
+                            + "Constrói a query compatível com qualquer tipo de base de dados.\n"
+                            +"Permite condições, ordenação, evita SQL Injection, entre outros.\n"
+                            +"Exemplo que demonstra como define as colunas, as condições, ordenação e paginação:",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const record = _db.findQuery(\n"
+                                            + "    \"pessoa\",\n"
+                                            + "    _val.map()\n"
+                                            + "        .set(\n"
+                                            + "            \"where\",\n"
+                                            + "            _val.map()\n"
+                                            + "                .set(\"email\", \"pessoa@e-mail.exemplo\")\n"
+                                            + "        )\n"
+                                            + ")\n"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "From an object that has the structure similar to an SQL query, it generates a query to make a selection.\n"
+                            + "Build the query compatible with any type of database.\n"
+                            + "Allows conditions, ordering, avoids SQL Injection, among others.\n"
+                            + "Example that demonstrates how to define columns, conditions, ordering and pagination:",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const record = _db.findQuery(\n"
+                                            + "    \"pessoa\",\n"
+                                            + "    _val.map()\n"
+                                            + "        .set(\n"
+                                            + "            \"where\",\n"
+                                            + "            _val.map()\n"
+                                            + "                .set(\"email\", \"pessoa@e-mail.exemplo\")\n"
+                                            + "        )\n"
+                                            + ")\n"
+                            )}),},
+            parameters = {
+                    @ParameterDoc(name = "table", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "tabela",
+                                    description = "Nome tabela."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Table name."
+                            )
+                    }),
+                    @ParameterDoc(name = "params", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Definição da consulta, suporta limitar colunas (_columns_), adicionar condições (_where_), ordenação (_order_), entre outros."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Query definition, supports limiting columns (_columns_), adding conditions (_where_), ordering (_order_), among others."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "A query com os parâmetros pronta a ser utilizada."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The query with the parameters ready to be used."
+                    )
+            }
+    )
     public String findQuery(String table, Values params) throws ResourceException {
         return new Data(getProteu(), getHili(), key).findQuery(table, params);
     }
@@ -1354,6 +1507,78 @@ public class DB extends ResourceBase {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa uma pesquisa a uma tabela retornando um objeto do tipo DBSearchResult.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "var query = _db.search(\n" +
+                                            "   'worker',\n" +
+                                            "   _val.map()\n" +
+                                            "       .set('active','1')" +
+                                            ");\n" +
+                                            "\n" +
+                                            "_out.json({data: query.getResults(),total: query.getTotal()});"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Performs a search on a table returning an object of type DBSearchResult.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "var query = _db.search(\n" +
+                                            "   'worker',\n" +
+                                            "   _val.map()\n" +
+                                            "       .set('active','1')" +
+                                            ");\n" +
+                                            "\n" +
+                                            "_out.json({data: query.getResults(),total: query.getTotal()});"
+                            )})
+    }, parameters = {
+            @ParameterDoc(name = "table", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tabela",
+                            description = "Nome da tabela na base de dados que deve obter os dados."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the table in the database that should obtain the data."
+                    )
+            }),
+            @ParameterDoc(name = "data", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "dados",
+                            description = "Dados para se efectuar a pesquisa."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Data to carry out the search."
+                    )
+            }),
+            @ParameterDoc(name = "wildcards", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Se deve utilizar ou não wildcards na pesquisa."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Whether or not to use wildcards in the search."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto do tipo DBSearchResult."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Object of type DBSearchResult."
+            )
+    })
     public DBSearchResult search(String table, Map data) throws ResourceException {
         return search(table, new Values(data));
     }
@@ -1529,6 +1754,46 @@ public class DB extends ResourceBase {
         return queryFirst("select * from " + table + " where uid = ?", UUID.fromString(uid));
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Seleciona todos os dados de uma tabela.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_db.all('cliente');"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Selects all the data from a table.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_db.all('client');"
+                            )})
+    }, parameters = {
+            @ParameterDoc(name = "table", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tabela",
+                            description = "Nome da tabela de onde será executada a query."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Table's name where the query is going to be executed."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Os dados encontrados na tabela ou null caso não exista."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The data found on the table or null if it does not exist."
+            )
+    }
+    )
     public List<Values> all(String tableName) throws ResourceException {
         try {
             return ops().query("select * from " + org.netuno.psamata.DB.sqlInjectionRawName(tableName));
@@ -1537,6 +1802,75 @@ public class DB extends ResourceBase {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa a inserção várias linhas numa tabela atravás de um Array de Objetos ou uma Lista de Valores.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code =  "_db.insertMany(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.list()\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('name','Netuno')\n" +
+                                            "        )\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('name','Sitana')\n" +
+                                            "        )\n" +
+                                            ");"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Executes the insertion of multiple rows into a table of an Array of Objects or a List of Values.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_db.insertMany(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.list()\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('name','Netuno')\n" +
+                                            "        )\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('name','Sitana')\n" +
+                                            "        )\n" +
+                                            ");"
+                            )})
+    }, parameters = {
+            @ParameterDoc(name = "table", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tabela",
+                            description = "Nome da tabela na base de dados que deve receber os dados que serão inseridos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the table in the database that should receive the data to be entered."
+                    )
+            }),
+            @ParameterDoc(name = "dataItems", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "listaDados",
+                            description = "Array ou lista de objetos com a estrutura de dados que será inserida."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Array or list of objects with the data structure to be inserted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Array com os IDs dos dados inseridos."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "An array with the IDs to the inserted data."
+            )
+    }
+    )
     public int[] insertMany(String table, List dataItems) throws ResourceException {
         return insertMany(table, dataItems.toArray());
     }
@@ -1637,6 +1971,67 @@ public class DB extends ResourceBase {
         return id;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa a inserção de um valor caso ele não exista ou retorna o ID caso já exista.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code =  "var dadosInseridos = _db.insertIfNotExists(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.map()\n" +
+                                            "        .set('name','Netuno')\n" +
+                                            ");\n" +
+                                            "_out.json({dadosInseridos: dadosInseridos})"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Executes the insertion of a value if it does not exist or returns the ID if it already exists.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "var insertedData = _db.insertIfNotExists(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.map()\n" +
+                                            "        .set('name','Netuno')\n" +
+                                            ");\n" +
+                                            "_out.json({insertedData: insertedData})"
+                            )})
+    }, parameters = {
+            @ParameterDoc(name = "table", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tabela",
+                            description = "Nome da tabela na base de dados que deve receber os dados que serão inseridos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the table in the database that should receive the data to be entered."
+                    )
+            }),
+            @ParameterDoc(name = "data", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "dados",
+                            description = "Objeto com a estrutura de dados que será inserido."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Object with the data structure to be inserted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "ID do dado que foi inserido ou ID do dado já existente."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "ID of the data that was inserted or ID of the existing data."
+            )
+    }
+    )
     public int insertIfNotExists(String table, Map data) throws ResourceException {
         return insertIfNotExists(table, new Values(data));
     }
@@ -1660,6 +2055,76 @@ public class DB extends ResourceBase {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa a atualização de um valor caso ele exista baseando-se numa chave primária ou uma inserção quando nenhum dado existe com a mesma chave primária. "+
+                            "Este tipo de operação é útil quando não é possível utilizar IDs em determinadas operações.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code =  "// Se existir algum dado na tabela worker com o campo name (a chave primária nesta tabela)" +
+                                            "// igual ao inserido na query todos os dados serão atualizados" +
+                                            "// Se não existir algum dado a informação será inserida na tabela" +
+                                            "var dadosStore = _db.store(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.map()\n" +
+                                            "        .set('name','Netuno')\n" +
+                                            ");\n" +
+                                            "_out.json({dadosStore: dadosStore})"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "\n" +
+                            "Performs an update of a value if it exists based on a primary key or an insert when no data exists with the same primary key. "+
+                            "This type of operation is useful when it is not possible to use IDs in certain operations.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// If there is some data on table worker with the name field (the primary key on this table) " +
+                                            "// equal to the added all the data will be updated" +
+                                            "// If there isn't it will instead be inserted" +
+                                            "var storedData = _db.store(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.map()\n" +
+                                            "        .set('name','Netuno')\n" +
+                                            ");\n" +
+                                            "_out.json({storedData: storedData})"
+                            )})
+    }, parameters = {
+            @ParameterDoc(name = "table", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tabela",
+                            description = "Nome da tabela na base de dados que deve receber os dados que serão inseridos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the table in the database that should receive the data to be entered."
+                    )
+            }),
+            @ParameterDoc(name = "data", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "dados",
+                            description = "Objeto com a estrutura de dados que será inserido."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Object with the data structure to be inserted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "ID do dado que foi inserido ou ID do dado já existente."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "ID of the data that was inserted or ID of the existing data."
+            )
+    }
+    )
     public int store(String table, Map data) throws ResourceException {
         return store(table, new Values(data));
     }
@@ -1702,6 +2167,81 @@ public class DB extends ResourceBase {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa a atualização várias linhas numa tabela atravás de um Array de Objetos ou uma Lista de Valores. É necessário que cada objeto possua o id ou uid do dado que será alterado",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code =  "var dadosAlterados = _db.updateMany(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.list()\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('id', 1)\n" +
+                                            "            .set('name','Netuno')\n" +
+                                            "        )\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('id', 2)\n" +
+                                            "            .set('name','Sitana')\n" +
+                                            "        )\n" +
+                                            ");\n" +
+                                            "_out.json({dados: dadosAlterados})"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Executes the update of multiple rows into a table of an Array of Objects or a List of Values. It's necessary that the object has id or uid for the data that will be updated.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "var updatedData = _db.updateMany(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.list()\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('id', 1)\n" +
+                                            "            .set('name','Netuno')\n" +
+                                            "        )\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('id', 2)\n" +
+                                            "            .set('name','Sitana')\n" +
+                                            "        )\n" +
+                                            ");\n" +
+                                            "_out.json({updatedData: updatedData})"
+                            )})
+    }, parameters = {
+            @ParameterDoc(name = "table", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tabela",
+                            description = "Nome da tabela na base de dados que deve receber os dados que serão inseridos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the table in the database that should receive the data to be entered."
+                    )
+            }),
+            @ParameterDoc(name = "dataItems", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "listaDados",
+                            description = "Array ou lista de objetos com a estrutura de dados que será inserida."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Array or list of objects with the data structure to be inserted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Array com a quantidade de registos alterados para cada objeto dentro da lista."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Array with number of records affected by the update for each object inside the list."
+            )
+    }
+    )
     public int[] updateMany(String table, List dataItems) throws ResourceException {
         return updateMany(table, dataItems.toArray());
     }
@@ -2007,6 +2547,77 @@ public class DB extends ResourceBase {
         return counter;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa a eliminação de várias linhas numa tabela atravás de um Array de Objetos ou uma Lista de Valores. É necessário que cada objeto possua o id ou uid do dado que será alterado",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code =  "var dadosEliminados = _db.deleteMany(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.list()\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('id', 1)\n" +
+                                            "        )\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('id', 2)\n" +
+                                            "        )\n" +
+                                            ");\n" +
+                                            "_out.json({dadosEliminados: dadosEliminados})"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Executes the update of multiple rows into a table of an Array of Objects or a List of Values. It's necessary that the object has id or uid for the data that will be updated.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "var deletedData = _db.deleteMany(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.list()\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('id', 1)\n" +
+                                            "        )\n" +
+                                            "        .add(_val.map()\n" +
+                                            "            .set('id', 2)\n" +
+                                            "        )\n" +
+                                            ");\n" +
+                                            "_out.json({deletedData: deletedData})"
+                            )})
+    }, parameters = {
+            @ParameterDoc(name = "table", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tabela",
+                            description = "Nome da tabela na base de dados que deve receber os dados que serão inseridos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the table in the database that should receive the data to be entered."
+                    )
+            }),
+            @ParameterDoc(name = "dataItems", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "listaDados",
+                            description = "Array ou lista de objetos com a estrutura de dados que será inserida."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Array or list of objects with the data structure to be inserted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Array com a quantidade de registos afetados pela eliminação para cada objeto dentro da lista."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Array with number of records affected by the deletion for each object inside the list."
+            )
+    }
+    )
     public int[] deleteMany(String table, List dataItems) throws ResourceException {
         return deleteMany(table, dataItems.toArray());
     }
@@ -2281,6 +2892,80 @@ public class DB extends ResourceBase {
         return counter;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa a inserção ou atualização de um registo na base de dados baseado no UID.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Executa a adição através do UID\n"
+                                            + "\n"
+                                            + "const uid = \"1d8722f4-fa28-4a08-8098-6dd5cab1b212\";\n"
+                                            + "\n"
+                                            + "const result = _db.delete(\n"
+                                            + "    \"cliente\",\n"
+                                            + "    uid\n"
+                                            + ");\n"
+                                            + "\n"
+                                            + "_out.json(\n"
+                                            + "    \"result\": result\n"
+                                            + ");"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Performs the deletion of records in the database based on the UID.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Executa a eliminação através do uid\n"
+                                            + "\n"
+                                            + "const uid = \"1d8722f4-fa28-4a08-8098-6dd5cab1b212\";\n"
+                                            + "\n"
+                                            + "const result = _db.delete(\n"
+                                            + "    \"client\",\n"
+                                            + "    uid\n"
+                                            + ");\n"
+                                            + "\n"
+                                            + "_out.json(\n"
+                                            + "    \"result\": result\n"
+                                            + ");"
+                            )})
+    },
+            parameters = {
+                    @ParameterDoc(name = "table", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "tabela",
+                                    description = "Nome da tabela na base de dados."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Table's name in the database."
+                            )
+                    }),
+                    @ParameterDoc(name = "uid", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "UID do registo a eliminar."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Record's UID to be deleted."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Quantidade de registos afetados pela eliminação."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Number of records affected by the deletion."
+                    )
+            }
+    )
     public int save(String table, int id, Map data) throws ResourceException {
         return save(table, id, new Values(data));
     }
@@ -2813,22 +3498,185 @@ public class DB extends ResourceBase {
         return org.netuno.psamata.DB.sqlInjectionRawPath(data);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se sequências, tabelas, colunas e indexes existem na base de dados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().table(\"client\")) {\n" +
+                                            "    _db.table().create(\n" +
+                                            "        \"client\",\n" +
+                                            "        _db.column().setName(\"id\").setType(\"int\").setPrimaryKey(true),\n" +
+                                            "        _db.column().setName(\"name\").setType(\"varchar\").setNotNull(true).setDefault()\n" +
+                                            "    );\n" +
+                                            "}"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks if sequences, tables, columns and indexes exist in the database.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().table(\"client\")) {\n" +
+                                            "    _db.table().create(\n" +
+                                            "        \"client\",\n" +
+                                            "        _db.column().setName(\"id\").setType(\"int\").setPrimaryKey(true),\n" +
+                                            "        _db.column().setName(\"name\").setType(\"varchar\").setNotNull(true).setDefault()\n" +
+                                            "    );\n" +
+                                            "}"
+                            )
+                    })
+    }, parameters = {},
+            returns = {}
+    )
     public CheckExists checkExists() {
         return new CheckExists(getProteu(), getHili(), key);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza a manipulação de colunas em base de dados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().column(\"client\", \"description\")) {\n" +
+                                            "    _db.column().rename(\n" +
+                                            "        \"client\", // Tabela\n" +
+                                            "        \"description\", // Nome Antigo\n" +
+                                            "        \"name\" // Novo Nome\n" +
+                                            "    );\n" +
+                                            "}"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Performs the manipulation of columns in the database.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().column(\"client\", \"description\")) {\n" +
+                                            "    _db.column().rename(\n" +
+                                            "        \"client\", // Table\n" +
+                                            "        \"description\", // Old Name\n" +
+                                            "        \"name\" // New Name\n" +
+                                            "    );\n" +
+                                            "}"
+                            )
+                    })
+    }, parameters = {}, returns = {}
+    )
     public Column column() {
         return new Column(getProteu(), getHili(), key);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza a manipulação de indexes em base de dados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().index(\"client\", \"name\")) {\n" +
+                                            "   _db.index().create(\n" +
+                                            "       \"client\", // Nome da Tabela\n" +
+                                            "       \"name\" // Nome da Coluna\n" +
+                                            "   ); // O index client_name_idx será criado criado.\n" +
+                                            "}"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Performs the manipulation of indexes in the database.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().index(\"client\", \"name\")) {\n" +
+                                            "   _db.index().create(\n" +
+                                            "       \"client\", // Table Name\n" +
+                                            "       \"name\" // Column Name\n" +
+                                            "   ); // The index client_name_idx will be created.\n" +
+                                            "}"
+                            )
+                    })
+    }, parameters = {}, returns = {}
+    )
     public Index index() {
         return new Index(getProteu(), getHili(), key);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Realiza a manipulação de sequências em base de dados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().sequence(\"client\", \"name\")) {\n" +
+                                            "   _db.index().create(\n" +
+                                            "       \"client\", // Nome da Tabela\n" +
+                                            "       \"name\" // Nome da Coluna\n" +
+                                            "   ); // O index client_name_idx será criado criado.\n" +
+                                            "}"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Performs the manipulation of sequences in a database.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().sequence(\"client\", \"name\")) {\n" +
+                                            "   _db.index().create(\n" +
+                                            "       \"client\", // Table's name\n" +
+                                            "       \"name\" // Table's name\n" +
+                                            "   ); // The index client_name_idx will be created.\n" +
+                                            "}"
+                            )
+                    })
+    }, parameters = {}, returns = {}
+    )
     public Sequence sequence() {
         return new Sequence(getProteu(), getHili(), key);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se sequências, tabelas, colunas e indexes existem na base de dados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().table(\"client\")) {\n" +
+                                            "    _db.table().create(\n" +
+                                            "        \"client\",\n" +
+                                            "        _db.column().setName(\"id\").setType(\"int\").setPrimaryKey(true),\n" +
+                                            "        _db.column().setName(\"name\").setType(\"varchar\").setNotNull(true).setDefault()\n" +
+                                            "    );\n" +
+                                            "}"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks if sequences, tables, columns and indexes exist in the database.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (!_db.checkExists().table(\"client\")) {\n" +
+                                            "    _db.table().create(\n" +
+                                            "        \"client\",\n" +
+                                            "        _db.column().setName(\"id\").setType(\"int\").setPrimaryKey(true),\n" +
+                                            "        _db.column().setName(\"name\").setType(\"varchar\").setNotNull(true).setDefault()\n" +
+                                            "    );\n" +
+                                            "}"
+                            )
+                    })
+    }, parameters = {},
+            returns = {}
+    )
     public Table table() {
         return new Table(getProteu(), getHili(), key);
     }
