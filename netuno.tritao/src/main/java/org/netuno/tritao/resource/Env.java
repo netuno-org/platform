@@ -138,6 +138,26 @@ public class Env extends ResourceBase {
                 || name.toLowerCase().startsWith(current().toLowerCase());
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Serve para verificar se está a utilizar o Graal.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Serves to check if you are using Graal.",
+                    howToUse = { })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Caso Graal esteja em uso será retornado true."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "If Graal is in use, true will be returned."
+            )
+    })
     public boolean isGraal() {
         return GraalRunner.isGraal();
     }

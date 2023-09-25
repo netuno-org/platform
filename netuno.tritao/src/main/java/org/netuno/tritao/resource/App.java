@@ -425,7 +425,19 @@ public class App extends ResourceBase {
 		                            )
 		                    })
 		    },
-    		parameters = {},
+    		parameters = {
+					@ParameterDoc(name = "key", translations = {
+							@ParameterTranslationDoc(
+									language=LanguageDoc.PT,
+									name = "chave",
+									description = "Nome do url configurado."
+							),
+							@ParameterTranslationDoc(
+									language=LanguageDoc.EN,
+									description = "Name of the configured url."
+							)
+					})
+			},
     		returns = {
     	            @ReturnTranslationDoc(
     	                    language = LanguageDoc.PT,
