@@ -27,6 +27,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.hili.HiliError;
 import org.netuno.tritao.providers.LDAPAuthenticator;
 import org.netuno.tritao.resource.*;
 import org.netuno.tritao.util.Rule;
@@ -242,6 +243,9 @@ public class Auth extends WebMaster {
     public static boolean signIn(Proteu proteu, Hili hili, String username, String password, Type type, Profile profile) {
         Values dbUser = null;
         Values dbUserBase = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUser(username);
+        if (dbUserBase == null) {
+            return false;
+        }
         if (!dbUserBase.getBoolean("no_pass")) {
             dbUser = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUserLogin(
                     username,
@@ -481,7 +485,26 @@ public class Auth extends WebMaster {
                     );
                     return;
                 }
-                String group = proteu.getConfig().getValues("_app:config").getValues("provider").getString("default_group");
+                String group = proteu.getConfig()
+                        .getValues("_app")
+                        .getValues("providers", new Values())
+                        .getValues(jsonData.getString("provider"), new Values())
+                        .getString("default_group");
+                if (group.isEmpty()) {
+                    group = proteu.getConfig()
+                            .getValues("_app")
+                            .getValues("providers")
+                            .getString("default_group");
+                }
+                if (group.isEmpty()) {
+                    logger.fatal(
+                            new HiliError(proteu, hili, "Authentication for the provider "+ jsonData.getString("provider") +" has no default group defined.")
+                                    .setLogFatal(true).getLogMessage()
+                    );
+                    header.status(Proteu.HTTPStatus.Forbidden403);
+                    out.json(new Values().set("result", false));
+                    return;
+                }
                 String passwordEncrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, req.getString("user"), req.getString("pass"));
                 Values user = new Values();
                 user.set("name", jsonData.getString("name"));
@@ -545,6 +568,7 @@ public class Auth extends WebMaster {
         } else if (credentials != null) {
             if (jwtRequest) {
                 if (signIn(getProteu(), getHili(), Type.JWT, profile)) {
+
                     header.status(Proteu.HTTPStatus.OK200);
                     getProteu().outputJSON(
                             getProteu().getConfig().getValues("_jwt:auth:data")
