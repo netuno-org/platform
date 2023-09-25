@@ -266,7 +266,8 @@ public class Setup extends Base {
             table.create("netuno_provider_data",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("nonce").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
-                    table.newColumn().setName("data").setType(Column.Type.TEXT).setNotNull(true).setDefault()
+                    table.newColumn().setName("data").setType(Column.Type.TEXT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault()
             );
             sequence.create("netuno_provider_data_id");
 
