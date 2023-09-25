@@ -199,7 +199,7 @@ public class Auth extends ResourceBase {
         if (providerConfig == null) {
             return false;
         }
-        return providerConfig.getValues(providerKey).getBoolean("enabled");
+        return providerConfig.getBoolean("enabled");
     }
 
     public boolean isProviderEnabled(String providerKey) {
@@ -299,6 +299,14 @@ public class Auth extends ResourceBase {
     )
     public boolean isSession() {
         return org.netuno.tritao.Auth.isAuthenticated(getProteu(), getHili(), org.netuno.tritao.Auth.Type.SESSION);
+    }
+
+    public boolean isAuthenticated() {
+        return org.netuno.tritao.Auth.isAuthenticated(getProteu(), getHili());
+    }
+
+    public void logout() {
+        org.netuno.tritao.Auth.clearSession(getProteu(), getHili());
     }
 
     @MethodDoc(
