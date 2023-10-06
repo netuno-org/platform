@@ -1751,8 +1751,11 @@ public class DB extends ResourceBase {
         } catch (PsamataException e) {
             throw new ResourceException("db.get(" + table + ", " + uid + ")", e);
         }
-        if (isH2DataBase() || isPostgreSQL()) {
+        if (isH2DataBase()) {
             return queryFirst("select * from " + table + " where uid = ?", UUID.fromString(uid));
+        }
+        if (isPostgreSQL()) {
+            return queryFirst("select * from " + table + " where uid = ?::uuid", uid);
         }
         return queryFirst("select * from " + table + " where uid = ?", uid);
     }
@@ -2992,8 +2995,10 @@ public class DB extends ResourceBase {
             int insertedId = Integer.parseInt(dataItem.getId());
             dataItem = null;
             if (!id.matches("^\\d+$")) {
-                if (isH2DataBase() || isPostgreSQL()) {
+                if (isH2DataBase()) {
                     execute("update " + escape(table) + " set uid = ? where id = ?", UUID.fromString(id), insertedId);
+                } else if (isPostgreSQL()) {
+                    execute("update " + escape(table) + " set uid = ?::uuid where id = ?", id, insertedId);
                 } else {
                     execute("update " + escape(table) + " set uid = ? where id = ?", id, insertedId);
                 }
@@ -3097,7 +3102,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isH2DataBase() {
-        return Base.isMariaDB(Config.getDataBaseBuilder(getProteu()));
+        return Base.isH2(Config.getDataBaseBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3686,6 +3691,42 @@ public class DB extends ResourceBase {
     )
     public Table table() {
         return new Table(getProteu(), getHili(), key);
+    }
+
+    public String param(String type) {
+        if (type != null) {
+            if (type.equalsIgnoreCase("int") || type.equalsIgnoreCase("integer")) {
+                if (isPG()) {
+                    return "?::int";
+                }
+            }
+            if (type.equalsIgnoreCase("numeric") || type.equalsIgnoreCase("decimal") || type.equalsIgnoreCase("float")) {
+                if (isPG()) {
+                    return "?::numeric";
+                }
+            }
+            if (type.equalsIgnoreCase("double") || type.equalsIgnoreCase("double precision")) {
+                if (isPG()) {
+                    return "?::double precision";
+                }
+            }
+            if (type.equalsIgnoreCase("time")) {
+                if (isPG()) {
+                    return "?::time";
+                }
+            }
+            if (type.equalsIgnoreCase("date")) {
+                if (isPG()) {
+                    return "?::date";
+                }
+            }
+            if (type.equalsIgnoreCase("timestamp")) {
+                if (isPG()) {
+                    return "?::timestamp";
+                }
+            }
+        }
+        return "?";
     }
 
     @MethodDoc(translations = {
