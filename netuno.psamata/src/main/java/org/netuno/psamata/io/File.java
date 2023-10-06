@@ -283,7 +283,7 @@ public class File {
                     )}
             )
     }, returns = {})
-    public boolean changeName(String newName) {
+    public boolean rename(String newName) {
         newName = Normalizer.normalize(newName, Normalizer.Form.NFD);
         newName = newName.replaceAll("\\p{M}", "")
                 .replaceAll("[^\\p{ASCII}]", "")
@@ -309,6 +309,9 @@ public class File {
         }
         if (newPath.indexOf("/") > -1) {
             newPath = newPath.substring(0, newPath.lastIndexOf("/") + 1);
+        }
+        if (newPath.indexOf(java.io.File.separator) == -1 && newPath.indexOf("\\") == -1 && newPath.indexOf("/") == -1) {
+            newPath = "";
         }
         path = newPath + newName + lastWithSeparator;
         return true;
