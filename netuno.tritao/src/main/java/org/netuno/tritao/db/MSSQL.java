@@ -181,6 +181,10 @@ public class MSSQL implements Builder {
         return coreBusiness.getUserByUId(uid);
     }
 
+    public Values getUserByEmail(String email) {
+        return coreBusiness.getUserByEmail(email);
+    }
+
     public List<Values> selectUserOther(String id, String name, String user) {
         return coreBusiness.selectUserOther(id, name, user);
     }
@@ -222,55 +226,16 @@ public class MSSQL implements Builder {
         return coreBusiness.deleteUser(id);
     }
 
-    public void clearOldUserDataProvider(String secret) {
-        coreBusiness.clearOldUserDataProvider(secret);
-    }
-    public int insertUserDataProvider(Values values) {
-        return coreBusiness.insertUserDataProvider(values);
+    public int insertProvider(String name, String code) {
+        return coreBusiness.insertProvider(name, code);
     }
 
-    public Values getUserDataProviderByID(String id) {
-        return coreBusiness.getUserDataProviderByID(id);
+    public int insertProvider(Values values) {
+        return coreBusiness.insertProvider(values);
     }
 
-    public Values getUserDataProviderByNonce(String nonce) {
-        return coreBusiness.getUserDataProviderByNonce(nonce);
-    }
-
-    public boolean deleteUserDataProvider(String id) {
-        return coreBusiness.deleteUserDataProvider(id);
-    }
-
-    public Values selectUserProviderByCode(String userId, String providerCode) {
-        return coreBusiness.selectUserProviderByCode(userId, providerCode);
-    }
-
-    public boolean hasUserProviderByCode(String userId, String providerCode) {
-        return coreBusiness.hasUserProviderByCode(userId, providerCode);
-    }
-
-    public List<Values> selectUserProviders(String userId) {
-        return coreBusiness.selectUserProviders(userId);
-    }
-
-    public boolean isProviderUserAssociate(Values values){
-        return coreBusiness.isProviderUserAssociate(values);
-    }
-
-    public Values getProviderUserById(String id) {
-        return coreBusiness.getProviderUserById(id);
-    }
-
-    public int insertProviderUser(Values values){
-        return coreBusiness.insertProviderUser(values);
-    }
-
-    public boolean deleteProviderUser(String id){
-        return coreBusiness.deleteProviderUser(id);
-    }
-
-    public Values selectProviderByCode(String providerCode) {
-        return coreBusiness.selectProviderByCode(providerCode);
+    public Values getProviderByCode(String code) {
+        return coreBusiness.getProviderByCode(code);
     }
 
     public List<Values> selectProviderSearch(String term) {
@@ -285,13 +250,58 @@ public class MSSQL implements Builder {
         return coreBusiness.getProviderById(id);
     }
 
-    public int insertProvider(String name, String code) {
-        return coreBusiness.insertProvider(name, code);
+    public List<Values> selectUserProviders(String userId) {
+        return coreBusiness.selectUserProviders(userId);
     }
 
-    public boolean deleteProvider(String id) {
-        return coreBusiness.deleteAuth(id);
+    public boolean isProviderUserAssociate(Values values){
+        return coreBusiness.isProviderUserAssociate(values);
     }
+
+    public Values getProviderUserById(String id) {
+        return coreBusiness.getProviderUserById(id);
+    }
+
+    public Values getProviderUserByUser(String providerId, String userId) {
+        return coreBusiness.getProviderUserByUser(providerId, userId);
+    }
+
+    public boolean hasProviderUserByUser(String providerId, String userId) {
+        return coreBusiness.hasProviderUserByUser(providerId, userId);
+    }
+
+    public Values getProviderUserByUid(String uid) {
+        return coreBusiness.getProviderUserByUid(uid);
+    }
+
+    public Values getProviderUserByCode(String providerId, String code) {
+        return coreBusiness.getProviderUserByCode(providerId, code);
+    }
+
+    public Values getProviderUserByEmail(String providerId, String email) {
+        return coreBusiness.getProviderUserByEmail(providerId, email);
+    }
+
+    public void clearOldProviderUser(String provider_id, String code) {
+        coreBusiness.clearOldProviderUser(provider_id, code);
+    }
+
+    public int insertProviderUser(Values values){
+        return coreBusiness.insertProviderUser(values);
+    }
+
+    public boolean updateProviderUser(Values values){
+        return coreBusiness.updateProviderUser(values);
+    }
+
+    public boolean updateProviderUser(String id, Values values){
+        return coreBusiness.updateProviderUser(id, values);
+    }
+
+    public boolean deleteProviderUser(String id){
+        return coreBusiness.deleteProviderUser(id);
+    }
+
     public List<Values> selectGroupOther(String id, String name) {
         return coreBusiness.selectGroupOther(id, name);
     }

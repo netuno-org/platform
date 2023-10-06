@@ -87,6 +87,8 @@ public interface Builder {
     Values getUserById(String id);
     Values getUserByUId(String uid);
 
+    Values getUserByEmail(String email);
+
     List<Values> selectUsersByIdAndGroupId(String user_id, String group_id);
 
     List<Values> selectUserOther(String id, String name, String user);
@@ -105,19 +107,17 @@ public interface Builder {
 
     boolean deleteUser(String id);
 
-    void clearOldUserDataProvider(String secret);
+    int insertProvider(String name, String code);
 
-    int insertUserDataProvider(Values values);
+    int insertProvider(Values values);
 
-    Values getUserDataProviderByID(String id);
+    Values getProviderByCode(String code);
 
-    Values getUserDataProviderByNonce(String nonce);
+    List<Values> selectProviderSearch(String term);
 
-    boolean deleteUserDataProvider(String id);
+    List<Values> selectProvider(String provider_id);
 
-    Values selectUserProviderByCode(String userId, String providerCode);
-
-    boolean hasUserProviderByCode(String userId, String providerCode);
+    Values getProviderById(String id);
 
     List<Values> selectUserProviders(String userId);
 
@@ -125,21 +125,25 @@ public interface Builder {
 
     Values getProviderUserById(String id);
 
+    Values getProviderUserByUser(String providerId, String userId);
+
+    boolean hasProviderUserByUser(String providerId, String userId);
+
+    Values getProviderUserByUid(String uid);
+
+    Values getProviderUserByCode(String providerId, String code);
+
+    Values getProviderUserByEmail(String providerId, String email);
+
+    void clearOldProviderUser(String provider_id, String code);
+
     int insertProviderUser(Values values);
 
+    boolean updateProviderUser(Values values);
+
+    boolean updateProviderUser(String id, Values values);
+
     boolean deleteProviderUser(String id);
-
-    Values selectProviderByCode(String providerCode);
-
-    List<Values> selectProviderSearch(String term);
-
-    List<Values> selectProvider(String providerId);
-
-    Values getProviderById(String id);
-
-    int insertProvider(String name, String code);
-
-    boolean deleteProvider(String id);
     
     List<Values> selectGroupOther(String id, String name);
 

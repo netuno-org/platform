@@ -322,6 +322,14 @@ public class CoreBusiness extends Base {
         return null;
     }
 
+    public Values getUserByEmail(String email) {
+        List<Values> dbUsers = selectUserByEmail(email);
+        if (dbUsers.size() == 1) {
+            return dbUsers.get(0);
+        }
+        return null;
+    }
+
     public List<Values> selectUserOther(String id, String name, String user) {
         String select = " * ";
         String from = " netuno_user ";
@@ -540,218 +548,47 @@ public class CoreBusiness extends Base {
         return true;
     }
 
+    // PROVIDER
+    public int insertProvider(String name, String code) {
+        Values data = new Values()
+                .set("name", name)
+                .set("code", code);
+        return insertProvider(data);
+    }
 
-
-    //DATA PROVIDER
-
-    //ADD DATA
-    public int insertUserDataProvider(Values values) {
-        DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_provider_data");
-        dataItem.setValues(values);
-        dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_provider_data", dataItem);
-        if (dataItem.isStatusAsError()) {
+    public int insertProvider(Values values) {
+        if (values.hasKey("id") || values.getInt("id") > 0) {
             return 0;
         }
-        Values data = new Values();
-
-        if (values.hasKey("nonce")) {
-            data.set("nonce", "'" + DB.sqlInjection(values.getString("nonce")) + "'");
-        }
-
-        if (values.hasKey("data")) {
-            data.set("data", "'" + DB.sqlInjection(values.getString("data")) + "'");
-        }
-
-        int id = insertInto("netuno_provider_data", data);
-        Values record = getUserDataProviderByID("" + id);
-        dataItem.setRecord(getUserDataProviderByID("" + id));
-        dataItem.setStatus(DataItem.Status.Inserted);
-        dataItem.setId(record.getString("id"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider_data", dataItem);
-        return id;
-    }
-
-    public Values getUserDataProviderByID(String id) {
-        if (id.isEmpty() || id.equals("0")) {
-            return null;
-        }
-        String select = " * ";
-        String from = " netuno_provider_data ";
-        String where = "where 1 = 1 ";
-        if (!id.equals("")) {
-            where += " and id = '" + DB.sqlInjectionInt(id) + "'";
-        }
-        String sql = "select " + select + " from " + from + where;
-        List<Values> rows = getManager().query(sql);
-        if (rows.size() > 0) {
-            return rows.get(0);
-        }
-        return null;
-    }
-    public Values getUserDataProviderByNonce(String nonce) {
-        if (nonce.isEmpty() || nonce.equals("0")) {
-            return null;
-        }
-        String select = " * ";
-        String from = " netuno_provider_data ";
-        String where = "where 1 = 1 ";
-        if (!nonce.equals("")) {
-            where += " and nonce = '" + DB.sqlInjection(nonce) + "'";
-        }
-        String sql = "select " + select + " from " + from + where;
-        List<Values> rows = getManager().query(sql);
-        if (rows.size() > 0) {
-            return rows.get(0);
-        }
-        return null;
-    }
-    public void clearOldUserDataProvider(String secret){
-        getManager().execute("DELETE FROM netuno_provider_data where data LIKE '%" + secret + "%'");
-    }
-    public boolean deleteUserDataProvider(String id){
-        id = "" + DB.sqlInjectionInt(id);
-        Values dataRecord = getUserDataProviderByID(id);
-        if (dataRecord == null) {
-            return false;
-        }
-
-        DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
-        dataItem.setTable("netuno_provider_data");
-        dataItem.setRecord(dataRecord);
-        dataItem.setStatus(DataItem.Status.Delete);
-        getManager().scriptRemove(getProteu(), getHili(), "netuno_provider_data", dataItem);
-        if (dataItem.isStatusAsError()) {
-            return false;
-        }
-        getManager().execute("delete from netuno_provider_data where id = " + id);
-        dataItem.setStatus(DataItem.Status.Deleted);
-        getManager().scriptRemoved(getProteu(), getHili(), "netuno_provider_data", dataItem);
-        return true;
-    }
-
-    public Values getProviderById(String id) {
-        if (id.isEmpty() || id.equals("0")) {
-            return null;
-        }
-        List<Values> rows = selectProvider(id);
-        if (rows.size() > 0) {
-            return rows.get(0);
-        }
-        return null;
-    }
-
-    public Values selectUserProviderByCode(String userId, String providerCode) {
-        String select = " netuno_provider_user.* ";
-        String from = " netuno_provider_user inner join netuno_provider"
-                +" on netuno_provider_user.provider_id = netuno_provider.id ";
-        String where = "where netuno_provider_user.user_id = " + DB.sqlInjectionInt(userId)
-                + " and netuno_provider.code = '" + DB.sqlInjection(providerCode) + "'";
-        String sql = "select " + select + " from " + from + where;
-        List<Values> results = getManager().query(sql);
-        if (results.size() == 1) {
-            return results.get(0);
-        }
-        return null;
-    }
-
-    public boolean hasUserProviderByCode(String userId, String providerCode) {
-        return selectUserProviderByCode(userId, providerCode) != null;
-    }
-
-    public List<Values> selectUserProviders(String userId) {
-        String select = " * ";
-        String from = " netuno_provider_user ";
-        String where = "where user_id = " + DB.sqlInjectionInt(userId);
-        String sql = "select " + select + " from " + from + where;
-        return getManager().query(sql);
-    }
-
-    public boolean isProviderUserAssociate(Values values) {
-        String select = " * ";
-        String from = " netuno_provider_user ";
-        String where = "where user_id = '" + DB.sqlInjectionInt(values.getString("user_id")) + "'";
-        where += " AND provider_id = '" + DB.sqlInjectionInt(values.getString("provider_id")) + "'";
-        where += " AND code = '" + DB.sqlInjection(values.getString("code")) + "'";
-
-        String sql = "select " + select + " from " + from + where;
-        return getManager().query(sql).size() == 1;
-    }
-
-    public Values getProviderUserById(String id) {
-        if (id.isEmpty() || id.equals("0")) {
-            return null;
-        }
-        String select = " * ";
-        String from = " netuno_provider_user ";
-        String where = "where 1 = 1 ";
-        if (!id.isEmpty()) {
-            where += " and id = " + DB.sqlInjectionInt(id);
-        }
-        String sql = "select " + select + " from " + from + where;
-        List<Values> rows = getManager().query(sql);
-        if (rows.size() > 0) {
-            return rows.get(0);
-        }
-        return null;
-    }
-
-    public int insertProviderUser(Values values) {
         DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_provider_user");
+        dataItem.setTable("netuno_provider");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_provider_user", dataItem);
+        getManager().scriptSave(getProteu(), getHili(), "netuno_provider", dataItem);
 
         if (dataItem.isStatusAsError()) {
             return 0;
         }
 
         Values data = new Values();
-        if (values.hasKey("user_id")) {
-            data.set("user_id", values.getInt("user_id"));
-        }
-
-        if (values.hasKey("provider_id")) {
-            data.set("provider_id", values.getInt("provider_id"));
+        if (values.hasKey("name")) {
+            data.set("name", "'" + DB.sqlInjection(values.getString("name")) + "'");
         }
 
         if (values.hasKey("code")) {
             data.set("code", "'" + DB.sqlInjection(values.getString("code")) + "'");
         }
 
-        int id = insertInto("netuno_provider_user", data);
-        Values record = getProviderUserById(Integer.toString(id));
-        dataItem.setRecord(record);
+        int id = insertInto("netuno_provider", data);
+        Values record = getProviderById("" + id);
+        dataItem.setRecord(getProviderById("" + id));
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider_user", dataItem);
+        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider", dataItem);
         return id;
     }
 
-    public boolean deleteProviderUser(String id) {
-        id = DB.sqlInjectionInt(id);
-        Values dataRecord = getProviderUserById(id);
-        if (dataRecord == null) {
-            return false;
-        }
-
-        DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
-        dataItem.setTable("netuno_provider_user");
-        dataItem.setRecord(dataRecord);
-        dataItem.setStatus(DataItem.Status.Delete);
-        getManager().scriptRemove(getProteu(), getHili(), "netuno_provider_user", dataItem);
-        if (dataItem.isStatusAsError()) {
-            return false;
-        }
-        getManager().execute("delete from netuno_provider_user where id = " + id);
-        dataItem.setStatus(DataItem.Status.Deleted);
-        getManager().scriptRemoved(getProteu(), getHili(), "netuno_provider_user", dataItem);
-        return true;
-    }
-
-    public Values selectProviderByCode(String code) {
+    public Values getProviderByCode(String code) {
         String select = " * ";
         String from = " netuno_provider ";
         String where = "where lower(code) = '" + DB.sqlInjection(code.toLowerCase()) + "'";
@@ -786,64 +623,245 @@ public class CoreBusiness extends Base {
         return getManager().query(sql);
     }
 
-    public int insertProvider(String name, String code) {
-        Values data = new Values()
-                .set("name", name)
-                .set("code", code);
-        return insertProvider(data);
-    }
-    
-    public boolean deleteAuth(String id) {
-        id = "" + DB.sqlInjectionInt(id);
-        Values dataRecord = getProviderById(id);
-        if (dataRecord == null) {
-            return false;
+    public Values getProviderById(String id) {
+        if (id.isEmpty() || id.equals("0")) {
+            return null;
         }
-
-        DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
-        dataItem.setTable("netuno_provider");
-        dataItem.setRecord(dataRecord);
-        dataItem.setStatus(DataItem.Status.Delete);
-        getManager().scriptRemove(getProteu(), getHili(), "netuno_provider", dataItem);
-        if (dataItem.isStatusAsError()) {
-            return false;
+        List<Values> rows = selectProvider(id);
+        if (rows.size() > 0) {
+            return rows.get(0);
         }
-        getManager().execute("delete from netuno_provider where id = " + id);
-        dataItem.setStatus(DataItem.Status.Deleted);
-        getManager().scriptRemoved(getProteu(), getHili(), "netuno_provider", dataItem);
-        return true;
+        return null;
     }
 
-    public int insertProvider(Values values) {
-        if (values.hasKey("id") || values.getInt("id") > 0) {
-            return 0;
+    public List<Values> selectUserProviders(String userId) {
+        String select = " netuno_provider_user.*, netuno_provider.code AS \"provider_code\", netuno_provider.name AS \"provider_name\" ";
+        String from = " netuno_provider_user INNER JOIN netuno_provider ON netuno_provider_user.provider_id = netuno_provider.id ";
+        String where = " netuno_provider_user.user_id = " + DB.sqlInjectionInt(userId);
+        String sql = "SELECT " + select + " FROM " + from + " WHERE " + where;
+        return getManager().query(sql);
+    }
+
+    public boolean isProviderUserAssociate(Values values) {
+        String select = " * ";
+        String from = " netuno_provider_user ";
+        String where = "where user_id = '" + DB.sqlInjectionInt(values.getString("user_id")) + "'";
+        where += " AND provider_id = '" + DB.sqlInjectionInt(values.getString("provider_id")) + "'";
+        where += " AND code = '" + DB.sqlInjection(values.getString("code")) + "'";
+
+        String sql = "select " + select + " from " + from + where;
+        return getManager().query(sql).size() == 1;
+    }
+
+    public Values getProviderUserById(String id) {
+        if (id.isEmpty() || id.equals("0")) {
+            return null;
         }
+        String select = " netuno_provider_user.*, netuno_provider.code AS \"provider_code\", netuno_provider.name AS \"provider_name\" ";
+        String from = " netuno_provider_user INNER JOIN netuno_provider ON netuno_provider_user.provider_id = netuno_provider.id ";
+        String where = "where 1 = 1 ";
+        if (!id.isEmpty()) {
+            where += " and netuno_provider_user.id = " + DB.sqlInjectionInt(id);
+        }
+        String sql = "select " + select + " from " + from + where;
+        List<Values> rows = getManager().query(sql);
+        if (rows.size() > 0) {
+            return rows.get(0);
+        }
+        return null;
+    }
+
+    public Values getProviderUserByUser(String providerId, String userId) {
+        String select = " netuno_provider_user.*, netuno_provider.code AS \"provider_code\", netuno_provider.name AS \"provider_name\" ";
+        String from = " netuno_provider_user INNER JOIN netuno_provider ON netuno_provider_user.provider_id = netuno_provider.id ";
+        String where = " 1 = 1 "
+                + " AND netuno_provider_user.provider_id = " + DB.sqlInjection(providerId)
+                + " AND netuno_provider_user.user_id = " + DB.sqlInjectionInt(userId);
+        String sql = "SELECT " + select + " FROM " + from + " WHERE " + where;
+        List<Values> results = getManager().query(sql);
+        if (results.size() == 1) {
+            return results.get(0);
+        }
+        return null;
+    }
+
+    public boolean hasProviderUserByUser(String providerId, String userId) {
+        return getProviderUserByUser(providerId, userId) != null;
+    }
+
+    public Values getProviderUserByUid(String uid) {
+        if (uid.isEmpty() || uid.equals("0")) {
+            return null;
+        }
+        String select = " netuno_provider_user.*, netuno_provider.code AS \"provider_code\", netuno_provider.name AS \"provider_name\" ";
+        String from = " netuno_provider_user INNER JOIN netuno_provider ON netuno_provider_user.provider_id = netuno_provider.id ";
+        String where = "WHERE 1 = 1 ";
+        where += " AND netuno_provider_user.uid = '" + DB.sqlInjection(uid) + "'";
+        String sql = "SELECT " + select + " FROM " + from + where;
+        List<Values> rows = getManager().query(sql);
+        if (rows.size() > 0) {
+            return rows.get(0);
+        }
+        return null;
+    }
+
+    public Values getProviderUserByCode(String providerId, String code) {
+        if (code.isEmpty()) {
+            return null;
+        }
+        String select = " netuno_provider_user.*, netuno_provider.code AS \"provider_code\", netuno_provider.name AS \"provider_name\" ";
+        String from = " netuno_provider_user INNER JOIN netuno_provider ON netuno_provider_user.provider_id = netuno_provider.id ";
+        String where = "WHERE 1 = 1 ";
+        where += " AND netuno_provider_user.provider_id = " + DB.sqlInjection(providerId);
+        where += " AND netuno_provider_user.code = '" + DB.sqlInjection(code) + "'";
+        String sql = "SELECT " + select + " FROM " + from + where;
+        List<Values> rows = getManager().query(sql);
+        if (rows.size() > 0) {
+            return rows.get(0);
+        }
+        return null;
+    }
+
+    public Values getProviderUserByEmail(String providerId, String email) {
+        if (email.isEmpty()) {
+            return null;
+        }
+        String select = " netuno_provider_user.*, netuno_provider.code AS \"provider_code\", netuno_provider.name AS \"provider_name\" ";
+        String from = " netuno_provider_user INNER JOIN netuno_provider ON netuno_provider_user.provider_id = netuno_provider.id ";
+        String where = "WHERE 1 = 1 ";
+        where += " AND netuno_provider_user.provider_id = " + DB.sqlInjection(providerId);
+        where += " AND netuno_provider_user.email = '" + DB.sqlInjection(email) + "'";
+        String sql = "SELECT " + select + " FROM " + from + where;
+        List<Values> rows = getManager().query(sql);
+        if (rows.size() > 0) {
+            return rows.get(0);
+        }
+        return null;
+    }
+
+    public int clearOldProviderUser(String provider_id, String code) {
+        return getManager().execute("DELETE FROM netuno_provider_user WHERE provider_id = "+ DB.sqlInjectionInt(provider_id) +" AND code NOT LIKE '" + DB.sqlInjection(code) + "' ");
+    }
+
+    public int insertProviderUser(Values values) {
         DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_provider");
+        dataItem.setTable("netuno_provider_user");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_provider", dataItem);
+        getManager().scriptSave(getProteu(), getHili(), "netuno_provider_user", dataItem);
 
         if (dataItem.isStatusAsError()) {
             return 0;
         }
 
         Values data = new Values();
-        if (values.hasKey("name")) {
-            data.set("name", "'" + DB.sqlInjection(values.getString("name")) + "'");
-        }
 
+        if (values.hasKey("provider_id")) {
+            data.set("provider_id", values.getInt("provider_id"));
+        }
+        if (values.hasKey("user_id")) {
+            data.set("user_id", values.getInt("user_id"));
+        }
+        if (values.hasKey("uid")) {
+            data.set("uid", "'" + DB.sqlInjection(values.getString("uid")) + "'");
+        }
         if (values.hasKey("code")) {
             data.set("code", "'" + DB.sqlInjection(values.getString("code")) + "'");
         }
+        if (values.hasKey("email")) {
+            data.set("email", "'" + DB.sqlInjection(values.getString("email")) + "'");
+        }
+        if (values.hasKey("name")) {
+            data.set("name", "'" + DB.sqlInjection(values.getString("name")) + "'");
+        }
+        if (values.hasKey("username")) {
+            data.set("username", "'" + DB.sqlInjection(values.getString("username")) + "'");
+        }
+        if (values.hasKey("avatar")) {
+            data.set("avatar", "'" + DB.sqlInjection(values.getString("avatar")) + "'");
+        }
 
-        int id = insertInto("netuno_provider", data);
-        Values record = getProviderById("" + id);
-        dataItem.setRecord(getProviderById("" + id));
+        int id = insertInto("netuno_provider_user", data);
+        Values record = getProviderUserById(Integer.toString(id));
+        dataItem.setRecord(record);
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider", dataItem);
+        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider_user", dataItem);
         return id;
+    }
+
+    public boolean updateProviderUser(Values values) {
+        return updateProviderUser(values.getString("id"), values);
+    }
+
+    public boolean updateProviderUser(String id, Values values) {
+        if (!isId(id)) {
+            return false;
+        }
+        id = "" + DB.sqlInjectionInt(id);
+        Values dataRecord = getProviderUserById(id);
+        if (dataRecord == null) {
+            return false;
+        }
+        DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("uid"));
+        dataItem.setTable("netuno_provider_user");
+        dataItem.setRecord(dataRecord);
+        dataItem.setValues(values);
+        dataItem.setStatus(DataItem.Status.Update);
+        getManager().scriptSave(getProteu(), getHili(), "netuno_provider_user", dataItem);
+        if (dataItem.isStatusAsError()) {
+            return false;
+        }
+        String update = "";
+        if (values.hasKey("provider_id")) {
+            update += ", provider_id = " + DB.sqlInjectionInt(values.getString("provider_id"));
+        }
+        if (values.hasKey("user_id")) {
+            update += ", user_id = " + DB.sqlInjectionInt(values.getString("user_id"));
+        }
+        if (values.hasKey("code")) {
+            update += ", code = '" + DB.sqlInjection(values.getString("code")) + "'";
+        }
+        if (values.hasKey("uid")) {
+            update += ", uid = '" + DB.sqlInjection(values.getString("uid")) + "'";
+        }
+        if (values.hasKey("email")) {
+            update += ", email = '" + DB.sqlInjection(values.getString("email")) + "'";
+        }
+        if (values.hasKey("name")) {
+            update += ", name = '" + DB.sqlInjection(values.getString("name")) + "'";
+        }
+        if (values.hasKey("username")) {
+            update += ", username = '" + DB.sqlInjection(values.getString("username")) + "'";
+        }
+        if (values.hasKey("avatar")) {
+            update += ", avatar = '" + DB.sqlInjection(values.getString("avatar")) + "'";
+        }
+        getManager().execute("update netuno_provider_user set id = " + id + update + " where id = " + id);
+        dataItem.setStatus(DataItem.Status.Updated);
+        getManager().scriptSaved(getProteu(), getHili(), "netuno_provider_user", dataItem);
+        return true;
+    }
+
+    public boolean deleteProviderUser(String id) {
+        id = DB.sqlInjectionInt(id);
+        Values dataRecord = getProviderUserById(id);
+        if (dataRecord == null) {
+            return false;
+        }
+
+        DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
+        dataItem.setTable("netuno_provider_user");
+        dataItem.setRecord(dataRecord);
+        dataItem.setStatus(DataItem.Status.Delete);
+        getManager().scriptRemove(getProteu(), getHili(), "netuno_provider_user", dataItem);
+        if (dataItem.isStatusAsError()) {
+            return false;
+        }
+        getManager().execute("delete from netuno_provider_user where id = " + id);
+        dataItem.setStatus(DataItem.Status.Deleted);
+        getManager().scriptRemoved(getProteu(), getHili(), "netuno_provider_user", dataItem);
+        return true;
     }
 
     public List<Values> selectGroupOther(String id, String name) {
