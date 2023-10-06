@@ -181,7 +181,9 @@ public class Service {
                 service.defaultEmptyOutput();
                 return;
             }
-            if (service.getPath().equalsIgnoreCase("_auth") || Auth.isAuthenticated(proteu, hili)) {
+            if (service.getPath().startsWith("_auth_provider/")
+                    || service.getPath().equalsIgnoreCase("_auth")
+                    || Auth.isAuthenticated(proteu, hili)) {
                 service.allow();
             }
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
@@ -214,7 +216,7 @@ public class Service {
                     outStream = new ByteArrayOutputStream();
                     proteu.getOutput().getMirrors().add(outStream);
                 }
-                if (service.getPath().toLowerCase().contains("_auth_provider")) {
+                if (service.getPath().startsWith("_auth_provider/")) {
                     HandlerProviders providers = new HandlerProviders(service, proteu, hili);
                     providers.run();
                 } else {
