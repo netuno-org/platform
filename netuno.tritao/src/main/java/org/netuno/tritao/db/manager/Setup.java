@@ -210,26 +210,26 @@ public class Setup extends Base {
             sequence.create("netuno_provider_id");
 
 
-            if (getBuilder().selectProviderByCode("gl") != null
-                || getBuilder().selectProviderByCode("gh") != null
-                || getBuilder().selectProviderByCode("ds") != null) {
+            if (getBuilder().getProviderByCode("gl") != null
+                || getBuilder().getProviderByCode("gh") != null
+                || getBuilder().getProviderByCode("ds") != null) {
                 getManager().execute("DELETE FROM netuno_provider");
                 sequence.restart("netuno_provider_id", 1);
             }
 
-            if (getBuilder().selectProviderByCode("ldap") == null) {
+            if (getBuilder().getProviderByCode("ldap") == null) {
                 getBuilder().insertProvider("LDAP", "ldap");
             }
 
-            if (getBuilder().selectProviderByCode("google") == null) {
+            if (getBuilder().getProviderByCode("google") == null) {
                 getBuilder().insertProvider("Google", "google");
             }
 
-            if (getBuilder().selectProviderByCode("github") == null) {
+            if (getBuilder().getProviderByCode("github") == null) {
                 getBuilder().insertProvider("GitHub", "github");
             }
 
-            if (getBuilder().selectProviderByCode("discord") == null) {
+            if (getBuilder().getProviderByCode("discord") == null) {
                 getBuilder().insertProvider("Discord", "discord");
 	        }
 
@@ -255,21 +255,24 @@ public class Setup extends Base {
 
             table.create("netuno_provider_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
+                    table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
                     table.newColumn().setName("provider_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
-                    table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
-                    table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(true).setDefault()
+                    table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(false).setDefault(),
+                    table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
+                    table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(),
+                    table.newColumn().setName("email").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
+                    table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
+                    table.newColumn().setName("username").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
+                    table.newColumn().setName("avatar").setType(Column.Type.VARCHAR).setNotNull(false).setDefault()
             );
             sequence.create("netuno_provider_user_id");
             index.create("netuno_provider_user", "user_id");
             index.create("netuno_provider_user", "provider_id");
 
-            table.create("netuno_provider_data",
-                    table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
-                    table.newColumn().setName("nonce").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
-                    table.newColumn().setName("data").setType(Column.Type.TEXT).setNotNull(true).setDefault(),
-                    table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault()
-            );
-            sequence.create("netuno_provider_data_id");
+            if (checkExists.table("netuno_provider_data")) {
+                table.drop("netuno_provider_data");
+                sequence.drop("netuno_provider_data_id");
+            }
 
             table.create("netuno_group_rule",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
