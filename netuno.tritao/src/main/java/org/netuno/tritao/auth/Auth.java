@@ -395,7 +395,7 @@ public class Auth extends WebMaster {
             String provider = req.getString("provider");
             Builder DBManager = Config.getDataBaseBuilder(proteu);
 
-            Values dbProvider = DBManager.getProviderByCode(provider);
+            Values dbProvider = DBManager.getAuthProviderByCode(provider);
             if (dbProvider == null) {
                 header.status(Proteu.HTTPStatus.Forbidden403);
                 out.json(
@@ -408,7 +408,7 @@ public class Auth extends WebMaster {
                 );
                 return;
             }
-            Values dbProviderUser = DBManager.getProviderUserByUid(secret);
+            Values dbProviderUser = DBManager.getAuthProviderUserByUid(secret);
             if (dbProviderUser == null) {
                 header.status(Proteu.HTTPStatus.Forbidden403);
                 out.json(
@@ -428,14 +428,14 @@ public class Auth extends WebMaster {
                 Values user = users.get(0);
                 if (user.getString("nonce").equals(secret) && user.getString("nonce_generator").equals(provider)) {
                     int providerId = dbProvider.getInt("id");
-                    boolean isAssociated = DBManager.isProviderUserAssociate(
+                    boolean isAssociated = DBManager.isAuthProviderUserAssociate(
                             new Values()
                                     .set("provider_id", providerId)
                                     .set("user_id", user.getString("id"))
                                     .set("code", dbProviderUser.getString("code"))
                     );
                     if (isAssociated) {
-                        DBManager.clearOldProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
+                        DBManager.clearOldAuthProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
                         user.set("nonce", "");
                         user.set("nonce_generator", "");
                         DBManager.updateUser(user);
@@ -450,13 +450,13 @@ public class Auth extends WebMaster {
                         if (req.hasKey("password")) {
                             String passwordEncrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), req.getString("password"));
                             if (DBManager.selectUserLogin(user.getString("user"), passwordEncrypted).size() > 0) {
-                                DBManager.insertProviderUser(
+                                DBManager.insertAuthProviderUser(
                                         new Values()
                                                 .set("user_id", user.getString("id"))
                                                 .set("provider_id", providerId)
                                                 .set("code", dbProviderUser.getString("code"))
                                 );
-                                DBManager.clearOldProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
+                                DBManager.clearOldAuthProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
                                 user.set("nonce", "");
                                 user.set("nonce_generator", "");
                                 DBManager.updateUser(user);
@@ -529,7 +529,7 @@ public class Auth extends WebMaster {
 
                 int id = DBManager.insertUser(user);
                 Values values = DBManager.getUserById(id + "");
-                DBManager.clearOldProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
+                DBManager.clearOldAuthProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
                 if (signIn(proteu, hili, values, Type.JWT, Profile.ALL)) {
                     header.status(Proteu.HTTPStatus.OK200);
                     proteu.outputJSON(

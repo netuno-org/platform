@@ -46,7 +46,7 @@ public class User {
     	if (proteu.getRequestAll().getString("service").equals("json")) {
 	    	String json = "";
 			if (proteu.getRequestAll().hasKey("providers")) {
-				List<Values> dbProviders = Config.getDataBaseBuilder(proteu).selectProviderSearch(proteu.getRequestAll().getString("q"));
+				List<Values> dbProviders = Config.getDataBaseBuilder(proteu).selectAuthProviderSearch(proteu.getRequestAll().getString("q"));
 				Values providers = new Values();
 				for (Values dbProvider : dbProviders) {
 					providers.add(
@@ -204,16 +204,16 @@ public class User {
 							proteu.getRequestAll().getString("mail"),
 							group != null ? group.getString("id") : "0",
 							proteu.getRequestAll().getString("active"))) {
-						Values dbUserProviderLDAP = Config.getDataBaseBuilder(proteu).getProviderUserByCode(user.getString("id"), "ldap");
+						Values dbUserProviderLDAP = Config.getDataBaseBuilder(proteu).getAuthProviderUserByCode(user.getString("id"), "ldap");
 						if (proteu.getRequestAll().getBoolean("provider_ldap_active") && dbUserProviderLDAP == null) {
-							Config.getDataBaseBuilder(proteu).insertProviderUser(
+							Config.getDataBaseBuilder(proteu).insertAuthProviderUser(
 									new Values()
 											.set("user_id", user.getInt("id"))
-											.set("provider_id", Config.getDataBaseBuilder(proteu).getProviderByCode("ldap").getInt("id"))
+											.set("provider_id", Config.getDataBaseBuilder(proteu).getAuthProviderByCode("ldap").getInt("id"))
 											.set("code", "")
 							);
 						} else if (!proteu.getRequestAll().getBoolean("provider_ldap_active") && dbUserProviderLDAP != null) {
-							Config.getDataBaseBuilder(proteu).deleteProviderUser(dbUserProviderLDAP.getString("id"));
+							Config.getDataBaseBuilder(proteu).deleteAuthProviderUser(dbUserProviderLDAP.getString("id"));
 						}
 						TemplateBuilder.output(proteu, hili, "user/notification/saved", data);
 					} else {
@@ -285,7 +285,7 @@ public class User {
         	} else {
         		data.set("user.active.checked", "");
         	}
-			if (Config.getDataBaseBuilder(proteu).hasProviderUserByUser(Config.getDataBaseBuilder(proteu).getProviderByCode("ldap").getString("id"), user.getString("id"))) {
+			if (Config.getDataBaseBuilder(proteu).hasAuthProviderUserByUser(Config.getDataBaseBuilder(proteu).getAuthProviderByCode("ldap").getString("id"), user.getString("id"))) {
 				data.set("user.providers.ldap.active.checked", "checked");
 			} else {
 				data.set("user.providers.ldap.active.checked", "");

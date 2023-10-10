@@ -1214,11 +1214,11 @@ public class User extends ResourceBase {
 
     public boolean hasProvider(int userId, String providerCode) {
         Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
-        Values dbProvider = dbBuilder.getProviderByCode(providerCode);
+        Values dbProvider = dbBuilder.getAuthProviderByCode(providerCode);
         if (dbProvider == null) {
             throw new ResourceException("The provider code "+ providerCode +" was not found.");
         }
-        return dbBuilder.hasProviderUserByUser(dbBuilder.getProviderByCode(providerCode).getString("id"), Integer.toString(userId));
+        return dbBuilder.hasAuthProviderUserByUser(dbBuilder.getAuthProviderByCode(providerCode).getString("id"), Integer.toString(userId));
     }
 
     public Values allProvidersData() {
@@ -1226,7 +1226,7 @@ public class User extends ResourceBase {
     }
 
     public Values allProvidersData(int userId) {
-        return new Values(Config.getDataBaseBuilder(getProteu()).selectUserProviders(Integer.toString(userId)));
+        return new Values(Config.getDataBaseBuilder(getProteu()).selectUserAuthProviders(Integer.toString(userId)));
     }
 
     public Values providerData(String providerCode) {
@@ -1235,16 +1235,16 @@ public class User extends ResourceBase {
 
     public Values providerData(int userId, String providerCode) {
         Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
-        Values dbProvider = dbBuilder.getProviderByCode(providerCode);
+        Values dbProvider = dbBuilder.getAuthProviderByCode(providerCode);
         if (dbProvider == null) {
             throw new ResourceException("The provider code "+ providerCode +" was not found.");
         }
-        return dbBuilder.getProviderUserByUser(dbProvider.getString("id"), Integer.toString(userId));
+        return dbBuilder.getAuthProviderUserByUser(dbProvider.getString("id"), Integer.toString(userId));
     }
 
     public Values providerDataByUid(String uid) {
         Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
-        return dbBuilder.getProviderUserByUid(uid);
+        return dbBuilder.getAuthProviderUserByUid(uid);
     }
 
 }

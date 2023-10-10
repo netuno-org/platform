@@ -83,7 +83,7 @@ public class HandlerProviders extends WebMaster {
                             }
                             user = google.getUserDetails(accessTokens);
                         } else if (proteu.getRequestAll().hasKey("uid")) {
-                            Values dbProviderUser = dbManager.getProviderUserByUid(proteu.getRequestAll().getString("uid"));
+                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
                             if (dbProviderUser != null) {
                                 user = new Values();
                                 user.put("id", dbProviderUser.getString("code"));
@@ -147,7 +147,7 @@ public class HandlerProviders extends WebMaster {
                             }
                             user = facebook.getUserDetails(accessTokens);
                         } else if (proteu.getRequestAll().hasKey("uid")) {
-                            Values dbProviderUser = dbManager.getProviderUserByUid(proteu.getRequestAll().getString("uid"));
+                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
                             if (dbProviderUser != null) {
                                 user = new Values();
                                 user.put("id", dbProviderUser.getString("code"));
@@ -211,7 +211,7 @@ public class HandlerProviders extends WebMaster {
                             }
                             user = github.getUserDetails(accessTokens);
                         } else if (proteu.getRequestAll().hasKey("uid")) {
-                            Values dbProviderUser = dbManager.getProviderUserByUid(proteu.getRequestAll().getString("uid"));
+                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
                             if (dbProviderUser != null) {
                                 user = new Values();
                                 user.put("id", dbProviderUser.getString("code"));
@@ -275,7 +275,7 @@ public class HandlerProviders extends WebMaster {
                             }
                             user = discord.getUserDetails(accessTokens);
                         } else if (proteu.getRequestAll().hasKey("uid")) {
-                            Values dbProviderUser = dbManager.getProviderUserByUid(proteu.getRequestAll().getString("uid"));
+                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
                             if (dbProviderUser != null) {
                                 user = new Values();
                                 user.put("id", dbProviderUser.getString("code"));
@@ -330,9 +330,9 @@ public class HandlerProviders extends WebMaster {
 
         String uid = UUID.randomUUID().toString();
 
-        Values dbProvider = dbManager.getProviderByCode(provider);
+        Values dbProvider = dbManager.getAuthProviderByCode(provider);
 
-        dbManager.clearOldProviderUser(dbProvider.getString("id"), data.getString("id"));
+        dbManager.clearOldAuthProviderUser(dbProvider.getString("id"), data.getString("id"));
 
         Out out = resource(Out.class);
 
@@ -353,9 +353,9 @@ public class HandlerProviders extends WebMaster {
             );
             return;
         }
-        Values dbProviderUser = dbManager.getProviderUserByCode(dbProvider.getString("id"), data.getString("id"));
+        Values dbProviderUser = dbManager.getAuthProviderUserByCode(dbProvider.getString("id"), data.getString("id"));
         if (dbProviderUser == null) {
-            dbManager.insertProviderUser(
+            dbManager.insertAuthProviderUser(
                     new Values()
                             .set("uid", uid)
                             .set("provider_id", dbProvider.getString("id"))
@@ -367,7 +367,7 @@ public class HandlerProviders extends WebMaster {
                             .set("avatar", data.get("avatar"))
             );
         } else {
-            dbManager.updateProviderUser(
+            dbManager.updateAuthProviderUser(
                     new Values()
                             .set("id", dbProviderUser.getInt("id"))
                             .set("uid", uid)
@@ -381,7 +381,7 @@ public class HandlerProviders extends WebMaster {
             );
         }
         int idProvider = dbProvider.getInt("id");
-        boolean isAssociate = dbManager.isProviderUserAssociate(
+        boolean isAssociate = dbManager.isAuthProviderUserAssociate(
                 new Values()
                         .set("provider_id", idProvider)
                         .set("user_id", dbUser.getInt("id"))
@@ -427,18 +427,18 @@ public class HandlerProviders extends WebMaster {
 
         String uid = UUID.randomUUID().toString();
 
-        Values dbProvider = dbManager.getProviderByCode(provider);
+        Values dbProvider = dbManager.getAuthProviderByCode(provider);
 
-        dbManager.clearOldProviderUser(dbProvider.getString("id"), data.getString("id"));
+        dbManager.clearOldAuthProviderUser(dbProvider.getString("id"), data.getString("id"));
 
         Out out = resource(Out.class);
 
         Values dbUser = dbManager.getUserByEmail(data.getString("email"));
 
         if (dbUser == null) {
-            Values dbProviderUser = dbManager.getProviderUserByCode(dbProvider.getString("id"), data.getString("id"));
+            Values dbProviderUser = dbManager.getAuthProviderUserByCode(dbProvider.getString("id"), data.getString("id"));
             if (dbProviderUser == null) {
-                dbManager.insertProviderUser(
+                dbManager.insertAuthProviderUser(
                         new Values()
                                 .set("uid", uid)
                                 .set("provider_id", dbProvider.getString("id"))
@@ -450,7 +450,7 @@ public class HandlerProviders extends WebMaster {
                                 .set("avatar", data.get("avatar"))
                 );
             } else {
-                dbManager.updateProviderUser(
+                dbManager.updateAuthProviderUser(
                         new Values()
                                 .set("id", dbProviderUser.getInt("id"))
                                 .set("uid", uid)
