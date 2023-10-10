@@ -23,7 +23,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Proteu.ContentType;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.Auth;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.ComponentData.Type;

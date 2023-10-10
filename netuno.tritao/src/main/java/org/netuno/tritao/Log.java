@@ -19,6 +19,7 @@ package org.netuno.tritao;
 
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
 

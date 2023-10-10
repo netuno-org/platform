@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.RunEvent;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 

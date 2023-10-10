@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.Rule;

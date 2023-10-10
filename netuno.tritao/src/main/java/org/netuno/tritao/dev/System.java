@@ -20,7 +20,7 @@ package org.netuno.tritao.dev;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.Auth;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.resource.Out;
 import org.netuno.tritao.resource.Req;

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao;
+package org.netuno.tritao.auth;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.hili.HiliError;
-import org.netuno.tritao.providers.LDAPAuthenticator;
+import org.netuno.tritao.auth.providers.LDAPAuthenticator;
 import org.netuno.tritao.resource.*;
 import org.netuno.tritao.util.Rule;
 
@@ -391,38 +391,51 @@ public class Auth extends WebMaster {
         Out out = resource(Out.class);
         Req req = resource(Req.class);
         if (req.hasKey("secret") && req.hasKey("provider")) {
-            String secret = req.getString("secret"), provider = req.getString("provider");
+            String secret = req.getString("secret");
+            String provider = req.getString("provider");
             Builder DBManager = Config.getDataBaseBuilder(proteu);
 
-            Values userDataProvider = DBManager.getUserDataProviderByNonce(secret);
-            if (userDataProvider == null) {
+            Values dbProvider = DBManager.getProviderByCode(provider);
+            if (dbProvider == null) {
                 header.status(Proteu.HTTPStatus.Forbidden403);
                 out.json(
                         new Values()
                                 .set("result", false)
-                                .set("errors",
+                                .set("error",
                                         new Values()
-                                                .set("Secret", "is invalid.")
+                                                .set("code", "invalid-provider")
+                                )
+                );
+                return;
+            }
+            Values dbProviderUser = DBManager.getProviderUserByUid(secret);
+            if (dbProviderUser == null) {
+                header.status(Proteu.HTTPStatus.Forbidden403);
+                out.json(
+                        new Values()
+                                .set("result", false)
+                                .set("error",
+                                        new Values()
+                                                .set("code", "invalid-secret")
                                 )
                 );
                 return;
             }
 
-            JSONObject jsonData = new JSONObject(userDataProvider.getString("data"));
-            List<Values> users = DBManager.selectUserByEmail(jsonData.getString("email"));
+            List<Values> users = DBManager.selectUserByEmail(dbProviderUser.getString("email"));
 
             if (users.size() > 0) {
                 Values user = users.get(0);
                 if (user.getString("nonce").equals(secret) && user.getString("nonce_generator").equals(provider)) {
-                    int providerId = DBManager.selectProviderByCode(jsonData.getString("provider")).getInt("id");
+                    int providerId = dbProvider.getInt("id");
                     boolean isAssociated = DBManager.isProviderUserAssociate(
                             new Values()
                                     .set("provider_id", providerId)
                                     .set("user_id", user.getString("id"))
-                                    .set("code", jsonData.getString("secret"))
+                                    .set("code", dbProviderUser.getString("code"))
                     );
                     if (isAssociated) {
-                        DBManager.clearOldUserDataProvider(jsonData.getString("id"));
+                        DBManager.clearOldProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
                         user.set("nonce", "");
                         user.set("nonce_generator", "");
                         DBManager.updateUser(user);
@@ -441,9 +454,9 @@ public class Auth extends WebMaster {
                                         new Values()
                                                 .set("user_id", user.getString("id"))
                                                 .set("provider_id", providerId)
-                                                .set("code", jsonData.getString("secret"))
+                                                .set("code", dbProviderUser.getString("code"))
                                 );
-                                DBManager.clearOldUserDataProvider(jsonData.getString("id"));
+                                DBManager.clearOldProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
                                 user.set("nonce", "");
                                 user.set("nonce_generator", "");
                                 DBManager.updateUser(user);
@@ -488,7 +501,7 @@ public class Auth extends WebMaster {
                 String group = proteu.getConfig()
                         .getValues("_app")
                         .getValues("providers", new Values())
-                        .getValues(jsonData.getString("provider"), new Values())
+                        .getValues(dbProvider.getString("code"), new Values())
                         .getString("default_group");
                 if (group.isEmpty()) {
                     group = proteu.getConfig()
@@ -498,7 +511,7 @@ public class Auth extends WebMaster {
                 }
                 if (group.isEmpty()) {
                     logger.fatal(
-                            new HiliError(proteu, hili, "Authentication for the provider "+ jsonData.getString("provider") +" has no default group defined.")
+                            new HiliError(proteu, hili, "Authentication for the provider "+ dbProvider.getString("name") +" has no default group defined.")
                                     .setLogFatal(true).getLogMessage()
                     );
                     header.status(Proteu.HTTPStatus.Forbidden403);
@@ -507,8 +520,8 @@ public class Auth extends WebMaster {
                 }
                 String passwordEncrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, req.getString("user"), req.getString("pass"));
                 Values user = new Values();
-                user.set("name", jsonData.getString("name"));
-                user.set("mail", jsonData.getString("email"));
+                user.set("name", dbProviderUser.getString("name"));
+                user.set("mail", dbProviderUser.getString("email"));
                 user.set("user", req.getString("user"));
                 user.set("pass", passwordEncrypted);
                 user.set("group_id", DBManager.selectGroupOther("", group).get(0).getInt("id"));
@@ -516,13 +529,7 @@ public class Auth extends WebMaster {
 
                 int id = DBManager.insertUser(user);
                 Values values = DBManager.getUserById(id + "");
-                DBManager.insertProviderUser(
-                        new Values()
-                                .set("provider_id", DBManager.selectProviderByCode(jsonData.getString("provider")).getString("id"))
-                                .set("user_id", id)
-                                .set("code", jsonData.getString("secret"))
-                );
-                DBManager.clearOldUserDataProvider(jsonData.getString("id"));
+                DBManager.clearOldProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
                 if (signIn(proteu, hili, values, Type.JWT, Profile.ALL)) {
                     header.status(Proteu.HTTPStatus.OK200);
                     proteu.outputJSON(

@@ -19,7 +19,7 @@ package org.netuno.tritao.dev;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.Auth;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.Parameter;
 import org.netuno.tritao.com.ParameterType;

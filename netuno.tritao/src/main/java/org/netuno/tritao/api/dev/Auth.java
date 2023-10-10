@@ -26,7 +26,7 @@ import org.netuno.tritao.hili.Hili;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/dev/Auth")
-public class Auth extends org.netuno.tritao.Auth {
+public class Auth extends org.netuno.tritao.auth.Auth {
     
     public Auth(Proteu proteu, Hili hili) {
         super(proteu, hili, Profile.DEV);

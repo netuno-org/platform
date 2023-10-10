@@ -19,7 +19,7 @@ package org.netuno.tritao.dev;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
-import org.netuno.tritao.Auth;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.hili.Hili;
 

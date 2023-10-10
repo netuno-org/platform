@@ -23,7 +23,7 @@ import org.json.JSONException;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.Auth;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;

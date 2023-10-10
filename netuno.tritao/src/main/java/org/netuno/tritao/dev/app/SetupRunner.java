@@ -1,7 +1,7 @@
 package org.netuno.tritao.dev.app;
 
 import org.netuno.proteu.Path;
-import org.netuno.tritao.Auth;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.resource.Header;
 import org.netuno.tritao.resource.Out;

@@ -22,7 +22,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.Auth;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.ComponentData;

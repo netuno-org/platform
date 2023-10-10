@@ -47,6 +47,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.com.Active;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.ComponentData;

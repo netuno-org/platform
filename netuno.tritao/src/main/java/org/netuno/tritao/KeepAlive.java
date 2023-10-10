@@ -20,6 +20,7 @@ package org.netuno.tritao;
 import java.io.IOException;
 
 import org.netuno.proteu.Proteu;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.hili.Hili;
 
 /**

@@ -27,6 +27,7 @@ import org.netuno.proteu.Path;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
@@ -52,7 +53,7 @@ public class CodeClient extends WebMaster {
     @Override
     public void run() throws Exception {
         Header _header = resource(Header.class);
-        if (!org.netuno.tritao.Auth.isDevAuthenticated(getProteu(), getHili())) {
+        if (!Auth.isDevAuthenticated(getProteu(), getHili())) {
             _header.status(Proteu.HTTPStatus.Forbidden403);
             return;
         }

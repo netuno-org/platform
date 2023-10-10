@@ -25,6 +25,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.hili.HiliError;
@@ -34,7 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.netuno.tritao.openapi.Schema;
-import org.netuno.tritao.providers.HandlerProviders;
+import org.netuno.tritao.auth.providers.HandlerProviders;
 import org.netuno.tritao.resource.JWT;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.event.EventExecutor;
