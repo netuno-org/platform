@@ -107,43 +107,43 @@ public interface Builder {
 
     boolean deleteUser(String id);
 
-    int insertProvider(String name, String code);
+    int insertAuthProvider(String name, String code);
 
-    int insertProvider(Values values);
+    int insertAuthProvider(Values values);
 
-    Values getProviderByCode(String code);
+    Values getAuthProviderByCode(String code);
 
-    List<Values> selectProviderSearch(String term);
+    List<Values> selectAuthProviderSearch(String term);
 
-    List<Values> selectProvider(String provider_id);
+    List<Values> selectAuthProvider(String provider_id);
 
-    Values getProviderById(String id);
+    Values getAuthProviderById(String id);
 
-    List<Values> selectUserProviders(String userId);
+    List<Values> selectUserAuthProviders(String userId);
 
-    boolean isProviderUserAssociate(Values values);
+    boolean isAuthProviderUserAssociate(Values values);
 
-    Values getProviderUserById(String id);
+    Values getAuthProviderUserById(String id);
 
-    Values getProviderUserByUser(String providerId, String userId);
+    Values getAuthProviderUserByUser(String providerId, String userId);
 
-    boolean hasProviderUserByUser(String providerId, String userId);
+    boolean hasAuthProviderUserByUser(String providerId, String userId);
 
-    Values getProviderUserByUid(String uid);
+    Values getAuthProviderUserByUid(String uid);
 
-    Values getProviderUserByCode(String providerId, String code);
+    Values getAuthProviderUserByCode(String providerId, String code);
 
-    Values getProviderUserByEmail(String providerId, String email);
+    Values getAuthProviderUserByEmail(String providerId, String email);
 
-    void clearOldProviderUser(String provider_id, String code);
+    void clearOldAuthProviderUser(String provider_id, String code);
 
-    int insertProviderUser(Values values);
+    int insertAuthProviderUser(Values values);
 
-    boolean updateProviderUser(Values values);
+    boolean updateAuthProviderUser(Values values);
 
-    boolean updateProviderUser(String id, Values values);
+    boolean updateAuthProviderUser(String id, Values values);
 
-    boolean deleteProviderUser(String id);
+    boolean deleteAuthProviderUser(String id);
     
     List<Values> selectGroupOther(String id, String name);
 

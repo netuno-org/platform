@@ -202,35 +202,32 @@ public class Setup extends Base {
                 sequence.rename("netuno_providers_id", "netuno_provider_id");
             }
 
-            table.create("netuno_provider",
+            table.create("netuno_auth_provider",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("code").setType(Column.Type.VARCHAR).setNotNull(true).setDefault()
             );
-            sequence.create("netuno_provider_id");
+            sequence.create("netuno_auth_provider_id");
 
-
-            if (getBuilder().getProviderByCode("gl") != null
-                || getBuilder().getProviderByCode("gh") != null
-                || getBuilder().getProviderByCode("ds") != null) {
-                getManager().execute("DELETE FROM netuno_provider");
-                sequence.restart("netuno_provider_id", 1);
+            if (checkExists.table("netuno_provider")) {
+                table.drop("netuno_provider");
+                sequence.drop("netuno_provider");
             }
 
-            if (getBuilder().getProviderByCode("ldap") == null) {
-                getBuilder().insertProvider("LDAP", "ldap");
+            if (getBuilder().getAuthProviderByCode("ldap") == null) {
+                getBuilder().insertAuthProvider("LDAP", "ldap");
             }
 
-            if (getBuilder().getProviderByCode("google") == null) {
-                getBuilder().insertProvider("Google", "google");
+            if (getBuilder().getAuthProviderByCode("google") == null) {
+                getBuilder().insertAuthProvider("Google", "google");
             }
 
-            if (getBuilder().getProviderByCode("github") == null) {
-                getBuilder().insertProvider("GitHub", "github");
+            if (getBuilder().getAuthProviderByCode("github") == null) {
+                getBuilder().insertAuthProvider("GitHub", "github");
             }
 
-            if (getBuilder().getProviderByCode("discord") == null) {
-                getBuilder().insertProvider("Discord", "discord");
+            if (getBuilder().getAuthProviderByCode("discord") == null) {
+                getBuilder().insertAuthProvider("Discord", "discord");
 	        }
 
             table.create("netuno_user",
@@ -253,7 +250,7 @@ public class Setup extends Base {
             index.create("netuno_user", "group_id");
             sequence.create("netuno_user_id");
 
-            table.create("netuno_provider_user",
+            table.create("netuno_auth_provider_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
                     table.newColumn().setName("provider_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
@@ -265,13 +262,18 @@ public class Setup extends Base {
                     table.newColumn().setName("username").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
                     table.newColumn().setName("avatar").setType(Column.Type.VARCHAR).setNotNull(false).setDefault()
             );
-            sequence.create("netuno_provider_user_id");
-            index.create("netuno_provider_user", "user_id");
-            index.create("netuno_provider_user", "provider_id");
+            sequence.create("netuno_auth_provider_user_id");
+            index.create("netuno_auth_provider_user", "user_id");
+            index.create("netuno_auth_provider_user", "provider_id");
 
             if (checkExists.table("netuno_provider_data")) {
                 table.drop("netuno_provider_data");
                 sequence.drop("netuno_provider_data_id");
+            }
+
+            if (checkExists.table("netuno_provider_user")) {
+                table.drop("netuno_provider_user");
+                sequence.drop("netuno_provider_user_id");
             }
 
             table.create("netuno_group_rule",
