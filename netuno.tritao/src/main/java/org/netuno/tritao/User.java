@@ -24,8 +24,8 @@ import org.netuno.psamata.Values;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Lang;
@@ -204,12 +204,12 @@ public class User {
 							proteu.getRequestAll().getString("mail"),
 							group != null ? group.getString("id") : "0",
 							proteu.getRequestAll().getString("active"))) {
-						Values dbUserProviderLDAP = Config.getDataBaseBuilder(proteu).selectUserProviderByCode(user.getString("id"), "ldap");
+						Values dbUserProviderLDAP = Config.getDataBaseBuilder(proteu).getProviderUserByCode(user.getString("id"), "ldap");
 						if (proteu.getRequestAll().getBoolean("provider_ldap_active") && dbUserProviderLDAP == null) {
 							Config.getDataBaseBuilder(proteu).insertProviderUser(
 									new Values()
 											.set("user_id", user.getInt("id"))
-											.set("provider_id", Config.getDataBaseBuilder(proteu).selectProviderByCode("ldap").getInt("id"))
+											.set("provider_id", Config.getDataBaseBuilder(proteu).getProviderByCode("ldap").getInt("id"))
 											.set("code", "")
 							);
 						} else if (!proteu.getRequestAll().getBoolean("provider_ldap_active") && dbUserProviderLDAP != null) {
@@ -285,7 +285,7 @@ public class User {
         	} else {
         		data.set("user.active.checked", "");
         	}
-			if (Config.getDataBaseBuilder(proteu).hasUserProviderByCode(user.getString("id"), "ldap")) {
+			if (Config.getDataBaseBuilder(proteu).hasProviderUserByUser(Config.getDataBaseBuilder(proteu).getProviderByCode("ldap").getString("id"), user.getString("id"))) {
 				data.set("user.providers.ldap.active.checked", "checked");
 			} else {
 				data.set("user.providers.ldap.active.checked", "");

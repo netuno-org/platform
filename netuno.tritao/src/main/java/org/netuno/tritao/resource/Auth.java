@@ -25,8 +25,6 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
 
-import java.util.List;
-
 /**
  * Authentication - Resource
  * @author Eduardo Fonseca Velasques - @eduveks
@@ -62,7 +60,7 @@ import java.util.List;
 })
 public class Auth extends ResourceBase {
 
-    public Values providersConfig = new Values();
+    public Values allProvidersConfig = new Values();
 
     public Values providerLDAPConfig = new Values();
 
@@ -107,103 +105,36 @@ public class Auth extends ResourceBase {
         if (auth == null) {
             return this;
         }
-        providersConfig = auth.getValues("providers");
-        if (providersConfig == null) {
-            return this;
-        }
-        providerLDAPConfig = providersConfig.getValues("ldap", new Values());
-        providerGoogleConfig = providersConfig.getValues("google", new Values());
-        providerGitHubConfig = providersConfig.getValues("github", new Values());
-        providerDiscordConfig = providersConfig.getValues("discord", new Values());
-        providerLDAPEnabled = providerLDAPConfig.getBoolean("enabled");
-        providerGoogleEnabled = providerGoogleConfig.getBoolean("enabled");
-        providerGitHubEnabled = providerGitHubConfig.getBoolean("enabled");
-        providerDiscordEnabled = providerDiscordConfig.getBoolean("enabled");
+        allProvidersConfig = auth.getValues("providers", new Values());
         return this;
     }
 
-    public Values providersConfig() {
-        return providersConfig;
+    public Values allProvidersConfig() {
+        return allProvidersConfig;
     }
 
-    public Values getProvidersConfig() {
-        return providersConfig;
+    public Values getAllProvidersConfig() {
+        return allProvidersConfig;
     }
 
-    public Values providerLDAPConfig() {
-        return providerLDAPConfig;
+    public Values providerConfig(String providerCode) {
+        return allProvidersConfig().getValues(providerCode.toLowerCase());
     }
 
-    public Values getProviderLDAPConfig() {
-        return providerLDAPConfig;
+    public Values getProviderConfig(String providerCode) {
+        return providerConfig(providerCode);
     }
 
-    public Values providerGoogleConfig() {
-        return providerGoogleConfig;
-    }
-
-    public Values getProviderGoogleConfig() {
-        return providerGoogleConfig;
-    }
-
-    public Values providerGitHubConfig() {
-        return providerGitHubConfig;
-    }
-
-    public Values getProviderGitHubConfig() {
-        return providerGitHubConfig;
-    }
-
-    public Values providerDiscordConfig() {
-        return providerDiscordConfig;
-    }
-
-    public Values getProviderDiscordConfig() {
-        return providerDiscordConfig;
-    }
-
-    public boolean providerLDAPEnabled() {
-        return providerLDAPEnabled;
-    }
-
-    public boolean isProviderLDAPEnabled() {
-        return providerLDAPEnabled;
-    }
-
-    public boolean providerGoogleEnabled() {
-        return providerGoogleEnabled;
-    }
-
-    public boolean isProviderGoogleEnabled() {
-        return providerGoogleEnabled;
-    }
-
-    public boolean providerGitHubEnabled() {
-        return providerGitHubEnabled;
-    }
-
-    public boolean isProviderGitHubEnabled() {
-        return providerGitHubEnabled;
-    }
-
-    public boolean providerDiscordEnabled() {
-        return providerDiscordEnabled;
-    }
-
-    public boolean isProviderDiscordEnabled() {
-        return providerDiscordEnabled;
-    }
-
-    public boolean providerEnabled(String providerKey) {
-        Values providerConfig = providersConfig.getValues(providerKey);
+    public boolean providerEnabled(String providerCode) {
+        Values providerConfig = allProvidersConfig.getValues(providerCode.toLowerCase());
         if (providerConfig == null) {
             return false;
         }
         return providerConfig.getBoolean("enabled");
     }
 
-    public boolean isProviderEnabled(String providerKey) {
-        return providerEnabled(providerKey);
+    public boolean isProviderEnabled(String providerCode) {
+        return providerEnabled(providerCode);
     }
 
     @MethodDoc(translations = {
@@ -243,7 +174,7 @@ public class Auth extends ResourceBase {
             }
     )
     public boolean isDev() {
-        return org.netuno.tritao.Auth.isDevAuthenticated(getProteu(), getHili());
+        return org.netuno.tritao.auth.Auth.isDevAuthenticated(getProteu(), getHili());
     }
 
     @MethodDoc(translations = {
@@ -283,7 +214,7 @@ public class Auth extends ResourceBase {
             }
     )
     public boolean isAdmin() {
-        return org.netuno.tritao.Auth.isAdminAuthenticated(getProteu(), getHili());
+        return org.netuno.tritao.auth.Auth.isAdminAuthenticated(getProteu(), getHili());
     }
 
     @MethodDoc(translations = {
@@ -324,7 +255,7 @@ public class Auth extends ResourceBase {
             }
     )
     public boolean isJWT() {
-        return org.netuno.tritao.Auth.isAuthenticated(getProteu(), getHili(), org.netuno.tritao.Auth.Type.JWT);
+        return org.netuno.tritao.auth.Auth.isAuthenticated(getProteu(), getHili(), org.netuno.tritao.auth.Auth.Type.JWT);
     }
 
     @MethodDoc(translations = {
@@ -364,15 +295,15 @@ public class Auth extends ResourceBase {
             }
     )
     public boolean isSession() {
-        return org.netuno.tritao.Auth.isAuthenticated(getProteu(), getHili(), org.netuno.tritao.Auth.Type.SESSION);
+        return org.netuno.tritao.auth.Auth.isAuthenticated(getProteu(), getHili(), org.netuno.tritao.auth.Auth.Type.SESSION);
     }
 
     public boolean isAuthenticated() {
-        return org.netuno.tritao.Auth.isAuthenticated(getProteu(), getHili());
+        return org.netuno.tritao.auth.Auth.isAuthenticated(getProteu(), getHili());
     }
 
     public void logout() {
-        org.netuno.tritao.Auth.clearSession(getProteu(), getHili());
+        org.netuno.tritao.auth.Auth.clearSession(getProteu(), getHili());
     }
 
     @MethodDoc(

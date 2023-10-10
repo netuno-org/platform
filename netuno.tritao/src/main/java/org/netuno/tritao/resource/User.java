@@ -22,8 +22,9 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.Auth;
+import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.hili.Hili;
 
 import java.sql.SQLException;
@@ -1207,39 +1208,43 @@ public class User extends ResourceBase {
         );
     }
 
-    public Values providers() {
-        return new Values(Config.getDataBaseBuilder(getProteu()).selectUserProviders(Integer.toString(id)));
+    public boolean hasProvider(String providerCode) {
+        return hasProvider(id, providerCode);
     }
 
-    public boolean hasProviderLDAP() {
-        return hasProviderLDAP(id);
+    public boolean hasProvider(int userId, String providerCode) {
+        Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
+        Values dbProvider = dbBuilder.getProviderByCode(providerCode);
+        if (dbProvider == null) {
+            throw new ResourceException("The provider code "+ providerCode +" was not found.");
+        }
+        return dbBuilder.hasProviderUserByUser(dbBuilder.getProviderByCode(providerCode).getString("id"), Integer.toString(userId));
     }
 
-    public boolean hasProviderLDAP(int userId) {
-        return Config.getDataBaseBuilder(getProteu()).hasUserProviderByCode(Integer.toString(userId), "ldap");
+    public Values allProvidersData() {
+        return allProvidersData(id);
     }
 
-    public boolean hasProviderGoogle() {
-        return hasProviderGoogle(id);
+    public Values allProvidersData(int userId) {
+        return new Values(Config.getDataBaseBuilder(getProteu()).selectUserProviders(Integer.toString(userId)));
     }
 
-    public boolean hasProviderGoogle(int userId) {
-        return Config.getDataBaseBuilder(getProteu()).hasUserProviderByCode(Integer.toString(userId), "google");
+    public Values providerData(String providerCode) {
+        return providerData(id, providerCode);
     }
 
-    public boolean hasProviderGitHub() {
-        return hasProviderGitHub(id);
+    public Values providerData(int userId, String providerCode) {
+        Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
+        Values dbProvider = dbBuilder.getProviderByCode(providerCode);
+        if (dbProvider == null) {
+            throw new ResourceException("The provider code "+ providerCode +" was not found.");
+        }
+        return dbBuilder.getProviderUserByUser(dbProvider.getString("id"), Integer.toString(userId));
     }
 
-    public boolean hasProviderGitHub(int userId) {
-        return Config.getDataBaseBuilder(getProteu()).hasUserProviderByCode(Integer.toString(userId), "github");
+    public Values providerDataByUid(String uid) {
+        Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
+        return dbBuilder.getProviderUserByUid(uid);
     }
 
-    public boolean hasProviderDiscord() {
-        return hasProviderDiscord(id);
-    }
-
-    public boolean hasProviderDiscord(int userId) {
-        return Config.getDataBaseBuilder(getProteu()).hasUserProviderByCode(Integer.toString(userId), "discord");
-    }
 }
