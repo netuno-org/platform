@@ -20,51 +20,42 @@
  * @author Marcel Becheanu - @marcelgbecheanu
  */
 
-package org.netuno.tritao.providers.entities;
+package org.netuno.tritao.auth.providers.entities;
 
-import org.json.JSONObject;
 import org.netuno.psamata.Values;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringJoiner;
+import org.netuno.tritao.auth.providers.Callback;
 
 public class Google {
     private String id = null;
     private String secret = null;
-    private String callbackUrl = null;
-    public Google(String id, String secret, String callbackUrl){
+    private Values callbacks = null;
+    public Google(String id, String secret, Values callbacks) {
         this.id = id;
         this.secret = secret;
-        this.callbackUrl = callbackUrl;
+        this.callbacks = callbacks;
     }
-    public String getUrlAuthenticator(){
-            return "https://accounts.google.com/o/oauth2/auth?response_type=code&redirect_uri=" + callbackUrl + "&scope="+"https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile"+"&client_id=" + id;
+    public String getUrlAuthenticator(Callback callback) {
+            return "https://accounts.google.com/o/oauth2/auth?response_type=code&redirect_uri=" + callbacks.getString(callback.toString()) + "&scope="+"https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile"+"&client_id=" + id;
     }
 
-    public JSONObject getAccessTokens(String code) throws Exception {
+    public Values getAccessTokens(Callback callback, String code) throws Exception {
         String url = "https://accounts.google.com/o/oauth2/token";
         Values params = new Values();
         params.set("code", code);
         params.set("client_id", id);
         params.set("client_secret", secret);
-        params.set("redirect_uri", callbackUrl);
+        params.set("redirect_uri", callbacks.getString(callback.toString()));
         params.set("grant_type", "authorization_code");
         return Requests.makePost(url, params);
     }
 
-    public JSONObject getUserDetails(JSONObject data) throws Exception {
+    public Values getUserDetails(Values data) throws Exception {
         String url = "https://www.googleapis.com/oauth2/v1/userinfo";
         Values params = new Values();
-        params.set("access_token", data.get("access_token"));
-        return Requests.makeGet(url, params);
+        params.set("access_token", data.getString("access_token"));
+        Values details = Requests.makeGet(url, params);
+        details.set("avatar", details.getString("picture"));
+        return details;
     }
 
     /*public JSONObject getAccessTokens(String code){

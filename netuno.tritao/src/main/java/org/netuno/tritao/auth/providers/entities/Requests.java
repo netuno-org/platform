@@ -1,4 +1,4 @@
-package org.netuno.tritao.providers.entities;
+package org.netuno.tritao.auth.providers.entities;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,12 +17,12 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 public class Requests {
-    public static JSONObject makeGet(String url, Values params) throws Exception{
+    public static Values makeGet(String url, Values params) throws Exception{
         return makeGet(url, params, null);
     }
 
-    public static JSONObject makeGet(String url, Values params, String authorization) throws Exception{
-        if(params != null && params.size() > 0){
+    public static Values makeGet(String url, Values params, String authorization) throws Exception{
+        if (params != null && params.size() > 0){
             url += "?";
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<?,?> entry : params.entrySet()) {
@@ -40,18 +40,18 @@ public class Requests {
         URLConnection con = urlCache.openConnection();
         HttpURLConnection http = (HttpURLConnection)con;
 
-        if(authorization != null)
-        http.setRequestProperty("Authorization", authorization);
-
+        if (authorization != null) {
+            http.setRequestProperty("Authorization", authorization);
+        }
         http.setRequestMethod("GET");
         http.setDoOutput(true);
         String response;
-        try(InputStream inputStream = http.getInputStream()) {
+        try (InputStream inputStream = http.getInputStream()) {
             response = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
-        return new JSONObject(response);
+        return Values.fromJSON(response);
     }
-    public static JSONObject makePost(String url, Values params) throws Exception {
+    public static Values makePost(String url, Values params) throws Exception {
         URL urlCache = new URL(url);
         URLConnection con = urlCache.openConnection();
         HttpURLConnection http = (HttpURLConnection)con;
@@ -62,35 +62,35 @@ public class Requests {
             arguments.put(key, params.getString(key));
         }
         StringJoiner sj = new StringJoiner("&");
-        for(Map.Entry<String,String> entry : arguments.entrySet())
+        for (Map.Entry<String,String> entry : arguments.entrySet()) {
             sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "="
                     + URLEncoder.encode(entry.getValue(), "UTF-8"));
+        }
         byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
         int length = out.length;
         http.setFixedLengthStreamingMode(length);
         http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         http.connect();
-        try(OutputStream os = http.getOutputStream()) {
+        try (OutputStream os = http.getOutputStream()) {
             os.write(out);
         }
         String response;
-        try(InputStream inputStream = http.getInputStream()) {
+        try (InputStream inputStream = http.getInputStream()) {
             response = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            try(InputStream errorStream = http.getErrorStream()) {
+            try (InputStream errorStream = http.getErrorStream()) {
                 System.out.println(new String(errorStream.readAllBytes(), StandardCharsets.UTF_8));
             }
             throw e;
         }
         http.disconnect();
 
-        if(isValid(response)){
-            JSONObject data = new JSONObject(response);
-            return data;
-        } else if(response.contains("=") && response.length() > 1) {
+        if (isValid(response)) {
+            return Values.fromJSON(response);
+        } else if (response.contains("=") && response.length() > 1) {
             response = response.replaceAll("=", "\":\"");
             response = response.replaceAll("&", "\",\"");
-            return new JSONObject("{\"" + response + "\"}");
+            return Values.fromJSON("{\"" + response + "\"}");
         } else {
             return null;
         }

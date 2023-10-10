@@ -1,4 +1,4 @@
-package org.netuno.tritao.providers.entities;
+package org.netuno.tritao.auth.providers.entities;
 
 /*
  * Licensed to the Netuno.org under one or more

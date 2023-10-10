@@ -1,4 +1,4 @@
-package org.netuno.tritao.providers;
+package org.netuno.tritao.auth.providers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,8 +38,8 @@ public class LDAPAuthenticator {
 
     public Values authenticate(String username, String password) {
         Auth auth = hili.resource().get(Auth.class);
-        if (auth.isProviderLDAPEnabled()) {
-            Values config = auth.providerLDAPConfig();
+        if (auth.isProviderEnabled("ldap")) {
+            Values config = auth.providerConfig("ldap");
             this.domain = config.getString("domain");
             this.url = config.getString("url");
             this.search = config.getString("search");
@@ -48,7 +48,7 @@ public class LDAPAuthenticator {
         }
         User user = hili.resource().get(User.class);
         Values dbUser = user.get(username);
-        if (!user.hasProviderLDAP(dbUser.getInt("id"))) {
+        if (!user.hasProvider(dbUser.getInt("id"), "ldap")) {
             return null;
         }
         String returnedAtts[] ={ "sn", "givenName", "mail" };
