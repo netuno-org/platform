@@ -613,28 +613,23 @@ public class CoreBusiness extends Base {
         return getManager().query(sql);
     }
 
-    public List<Values> selectAuthProvider(String provider_id) {
-        String select = " * ";
-        String from = " netuno_auth_provider ";
-        String where = "where id = " + DB.sqlInjectionInt(provider_id);
-
-        String order = " order by name ";
-        String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
-    }
-
     public Values getAuthProviderById(String id) {
         if (id.isEmpty() || id.equals("0")) {
             return null;
         }
-        List<Values> rows = selectAuthProvider(id);
-        if (rows.size() > 0) {
-            return rows.get(0);
+        String select = " * ";
+        String from = " netuno_auth_provider ";
+        String where = "where id = " + DB.sqlInjectionInt(id);
+        String order = " order by name ";
+        String sql = "select " + select + " from " + from + where + order;
+        List<Values> results = getManager().query(sql);
+        if (results.size() == 1) {
+            return results.get(0);
         }
         return null;
     }
 
-    public List<Values> selectUserAuthProviders(String userId) {
+    public List<Values> allAuthProviderUserByUser(String userId) {
         String select = " netuno_auth_provider_user.*, netuno_auth_provider.code AS \"provider_code\", netuno_auth_provider.name AS \"provider_name\" ";
         String from = " netuno_auth_provider_user INNER JOIN netuno_auth_provider ON netuno_auth_provider_user.provider_id = netuno_auth_provider.id ";
         String where = " netuno_auth_provider_user.user_id = " + DB.sqlInjectionInt(userId);

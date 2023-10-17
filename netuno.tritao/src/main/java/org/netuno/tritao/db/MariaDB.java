@@ -240,16 +240,12 @@ public class MariaDB implements Builder {
         return coreBusiness.selectAuthProviderSearch(term);
     }
 
-    public List<Values> selectAuthProvider(String provider_id) {
-        return coreBusiness.selectAuthProvider(provider_id);
-    }
-
     public Values getAuthProviderById(String id) {
         return coreBusiness.getAuthProviderById(id);
     }
 
-    public List<Values> selectUserAuthProviders(String userId) {
-        return coreBusiness.selectUserAuthProviders(userId);
+    public List<Values> allAuthProviderUserByUser(String userId) {
+        return coreBusiness.allAuthProviderUserByUser(userId);
     }
 
     public boolean isAuthProviderUserAssociate(Values values){

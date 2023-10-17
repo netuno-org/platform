@@ -115,11 +115,9 @@ public interface Builder {
 
     List<Values> selectAuthProviderSearch(String term);
 
-    List<Values> selectAuthProvider(String provider_id);
-
     Values getAuthProviderById(String id);
 
-    List<Values> selectUserAuthProviders(String userId);
+    List<Values> allAuthProviderUserByUser(String userId);
 
     boolean isAuthProviderUserAssociate(Values values);
 
