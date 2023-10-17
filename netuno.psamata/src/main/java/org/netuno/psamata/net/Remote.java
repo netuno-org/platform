@@ -33,7 +33,6 @@ import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.net.ssl.*;
-import javax.xml.crypto.Data;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
@@ -48,9 +47,7 @@ import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
-
 /*
-
 JAVA 11 - PATCH
 
 import java.net.http.HttpRequest;
@@ -60,7 +57,6 @@ HttpRequest request = HttpRequest.newBuilder()
                .method("PATCH", HttpRequest.BodyPublishers.ofString(message))
                .header("Content-Type", "text/xml")
                .build();
-
 */
 
 /**
@@ -962,24 +958,25 @@ public class Remote {
         return submit(method, url, qs, contentType, data);
     }
 
-    public String soap11(String soapMethod) {
-        return soap11(soapMethod, "");
+    public Values soap11(String soapMethod) {
+        return soap11(soapMethod, null);
     }
 
-    public String soap11(String soapMethod, String data) {
+    public Values soap11(String soapMethod, Values data) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(getSOAPURL()).openConnection();
             try {
-                if (!data.isEmpty()) {
+                if (data != null && !data.isEmpty()) {
                     connection.setDoOutput(true);
                 }
                 connection.setDoInput(true);
                 connection.setInstanceFollowRedirects(isFollowRedirects());
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("SOAPAction", getSOAPAction() + soapMethod);
-                if (!data.isEmpty()) {
-                    JSONObject json = new JSONObject(data);
-                    data = "<?xml version=\"1.0\" encoding=\"" + getCharset() + "\"?>"
+                String sendEnvelop = "";
+                if (data != null && !data.isEmpty()) {
+                    JSONObject json = new JSONObject(data.toJSON());
+                    sendEnvelop = "<?xml version=\"1.0\" encoding=\"" + getCharset() + "\"?>"
                             + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
                             + "<soap:Body>"
                             + "<" + soapMethod + " xmlns=\"" + getSOAPNS() + "\">"
@@ -988,7 +985,7 @@ public class Remote {
                             + "</soap:Body>"
                             + "</soap:Envelope>";
                     connection.setRequestProperty("Content-Type", "text/xml; charset=" + getCharset());
-                    connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
+                    connection.setRequestProperty("Content-Length", Integer.toString(sendEnvelop.getBytes().length));
                 }
                 for (String key : getHeader().keys()) {
                     connection.setRequestProperty(key, getHeader().getString(key));
@@ -997,9 +994,9 @@ public class Remote {
                     connection.setRequestProperty("Authorization", authorization);
                 }
                 connection.setUseCaches(false);
-                if (!data.isEmpty()) {
+                if (!sendEnvelop.isEmpty()) {
                     DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-                    out.writeBytes(data);
+                    out.writeBytes(sendEnvelop);
                     out.flush();
                     out.close();
                 }
@@ -1013,7 +1010,7 @@ public class Remote {
                 if (resultObject.has("xmlns")) {
                     resultObject.remove("xmlns");
                 }
-                return resultObject.toString();
+                return new Values(resultObject);
             } catch (java.io.IOException e) {
                 throw new Error(e);
             } finally {
@@ -1024,23 +1021,24 @@ public class Remote {
         }
     }
 
-    public String soap12(String soapMethod) {
-        return soap12(soapMethod, "");
+    public Values soap12(String soapMethod) {
+        return soap12(soapMethod, null);
     }
 
-    public String soap12(String soapMethod, String data) {
+    public Values soap12(String soapMethod, Values data) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(getSOAPURL()).openConnection();
             try {
-                if (!data.isEmpty()) {
+                if (data != null && !data.isEmpty()) {
                     connection.setDoOutput(true);
                 }
                 connection.setDoInput(true);
                 connection.setInstanceFollowRedirects(isFollowRedirects());
                 connection.setRequestMethod("POST");
-                if (!data.isEmpty()) {
-                    JSONObject json = new JSONObject(data);
-                    data = "<?xml version=\"1.0\" encoding=\"" + getCharset() + "\"?>"
+                String sendEnvelop = "";
+                if (data != null && !data.isEmpty()) {
+                    JSONObject json = new JSONObject(data.toJSON());
+                    sendEnvelop = "<?xml version=\"1.0\" encoding=\"" + getCharset() + "\"?>"
                             + "<soap12:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">"
                             + "<soap12:Body>"
                             + "<" + soapMethod + " xmlns=\"" + getSOAPNS() + "\">"
@@ -1049,7 +1047,7 @@ public class Remote {
                             + "</soap12:Body>"
                             + "</soap12:Envelope>";
                     connection.setRequestProperty("Content-Type", "application/soap+xml; charset=" + getCharset());
-                    connection.setRequestProperty("Content-Length", Integer.toString(data.getBytes().length));
+                    connection.setRequestProperty("Content-Length", Integer.toString(sendEnvelop.getBytes().length));
                 }
                 for (String key : getHeader().keys()) {
                     connection.setRequestProperty(key, getHeader().getString(key));
@@ -1058,9 +1056,9 @@ public class Remote {
                     connection.setRequestProperty("Authorization", authorization);
                 }
                 connection.setUseCaches(false);
-                if (!data.isEmpty()) {
+                if (!sendEnvelop.isEmpty()) {
                     DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-                    out.writeBytes(data);
+                    out.writeBytes(sendEnvelop);
                     out.flush();
                     out.close();
                 }
@@ -1074,7 +1072,7 @@ public class Remote {
                 if (resultObject.has("xmlns")) {
                     resultObject.remove("xmlns");
                 }
-                return resultObject.toString();
+                return new Values(resultObject);
             } catch (java.io.IOException e) {
                 throw new Error(e);
             } finally {
