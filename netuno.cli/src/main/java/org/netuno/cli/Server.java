@@ -254,8 +254,9 @@ public class Server implements MainArg {
             
             System.out.println();
             System.out.println();
-            System.out.println(OS.consoleOutput("    @|green Netuno server is starting on:|@ @|cyan " + host + ":" + port + " |@"));
+            System.out.println(OS.consoleOutput("    @|green Server starting in:|@ @|cyan " + host + ":" + port + " |@"));
             System.out.println();
+            System.out.println(OS.consoleOutput("    @|green Environment used:|@ @|cyan " + Config.getEnv() + " |@"));
             System.out.println();
             System.out.println(OS.consoleOutput("    @|yellow Please wait... |@"));
             System.out.println();
