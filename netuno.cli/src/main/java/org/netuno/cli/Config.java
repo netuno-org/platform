@@ -937,6 +937,7 @@ public final class Config {
                 try {
                     config = Values.fromJSON(InputStream.readFromFile(homeConfigFile));
                     home = config.getString("home");
+                    long lastModified = homeConfigFile.lastModified();
                     if (!home.isEmpty()) {
                         if (home.startsWith("/")) {
                             appHomeConfigFile = new File(new File(home), "config" + File.separator +"_"+ Config.getEnv() + ".json");
@@ -944,11 +945,12 @@ public final class Config {
                             appHomeConfigFile = new File(new File(Config.getAppsHome(), home), "config" + File.separator +"_"+ Config.getEnv() + ".json");
                         }
                         if (appHomeConfigFile.exists()) {
+                            lastModified = appHomeConfigFile.lastModified();
                             config = Values.fromJSON(InputStream.readFromFile(appHomeConfigFile)).merge(config);
                         }
                     }
                     config.set("name", appName);
-                    config.set("lastModified", homeConfigFile.lastModified());
+                    config.set("lastModified", lastModified);
                     Config.setAppConfig(appName, config);
                 } catch (IOException | JSONException e) {
                     String message = "Configuration load failed: "+ homeConfigFile.getPath() +"\n\t"+ EmojiParser.parseToUnicode(":rotating_light:") +" Error: "+ e.getMessage();
