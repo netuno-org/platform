@@ -87,6 +87,7 @@ public class Auth extends ResourceBase {
         Values authConfig = getProteu().getConfig().getValues("_app:config").getValues("auth");
         if (authConfig != null) {
             getProteu().getConfig().set("_auth", authConfig);
+            load();
         }
     }
 

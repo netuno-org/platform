@@ -107,7 +107,11 @@ public class App extends ResourceBase {
     public String name() {
         return Config.getApp(getProteu());
     }
-	
+
+	public String getName() {
+		return name();
+	}
+
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -144,6 +148,10 @@ public class App extends ResourceBase {
     public String url() {
         return Config.getUrlApp(getProteu());
     }
+
+	public String getUrl() {
+		return url();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -181,6 +189,10 @@ public class App extends ResourceBase {
     public String urlPublic() {
         return Config.getUrlAppPublic(getProteu());
     }
+
+	public String getUrlPublic() {
+		return urlPublic();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -218,6 +230,10 @@ public class App extends ResourceBase {
     public String urlStorage() {
         return Config.getUrlAppBaseStorage(getProteu());
     }
+
+	public String getUrlStorage() {
+		return urlStorage();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -255,7 +271,11 @@ public class App extends ResourceBase {
     public String urlFileSystem() {
         return Config.getUrlAppFileSystem(getProteu());
     }
-	
+
+	public String getUrlFileSystem() {
+		return urlFileSystem();
+	}
+
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -292,7 +312,11 @@ public class App extends ResourceBase {
     public String urlFileSystemPrivate() {
         return Config.getUrlAppFileSystemPrivate(getProteu());
     }
-	
+
+	public String getUrlFileSystemPrivate() {
+		return urlFileSystemPrivate();
+	}
+
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -329,6 +353,10 @@ public class App extends ResourceBase {
     public String urlFileSystemPublic() {
         return Config.getUrlAppFileSystemPublic(getProteu());
     }
+
+	public String getUrlFileSystemPublic() {
+		return urlFileSystemPublic();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -366,6 +394,10 @@ public class App extends ResourceBase {
     public String urlFileSystemServer() {
         return Config.getUrlAppFileSystemServer(getProteu());
     }
+
+	public String getUrlFileSystemServer() {
+		return urlFileSystemServer();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -403,6 +435,10 @@ public class App extends ResourceBase {
     public String urlAdmin() {
         return Config.getUrlAdmin(getProteu());
     }
+
+	public String getUrlAdmin() {
+		return urlAdmin();
+	}
 
 	@MethodDoc(
     		translations = {
@@ -453,6 +489,10 @@ public class App extends ResourceBase {
         return Config.getUrl(getProteu(), key);
     }
 
+	public String getUrl(String key) {
+		return url(key);
+	}
+
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -489,6 +529,10 @@ public class App extends ResourceBase {
     public String urlServices() {
         return Config.getUrlServices(getProteu());
     }
+
+	public String getUrlServices() {
+		return urlServices();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -526,6 +570,10 @@ public class App extends ResourceBase {
     public String pathBase() {
         return Config.getPathAppBase(getProteu());
     }
+
+	public String getPathBase() {
+		return pathBase();
+	}
     
     @MethodDoc(
     		translations = {
@@ -563,6 +611,10 @@ public class App extends ResourceBase {
     public String pathHome() {
         return Config.getPathAppBase(getProteu());
     }
+
+	public String getPathHome() {
+		return pathHome();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -600,6 +652,10 @@ public class App extends ResourceBase {
     public String pathConfig() {
         return Config.getPathAppBaseConfig(getProteu());
     }
+
+	public String getPathConfig() {
+		return pathConfig();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -637,6 +693,10 @@ public class App extends ResourceBase {
     public String pathPublic() {
         return Config.getPathAppBasePublic(getProteu());
     }
+
+	public String getPathPublic() {
+		return pathPublic();
+	}
 	
     @MethodDoc(
     		translations = {
@@ -675,6 +735,10 @@ public class App extends ResourceBase {
         return Config.getPathAppBaseServer(getProteu());
     }
 
+	public String getPathServer() {
+		return pathServer();
+	}
+
     @MethodDoc(
     		translations = {
 		            @MethodTranslationDoc(
@@ -711,6 +775,10 @@ public class App extends ResourceBase {
     public String pathStorage() {
         return Config.getPathAppBaseStorage(getProteu());
     }
+
+	public String getPathStorage() {
+		return pathStorage();
+	}
 
     @MethodDoc(
     		translations = {
@@ -757,7 +825,63 @@ public class App extends ResourceBase {
         return config;
     }
 
-    @MethodDoc(translations = {
+
+	public Values getConfig() {
+		return config();
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Verifica se a configuração da aplicação foi alterada.",
+							howToUse = {
+									@SourceCodeDoc(
+											type = SourceCodeTypeDoc.JavaScript,
+											code = "// Valida se a configuração foi alterada.\n" +
+													"\n" +
+													"if (_app.configReloaded()) {\n" +
+													"  _out.println(`A config da app está atualizada.`);\n" +
+													"}"
+									)
+							}
+					),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Checks whether the application configuration has been changed.",
+							howToUse = {
+									@SourceCodeDoc(
+											type = SourceCodeTypeDoc.JavaScript,
+											code = "// Validates whether the configuration has been changed.\n" +
+													"\n" +
+													"if (_app.configReloaded()) {\n" +
+													"  _out.println(`App config is up to date.`);\n" +
+													"}"
+									)
+							}
+					)
+			},
+			parameters = {},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna se a configuração foi alterada e recarregada."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns whether the configuration was changed and reloaded."
+					)
+			}
+	)
+	public boolean configReloaded() {
+		return getProteu().getConfig().getBoolean("_app:config:reloaded");
+	}
+
+	public boolean isConfigReloaded() {
+		return configReloaded();
+	}
+
+	@MethodDoc(translations = {
     		@MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Obtém os dados de settings da aplicação presentes no ficheiro de config.",
@@ -800,6 +924,11 @@ public class App extends ResourceBase {
     public Values settings() {
         return settings;
     }
+
+
+	public Values getSettings() {
+		return settings();
+	}
     
     @MethodDoc(translations = {
     		@MethodTranslationDoc(

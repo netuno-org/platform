@@ -46,14 +46,14 @@ import org.netuno.tritao.resource.event.EventExecutor;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class ProteuEvents implements Events {
-    private static Logger logger = LogManager.getLogger(ProteuEvents.class);
+    private static final Logger logger = LogManager.getLogger(ProteuEvents.class);
 
     private static boolean firstStart = true;
     
     private static Values appConfigBase = new Values();
-    private static long appConfigBaseLastModified = 0l;
+    private static long appConfigBaseLastModified = 0L;
 
-    private static Values starting = new Values();
+    private static final Values starting = new Values();
     
     private void loadHikariConfig(String app, HikariConfig config, Values db) {
         config.setPoolName(app);
@@ -122,6 +122,7 @@ public class ProteuEvents implements Events {
                 Class<?> cls = Class.forName("org.netuno.cli.utils.Build");
                 Config.BUILD_NUMBER = (String)cls.getMethod("getNumber").invoke(null);
             } catch (ClassNotFoundException e) {
+                logger.trace("CLI Build class can not be found.", e);
             } catch (Exception e) {
                 logger.fatal("Error loading build number.", e);
             }
@@ -145,7 +146,7 @@ public class ProteuEvents implements Events {
         String environment = "";
 
         try {
-            Class cls = Class.forName("org.netuno.cli.Config");
+            Class<?> cls = Class.forName("org.netuno.cli.Config");
             String appsHome = (String)cls.getMethod("getAppsHome").invoke(null);
             Config.setAppsHome(appsHome);
             appConfig = (Values)cls.getMethod("getAppConfigByHost", String.class).invoke(null, host);
@@ -162,10 +163,11 @@ public class ProteuEvents implements Events {
                 appConfig = (Values)cls.getMethod("getAppConfig", String.class).invoke(null, app);
             }
             environment = (String)cls.getMethod("getEnv").invoke(null);
-
+            @SuppressWarnings("unchecked")
             List<String> permittedLanguages = (List<String>)cls.getMethod("getPermittedLanguages").invoke(null);
-            Config.setPermittedLanguages(permittedLanguages.toArray(new String[permittedLanguages.size()]));
+            Config.setPermittedLanguages(permittedLanguages.toArray(new String[0]));
         } catch (ClassNotFoundException e) {
+            logger.trace("CLI Config class can not be found.", e);
         } catch (Exception e) {
             logger.fatal("Error loading app config.", e);
         }
@@ -213,7 +215,7 @@ public class ProteuEvents implements Events {
         proteu.getConfig().set("_url:filesystem", "/fs/"+ app);
 
         try {
-            if (proteu.getConfig().getBoolean("_lang:disabled") == false) {
+            if (!proteu.getConfig().getBoolean("_lang:disabled")) {
                 proteu.getConfig().set("_lang:en_GB", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "en_GB"));
                 proteu.getConfig().set("_lang:en_US", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "en_US"));
                 proteu.getConfig().set("_lang:pt_PT", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "pt_PT"));
@@ -281,7 +283,7 @@ public class ProteuEvents implements Events {
             if (dbEngine.isEmpty()) {
                 String message = "App "+ app +" with empty database engine.";
                 throw new DBError(message).setLogFatal(true);
-            } else if (org.netuno.proteu.Config.getDataSources().hasKey(Config.getDabaBase(proteu, key)) == false) {
+            } else if (!org.netuno.proteu.Config.getDataSources().hasKey(Config.getDabaBase(proteu, key))) {
             	org.netuno.proteu.Config.getDataSources().set(Config.getDabaBase(proteu, key) +"$LastModified", appConfig.getLong("lastModified"));
                 try {
                     if (dbEngine.equalsIgnoreCase("h2")
@@ -447,6 +449,15 @@ public class ProteuEvents implements Events {
                 proteu.getConfig().set("_database:builder:"+ key +":uuid-function", db.getString("uuidFunction"));
             }
         }
+        if (org.netuno.proteu.Config.getConfig()
+                .getLong("_app:"+ appConfig.getString("name") +":config:lastModified")
+                != appConfig.getLong("lastModified")) {
+            proteu.getConfig().set("_app:config:reloaded", true);
+            org.netuno.proteu.Config.getConfig().set(
+                    "_app:"+ appConfig.getString("name") +":config:lastModified",
+                    appConfig.getLong("lastModified")
+            );
+        }
         Config.getComponents(proteu, hili);
         Config.getScriptingDefinitions(proteu, hili);
         hili.resource().all(true);
@@ -531,7 +542,7 @@ public class ProteuEvents implements Events {
             publicPath = proteu.safePath(publicPath);
             
             /*if (!Config.getPathAppBasePublic(proteu).startsWith(Config.getPathWebHome(proteu))
-            		&& publicPath.startsWith("/apps/"+ Config.getApp(proteu) +"/")) {
+                && publicPath.startsWith("/apps/"+ Config.getApp(proteu) +"/")) {
             	publicPath = publicPath.substring(("/apps/"+ Config.getApp(proteu) +"/").length());
             }*/
             
@@ -542,7 +553,7 @@ public class ProteuEvents implements Events {
         } else if ((hostType == Config.HostType.SERVICES && url.startsWith(services_url))
         		|| (hostType == Config.HostType.BASE && url.startsWith(services_url))
         		|| (hostType == Config.HostType.ADMIN && url.startsWith(admin_url + "services/"))) {
-        	String servicePath = "";
+        	String servicePath;
         	if (hostType == Config.HostType.SERVICES || hostType == Config.HostType.BASE) {
         		servicePath = url.substring(services_url.length());
         	} else {
@@ -696,28 +707,27 @@ public class ProteuEvents implements Events {
                 return;
             }
             TemplateBuilder.output(proteu, hili, "includes/head_login");
-            switch (httpStatus) {
-                case Forbidden403:
+            errorMessage = switch (httpStatus) {
+                case Forbidden403 -> {
                     TemplateBuilder.output(proteu, hili, "http/403_forbidden");
-                    errorMessage = "Hili - 403 Forbidden";
-                    break;
-                case NotFound404:
+                    yield "Hili - 403 Forbidden";
+                }
+                case NotFound404 -> {
                     TemplateBuilder.output(proteu, hili, "http/404_not_found");
-                    errorMessage = "Hili - 404 Not Found";
-                    break;
-                case InternalServerError500:
+                    yield "Hili - 404 Not Found";
+                }
+                case InternalServerError500 -> {
                     TemplateBuilder.output(proteu, hili, "http/500_internal_server_error");
-                    errorMessage = "Hili - 500 Internal Server Error";
-                    break;
-                default:
+                    yield "Hili - 500 Internal Server Error";
+                }
+                default -> {
                     TemplateBuilder.output(proteu, hili, "http/000_generic");
-                    errorMessage = "Hili - "+ httpStatus.toString() +" - Generic Error";
-                    break;
-            }
+                    yield "Hili - " + httpStatus + " - Generic Error";
+                }
+            };
             TemplateBuilder.output(proteu, hili, "includes/foot_login");
         } catch (Throwable t) {
             logger.error(errorMessage, t);
-            new Error(t);
         }
     }
 

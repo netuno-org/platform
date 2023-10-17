@@ -67,5 +67,4 @@ public class Config extends ResourceBaseValues {
     public Config(Proteu proteu, Hili hili) {
         super(proteu, hili, proteu.getConfig());
     }
-
 }
