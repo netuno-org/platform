@@ -1226,7 +1226,7 @@ public class User extends ResourceBase {
     }
 
     public Values allProvidersData(int userId) {
-        return new Values(Config.getDataBaseBuilder(getProteu()).selectUserAuthProviders(Integer.toString(userId)));
+        return new Values(Config.getDataBaseBuilder(getProteu()).allAuthProviderUserByUser(Integer.toString(userId)));
     }
 
     public Values providerData(String providerCode) {

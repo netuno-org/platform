@@ -290,6 +290,15 @@ public class User {
 			} else {
 				data.set("user.providers.ldap.active.checked", "");
 			}
+			List<Values> allAuthProviders = Config.getDataBaseBuilder(proteu).allAuthProviderUserByUser(user.getString("id"));
+			for (Values authProvider : allAuthProviders) {
+				if (authProvider.getString("provider_code").equals("ldap")) {
+					continue;
+				}
+				for (String field : List.of("moment", "code", "name", "username", "email", "avatar")) {
+					data.set(String.format("user.providers.%s.%s", authProvider.getString("provider_code"), field), authProvider.get(field));
+				}
+			}
         } else {
 			data.set("user.password.validation", "required");
 		}
