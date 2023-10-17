@@ -62,23 +62,159 @@
         <input type="checkbox" name="active" id="netuno_user_form_user_active" value="1" _{data=user.active.checked}>
     </div>
     <br>
+    #if ($_auth.isProviderEnabled("ldap") || $_auth.isProviderEnabled("google") || $_auth.isProviderEnabled("github") || $_auth.isProviderEnabled("discord"))
     <h2>_{&lang=netuno.user.providers.title}</h2>
     <ul class="nav nav-tabs nav-justified">
+        #if ($_auth.isProviderEnabled("ldap"))
         <li role="presentation"><a href="javascript: void(0);" id="netuno_user_providers_ldap_button">LDAP</a></li>
-        <li role="presentation"><a href="javascript: void(0);" id="netuno_user_providers_google_button">Google</a></li>
-        <li role="presentation"><a href="javascript: void(0);" id="netuno_user_providers_github_button">GitHub</a></li>
-        <li role="presentation"><a href="javascript: void(0);" id="netuno_user_providers_discord_button">Discord</a></li>
+        #end
+        #if ($_auth.isProviderEnabled("google"))
+        <li role="presentation">
+            <a href="javascript: void(0);" id="netuno_user_providers_google_button">
+                #if ($data.get("user.providers.google.moment"))<b>#end
+                Google
+                #if ($data.get("user.providers.google.moment"))</b>#end
+            </a>
+        </li>
+        #end
+        #if ($_auth.isProviderEnabled("github"))
+        <li role="presentation">
+            <a href="javascript: void(0);" id="netuno_user_providers_github_button">
+                #if ($data.get("user.providers.github.moment"))<b>#end
+                GitHub
+                #if ($data.get("user.providers.github.moment"))</b>#end
+            </a>
+        </li>
+        #end
+        #if ($_auth.isProviderEnabled("discord"))
+        <li role="presentation">
+            <a href="javascript: void(0);" id="netuno_user_providers_discord_button">
+                #if ($data.get("user.providers.discord.moment"))<b>#end
+                Discord
+                #if ($data.get("user.providers.discord.moment"))</b>#end
+            </a>
+        </li>
+        #end
     </ul>
+    #if ($_auth.isProviderEnabled("ldap"))
     <div id="netuno_user_providers_ldap_container" class="netuno-user-providers-container" style="display: none;">
         <div class="form-group">
             <label for="netuno_user_providers_ldap_active">_{&lang=netuno.user.providers.ldap.active.label}</label>
             <input type="checkbox" name="provider_ldap_active" id="netuno_user_providers_ldap_active" value="1" _{data=user.providers.ldap.active.checked}>
         </div>
     </div>
-    <div id="netuno_user_providers_google_container" class="netuno-providers-container" style="display: none;">Google</div>
-    <div id="netuno_user_providers_github_container" class="netuno-providers-container" style="display: none;">GitHub</div>
-    <div id="netuno_user_providers_discord_container" class="netuno-providers-container" style="display: none;">Discord</div>
+    #end
+    #set ($formatAuthProviderMoment = $_time.simpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+    #if ($_auth.isProviderEnabled("google"))
+    <div id="netuno_user_providers_google_container" class="netuno-user-providers-container" style="display: none;">
+        #if ($data.get("user.providers.google.moment"))
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.moment.label}:</label>
+            <span>$formatAuthProviderMoment.format($data.getSQLTimestamp("user.providers.google.moment"))</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.code.label}:</label>
+            <span>_{data=user.providers.google.code}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.name.label}:</label>
+            <span>_{data=user.providers.google.name}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.username.label}:</label>
+            <span>_{data=user.providers.google.username}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.email.label}:</label>
+            <span>_{data=user.providers.google.email}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.avatar.label}:</label>
+            #if ($data.getString("user.providers.google.avatar") != "")
+            <div><a href="_{data=user.providers.google.avatar}" target="_blank"><img src="_{data=user.providers.google.avatar}" width="100" height="100"/></a></div>
+            #end
+        </div>
+        #else
+        <div class="form-group">
+            _{&lang=netuno.user.providers.msg.no_data}
+        </div>
+        #end
+    </div>
+    #end
+    #if ($_auth.isProviderEnabled("github"))
+    <div id="netuno_user_providers_github_container" class="netuno-user-providers-container" style="display: none;">
+        #if ($data.getString("user.providers.github.moment") != "")
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.moment.label}:</label>
+            <span>$formatAuthProviderMoment.format($data.getSQLTimestamp("user.providers.github.moment"))</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.code.label}:</label>
+            <span>_{data=user.providers.github.code}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.name.label}:</label>
+            <span>_{data=user.providers.github.name}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.username.label}:</label>
+            <span>_{data=user.providers.github.username}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.email.label}:</label>
+            <span>_{data=user.providers.github.email}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.avatar.label}:</label>
+            #if ($data.getString("user.providers.github.avatar") != "")
+            <div><a href="_{data=user.providers.github.avatar}" target="_blank"><img src="_{data=user.providers.github.avatar}" width="100" height="100"/></a></div>
+            #end
+        </div>
+        #else
+        <div class="form-group">
+            _{&lang=netuno.user.providers.msg.no_data}
+        </div>
+        #end
+    </div>
+    #end
+    #if ($_auth.isProviderEnabled("discord"))
+    <div id="netuno_user_providers_discord_container" class="netuno-user-providers-container" style="display: none;">
+        #if ($data.getString("user.providers.discord.moment") != "")
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.moment.label}:</label>
+            <span>$formatAuthProviderMoment.format($data.getSQLTimestamp("user.providers.discord.moment"))</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.code.label}:</label>
+            <span>_{data=user.providers.discord.code}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.name.label}:</label>
+            <span>_{data=user.providers.discord.name}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.username.label}:</label>
+            <span>_{data=user.providers.discord.username}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.email.label}:</label>
+            <span>_{data=user.providers.discord.email}</span>
+        </div>
+        <div class="form-group">
+            <label>_{&lang=netuno.user.providers.avatar.label}:</label>
+            #if ($data.getString("user.providers.discord.avatar") != "")
+            <div><a href="_{data=user.providers.discord.avatar}" target="_blank"><img src="_{data=user.providers.discord.avatar}" width="100" height="100"/></a></div>
+            #end
+        </div>
+        #else
+        <div class="form-group">
+            _{&lang=netuno.user.providers.msg.no_data}
+        </div>
+        #end
+    </div>
+    #end
     <br>
+    #end
     <h2>_{&lang=netuno.user.rules.title}</h2>
     <ul class="nav nav-tabs nav-justified">
         <li role="presentation"><a href="javascript: void(0);" id="netuno_user_form_rules_button">_{&lang=netuno.rules.forms}</a></li>
