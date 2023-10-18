@@ -1247,4 +1247,84 @@ public class User extends ResourceBase {
         return dbBuilder.getAuthProviderUserByUid(uid);
     }
 
+    public boolean password(int id, String password) {
+        return setPassword(id, password);
+    }
+
+    public boolean password(String password) {
+        return setPassword(password);
+    }
+
+    public boolean setPassword(int id, String password) {
+        Values userData = get(id);
+        String userId = userData.getString("id");
+        return Config.getDataBaseBuilder(getProteu()).updateUser(
+                userId,
+                new Values()
+                        .set("pass", Config.getPasswordBuilder(getProteu()).getCryptPassword(
+                                getProteu(),
+                                getHili(),
+                                userData.getString("user"),
+                                password
+                        ))
+        );
+    }
+
+    public boolean setPassword(String password) {
+        return setPassword(id, password);
+    }
+
+    public boolean noPassword(int id, boolean active) {
+        return setNoPassword(id, active);
+    }
+
+    public boolean noPassword(boolean active) {
+        return setNoPassword(active);
+    }
+
+    public boolean setNoPassword(int id, boolean active) {
+        Values userData = get(id);
+        String userId = userData.getString("id");
+        return Config.getDataBaseBuilder(getProteu()).updateUser(
+                userId,
+                new Values()
+                        .set("no_pass", active)
+                        .set("pass", "")
+        );
+    }
+
+    public boolean setNoPassword(boolean active) {
+        return setNoPassword(id, active);
+    }
+
+    public boolean providerLDAP(int id, boolean active) {
+        return setProviderLDAP(id, active);
+    }
+
+    public boolean providerLDAP(boolean active) {
+        return setProviderLDAP(active);
+    }
+
+    public boolean setProviderLDAP(int id, boolean active) {
+        Values userData = get(id);
+        Values dbUserProviderLDAP = Config.getDataBaseBuilder(getProteu()).getAuthProviderUserByCode(userData.getString("id"), "ldap");
+        if (active && dbUserProviderLDAP == null) {
+            Config.getDataBaseBuilder(getProteu()).insertAuthProviderUser(
+                    new Values()
+                            .set("user_id", userData.getInt("id"))
+                            .set("provider_id", Config.getDataBaseBuilder(getProteu()).getAuthProviderByCode("ldap").getInt("id"))
+                            .set("code", "")
+            );
+            return true;
+        } else if (!active && dbUserProviderLDAP != null) {
+            Config.getDataBaseBuilder(getProteu()).deleteAuthProviderUser(dbUserProviderLDAP.getString("id"));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean setProviderLDAP(boolean active) {
+        return setProviderLDAP(id, active);
+    }
+
 }
