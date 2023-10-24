@@ -105,7 +105,7 @@ if (!$javaVersion -or !$mvnInstalled -or !$nodejsInstalled -or !$proguardIsInsta
             [Environment]::SetEnvironmentVariable("M2_HOME", $mavenPath, "Machine")
             [Environment]::SetEnvironmentVariable("MAVEN_HOME", $mavenPath, "Machine")
             
-            $WebClient.DownloadFile("https://github.com/Guardsquare/proguard/releases/download/v7.2.2/proguard-7.2.2.zip", "$PSScriptRoot\proguard.zip")
+            $WebClient.DownloadFile("https://github.com/Guardsquare/proguard/releases/download/v7.4/proguard-7.4.0.zip", "$PSScriptRoot\proguard.zip")
             Expand-Archive -LiteralPath "proguard.zip" -DestinationPath ".\" -Force
             Get-ChildItem -Path "./" -Directory "proguard-*" | Rename-Item -NewName "proguard"
             Remove-Item ".\proguard.zip" -Recurse -Confirm:$false -Force -ErrorAction Ignore
