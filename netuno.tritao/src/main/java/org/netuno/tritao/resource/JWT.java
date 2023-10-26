@@ -686,40 +686,6 @@ public class JWT extends ResourceBase {
         return null;
     }
 
-
-    public Values searchApp(Values data) {
-        if (data.hasKey("key") && data.hasKey("secret")) {
-
-        } else if (data.hasKey("code")) {
-
-        } else if (data.hasKey("name")) {
-
-        }
-        return new Values();
-    }
-
-    public Values registerApp(Values data) {
-        return new Values();
-    }
-
-    public String createAppCode(String code) {
-        return "";
-    }
-
-    public Values registerWebOrigin(Values data) {
-        return new Values();
-    }
-
-    public boolean isAppCode(String code) {
-        return false;
-    }
-
-    public Values searchWebOrigin(Values data) {
-        return new Values();
-    }
-
-
-
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
