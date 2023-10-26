@@ -22,6 +22,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.netuno.library.doc.*;
@@ -410,6 +411,74 @@ public class XLS extends ResourceBase {
         workbook.setActiveSheet(index);
         this.sheet = workbook.getSheetAt(index);
         return this.sheet;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém a referência da coluna (letras) com base na sua posição numérico.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the column reference (letters) based on its numeric position.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "index", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            description = "Número da coluna."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Column number."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Referência em letras da coluna."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Reference in column letters."
+            )
+    })
+    public String columnReference(int index) {
+        return CellReference.convertNumToColString(index);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém a posição numérica da coluna com base na referência em letras.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the numeric position of the column based on the letter reference.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "index", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            description = "Referência em letras da coluna."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Reference in column letters."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Posição numérica da coluna."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Numeric position of the column."
+            )
+    })
+    public int columnReference(String index) {
+        return CellReference.convertColStringToIndex(index);
     }
 
     @MethodDoc(dependency = "create", translations = {
@@ -2464,11 +2533,11 @@ public class XLS extends ResourceBase {
     }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Referência da posição da última célula com dados inserida."
+                description = "Referência da posição com base nas coordenadas passadas."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Reference of the position of the last cell with data entered."
+                description = "Position reference based on passed coordinates."
         )
     })
     public XLSPosition position(int rowIndex, int colIndex) {
