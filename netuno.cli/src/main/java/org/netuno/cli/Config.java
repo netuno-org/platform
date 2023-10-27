@@ -918,7 +918,7 @@ public final class Config {
                     && homeConfigFile.lastModified() <= appConfigLastModified) {
                     config = appConfig;
                 }
-                home = config.getString("home");
+                home = appConfig.getString("home");
                 if (!home.isEmpty()) {
                     if (home.startsWith("/")) {
                         appHomeConfigFile = new File(new File(home), "config" + File.separator +"_"+ Config.getEnv() + ".json");
