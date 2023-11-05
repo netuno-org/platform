@@ -158,7 +158,6 @@ public class JWT extends ResourceBase {
             parameters = {},
             returns = {}
     )
-
     public int accessExpires() {
         Values config = getProteu().getConfig().asValues("_jwt");
         if (config != null) {
@@ -181,7 +180,6 @@ public class JWT extends ResourceBase {
             parameters = {},
             returns = {}
     )
-
     public int refreshExpires() {
         Values config = getProteu().getConfig().asValues("_jwt");
         if (config != null) {
@@ -503,9 +501,28 @@ public class JWT extends ResourceBase {
                             description = "Returns the validation."
                     )}
     )
-
     public boolean check(String token) {
+        Values dbToken = dbRecord(token);
+        if (dbToken != null) {
+                return check(dbToken);
+        }
+        return false;
+    }
+
+    public boolean check(Values dbToken) {
     	Time time = resource(Time.class);
+        Date expires = dbToken.getDate("access_expires");
+        if (expires.getTime() > time.instant().toEpochMilli()) {
+                return true;
+        }
+        return false;
+    }
+
+    public Values accessToken(Values contextData) {
+        return accessToken(0, contextData);
+    }
+
+    public Values dbRecord(String token) {
         Data dbManagerData = new Data(getProteu(), getHili());
         List<Values> dbTokens = dbManagerData.find(
                 "netuno_auth_jwt_token",
@@ -518,19 +535,10 @@ public class JWT extends ResourceBase {
                 )
         );
         if (dbTokens.size() == 1) {
-            Values dbToken = dbTokens.get(0);
-            Date expires = dbToken.getDate("access_expires");
-            if (expires.getTime() > time.instant().toEpochMilli()) {
-                return true;
-            }
+                return dbTokens.get(0);
         }
-        return false;
+        return null;
     }
-
-    public Values accessToken(Values contextData) {
-        return accessToken(0, contextData);
-    }
-
 
     @MethodDoc(translations = {
             @MethodTranslationDoc(
