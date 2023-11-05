@@ -27,6 +27,7 @@
         <netuno.psamata.version>7.0.0</netuno.psamata.version>
         <netuno.tritao.version>7.0.0</netuno.tritao.version>
         <netuno.library.doc.version>7.0.0</netuno.library.doc.version>
+        <json.version>20231013</json.version>
     </properties>
 
     <dependencyManagement>
