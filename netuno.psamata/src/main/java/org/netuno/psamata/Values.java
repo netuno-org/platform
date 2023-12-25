@@ -2732,12 +2732,16 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 if (htmlEscape && i instanceof String) {
                     i = StringEscapeUtils.escapeHtml4((String)i);
                 } else if (!htmlEscape && i instanceof String) {
-                    i = StringEscapeUtils.escapeJava(i.toString())
-                    		.replace("\\n", "\n")
-                    		.replace("\\r", "\r")
-                    		.replace("\\t", "\t")
-                    		.replace("\\\\", "\\")
-                    		.replace("\\\"", "\""); //StringEscapeUtils.escapeJava((String) i);
+                    i = StringEscapeUtils.escapeJson(i.toString())
+                            .replace("\\n", "\n")
+                            .replace("\\r", "\r")
+                            .replace("\\t", "\t")
+                            .replace("\\\\", "\\")
+                            .replace("\\\"", "\"")
+                            .replace("\\/", "/"); 
+                    /*
+                    i = StringEscapeUtils.escapeJava((String) i);
+                    */
                 } else if (is(i)) {
                     i = toJSONObject(i, htmlEscape);
                 }
