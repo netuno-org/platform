@@ -42,17 +42,13 @@ public class ErrorException extends ProteuError {
         super("\n#"
                 + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
                 + "\n#"
-                + "\n# "+ message +":"
-                + "\n#   "+ cause.getMessage().replace("\n", "\n#     ") +""
-                + "\n#"
-                + "\n", cause);
+                + "\n# "+ message.replace("\n", "\n# "), cause);
     }
 
     public ErrorException(Proteu proteu, Hili hili, Throwable cause) {
         super("\n#"
                 + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
-                + "\n#"
-                + "\n", cause);
+                + "\n#", cause);
     }
 
 }
