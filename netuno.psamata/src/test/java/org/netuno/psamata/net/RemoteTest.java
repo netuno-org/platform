@@ -20,6 +20,10 @@ package org.netuno.psamata.net;
 import org.junit.jupiter.api.*;
 import org.netuno.psamata.Values;
 
+/**
+ * Remote Test
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
 public class RemoteTest {
 
     private Remote remote = new Remote();
