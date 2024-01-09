@@ -23,6 +23,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.library.doc.LanguageDoc;
+import org.netuno.library.doc.MethodDoc;
+import org.netuno.library.doc.MethodTranslationDoc;
+import org.netuno.library.doc.ReturnTranslationDoc;
 
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 
@@ -58,6 +62,26 @@ public class SSHClient {
         }
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a conexão com o servidor através do SSH.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts connecting to the server via SSH.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto cliente SSH atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current SSH client object."
+        )
+    })
     public SSHClient connect() throws IOException {
         ssh.addHostKeyVerifier(new PromiscuousVerifier());
         ssh.connect(config.getHost(), config.getPort());
@@ -69,6 +93,26 @@ public class SSHClient {
         return this;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Fecha todas as sessões abertas e realiza a desconexão SSH com o servidor.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Closes all open sessions and performs SSH disconnection from the server.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto cliente SSH atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current SSH client object."
+        )
+    })
     public SSHClient disconnect() throws Exception {
         for (SSHSession session : sessions) {
             session.close();
@@ -83,18 +127,78 @@ public class SSHClient {
         return this;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a sessão SSH para executar comandos.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts SSH session to execute commands.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "A sessão iniciada para executar comandos."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The session started to execute commands."
+        )
+    })
     public SSHSession initSession() throws Exception {
         SSHSession session = new SSHSession(ssh);
         sessions.add(session);
         return session;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a sessão SFTP para gerir pastas e transferir arquivos.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts SFTP session to manage folders and transfer files.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "A sessão SFTP iniciada para executar comandos."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The SFTP session started to execute commands."
+        )
+    })
     public SSHSFTP initSFTP() throws IOException {
         SSHSFTP sftpSession = new SSHSFTP(ssh.newSFTPClient());
         sftpSessions.add(sftpSession);
         return sftpSession;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a sessão SCP para gerir pastas e transferir arquivos.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts SCP session to manage folders and transfer files.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "A sessão SCP iniciada para executar comandos."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The SCP session started to execute commands."
+        )
+    })
     public SSHSCP initSCP() throws IOException {
         SSHSCP scpSession = new SSHSCP(ssh.newSCPFileTransfer());
         scpSessions.add(scpSession);
