@@ -280,11 +280,11 @@ public class SSH extends ResourceBase implements AutoCloseable {
     }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto FTP atual."
+                description = "Recurso SSH atual."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current FTP object."
+                description = "Current SSH resource."
         )
     })
     public SSH setConfig(SSHConfig config) {
@@ -345,11 +345,11 @@ public class SSH extends ResourceBase implements AutoCloseable {
     }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto FTP atual."
+                description = "Recurso SSH atual."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current FTP object."
+                description = "Current SSH resource."
         )
     })
     public SSH setEnabled(boolean enabled) {
@@ -360,10 +360,50 @@ public class SSH extends ResourceBase implements AutoCloseable {
         return setEnabled(enabled);
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o cliente SSH base.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the base SSH client.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cliente SSH original de base."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Original base SSH client"
+        )
+    })
     public SSHClient getClient() {
         return client;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a conexão com o servidor através do SSH.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts connecting to the server via SSH.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Recurso SSH atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current SSH resource."
+        )
+    })
     public SSH connect() {
         try {
             client.connect();
@@ -373,28 +413,128 @@ public class SSH extends ResourceBase implements AutoCloseable {
         return this;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Fecha todas as sessões abertas e realiza a desconexão SSH com o servidor.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Closes all open sessions and performs SSH disconnection from the server.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Recurso SSH atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current SSH resource."
+        )
+    })
     public SSH disconnect() {
         try {
             client.disconnect();
             client = null;
             return this;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ErrorException(getProteu(), getHili(), "SSH disconnection failed!", e);
         }
     }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a sessão SSH para executar comandos.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts SSH session to execute commands.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "A sessão iniciada para executar comandos."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The session started to execute commands."
+        )
+    })
+    public SSHSession initSession() throws Exception {
+        return client.initSession();
+    }
     
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a sessão SFTP para gerir pastas e transferir arquivos.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts SFTP session to manage folders and transfer files.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "A sessão SFTP iniciada para executar comandos."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The SFTP session started to execute commands."
+        )
+    })
     public SSHSFTP initSFTP() throws IOException {
         return client.initSFTP();
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a sessão SCP para gerir pastas e transferir arquivos.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts SCP session to manage folders and transfer files.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "A sessão SCP iniciada para executar comandos."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The SCP session started to execute commands."
+        )
+    })
     public SSHSCP initSCP() throws IOException {
         return client.initSCP();
     }
 
-    public SSHSession initSession() throws Exception {
-        return client.initSession();
-    }
-
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Fecha todas as sessões abertas e realiza a desconexão SSH com o servidor.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Closes all open sessions and performs SSH disconnection from the server.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto SSH atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current SSH object."
+        )
+    })
     @Override
     public void close() throws Exception {
         if (client != null) {
