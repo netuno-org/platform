@@ -23,6 +23,11 @@ import java.util.concurrent.TimeUnit;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.MethodDoc;
+import org.netuno.library.doc.MethodTranslationDoc;
+import org.netuno.library.doc.ParameterDoc;
+import org.netuno.library.doc.ParameterTranslationDoc;
+import org.netuno.library.doc.ReturnTranslationDoc;
 
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -41,16 +46,53 @@ import net.schmizz.sshj.connection.channel.direct.Session.Command;
         )
 })
 public class SSHSession implements AutoCloseable {
-    Session session = null;
+    private Session session = null;
+    private boolean closed = false;
 
     protected SSHSession(net.schmizz.sshj.SSHClient sshClient) throws Exception {
         session = sshClient.startSession();
     }
 
-    public SSHExecResult exec(String command) throws IOException {
-        return exec(command, 0);
-    }
-
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Executa comandos remotamente através do SSH no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Execute commands remotely via SSH on the server.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "command", translations = {
+                    @ParameterTranslationDoc(
+                            name = "comando",
+                            language = LanguageDoc.PT,
+                            description = "Command to be executed remotely on the server."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Server path where the folder should be created."
+                    )}),
+            @ParameterDoc(name = "timeout", translations = {
+                @ParameterTranslationDoc(
+                        language = LanguageDoc.PT,
+                        description = "Tempo limite para execução do comando."
+                ),
+                @ParameterTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "Command execution timeout."
+                )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Resultado da execução do comando."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Command execution result."
+            )}
+    )
     public SSHExecResult exec(String command, int timeout) throws IOException {
         final Command cmd = session.exec(command);
         String error = IOUtils.readFully(cmd.getErrorStream()).toString();
@@ -68,11 +110,61 @@ public class SSHSession implements AutoCloseable {
             .setExitStatus(cmd.getExitStatus());
     }
 
+    public SSHExecResult exec(String command) throws IOException {
+        return exec(command, 0);
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Fecha a sessão atual.",
+                howToUse = {}),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Closes the current session.",
+                howToUse = {})
+        },
+        parameters = {},
+        returns = {}
+    )
     @Override
     public void close() throws Exception {
+        if (isClosed()) {
+            return;
+        }
         if (session != null) {
             session.close();
+            this.closed = true;
         }
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Verifica se a sessão ainda está aberta.",
+                howToUse = {}),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Checks if the session is still open.",
+                howToUse = {})
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se estiver aberta"
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if it is open."
+            )}
+    )
+    public boolean closed() {
+        return closed;
+    }
+
+    public boolean isClosed() {
+        return closed();
     }
 
 }
