@@ -18,6 +18,8 @@
 package org.netuno.psamata.ssh;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +35,9 @@ public class SSHClient {
     private static Logger logger = LogManager.getLogger(SSHClient.class);
     private net.schmizz.sshj.SSHClient ssh = null;
     private SSHConfig config = new SSHConfig();
+    private List<SSHSession> sessions = new ArrayList<>();
+    private List<SSHSCP> scpSessions = new ArrayList<>();
+    private List<SSHSFTP> sftpSessions = new ArrayList<>();
 
     public SSHClient() throws Exception {
         init();
@@ -64,20 +69,35 @@ public class SSHClient {
         return this;
     }
 
-    public SSHClient disconnect() throws IOException {
+    public SSHClient disconnect() throws Exception {
+        for (SSHSession session : sessions) {
+            session.close();
+        }
+        for (SSHSCP scpSession : scpSessions) {
+            scpSession.close();
+        }
+        for (SSHSFTP sftpSession : sftpSessions) {
+            sftpSession.close();
+        }
         ssh.disconnect();
         return this;
     }
 
+    public SSHSession initSession() throws Exception {
+        SSHSession session = new SSHSession(ssh);
+        sessions.add(session);
+        return session;
+    }
+
     public SSHSFTP initSFTP() throws IOException {
-        return new SSHSFTP(ssh.newSFTPClient());
+        SSHSFTP sftpSession = new SSHSFTP(ssh.newSFTPClient());
+        sftpSessions.add(sftpSession);
+        return sftpSession;
     }
 
     public SSHSCP initSCP() throws IOException {
-        return new SSHSCP(ssh.newSCPFileTransfer());
-    }
-
-    public SSHSession initSession() throws Exception {
-        return new SSHSession(ssh);
+        SSHSCP scpSession = new SSHSCP(ssh.newSCPFileTransfer());
+        scpSessions.add(scpSession);
+        return scpSession;
     }
 }
