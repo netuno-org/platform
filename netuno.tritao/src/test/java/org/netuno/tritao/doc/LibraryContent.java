@@ -348,16 +348,23 @@ public class LibraryContent {
                 if (methodDoc == null || methodDoc.dependency().isEmpty()) {
                     content.append("#### ");
                     if (isResource) {
-                        content.append("_" + name + ".");
+                        content.append("<span style=\"font-weight: normal\">");
+                        content.append("_" + name);
+                        content.append("</span>");
+                        content.append(".");
                     }
+                    content.append("<span style=\"color: #008000\">");
                     content.append(method.getName());
+                    content.append("</span>");
                 } else {
                     content.append("#### ");
                     if (isResource) {
                         content.append("`_" + name + "." + methodDoc.dependency() + "()`");
                         content.append(".");
                     }
+                    content.append("<span style=\"color: #008000\">");
                     content.append(method.getName());
+                    content.append("</span>");
                 }
                 content.append("(");
                 boolean firstParameter = true;
@@ -410,14 +417,23 @@ public class LibraryContent {
                                     .set("parameterTranslationDoc", parameterTranslationDoc)
                                     .set("parameterName", parameterName)
                     );
-                    content.append(parameterName + ": " + type(parameter.getType()));
+                    content.append("<span style=\"color: #FF8000\">");
+                    content.append(parameterName);
+                    content.append("</span>");
+                    content.append(": ");
+                    content.append("<span style=\"font-weight: normal; font-style: italic;\">");
+                    content.append(type(parameter.getType()));
+                    content.append("</span>");
                     firstParameter = false;
                 }
                 if (!parametersWithoutDoc.isEmpty()) {
                     System.out.println("# " + name + "." + method.getName() + "(" + parametersWithoutDoc + ")");
                 }
                 content.append(")");
-                content.append(" : " + type(method.getReturnType()));
+                content.append(" : ");
+                content.append("<span style=\"font-weight: normal; font-style: italic;\">");
+                content.append(type(method.getReturnType()));
+                content.append("</span>");
                 if (methodTranslationDoc != null) {
                     content.append("\n");
                     if (lang == LanguageDoc.EN) {
@@ -458,13 +474,13 @@ public class LibraryContent {
                         String parameterName = _parameter.getString("parameterName", parameter.getName());
                         ParameterTranslationDoc parameterTranslationDoc = (ParameterTranslationDoc) _parameter.get("parameterTranslationDoc");
                         if (parameterTranslationDoc == null) {
-                            content.append("| " + parameterName + " | " + type(parameter.getType()) + " |   |\n");
+                            content.append("| **" + parameterName + "** | _" + type(parameter.getType()) + "_ |   |\n");
                         } else {
                             String[] lines = parameterTranslationDoc.description().split("\n");
                             boolean firstLine = true;
                             for (String line : lines) {
                                 if (firstLine) {
-                                    content.append("| " + parameterName + " | " + type(parameter.getType()) + " | " + line + " |\n");
+                                    content.append("| **" + parameterName + "** | _" + type(parameter.getType()) + "_ | " + line + " |\n");
                                 } else {
                                     content.append("|   |   | " + line + " |\n");
                                 }
@@ -480,7 +496,7 @@ public class LibraryContent {
                     content.append("##### Retorno\n");
                 }
                 content.append("\n");
-                content.append("( " + (type(method.getReturnType())) + " )\n");
+                content.append("( _" + (type(method.getReturnType())) + "_ )\n");
                 if (returnTranslationDoc != null) {
                     content.append("\n");
                     content.append(returnTranslationDoc.description());
@@ -552,7 +568,7 @@ public class LibraryContent {
                 }
             }
         }
-        return "_" + content + "_";
+        return content;
     }
 
     private String sourceCodes(SourceCodeDoc[] sourceCodeDocs) {
