@@ -360,10 +360,50 @@ public class FTP extends ResourceBase implements AutoCloseable {
         return setEnabled(enabled);
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o cliente FTP base.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the base FTP client.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Cliente FTP original de base."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Original base FTP client"
+        )
+    })
     public FTPClient getClient() {
         return client;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Inicia a conexão com o servidor através do FTP.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Starts connecting to the server via FTP.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O recurso FTP atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The current FTP resource."
+        )
+    })
     public FTP connect() {
         try {
             client.connect();
@@ -373,6 +413,37 @@ public class FTP extends ResourceBase implements AutoCloseable {
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define o caminho remoto que deve ser utilizado para realizar as operações.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Defines the remote path that should be used to perform operations.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho no servidor para realizar o trabalho."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path on the server to perform the work."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP changeWorkingDirectory(String path) {
         try {
             client.changeWorkingDirectory(path);
@@ -386,6 +457,27 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Muda para a pasta anterior onde deve ser utilizada para realizar as operações.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Switches to the previous folder where it should be used to perform operations.",
+                    howToUse = {})},
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP changeToParentDirectory() {
         try {
             client.changeToParentDirectory();
@@ -399,6 +491,27 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém o caminho remoto atual de trabalho onde as operações estão sendo realizadas.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the current remote working path where operations are being performed.",
+                    howToUse = {})},
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O caminho remoto completo que está sendo utilizado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The full remote path being used."
+            )}
+    )
     public String getWorkingDirectory() {
         try {
             return client.getWorkingDirectory();
@@ -411,6 +524,37 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Lista os itens da pasta no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "List of items in a server folder.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho da pasta no servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Folder path in the server."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A lista de itens que está caminho do servidor."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The list of itens into the server path."
+            )}
+    )
     public List<FTPFile> list(String path) {
         try {
             return client.list(path);
@@ -423,6 +567,37 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma pastas no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a folder in the server.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho no servidor onde a pasta será criada."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Server path where the folder should be created."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP createDirectory(String path) {
         try {
             client.createDirectory(path);
@@ -436,6 +611,46 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Envia um array de bytes para serem salvos em um arquivo no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sends a byte array to be saved in a server file.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho do arquivo no servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File path in the server."
+                    )}),
+            @ParameterDoc(name = "bytes", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Array de bytes."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Array of bytes."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP uploadBytes(String path, byte[] bytes) {
         try {
             client.uploadBytes(path, bytes);
@@ -462,6 +677,59 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Envia um conteúdo de texto para ser salvado em um arquivo no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sends a text content to be saved in a server file.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho do arquivo no servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File path in the server."
+                    )
+                }),
+            @ParameterDoc(name = "text", translations = {
+                    @ParameterTranslationDoc(
+                            name = "texto",
+                            language = LanguageDoc.PT,
+                            description = "Conteúdo de texto."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Text content."
+                    )
+                }),
+            @ParameterDoc(name = "charset", translations = {
+                    @ParameterTranslationDoc(
+                            name = "encodificacao",
+                            language = LanguageDoc.PT,
+                            description = "Código de encodificação dos caractéres."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Encoding code of the characters."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP uploadText(String path, String content, String charset) {
         try {
             client.uploadText(path, content, charset);
@@ -475,6 +743,47 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Envia os dados de um arquivo para ser salvo no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sends the file data to be saved in a server file.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho do arquivo no servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File path in the server."
+                    )}),
+            @ParameterDoc(name = "source", translations = {
+                    @ParameterTranslationDoc(
+                            name = "origem",
+                            language = LanguageDoc.PT,
+                            description = "Arquivo local de origem."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Local file as the source."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP upload(String path, java.io.InputStream in) {
         try {
             client.upload(path, in);
@@ -501,6 +810,41 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    public FTP upload(String path, Storage file) {
+        return upload(path, file);
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém um array de bytes do conteúdo de um arquivo no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Obtain a byte array as content from a file server.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho do arquivo no servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File path in the server."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Array de bytes com o conteúdo do arquivo remoto no servidor."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Byte array with the remote file content in the server."
+            )}
+    )
     public byte[] downloadBytes(String path) {
         try {
             return client.downloadBytes(path);
@@ -508,6 +852,60 @@ public class FTP extends ResourceBase implements AutoCloseable {
             throw new ErrorException(
                 getProteu(), getHili(), 
                 String.format("FTP download bytes has failed: %s", path),
+                e
+            );
+        }
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém um conteúdo de texto de um arquivo no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Obtain a text content of a server file.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho do arquivo no servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File path in the server."
+                    )
+                }),
+            @ParameterDoc(name = "charset", translations = {
+                    @ParameterTranslationDoc(
+                            name = "encodificacao",
+                            language = LanguageDoc.PT,
+                            description = "Código de encodificação dos caractéres."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Encoding code of the characters."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conteúdo de texto do arquivo remoto no servidor."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Text content of the remote file in the server."
+            )}
+    )
+    public String downloadText(String path, String charset) {
+        try {
+            return client.downloadText(path, charset);
+        } catch (IOException e) {
+            throw new ErrorException(
+                getProteu(), getHili(), 
+                String.format("FTP download text file has failed: %s [%s]", path, charset),
                 e
             );
         }
@@ -525,18 +923,47 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
-    public String downloadText(String path, String charset) {
-        try {
-            return client.downloadText(path, charset);
-        } catch (IOException e) {
-            throw new ErrorException(
-                getProteu(), getHili(), 
-                String.format("FTP download text file has failed: %s [%s]", path, charset),
-                e
-            );
-        }
-    }
-
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Copia um arquivo no servidor para um arquivo local.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Copies a server file to a local file.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho do arquivo no servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "File path in the server."
+                    )}),
+            @ParameterDoc(name = "destination", translations = {
+                    @ParameterTranslationDoc(
+                            name = "destino",
+                            language = LanguageDoc.PT,
+                            description = "Arquivo local de destino para armazenar o conteúdo remoto."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Local file of destination to store the remote content."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP download(String path, java.io.OutputStream out) {
         try {
             client.download(path, out);
@@ -563,6 +990,51 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    public FTP download(String path, Storage file) {
+        return download(path, file.file());
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Renomeia um arquivo ou pasta no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Renames a file or folder on the server.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "oldPath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoAntigo",
+                            language = LanguageDoc.PT,
+                            description = "Caminho no servidor que deve ser renomeado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Path on the server that should be renamed."
+                    )}),
+            @ParameterDoc(name = "newPath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoNovo",
+                            language = LanguageDoc.PT,
+                            description = "O caminho de destino no servidor."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The destination path on the server."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP rename(String oldPath, String newPath) {
         try {
             client.rename(oldPath, newPath);
@@ -576,6 +1048,37 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Remove um arquivo no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Deletes a file in the server.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho no servidor o arquivo será removido."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Server path where the file should be removed."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP deleteFile(String path) {
         try {
             client.deleteDirectory(path);
@@ -589,6 +1092,37 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Remove uma pasta no servidor.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Deletes a folder in the server.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "remotePath", translations = {
+                    @ParameterTranslationDoc(
+                            name = "caminhoRemoto",
+                            language = LanguageDoc.PT,
+                            description = "Caminho no servidor a pasta será removida."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Server path where the folder should be removed."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP deleteDirectory(String path) {
         try {
             client.deleteDirectory(path);
@@ -602,6 +1136,37 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Envia um comando específico do site.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Send a site specific command.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "command", translations = {
+                    @ParameterTranslationDoc(
+                            name = "comando",
+                            language = LanguageDoc.PT,
+                            description = "Comando que deve ser enviado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Command that must be sent."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O recurso FTP atual."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current FTP resource."
+            )}
+    )
     public FTP sendSiteCommand(String command) {
         try {
             client.sendSiteCommand(command);
@@ -610,6 +1175,58 @@ public class FTP extends ResourceBase implements AutoCloseable {
             throw new ErrorException(
                 getProteu(), getHili(), 
                 String.format("FTP site command has failed: %s", command),
+                e
+            );
+        }
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Envia um comando específico.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Send a specific command.",
+                    howToUse = {})},
+        parameters = {
+            @ParameterDoc(name = "command", translations = {
+                    @ParameterTranslationDoc(
+                            name = "comando",
+                            language = LanguageDoc.PT,
+                            description = "Comando que deve ser enviado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Command that must be sent."
+                    )}),
+            @ParameterDoc(name = "args", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Argumentos adicionais."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Additional arguments."
+                    )})},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Resultado do comando."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Command result."
+            )}
+    )
+    public int sendCommand(String command, String args) {
+        try {
+            return client.sendCommand(command, args);
+        } catch (IOException e) {
+            throw new ErrorException(
+                getProteu(), getHili(), 
+                String.format("FTP command has failed: %s [%s]", command, args),
                 e
             );
         }
@@ -627,18 +1244,6 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
-    public int sendCommand(String command, String args) {
-        try {
-            return client.sendCommand(command, args);
-        } catch (IOException e) {
-            throw new ErrorException(
-                getProteu(), getHili(), 
-                String.format("FTP command has failed: %s [%s]", command, args),
-                e
-            );
-        }
-    }
-
     public FTP abort() {
         try {
             client.abort();
@@ -648,6 +1253,26 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Realiza a desconexão FTP com o servidor.",
+                howToUse = { }),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Performs FTP disconnection from the server.",
+                howToUse = { })
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O recurso FTP atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The current FTP resource."
+        )
+    })
     public FTP disconnect() {
         try {
             client.disconnect();
@@ -658,6 +1283,19 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
     
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Fecha a conexão FTP com o servidor.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Closes the FTP connection to the server.",
+                    howToUse = { })
+        }, parameters = {
+        }, returns = {}
+    )
     @Override
     public void close() throws Exception {
         if (client != null) {
