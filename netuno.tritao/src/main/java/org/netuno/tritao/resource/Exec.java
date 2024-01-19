@@ -47,9 +47,16 @@ import org.netuno.tritao.sandbox.ScriptResult;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Exec",
-                introduction = "Funcionalidades para auxiliar à execução do código.\n" +
-                        "Realiza a execução de outros scripts, suporta também executar scripts em outras linguagens de programação.\n" +
-                        "Executa o script indicado, retornando o seu output.",
+                introduction = "Funcionalidades para auxiliar à execução do código.\n"
+                        + "Realiza a execução de outros scripts, suporta também executar scripts em outras linguagens de programação.\n"
+                        + "Executa o script indicado, retornando o seu output.\n"
+                        + "Principais funções:\n"
+                        + "- [bind](#bind)\n"
+                        + "- [core](#core)\n"
+                        + "- [service](#service)\n"
+                        + "- [sleep](#sleep)\n"
+                        + "- [stop](#stop)\n"
+                        + "- [gc](#gc)\n",
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,
@@ -57,16 +64,29 @@ import org.netuno.tritao.sandbox.ScriptResult;
                                         "const outputOutput = _exec.core(\"outro-script\");\n" +
                                         "\n"+
                                         "// Executa outro script da App em `server/services/`\n" +
-                                        "const outputServico = _exec.service(\"outro-servico\");\n"
+                                        "const outputServico = _exec.service(\"outro-servico\");\n" +
+                                        "\n"+
+                                        "// Pausa por 2 segundos:`\n" +
+                                        "_exec.sleep(2000);\n"+
+                                        "\n"+
+                                        "// Para a execução:`\n" +
+                                        "_exec.stop();\n"
                         )
                 }
         ),
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "Exec",
-                introduction = "Functionalities to aid code execution.\n" +
-                        "It performs the execution of other scripts, it also supports the execution of scripts in other programming languages.\n" +
-                        "Executes the indicated script, returning its output.",
+                introduction = "Functionalities to aid code execution.\n"
+                        + "It performs the execution of other scripts, it also supports the execution of scripts in other programming languages.\n"
+                        + "Executes the indicated script, returning its output.\n"
+                        + "Main functions:\n"
+                        + "- [bind](#bind)\n"
+                        + "- [core](#core)\n"
+                        + "- [service](#service)\n"
+                        + "- [sleep](#sleep)\n"
+                        + "- [stop](#stop)\n"
+                        + "- [gc](#gc)\n",
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,
@@ -74,7 +94,13 @@ import org.netuno.tritao.sandbox.ScriptResult;
                                         "const outputOutput = _exec.core(\"other-script\");\n" +
                                         "\n"+
                                         "// Run another App script in `server/services/`\n" +
-                                        "const outputService = _exec.service(\"other-service\");\n"
+                                        "const outputService = _exec.service(\"other-service\");\n" +
+                                        "\n"+
+                                        "// Pause for 2 seconds:`\n" +
+                                        "_exec.sleep(2000);\n"+
+                                        "\n"+
+                                        "// Execution stop:`\n" +
+                                        "_exec.stop();\n"
                         )
                 }
         )

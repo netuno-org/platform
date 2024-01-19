@@ -617,12 +617,11 @@ public class Crypto extends ResourceBase {
                     description = "Binary data of the content encrypted in desEncode."
             )
     })
-    public byte[] desEncode(String key, String content) throws PsamataException {
-        return new DES(key).encode(content);
-    }
-
     public byte[] desEncode(String key, String content, String charset) throws PsamataException {
         return new DES(key, charset).encode(content);
+    }
+    public byte[] desEncode(String key, String content) throws PsamataException {
+        return new DES(key).encode(content);
     }
 
     @MethodDoc(translations = {
