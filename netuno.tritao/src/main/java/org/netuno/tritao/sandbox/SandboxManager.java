@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.SourceSection;
 import org.netuno.proteu.Proteu;
+import org.netuno.proteu.ProteuError;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.ScriptRunner;
@@ -414,6 +415,9 @@ public class SandboxManager implements AutoCloseable {
                     errorLineNumber = sourceSection.getStartLine();
                     errorColumnNumber = sourceSection.getStartColumn();
                 }
+                if (scriptException.isHostException()) {
+                    throwable = scriptException.asHostException();
+                }
             } else if (throwable instanceof ScriptException) {
                 ScriptException scriptException = (ScriptException)throwable;
                 errorLineNumber = scriptException.getLineNumber();
@@ -458,11 +462,14 @@ public class SandboxManager implements AutoCloseable {
     }
 
     public String getErrorInnerMessages(Throwable t) {
-        String errorMessages = "";
+        if (t == null) {
+            return "";
+        }
+        String errorMessages = "\n#    "+ t.getMessage();
         for (Throwable throwable : t.getSuppressed()) {
             errorMessages += "\n#    "+ t.getClass().getSimpleName() +": "+ throwable.getMessage();
         }
-        return errorMessages;
+        return errorMessages += getErrorInnerMessages(t.getCause());
     }
 
     public void onError(ScriptSourceCode script, String errorMessage, int errorLine, int errorColumn, Throwable t) {
