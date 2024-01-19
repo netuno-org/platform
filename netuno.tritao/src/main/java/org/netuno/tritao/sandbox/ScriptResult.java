@@ -17,8 +17,28 @@
 
 package org.netuno.tritao.sandbox;
 
+import org.netuno.library.doc.LanguageDoc;
+import org.netuno.library.doc.LibraryDoc;
+import org.netuno.library.doc.LibraryTranslationDoc;
+
+import org.graalvm.polyglot.Value;
+
 import java.util.function.Consumer;
 
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "ScriptResult",
+                introduction = "Resultado da exceção de scripts, se ocorreu com sucesso ou se gerou algum erro.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "ScriptResult",
+                introduction = "Script execution results if an error occurred or was successful.",
+                howToUse = { }
+        )
+})
 /**
  * Script Result
  * @author Eduardo Fonseca Velasques - @eduveks
@@ -46,10 +66,24 @@ public class ScriptResult {
         }
         return this;
     }
+    
+    public ScriptResult whenError(Value function) {
+        if (isError()) {
+            function.execute(error);
+        }
+        return this;
+    }
 
     public ScriptResult whenSucceed(Runnable func) {
         if (isSuccess()) {
             func.run();
+        }
+        return this;
+    }
+    
+    public ScriptResult whenSucceed(Value function) {
+        if (isSuccess()) {
+            function.execute();
         }
         return this;
     }
