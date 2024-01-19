@@ -17,12 +17,30 @@
 
 package org.netuno.tritao.resource.util;
 
+import org.netuno.library.doc.LanguageDoc;
+import org.netuno.library.doc.LibraryDoc;
+import org.netuno.library.doc.LibraryTranslationDoc;
+
 import com.vdurmont.emoji.EmojiParser;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuError;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "ErrorException",
+                introduction = "Exceção provocada por um erro genérico na plataforma, apresenta os detalhes do erro de forma intuitiva nos logs.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "ErrorException",
+                introduction = "Exception caused by a generic error on the platform, presents the details of the error intuitively in the logs.",
+                howToUse = { }
+        )
+})
 /**
  * Generic Errors
  * @author Eduardo Fonseca Velasques - @eduveks
