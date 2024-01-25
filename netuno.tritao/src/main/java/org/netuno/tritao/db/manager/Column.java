@@ -92,6 +92,10 @@ public class Column extends Base {
                 } else if (this == Type.VARCHAR) {
                     return "varchar";
                 }
+            } else if (isPostgreSQL(builder)) {
+                if (this == Type.DECIMAL) {
+                    return "double precision";
+                }
             } else if (isMSSQL(builder)) {
                 if (this == Type.UUID) {
                     return "uniqueidentifier";
@@ -105,6 +109,8 @@ public class Column extends Base {
             } else if (isMariaDB(builder)) {
                 if (this == Type.UUID) {
                     return "char";
+                } else if (this == Type.DECIMAL) {
+                    return "double";
                 }
             }
             return super.toString().toLowerCase();
@@ -325,8 +331,8 @@ public class Column extends Base {
     	String defaultLength = "";
     	String extraLength = "";
     	if (getType() == Type.DECIMAL) {
-    		defaultLength = "(10)"; // , 2
-    		extraLength = ""; // , 2
+    		//defaultLength = "(10)"; // , 2
+    		//extraLength = ""; // , 2
     	}
         if (isH2() || isPostgreSQL() || isMSSQL()) {
             return getType()
