@@ -70,7 +70,7 @@ public class Checkbox extends ComponentBase {
         try {
             new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             if (getMode() == Mode.SearchForm || getMode() == Mode.EditNew) {
-            	getDesignData().set("com.checkbox.checked", getConfiguration().getParameter("DEFAULT").getValue() == "true" ? " checked " : "");
+            	getDesignData().set("com.checkbox.checked", getConfiguration().getParameter("DEFAULT").getValue().equalsIgnoreCase("true") ? " checked " : "");
             } else {
             	getDesignData().set("com.checkbox.checked", (value != null && (value.equals("1") || value.toLowerCase().equals("true")) ? " checked " : ""));
             }

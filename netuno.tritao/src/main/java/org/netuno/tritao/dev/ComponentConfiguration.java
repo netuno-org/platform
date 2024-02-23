@@ -85,6 +85,9 @@ public class ComponentConfiguration {
 			comData.set("parameter.type", param.getType().toString());
 			comData.set("parameter.defaultvalue", param.getDefaultValue());
 			comData.set("parameter.value", param.getValue());
+			if (param.getType().toString().equalsIgnoreCase("boolean")) {
+				comData.set("parameter.checked", Boolean.valueOf(param.getValue()) ? "checked" : "");
+			}
 			if (param.getType() == ParameterType.LINK && param.getValue() != null && !param.getValue().isEmpty()
 					&& param.getValue().indexOf(":") > 0) {
 				String tableName = param.getValue().substring(0, param.getValue().indexOf(":"));

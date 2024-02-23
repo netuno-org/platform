@@ -68,6 +68,16 @@ public class Configuration {
         } catch (IOException e) {
             throw new Error(e);
         }*/
+        for (String key : getParameters().keySet()) {
+            Parameter parameter = getParameters().get(key);
+            if (!params.containsKey(key) && parameter.getType() == ParameterType.BOOLEAN) {
+                putParameter(
+                        key,
+                        parameter.getType(),
+                        parameter.getDefaultValue()
+                ).setValue("false");
+            }
+        }
         for (String key : params.keys()) {
             Values param = params.getValues(key);
             if (param == null) {
