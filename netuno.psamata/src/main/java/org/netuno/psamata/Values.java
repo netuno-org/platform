@@ -3605,6 +3605,14 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return fromJSON(toJSON());
     }
 
+    public static Values newList() {
+        return new Values().forceList();
+    }
+
+    public static Values newMap() {
+        return new Values().forceMap();
+    }
+
     public static boolean is(Object o) {
         if (isMap(o) || isList(o)) {
             return true;
