@@ -375,11 +375,11 @@ netuno.loadValidation = (form) ->
   rules = {}
   form.find("[validation]").each ()->
     element = $(this)
-    validation = S(element.attr("validation"))
+    validation = element.attr("validation")
     rules[element.attr("name")] = {}
-    if validation.contains("required")
+    if validation.indexOf("required") > -1
       rules[element.attr("name")]["required"] = true
-    if validation.contains("email")
+    if validation.indexOf("email") > -1
       rules[element.attr("name")]["email"] = true
   form.validate({
     "errorElement": 'span'
