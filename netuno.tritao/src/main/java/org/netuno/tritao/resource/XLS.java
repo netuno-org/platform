@@ -2815,6 +2815,9 @@ public class XLS extends ResourceBase {
                     } else if (currentCell.getCellType() == CellType.ERROR) {
                         cell.set("type", "error");
                         cell.set("value", currentCell.getErrorCellValue());
+                        try {
+                            cell.set("code", FormulaError.forInt(currentCell.getErrorCellValue()).getString());
+                        } catch (Exception e) { }
                     }
                     if (!cell.isEmpty()) {
                     	columns.add(cell);
