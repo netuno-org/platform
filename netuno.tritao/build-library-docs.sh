@@ -1,5 +1,11 @@
 #!/bin/bash
 
+cd ..
+
+./mvn-install.sh
+
+cd netuno.tritao
+
 mvn -Dtest=BuildLibraryTest test
 
 trash-put ../../doc/docs/library/objects

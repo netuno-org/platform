@@ -34,6 +34,7 @@
         <apache.tika.version>2.6.0</apache.tika.version>
         <apache.velocity.version>2.3</apache.velocity.version>
         <classgraph.version>4.8.163</classgraph.version>
+        <json.version>20231013</json.version>
     </properties>
 
     <dependencyManagement>

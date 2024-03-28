@@ -80,6 +80,7 @@ public class Manager {
                 return con;
             }
         } catch (Exception e) {
+            logger.trace(e);
             throw new DBError(e).setLogError("Connection to " + Config.getDabaBase(proteu, key));
         }
         try {

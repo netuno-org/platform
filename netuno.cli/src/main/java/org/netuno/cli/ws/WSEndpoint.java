@@ -101,7 +101,7 @@ public class WSEndpoint {
                     );
             Remote remote = new Remote();
             remote.getHeader().set("Authorization", authorization);
-            Remote.Response response = remote.alwaysBodyData().asJSON().acceptJSON().put(
+            Remote.Response response = remote.alwaysBodyData().asJSON().acceptJSON().post(
                 urlService,
                 dataRemote
             );

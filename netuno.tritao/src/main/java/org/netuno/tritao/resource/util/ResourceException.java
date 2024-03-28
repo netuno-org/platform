@@ -35,9 +35,7 @@ public class ResourceException extends ProteuError {
     }
 
     public ResourceException(String message, Throwable cause) {
-        super(cause != null && cause.getMessage() != null ? 
-                message +":\n#   "+ cause.getMessage().replace("\n", "\n#     ")
-                : message, cause);
+        super(message.replace("\n", "\n# "), cause);
     }
 
     public static String message(Class resourceClass, String message, Throwable cause) {
@@ -46,11 +44,8 @@ public class ResourceException extends ProteuError {
                 "\n#" +
                 "\n# "+ resource.name().toUpperCase() +
                 "\n#" +
-                "\n# " + message +
-                "\n#" +
-                "\n# " + cause.getMessage() +
-                "\n#" +
-                "\n"
+                "\n# " + message.replace("\n", "\n# ") +
+                "\n#"
             ;
     }
 }

@@ -43,6 +43,7 @@ import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.resource.Storage;
 
 public class LibraryContent {
@@ -52,6 +53,7 @@ public class LibraryContent {
     private LanguageDoc lang = null;
     private boolean isResource = false;
     private List<Class> objects = new ArrayList<Class>();
+    private List<Class> resources = new ArrayList<Class>();
 
     public LibraryContent(LanguageDoc lang, String name, Class _class) {
         this.lang = lang;
@@ -59,12 +61,13 @@ public class LibraryContent {
         this._class = _class;
     }
 
-    public LibraryContent(LanguageDoc lang, String name, Class _class, boolean isResource, List<Class> objects) {
+    public LibraryContent(LanguageDoc lang, String name, Class _class, boolean isResource, List<Class> objects, List<Class> resources) {
         this.lang = lang;
         this.name = name;
         this._class = _class;
         this.isResource = isResource;
         this.objects = objects;
+        this.resources = resources;
     }
 
     public String generate() throws Exception {
@@ -157,8 +160,10 @@ public class LibraryContent {
         }
         methods.sort((o1, o2) -> getMethodSignature(o1).compareTo(getMethodSignature(o2)));
         System.out.println("# METHODS:");
-        methodsSignatures.stream().forEach((v) -> System.out.println(v));
         for (Method _method : methods) {
+            if (!_method.getName().equals("getValues") && !_method.getName().equals("asValues")) {
+                //continue;
+            }
             if (_method.getName().equals("hashCode")
                     || _method.getName().equals("getClass")
                     || _method.getName().equals("notify")
@@ -188,6 +193,7 @@ public class LibraryContent {
                     continue;
                 }
             }
+            System.out.println("=="+ getMethodSignature(_method));
             content.append("---\n");
             content.append("\n");
             methodsProcessed.add(_method.getName());
@@ -217,18 +223,22 @@ public class LibraryContent {
                                     || (m.getReturnType() != null && method.getReturnType() != null 
                                             && m.getReturnType().equals(method.getReturnType())))
                     ).collect(Collectors.toList());
+                    List<Method> methodsDocumentedFound = new ArrayList<>();
                     for (Method methodWithDoc : methodsWithDoc) {
                         Parameter[] methodWithDocParameters = methodWithDoc.getParameters();
                         boolean sameParameters = true;
                         for (int i = 0; i < method.getParameterCount(); i++) {
                             Parameter docParameter = methodWithDocParameters[i];
                             Parameter parameter = methodParameters[i];
-                            Class classWithDocParameter = docParameter.getType().getClass();
-                            Class classParameter = parameter.getType().getClass();
-                            if (classWithDocParameter.equals(java.io.InputStream.class) || classParameter.equals(java.io.InputStream.class)) {
-                                System.out.println(" mau mau ");
+                            Class classWithDocParameter = docParameter.getType();
+                            Class classParameter = parameter.getType();
+                            if (classWithDocParameter.equals(java.io.InputStream.class) || classParameter.equals(java.io.InputStream.class)
+                                || classWithDocParameter.equals(java.io.OutputStream.class) || classParameter.equals(java.io.OutputStream.class)
+                                || classWithDocParameter.equals(java.io.File.class) || classParameter.equals(java.io.File.class)) {
+                                /*System.out.println("Invalid Java IO parameter documented!");
+                                System.out.println(getMethodSignature(method) +" X "+ getMethodSignature(methodWithDoc));
                                 System.exit(0);
-                                continue methods;
+                                continue methods;*/
                             }
                             boolean sameParameter = false;
                             if (classWithDocParameter.equals(classParameter)) {
@@ -239,8 +249,13 @@ public class LibraryContent {
                             } else if ((classWithDocParameter.equals(Values.class) || classWithDocParameter.equals(List.class))
                                 && (classParameter.equals(Values.class) || classParameter.equals(List.class))) {
                                 sameParameter = true;
-                            } else if ((classWithDocParameter.equals(Storage.class) || classWithDocParameter.equals(File.class) || classWithDocParameter.equals(InputStream.class))
-                                && (classParameter.equals(Storage.class) || classParameter.equals(File.class) || classParameter.equals(InputStream.class))) {
+                            } else if ((classWithDocParameter.equals(Storage.class) || classWithDocParameter.equals(File.class)
+                                     || classWithDocParameter.equals(InputStream.class) || classWithDocParameter.equals(OutputStream.class)
+                                     || classWithDocParameter.equals(java.io.InputStream.class) || classWithDocParameter.equals(java.io.OutputStream.class))
+                                && (classParameter.equals(Storage.class) || classParameter.equals(File.class)
+                                     || classParameter.equals(InputStream.class) || classParameter.equals(OutputStream.class)
+                                     || classParameter.equals(java.io.InputStream.class) || classParameter.equals(java.io.OutputStream.class))
+                            ) {
                                 sameParameter = true;
                             } else if ((classWithDocParameter.equals(Integer.class)
                                     || classWithDocParameter.equals(Short.class)
@@ -259,7 +274,30 @@ public class LibraryContent {
                             }
                         }
                         if (sameParameters) {
-                            methodDoc = methodWithDoc.getAnnotation(MethodDoc.class);
+                            methodsDocumentedFound.add(methodWithDoc);
+                        }
+                    }
+                    if (methodsDocumentedFound.size() == 1) {
+                        methodDoc = methodsDocumentedFound.get(0).getAnnotation(MethodDoc.class);
+                    } else if (methodsDocumentedFound.size() > 1) {
+                        for (Method methtodDocumentedFound : methodsDocumentedFound) {
+                            Parameter[] methtodDocumentedFoundParameters = methtodDocumentedFound.getParameters();
+                            boolean sameParameters = true;
+                            for (int i = 0; i < method.getParameterCount(); i++) {
+                                Parameter docParameter = methtodDocumentedFoundParameters[i];
+                                Parameter parameter = methodParameters[i];
+                                if (!docParameter.getType().getName().equals(parameter.getType().getName())) {
+                                    sameParameters = false;
+                                }
+                            }
+                            if (sameParameters) {
+                                System.out.println("# Same Parameters: " + getMethodSignature(methtodDocumentedFound));
+                                methodDoc = methtodDocumentedFound.getAnnotation(MethodDoc.class);
+                                break;
+                            }
+                        }
+                        if (methodDoc == null) {
+                            methodDoc = methodsDocumentedFound.get(0).getAnnotation(MethodDoc.class);
                         }
                     }
                     if (methodDoc == null && methodsWithDoc.size() > 0) {
@@ -310,16 +348,23 @@ public class LibraryContent {
                 if (methodDoc == null || methodDoc.dependency().isEmpty()) {
                     content.append("#### ");
                     if (isResource) {
-                        content.append("_" + name + ".");
+                        content.append("<span style=\"font-weight: normal\">");
+                        content.append("_" + name);
+                        content.append("</span>");
+                        content.append(".");
                     }
+                    content.append("<span style=\"color: #008000\">");
                     content.append(method.getName());
+                    content.append("</span>");
                 } else {
                     content.append("#### ");
                     if (isResource) {
                         content.append("`_" + name + "." + methodDoc.dependency() + "()`");
                         content.append(".");
                     }
+                    content.append("<span style=\"color: #008000\">");
                     content.append(method.getName());
+                    content.append("</span>");
                 }
                 content.append("(");
                 boolean firstParameter = true;
@@ -338,9 +383,6 @@ public class LibraryContent {
                                 break;
                             }
                         }
-                    }
-                    if (parameterDoc != null) {
-                        System.out.println("ParameterDoc");
                     }
                     String parameterName = parameter.getName();
                     ParameterTranslationDoc parameterTranslationDoc = null;
@@ -367,9 +409,6 @@ public class LibraryContent {
                     }
                     
                     if (parameterTranslationDoc != null) {
-                        System.out.println("parameterTranslationDoc");
-                    }
-                    if (parameterTranslationDoc != null) {
                         parameterName = parameterTranslationDoc.name().isEmpty() ? parameterDoc.name() : parameterTranslationDoc.name();
                     }
                     parameters.add(
@@ -378,14 +417,23 @@ public class LibraryContent {
                                     .set("parameterTranslationDoc", parameterTranslationDoc)
                                     .set("parameterName", parameterName)
                     );
-                    content.append(parameterName + ": " + type(parameter.getType()));
+                    content.append("<span style=\"color: #FF8000\">");
+                    content.append(parameterName);
+                    content.append("</span>");
+                    content.append(": ");
+                    content.append("<span style=\"font-weight: normal; font-style: italic;\">");
+                    content.append(type(parameter.getType()));
+                    content.append("</span>");
                     firstParameter = false;
                 }
                 if (!parametersWithoutDoc.isEmpty()) {
                     System.out.println("# " + name + "." + method.getName() + "(" + parametersWithoutDoc + ")");
                 }
                 content.append(")");
-                content.append(" : " + type(method.getReturnType()));
+                content.append(" : ");
+                content.append("<span style=\"font-weight: normal; font-style: italic;\">");
+                content.append(type(method.getReturnType()));
+                content.append("</span>");
                 if (methodTranslationDoc != null) {
                     content.append("\n");
                     if (lang == LanguageDoc.EN) {
@@ -423,16 +471,16 @@ public class LibraryContent {
                     content.append("|---|---|---|\n");
                     for (Values _parameter : parameters.list(Values.class)) {
                         Parameter parameter = (Parameter) _parameter.get("parameter");
-                        String parameterName = _parameter.getString("parameterName");
+                        String parameterName = _parameter.getString("parameterName", parameter.getName());
                         ParameterTranslationDoc parameterTranslationDoc = (ParameterTranslationDoc) _parameter.get("parameterTranslationDoc");
                         if (parameterTranslationDoc == null) {
-                            content.append("| " + parameterName + " | " + type(parameter.getType()) + " |   |\n");
+                            content.append("| **" + parameterName + "** | _" + type(parameter.getType()) + "_ |   |\n");
                         } else {
                             String[] lines = parameterTranslationDoc.description().split("\n");
                             boolean firstLine = true;
                             for (String line : lines) {
                                 if (firstLine) {
-                                    content.append("| " + parameterName + " | " + type(parameter.getType()) + " | " + line + " |\n");
+                                    content.append("| **" + parameterName + "** | _" + type(parameter.getType()) + "_ | " + line + " |\n");
                                 } else {
                                     content.append("|   |   | " + line + " |\n");
                                 }
@@ -448,7 +496,7 @@ public class LibraryContent {
                     content.append("##### Retorno\n");
                 }
                 content.append("\n");
-                content.append("( " + (type(method.getReturnType())) + " )\n");
+                content.append("( _" + (type(method.getReturnType())) + "_ )\n");
                 if (returnTranslationDoc != null) {
                     content.append("\n");
                     content.append(returnTranslationDoc.description());
@@ -470,20 +518,57 @@ public class LibraryContent {
             content = "void";
         } else {
             String name = cls.getSimpleName();
-            if (name.equals("String")) {
+            String clsName = cls.getName();
+            boolean objectTypeArray = false;
+            if (clsName.equals("java.lang.String")) {
                 return "string";
             } else {
-                for (Class _class : objects) {
-                    if (_class.getName().equals(cls.getName())) {
-                        content += "[" + cls.getSimpleName() + "](../../objects/" + cls.getSimpleName() + ")";
+                if (clsName.equals("[B")) {
+                    content = "byte[]";
+                } else if (clsName.equals("[S")) {
+                    content = "short[]";
+                } else if (clsName.equals("[J")) {
+                    content = "long[]";
+                } else if (clsName.equals("[F")) {
+                    content = "float[]";
+                } else if (clsName.equals("[D")) {
+                    content = "double[]";
+                } else if (clsName.equals("[Z")) {
+                    content = "boolean[]";
+                } else if (clsName.equals("[C")) {
+                    content = "char[]";
+                } else if (clsName.startsWith("[L")) {
+                    clsName = clsName.substring(2);
+                    objectTypeArray = true;
+                }
+                if (content.isEmpty()) {
+                    for (Class _class : objects) {
+                        if (_class.getName().equals(clsName)) {
+                            content += "[" + _class.getSimpleName() + "](../../objects/" + _class.getSimpleName() + ")";
+                            break;
+                        }
                     }
                 }
                 if (content.isEmpty()) {
-                    content = name;
+                    for (Class _class : resources) {
+                        if (_class.getName().equals(clsName)) {
+                            content += "[" + _class.getSimpleName() + "](../../resources/" + _class.getSimpleName() + ")";
+                            break;
+                        }
+                    }
+                }
+                if (objectTypeArray && !content.isEmpty()) {
+                    content += "[]";
+                }
+                if (content.isEmpty()) {
+                    content = cls.getName();
+                    if (objectTypeArray) {
+                        content += "[]";
+                    }
                 }
             }
         }
-        return "_" + content + "_";
+        return content;
     }
 
     private String sourceCodes(SourceCodeDoc[] sourceCodeDocs) {

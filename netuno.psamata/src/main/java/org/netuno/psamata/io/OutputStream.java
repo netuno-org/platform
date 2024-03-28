@@ -486,6 +486,20 @@ public class OutputStream extends java.io.OutputStream {
         }
         return this;
     }
+
+    public final OutputStream printf(final String format, Object... objects) throws IOException {
+        writeBytes(String.format(format, objects));
+        return this;
+    }
+
+    public final OutputStream printfAndClose(final String format, Object... objects) throws IOException {
+        try {
+            printf(format, objects);
+        } finally {
+            close();
+        }
+        return this;
+    }
     
     public final OutputStream writeAndClose(final String bytes) throws IOException {
         try {

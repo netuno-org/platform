@@ -20,6 +20,7 @@ package org.netuno.tritao.resource;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
+import org.netuno.proteu.ProteuError;
 import org.netuno.psamata.PsamataException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
@@ -190,8 +191,7 @@ public class DB extends ResourceBase {
         try {
             _db.dbOps = new org.netuno.psamata.DB(Config.getDataBaseManager(getProteu(), key).getConnection());
         } catch (Throwable e) {
-            logger.trace(e);
-            throw new ErrorException(getProteu(), getHili(), "Database connection failed!");
+            throw new ErrorException(getProteu(), getHili(), "Database connection failed!", e);
         }
         return _db;
     }
@@ -969,7 +969,16 @@ public class DB extends ResourceBase {
                             + ")"
                     )}),},
             parameters = {
-                @ParameterDoc(name = "query", translations = {})
+                @ParameterDoc(name = "query", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    description = "Comando que será executado na base de dados para obter registos."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Command that will be executed on the database to get records."
+                            )
+                    })
             },
             returns = {
                 @ReturnTranslationDoc(
@@ -2909,9 +2918,12 @@ public class DB extends ResourceBase {
                                             + "\n"
                                             + "const uid = \"1d8722f4-fa28-4a08-8098-6dd5cab1b212\";\n"
                                             + "\n"
-                                            + "const result = _db.delete(\n"
+                                            + "const result = _db.save(\n"
                                             + "    \"cliente\",\n"
-                                            + "    uid\n"
+                                            + "    uid,\n"
+                                            + "    _val.map()\n"
+                                            + "        .set(\"name\", \"nome\")\n"
+                                            + "        .set(\"mail\", \"mail@netuno.org\")\n"
                                             + ");\n"
                                             + "\n"
                                             + "_out.json(\n"
@@ -2920,7 +2932,7 @@ public class DB extends ResourceBase {
                             )}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Performs the deletion of records in the database based on the UID.",
+                    description = "Executes the insertion or update of a record in the database based on the UID.",
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
@@ -2928,9 +2940,12 @@ public class DB extends ResourceBase {
                                             + "\n"
                                             + "const uid = \"1d8722f4-fa28-4a08-8098-6dd5cab1b212\";\n"
                                             + "\n"
-                                            + "const result = _db.delete(\n"
+                                            + "const result = _db.save(\n"
                                             + "    \"client\",\n"
-                                            + "    uid\n"
+                                            + "    uid,\n"
+                                            + "    _val.map()\n"
+                                            + "        .set(\"name\", \"nome\")\n"
+                                            + "        .set(\"mail\", \"mail@netuno.org\")\n"
                                             + ");\n"
                                             + "\n"
                                             + "_out.json(\n"
@@ -2959,6 +2974,17 @@ public class DB extends ResourceBase {
                                     language = LanguageDoc.EN,
                                     description = "Record's UID to be deleted."
                             )
+                    }),
+                    @ParameterDoc(name = "data", translations = {
+                        @ParameterTranslationDoc(
+                                language = LanguageDoc.PT,
+                                name = "dados",
+                                description = "Objeto com a estrutura de dados que deverá ser atualizado."
+                        ),
+                        @ParameterTranslationDoc(
+                                language = LanguageDoc.EN,
+                                description = "Object with data structure that should be maintained."
+                        )
                     })
             },
             returns = {

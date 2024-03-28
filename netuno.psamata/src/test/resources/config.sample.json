@@ -1,0 +1,36 @@
+{
+    "smtp": {
+        "default": {
+            "host": "smtp.server.net",
+            "username": "test@server.net",
+            "password": "secret"
+        },
+        "gmail": {
+            "host": "smtp.gmail.com",
+            "username": "my.email@gmail.com",
+            "password": "secret"
+        }
+    },
+    "imap": {
+        "default": {
+            "host": "imap.server.net",
+            "username": "test@server.net",
+            "password": "secret"
+        }
+    },
+    "ftp": {
+        "default": {
+            "host": "ftp.server.net",
+            "username": "account",
+            "password": "secret"
+        }
+    },
+    "ssh": {
+        "default": {
+          "host": "ssh.server.net",
+          "port": 22,
+          "username": "username",
+          "password": "secret"
+        }
+    }
+}

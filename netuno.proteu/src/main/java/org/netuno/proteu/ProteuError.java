@@ -58,25 +58,31 @@ public class ProteuError extends Error {
         super(text);
     }
     
+    private String chainOfCausesMessages(Throwable t) {
+        if (t == null) {
+            return "";
+        }
+        String cause = "\n#     > "+ t.getMessage();
+        return cause + chainOfCausesMessages(t.getCause());
+    }
+    
     public String getLogMessage() {
         String message = getMessage();
         Throwable throwable = getCause();
-        String beforeMessage = message;
         while (throwable != null) {
             if (throwable instanceof ProteuError) {
                 message += ((ProteuError)throwable).getLogMessage() + "\n";
-                break;
-            }
-            if (throwable.getMessage() != null) {
-                if (!beforeMessage.contains(throwable.getMessage())) {
-                    if (!message.endsWith("\n")) {
-                        message += "\n";
-                    }
-                    message += "#    >  " + throwable.getMessage() + "\n";
-                    beforeMessage = throwable.getMessage();
-                }
             }
             throwable = throwable.getCause();
+            break;
+        }
+        if (throwable != null) {
+            if (!message.endsWith("\n")) {
+                message += "\n";
+            }
+            message += "# Causes\n";
+            message += chainOfCausesMessages(throwable);
+            message += "#\n";
         }
         if (logTrace && !logTraceMessage.isEmpty()) {
             message = "\n# TRACE: "+ logTraceMessage +"\n" + message;

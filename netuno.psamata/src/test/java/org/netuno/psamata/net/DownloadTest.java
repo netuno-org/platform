@@ -24,6 +24,10 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.AfterEach;
 
+/**
+ * Download Test
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
 public class DownloadTest {
 
     private Download download = new Download();

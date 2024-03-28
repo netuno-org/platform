@@ -375,11 +375,11 @@ netuno.loadValidation = (form) ->
   rules = {}
   form.find("[validation]").each ()->
     element = $(this)
-    validation = S(element.attr("validation"))
+    validation = element.attr("validation")
     rules[element.attr("name")] = {}
-    if validation.contains("required")
+    if validation.indexOf("required") > -1
       rules[element.attr("name")]["required"] = true
-    if validation.contains("email")
+    if validation.indexOf("email") > -1
       rules[element.attr("name")]["email"] = true
   form.validate({
     "errorElement": 'span'
@@ -480,11 +480,11 @@ netuno.loadLinks = (container)->
         $("#containers > div").hide()
         netuno.loadReport($("\#containers > div[netuno-report-name=#{ reportName }]"))
         return false
-      else if element.attr("href") isnt "#" and element.attr("href").substring('javascript:') is -1
-          container = $(element.attr("href"))
-          if container.length
-            $("#containers > div").hide()
-            container.show()
+      else if element.attr("href") isnt "#" and element.attr("href").indexOf('javascript:') is -1
+        container = $(element.attr("href"))
+        if container.length
+          $("#containers > div").hide()
+          container.show()
         return false
 
 netuno.mask = (container)->

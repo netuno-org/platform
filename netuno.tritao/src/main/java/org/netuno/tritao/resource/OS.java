@@ -29,6 +29,7 @@ import org.netuno.tritao.hili.Hili;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.netuno.library.doc.MethodDoc;
@@ -61,6 +62,8 @@ import org.netuno.tritao.resource.util.ResourceException;
 public class OS extends ResourceBase {
 
     public String directory = ".";
+    public boolean shell = true;
+    public Values env = new Values();
 
     public boolean readCommandOutput = true;
     public boolean readCommandError = true;
@@ -502,6 +505,36 @@ public class OS extends ResourceBase {
         return directory(file);
     }
 
+    public boolean shell() {
+        return shell;
+    }
+    public boolean getShell() {
+        return shell();
+    }
+
+    public OS shell(boolean shell) {
+        this.shell = shell;
+        return this;
+    }
+    public OS setShell(boolean shell) {
+        return shell(shell);
+    }
+
+    public Values env() {
+        return env;
+    }
+    public Values getEnv() {
+        return env();
+    }
+
+    public OS env(Values env) {
+        this.env = env;
+        return this;
+    }
+    public OS setEnv(Values shell) {
+        return env(shell);
+    }
+
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
@@ -548,11 +581,18 @@ public class OS extends ResourceBase {
         boolean isWindows = System.getProperty("os.name")
                 .toLowerCase().startsWith("windows");
         ProcessBuilder builder = new ProcessBuilder();
-        if (isWindows) {
-            builder.command(ArrayUtils.addAll(new String[] {"cmd.exe", "/c"}, command));
-        } else {
-            builder.command(ArrayUtils.addAll(new String[] {"sh", "-c"}, command));
+        Map<String, String> processEnv = builder.environment();
+        for (String key : env.keys()) {
+            processEnv.put(key, env.getString(key));
         }
+        if (shell) {
+            if (isWindows) {
+                command = ArrayUtils.addAll(new String[] {"cmd.exe", "/c"}, command);
+            } else {
+                command = ArrayUtils.addAll(new String[] {"sh", "-c"}, command);
+            }
+        }
+        builder.command(command);
         builder.directory(new java.io.File(directory));
         Process process = builder.start();
         String input = "";

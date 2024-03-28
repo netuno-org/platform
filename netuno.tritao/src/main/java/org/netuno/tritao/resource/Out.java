@@ -660,6 +660,11 @@ public class Out extends ResourceBase {
         return this;
     }
 
+    public Out printf(final String format, Object... objects) throws IOException {
+        getProteu().getOutput().printf(format, objects);
+        return this;
+    }
+
     public Out write(int b) throws IOException {
         getProteu().getOutput().write(b);
         return this;

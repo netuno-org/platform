@@ -17,21 +17,21 @@
 
 package org.netuno.psamata.mail;
 
+import org.netuno.psamata.ConfigTest;
+import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 
 import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
- *
- * @author eduardo
+ * Send Mail Test
+ * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class SendMailTest {
+public class SMTPTransportTest {
     private String username = "";
     private String password = "";
     private String to = "";
-    public SendMailTest(String username, String password, String to) {
+    public SMTPTransportTest(String username, String password, String to) {
         this.username = username;
         this.password = password;
         this.to = to;
@@ -61,13 +61,14 @@ public class SendMailTest {
 
     @Test
     public void testGMail() {
+        Values config = ConfigTest.get().getValues("smtp").getValues("gmail");
         org.netuno.psamata.mail.SMTPTransport sendMail = new org.netuno.psamata.mail.SMTPTransport();
-        sendMail.setUsername(username);
-        sendMail.setPassword(password);
-        sendMail.setTo(to);
         sendMail.setHost("smtp.gmail.com");
+        sendMail.setUsername(config.getString("username"));
+        sendMail.setPassword(config.getString("password"));
         sendMail.setPort(465);
         sendMail.setSSL(true);
+        sendMail.setTo(to);
         sendMail.setHTML("");
         sendMail.setSubject("Netuno Psamata - Mail - GMail Tester");
         sendMail.setText("This message was received? I hope so...");

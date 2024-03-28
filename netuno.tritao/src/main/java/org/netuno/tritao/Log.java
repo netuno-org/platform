@@ -27,7 +27,7 @@ import org.netuno.tritao.util.TemplateBuilder;
  * Log Service
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@Path("/netuno/logger")
+@Path("/org/netuno/tritao/Log")
 public class Log extends WebMaster {
 
     @Override

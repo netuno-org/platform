@@ -498,12 +498,12 @@
     form.find("[validation]").each(function() {
       var element, validation;
       element = $(this);
-      validation = S(element.attr("validation"));
+      validation = element.attr("validation");
       rules[element.attr("name")] = {};
-      if (validation.contains("required")) {
+      if (validation.indexOf("required") > -1) {
         rules[element.attr("name")]["required"] = true;
       }
-      if (validation.contains("email")) {
+      if (validation.indexOf("email") > -1) {
         return rules[element.attr("name")]["email"] = true;
       }
     });
@@ -630,14 +630,14 @@
           $("#containers > div").hide();
           netuno.loadReport($(`\#containers > div[netuno-report-name=${reportName}]`));
           return false;
-        } else if (element.attr("href") !== "#" && element.attr("href").substring('javascript:') === -1) {
+        } else if (element.attr("href") !== "#" && element.attr("href").indexOf('javascript:') === -1) {
           container = $(element.attr("href"));
           if (container.length) {
             $("#containers > div").hide();
             container.show();
           }
+          return false;
         }
-        return false;
       }
     });
   };

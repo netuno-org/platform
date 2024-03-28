@@ -27,3 +27,4 @@ javadoc/
 
 netuno.zip
 
+/src/test/resources/config.json

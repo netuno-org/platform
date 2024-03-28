@@ -30,6 +30,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.netuno.psamata.net.Remote;
 import org.netuno.psamata.script.GraalRunner;
 
+/**
+ * Values Test
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
 public class ValuesTest {
 
     public ValuesTest() {

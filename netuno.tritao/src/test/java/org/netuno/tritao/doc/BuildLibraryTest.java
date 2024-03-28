@@ -26,7 +26,6 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.resource.Resource;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,21 +62,33 @@ public class BuildLibraryTest {
                     ).enableAllInfo()
                     .scan();
             ClassInfoList libraryClasses = scanResult.getClassesWithAnnotation(LibraryDoc.class.getName());
-            List<Class> objects = new ArrayList<Class>();
+            List<Class> objects = new ArrayList<>();
+            List<Class> resources = new ArrayList<>();
             for (String _resourcesClass : libraryClasses.getNames()) {
                 Class _class = Class.forName(_resourcesClass);
                 Resource resource = (Resource) _class.getAnnotation(Resource.class);
                 if (resource == null) {
                     objects.add(_class);
+                } else {
+                    resources.add(_class);
+                }
+            }
+            for (String _resourcesClass : libraryClasses.getNames()) {
+                Class _class = Class.forName(_resourcesClass);
+                Resource resource = (Resource) _class.getAnnotation(Resource.class);
+                if (resource == null) {
                     String name = _class.getSimpleName();
                     if (!debugObject.isEmpty() && !name.equalsIgnoreCase(debugObject)) {
                         continue;
+                    }
+                    if (!name.equals("Values")) {
+                        //continue;
                     }
                     String pathMenu = "library/objects/" + name;
                     if (!menuObjects.contains(pathMenu)) {
                         menuObjects.add(pathMenu);
                     }
-                    LibraryContent docContent = new LibraryContent(lang, name, _class);
+                    LibraryContent docContent = new LibraryContent(lang, name, _class, false, objects, resources);
                     String content = docContent.generate();
                     if (content == null || content.isEmpty()) {
                         continue;
@@ -94,13 +105,13 @@ public class BuildLibraryTest {
                         continue;
                     }
                     if (!resource.name().equals("header")) {
-                        continue;
+                        //continue;
                     }
                     String pathMenu = "library/resources/" + resource.name();
                     if (!menuResources.contains(pathMenu)) {
                         menuResources.add(pathMenu);
                     }
-                    LibraryContent docContent = new LibraryContent(lang, resource.name(), _class, true, objects);
+                    LibraryContent docContent = new LibraryContent(lang, resource.name(), _class, true, objects, resources);
                     String content = docContent.generate();
                     if (content == null || content.isEmpty()) {
                         continue;

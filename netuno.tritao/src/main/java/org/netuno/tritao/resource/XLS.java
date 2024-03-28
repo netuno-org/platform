@@ -1162,6 +1162,9 @@ public class XLS extends ResourceBase {
         } else if (cell.getCellType() == CellType.ERROR) {
             cellData.set("type", "error");
             cellData.set("value", cell.getErrorCellValue());
+            try {
+                cell.set("code", FormulaError.forInt(currentCell.getErrorCellValue()).getString());
+            } catch (Exception e) { }
         }
         return cellData;
     }

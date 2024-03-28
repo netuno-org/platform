@@ -69,26 +69,26 @@ public class IMAP extends ResourceBase implements AutoCloseable {
 
     @AppEvent(type=AppEventType.BeforeEnvironment)
     private void beforeEnvironment() {
-        getProteu().getConfig().set("_smtp", getProteu().getConfig().getValues("_app:config").getValues("smtp"));
+        getProteu().getConfig().set("_imap", getProteu().getConfig().getValues("_app:config").getValues("imap"));
     }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Inicia uma nova instância do SMTP utilizando a configuração do STMP da chave `default`.",
+                description = "Inicia uma nova instância do IMAP utilizando a configuração do IMAP da chave `default`.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Starts a new instance of SMTP using the STMP configuration of the `default` key.",
+                description = "Starts a new instance of IMAP using the IMAP configuration of the `default` key.",
                 howToUse = { })
     }, parameters = { }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "A nova instância do recurso SMTP com base na configuração do STMP `default`."
+                description = "A nova instância do recurso IMAP com base na configuração do IMAP `default`."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The new instance of the SMTP resource based on the `default` STMP configuration."
+                description = "The new instance of the IMAP resource based on the `default` IMAP configuration."
         )
     })
     public IMAP init() throws ResourceException {
@@ -107,33 +107,33 @@ public class IMAP extends ResourceBase implements AutoCloseable {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Inicia uma nova instância do SMTP a partir de uma configuração específica.",
+                description = "Inicia uma nova instância do IMAP a partir de uma configuração específica.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Starts a new instance of SMTP from a specific configuration.",
+                description = "Starts a new instance of IMAP from a specific configuration.",
                 howToUse = { })
     }, parameters = {
         @ParameterDoc(name = "configKey", translations = {
             @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
                     name = "configKey",
-                    description = "Chave da configuração SMTP que será utilizada."
+                    description = "Chave da configuração IMAP que será utilizada."
             ),
             @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
                     name = "configKey",
-                    description = "Key of the SMTP configuration that will be used."
+                    description = "Key of the IMAP configuration that will be used."
             )
         })
     }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "A nova instância do recurso SMTP com base na configuração do SMTP especificada."
+                description = "A nova instância do recurso IMAP com base na configuração do IMAP especificada."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The new instance of the SMTP resource based on the specified SMTP configuration."
+                description = "The new instance of the IMAP resource based on the specified IMAP configuration."
         )
     })
     public IMAP init(String configKey) throws ResourceException {
@@ -160,11 +160,11 @@ public class IMAP extends ResourceBase implements AutoCloseable {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Inicia uma nova instância do SMTP a partir de uma configuração que é definida em um objeto de configuração própria.",
+                description = "Inicia uma nova instância do IMAP a partir de uma configuração que é definida em um objeto de configuração própria.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Starts a new instance of SMTP from a configuration that is defined in its own configuration object.",
+                description = "Starts a new instance of IMAP from a configuration that is defined in its own configuration object.",
                 howToUse = { })
     }, parameters = {
         @ParameterDoc(name = "config", translations = {
@@ -180,11 +180,11 @@ public class IMAP extends ResourceBase implements AutoCloseable {
     }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "A nova instância do recurso SMTP com base na configuração definida."
+                description = "A nova instância do recurso IMAP com base na configuração definida."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The new instance of the SMTP resource based on the defined configuration."
+                description = "The new instance of the IMAP resource based on the defined configuration."
         )
     })
     public IMAP init(IMAPConfig config) {
@@ -290,11 +290,11 @@ public class IMAP extends ResourceBase implements AutoCloseable {
     }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto SMTP atual."
+                description = "Objeto IMAP atual."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current SMTP object."
+                description = "Current IMAP object."
         )
     })
     public IMAP setConfig(IMAPConfig config) {
@@ -355,11 +355,11 @@ public class IMAP extends ResourceBase implements AutoCloseable {
     }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto SMTP atual."
+                description = "Objeto IMAP atual."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current SMTP object."
+                description = "Current IMAP object."
         )
     })
     public IMAP setEnabled(boolean enabled) {
@@ -438,6 +438,7 @@ public class IMAP extends ResourceBase implements AutoCloseable {
     public void close() throws Exception {
         if (client != null) {
             client.close();
+            client = null;
         }
     }
 }

@@ -394,6 +394,8 @@ public class ProteuEvents implements Events {
                             }
                             ds.setUser(db.getString("username", "sa"));
                             ds.setPassword(db.getString("password"));
+                            ds.setIntegratedSecurity(false);
+                            ds.setTrustServerCertificate(true);
                             config.setDataSource(ds);
                         }
                         loadHikariConfig(app, config, db);
