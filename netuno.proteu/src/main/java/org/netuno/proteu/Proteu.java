@@ -1159,23 +1159,39 @@ public class Proteu {
     }
 
     public void outputJSON(Values values) throws IOException, ProteuException {
-        outputJSON(values, false);
+        outputJSON(values, false, 0);
+    }
+
+    public void outputJSON(Values values, int indentFactor) throws IOException, ProteuException {
+        outputJSON(values, false, indentFactor);
     }
 
     public void outputJSON(Values values, boolean htmlEscape) throws IOException, ProteuException {
+        outputJSON(values, htmlEscape, 0);
+    }
+
+    public void outputJSON(Values values, boolean htmlEscape, int indentFactor) throws IOException, ProteuException {
         setResponseHeaderNoCache();
         setResponseHeader(ContentType.JSON);
-        getOutput().print(values.toJSON(htmlEscape));
+        getOutput().print(values.toJSON(htmlEscape, indentFactor));
     }
 
     public void outputJSON(List<Values> values) throws IOException, ProteuException {
-        outputJSON(values, false);
+        outputJSON(values, false, 0);
+    }
+
+    public void outputJSON(List<Values> values, int identFactor) throws IOException, ProteuException {
+        outputJSON(values, false, identFactor);
     }
 
     public void outputJSON(List<Values> values, boolean htmlEscape) throws IOException, ProteuException {
+        outputJSON(values, htmlEscape, 0);
+    }
+
+    public void outputJSON(List<Values> values, boolean htmlEscape, int indentFactor) throws IOException, ProteuException {
         setResponseHeaderNoCache();
         setResponseHeader(ContentType.JSON);
-        getOutput().print(Values.toJSON(values, htmlEscape));
+        getOutput().print(Values.toJSON(values, htmlEscape, indentFactor));
     }
 
     //public ScriptRunner getScriptRunner() {
