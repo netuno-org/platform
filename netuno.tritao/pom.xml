@@ -10,11 +10,6 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <kotlin.version>1.7.10</kotlin.version>
-        <arrow.version>1.1.2</arrow.version>
-        <apache.poi>5.2.3</apache.poi>
-        <apache.tika>2.6.0</apache.tika>
-        <apache.velocity>2.3</apache.velocity>
     </properties>
 
     <parent>
@@ -88,6 +83,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
+            <version>${graalvm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.18.0</version>
@@ -102,28 +104,28 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>${apache.poi}</version>
+            <version>${apache.poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>${apache.poi}</version>
+            <version>${apache.poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
-            <version>${apache.poi}</version>
+            <version>${apache.poi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>${apache.tika}</version>
+            <version>${apache.tika.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
-            <version>${apache.tika}</version>
+            <version>${apache.tika.version}</version>
             <type>pom</type>
             <exclusions>
                 <exclusion>
@@ -135,7 +137,7 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parser-pdf-module</artifactId>
-            <version>${apache.tika}</version>
+            <version>${apache.tika.version}</version>
         </dependency>
 
         <dependency>
@@ -163,12 +165,12 @@
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
-            <version>${apache.velocity}</version>
+            <version>${apache.velocity.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-scripting</artifactId>
-            <version>${apache.velocity}</version>
+            <version>${apache.velocity.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.oshi</groupId>
@@ -224,10 +226,10 @@
             <version>1.14.3</version>
         </dependency>
 
-    	<dependency>
+        <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.105</version>
+            <version>${classgraph.version}</version>
         </dependency>
 
 	    <dependency>

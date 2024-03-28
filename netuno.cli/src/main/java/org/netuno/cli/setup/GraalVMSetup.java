@@ -44,7 +44,8 @@ public class GraalVMSetup {
 
     public static void checkAndSetup() {
         String javaVersion = System.getProperty("java.vendor.version");
-        if (!javaVersion.startsWith("GraalVM") || !javaVersion.endsWith(Constants.GRAALVM_VERSION)) {
+        String graalVMMainVersion = Constants.GRAALVM_VERSION.substring(0, Constants.GRAALVM_VERSION.indexOf("."));
+        if (!javaVersion.startsWith("GraalVM CE "+ graalVMMainVersion +"+")) {
             checkAndSetup(Constants.GRAALVM_VERSION);
         }
     }
@@ -108,8 +109,10 @@ public class GraalVMSetup {
             logger.debug("GraalVM Version - Output:\n"+ versionOutput);
             logger.debug("GraalVM Version - Error:\n"+ versionError);
             */
-            if (versionOutput.toString().contains("GraalVM CE "+ graalVMVersion)
-                    || versionError.toString().contains("GraalVM CE "+ graalVMVersion)) {
+
+            String graalVMMainVersion = Constants.GRAALVM_VERSION.substring(0, Constants.GRAALVM_VERSION.indexOf("."));
+            if (versionOutput.toString().contains("GraalVM CE "+ graalVMMainVersion +"+")
+                    || versionError.toString().contains("GraalVM CE "+ graalVMVersion +"+")) {
                 return true;
             } else {
                 logger.debug("Is not the GraalVM CE "+ graalVMVersion +" then reinstall.");
@@ -129,16 +132,29 @@ public class GraalVMSetup {
             FileUtils.deleteDirectory(graalVMFolder);
         }
         if (installGraalVM == 0) {
-            String graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java17-windows-amd64-" + graalVMVersion + ".zip";
+            String graalVMURLPrefix = String.format("https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-%s/graalvm-community-jdk-%s_", graalVMVersion, graalVMVersion);
+            String graalVMURL = graalVMURLPrefix + "windows-x64_bin.zip";
             String graalVMFileName = "graalvm.zip";
             if (SystemUtils.IS_OS_MAC) {
-                graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java17-darwin-amd64-" + graalVMVersion + ".tar.gz";
+                if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x64")) {
+                    graalVMURL = graalVMURLPrefix + "macos-x64_bin.tar.gz";
+                } else if (SystemUtils.OS_ARCH.equals("aarch64")) {
+                    graalVMURL = graalVMURLPrefix + "macos-aarch64_bin.tar.gz";
+                } else {
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|red    GraalVM not support this architecture. |@"));
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("@|yellow    To continue then install with: |@"));
+                    System.out.println(OS.consoleNetunoCommand("install graal=false"));
+                    System.out.println();
+                    return;
+                }
                 graalVMFileName = "graalvm.tar.gz";
             } else if (SystemUtils.IS_OS_LINUX) {
                 if (SystemUtils.OS_ARCH.equals("amd64")) {
-                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java17-linux-amd64-" + graalVMVersion + ".tar.gz";
+                    graalVMURL = graalVMURLPrefix + "linux-x64_bin.tar.gz";
                 } else if (SystemUtils.OS_ARCH.equals("aarch64")) {
-                    graalVMURL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-" + graalVMVersion + "/graalvm-ce-java17-linux-aarch64-" + graalVMVersion + ".tar.gz";
+                    graalVMURL = graalVMURLPrefix + "linux-aarch64_bin.tar.gz";
                 } else {
                     System.out.println();
                     System.out.println(OS.consoleOutput("@|red    GraalVM not support this architecture. |@"));
@@ -284,7 +300,7 @@ public class GraalVMSetup {
                         zipFile.close();
                     }
                     for (File file : new File(path).listFiles()) {
-                        if (file.isDirectory() && file.getName().startsWith("graalvm-") && file.getName().endsWith("-"+ graalVMVersion)) {
+                        if (file.isDirectory() && file.getName().startsWith("graalvm-")) {
                             file.renameTo(new File(path, "graalvm"));
                         }
                     }
@@ -299,6 +315,10 @@ public class GraalVMSetup {
     }
 
     public static void installJS(String path) throws IOException, InterruptedException {
+        /**
+         * Deprecated in the latest GraalVM.
+         * To be removed in the future.
+         *
         File graalVMFolder = new File(path, Constants.GRAALVM_FOLDER);
         if (graalVMFolder.exists()) {
             System.out.println();
@@ -339,5 +359,6 @@ public class GraalVMSetup {
                 }
             }
         }
+         */
     }
 }

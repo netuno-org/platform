@@ -65,6 +65,9 @@
 -keep class org.graalvm.** { *; }
 -dontwarn org.graalvm.**
 
+-keep class com.oracle.** { *; }
+-dontwarn com.oracle.**
+
 -keep class !org.netuno.** { *; }
 -dontwarn !org.netuno.**
 

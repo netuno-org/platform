@@ -960,7 +960,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     public byte getByte(int index, byte defaultValue) {
         try {
-            return Byte.valueOf(safeString(get(index))).byteValue();
+            return Double.valueOf(safeString(get(index))).byteValue();
         } catch (Exception e) {
             return defaultValue;
         }
@@ -987,7 +987,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final byte getByte(final String key, final byte defaultValue) {
         if (hasKey(key)) {
             try {
-                return Byte.valueOf(safeString(get(key))).byteValue();
+                return Double.valueOf(safeString(get(key))).byteValue();
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1010,7 +1010,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     public int getInt(int index, int defaultValue) {
         try {
-            return Integer.valueOf(safeString(get(index))).intValue();
+            return Double.valueOf(safeString(get(index))).intValue();
         } catch (Exception e) {
             return defaultValue;
         }
@@ -1037,7 +1037,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final int getInt(final String key, final int defaultValue) {
         if (hasKey(key)) {
             try {
-                return Integer.valueOf(safeString(get(key))).intValue();
+                return Double.valueOf(safeString(get(key))).intValue();
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1060,7 +1060,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     public short getShort(int index, short defaultValue) {
         try {
-            return Short.valueOf(safeString(get(index))).shortValue();
+            return Double.valueOf(safeString(get(index))).shortValue();
         } catch (Exception e) {
             return defaultValue;
         }
@@ -1091,7 +1091,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final short getShort(final String key, final short defaultValue) {
         if (hasKey(key)) {
             try {
-                return Short.valueOf(safeString(get(key))).shortValue();
+                return Double.valueOf(safeString(get(key))).shortValue();
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1114,7 +1114,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     public float getFloat(int index, float defaultValue) {
         try {
-            return Float.valueOf(safeString(get(index))).floatValue();
+            return Double.valueOf(safeString(get(index))).floatValue();
         } catch (Exception e) {
             return defaultValue;
         }
@@ -1144,7 +1144,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final float getFloat(final String key, final float defaultValue) {
         if (hasKey(key)) {
             try {
-                return Float.valueOf(safeString(get(key))).floatValue();
+                return Double.valueOf(safeString(get(key))).floatValue();
             } catch (Exception e) {
                 return defaultValue;
             }
@@ -1220,7 +1220,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
 
     public long getLong(int index, long defaultValue) {
         try {
-            return Long.valueOf(safeString(get(index))).longValue();
+            return Double.valueOf(safeString(get(index))).longValue();
         } catch (Exception e) {
             return defaultValue;
         }
@@ -1250,7 +1250,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final long getLong(final String key, final long defaultValue) {
         if (hasKey(key)) {
             try {
-                return Long.valueOf(safeString(get(key))).longValue();
+                return Double.valueOf(safeString(get(key))).longValue();
             } catch (Exception e) {
                 return defaultValue;
             }

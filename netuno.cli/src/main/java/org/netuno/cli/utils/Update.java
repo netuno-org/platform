@@ -33,7 +33,13 @@ public class Update {
     
     public static void check() {
         try {
-            Values data = Values.fromJSON(new Remote().get("https://github.com/netuno-org/platform/releases/download/stable/netuno.json").toString());
+            Values data = Values.fromJSON(
+                    new Remote()
+                            .setConnectTimeout(10000)
+                            .setReadTimeout(10000)
+                            .get("https://github.com/netuno-org/platform/releases/download/stable/netuno.json")
+                            .toString()
+            );
             int compareVersion = Build.getNumber().compareTo(data.getString("version"));
             if (compareVersion < 0) {
                 if (data.getString("type").equals("critical")) {

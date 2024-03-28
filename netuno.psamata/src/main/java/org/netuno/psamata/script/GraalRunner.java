@@ -28,10 +28,10 @@ import java.util.*;
  */
 public class GraalRunner implements AutoCloseable {
     private static boolean graal = false;
-    
-    private static Engine engine = null;
-    
+
     private static HostAccess hostAccess = null;
+
+    private String[] permittedLanguages = null;
 
     private Builder contextBuilder = null;
     
@@ -41,8 +41,6 @@ public class GraalRunner implements AutoCloseable {
 
     static {
         try {
-            engine = Engine.create();
-            
             hostAccess = HostAccess.newBuilder()
                 .allowPublicAccess(true)
                 .allowArrayAccess(true)
@@ -82,15 +80,17 @@ public class GraalRunner implements AutoCloseable {
     }
     
     private void init(Map<String, String> options, String... permittedLanguages) {
+        this.permittedLanguages = permittedLanguages;
         //engine = Engine.create();
-        
         contextBuilder = Context.newBuilder(permittedLanguages)
+                .allowHostAccess(HostAccess.ALL)
+                .allowHostClassLookup(className -> true)
                 .allowExperimentalOptions(true)
                 .allowIO(true)
                 .allowAllAccess(true)
                 .allowCreateThread(true)
                 .allowHostAccess(hostAccess);
-        
+
         //https://www.graalvm.org/truffle/javadoc/org/graalvm/polyglot/ResourceLimits.html
         //contextBuilder.resourceLimits(new ResourceLimits())
         /*
@@ -113,8 +113,6 @@ public class GraalRunner implements AutoCloseable {
         if (options != null) {
             contextBuilder.options(options);
         }
-        
-        contextBuilder.engine(engine);
         
         newContext();
     }
@@ -202,12 +200,13 @@ public class GraalRunner implements AutoCloseable {
         return context.getBindings(language).getMember(var).asString();
     }
 
-    public Value eval(String language, String code) {
+    public Object eval(String language, String code) {
         try {
             //context.enter();
         } catch (Exception e) { }
         try {
-            return context.eval(language, code);
+            Value result = context.eval(language, code);
+            return result;
         } catch (org.graalvm.polyglot.PolyglotException e) {
             if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("Context execution was cancelled.")) {
                 return null;
@@ -311,13 +310,5 @@ public class GraalRunner implements AutoCloseable {
             }
         }
         return null;
-    }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        /*
-        GC TEST
-        close();
-        */
     }
 }

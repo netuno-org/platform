@@ -27,6 +27,13 @@
         <netuno.psamata.version>7.0.0</netuno.psamata.version>
         <netuno.tritao.version>7.0.0</netuno.tritao.version>
         <netuno.library.doc.version>7.0.0</netuno.library.doc.version>
+        <graalvm.version>24.0.0</graalvm.version>
+        <kotlin.version>1.7.10</kotlin.version>
+        <arrow.version>1.1.2</arrow.version>
+        <apache.poi.version>5.2.3</apache.poi.version>
+        <apache.tika.version>2.6.0</apache.tika.version>
+        <apache.velocity.version>2.3</apache.velocity.version>
+        <classgraph.version>4.8.163</classgraph.version>
         <json.version>20231013</json.version>
     </properties>
 

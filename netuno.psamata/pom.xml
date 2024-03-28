@@ -11,9 +11,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.release>11</maven.compiler.release>
-        <graalvm.version>22.3.0</graalvm.version>
     </properties>
-    
+
     <parent>
         <groupId>org.netuno</groupId>
         <artifactId>netuno</artifactId>
@@ -95,6 +94,12 @@
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
             <version>0.37.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
+            <version>${graalvm.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.graalvm.sdk</groupId>
