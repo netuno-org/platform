@@ -615,7 +615,7 @@ class TimeKiller implements Runnable
                         executorService.shutdownNow();
                     }
                 } else {
-                    targetThread.stop();
+                    targetThread.interrupt();
                 }
             }
         }
@@ -717,7 +717,7 @@ class ThreadMonitor {
                     }
                     if (!scriptFinished.get()) {
                         // HARD SHUTDOWN
-                        threadToMonitor.stop();
+                        threadToMonitor.interrupt();
                         scriptKilled.set(true);
                     }
                     return;
