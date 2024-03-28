@@ -134,15 +134,15 @@ import java.util.*;
 })
 public class XLS extends ResourceBase {
 
-    public HSSFWorkbook workbook = null;
+    public Workbook workbook = null;
 
-    public HSSFSheet sheet = null;
+    public Sheet sheet = null;
 
     public XLS(Proteu proteu, Hili hili) {
         super(proteu, hili);
     }
 
-    public XLS(Proteu proteu, Hili hili, HSSFWorkbook workbook, HSSFSheet activeSheet) {
+    public XLS(Proteu proteu, Hili hili, Workbook workbook, Sheet activeSheet) {
         super(proteu, hili);
         this.workbook = workbook;
         this.sheet = activeSheet;
@@ -178,8 +178,215 @@ public class XLS extends ResourceBase {
         )
     })
     public XLS create() {
-        HSSFWorkbook workbook = new HSSFWorkbook();
+        Workbook workbook = new HSSFWorkbook();
         return new XLS(getProteu(), getHili(), workbook, workbook.createSheet());
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Abre um arquivo do Excel.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Opens an Excel file.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "storage", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            description = "Referência do storage onde está o arquivo que será aberto."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Storage reference where the file will be opened."
+                    )
+            }),
+            @ParameterDoc(name = "password", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "senha",
+                            description = "Senha do arquivo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "File password."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Arquivo aberto em uma nova instância do recurso XLS."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "File opened in a new instance of the XLS resource."
+            )
+    })
+    public XLS open(Storage storage, String password) throws IOException {
+        Workbook workbook = WorkbookFactory.create(new java.io.File(FileSystemPath.absoluteFromStorage(getProteu(), storage)), password);
+        return new XLS(getProteu(), getHili(), workbook, workbook.getSheetAt(0));
+    }
+
+    public XLS open(Storage storage) throws IOException {
+        Workbook workbook = WorkbookFactory.create(new java.io.File(FileSystemPath.absoluteFromStorage(getProteu(), storage)));
+        return new XLS(getProteu(), getHili(), workbook, workbook.getSheetAt(0));
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Abre um arquivo do Excel.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Opens an Excel file.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "file", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "arquivo",
+                            description = "Arquivo do tipo documento de Excel."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Excel document type file."
+                    )
+            }),
+            @ParameterDoc(name = "password", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "senha",
+                            description = "Senha do arquivo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "File password."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Arquivo aberto em uma nova instância do recurso XLS."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "File opened in a new instance of the XLS resource."
+            )
+    })
+    public XLS open(File file, String password) throws IOException {
+        Workbook workbook = WorkbookFactory.create(new java.io.File(file.getFullPath()), password);
+        return new XLS(getProteu(), getHili(), workbook, workbook.getSheetAt(0));
+    }
+
+    public XLS open(File file) throws IOException {
+        Workbook workbook = WorkbookFactory.create(new java.io.File(file.getFullPath()));
+        return new XLS(getProteu(), getHili(), workbook, workbook.getSheetAt(0));
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Abre um arquivo do Excel.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Opens an Excel file.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "input", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "entrada",
+                            description = "Objeto de fluxo de entrada de dados do arquivo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "File data input stream object."
+                    )
+            }),
+            @ParameterDoc(name = "password", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "senha",
+                            description = "Senha do arquivo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "File password."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Arquivo aberto em uma nova instância do recurso XLS."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "File opened in a new instance of the XLS resource."
+            )
+    })
+    public XLS open(InputStream input, String password) throws IOException {
+        Workbook workbook = WorkbookFactory.create(input, password);
+        return new XLS(getProteu(), getHili(), workbook, workbook.getSheetAt(0));
+    }
+
+    public XLS open(InputStream input) throws IOException {
+        Workbook workbook = WorkbookFactory.create(input);
+        return new XLS(getProteu(), getHili(), workbook, workbook.getSheetAt(0));
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Abre um arquivo do Excel.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Opens an Excel file.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "input", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "entrada",
+                            description = "Objeto de fluxo de entrada de dados do arquivo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "File data input stream object."
+                    )
+            }),
+            @ParameterDoc(name = "password", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "senha",
+                            description = "Senha do arquivo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "File password."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Arquivo aberto em uma nova instância do recurso XLS."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "File opened in a new instance of the XLS resource."
+            )
+    })
+    public XLS open(java.io.InputStream input, String password) throws IOException {
+        Workbook workbook = WorkbookFactory.create(input, password);
+        return new XLS(getProteu(), getHili(), workbook, workbook.getSheetAt(0));
+    }
+
+    public XLS open(java.io.InputStream input) throws IOException {
+        Workbook workbook = WorkbookFactory.create(input);
+        return new XLS(getProteu(), getHili(), workbook, workbook.getSheetAt(0));
     }
 
     @MethodDoc(dependency = "create", translations = {
@@ -211,7 +418,7 @@ public class XLS extends ResourceBase {
                 description = "Gets the workbook."
         )
     })
-    public HSSFWorkbook workbook() {
+    public Workbook workbook() {
         return workbook;
     }
 
@@ -244,8 +451,61 @@ public class XLS extends ResourceBase {
                     description = "Gets the current spreadsheet."
             )
     })
-    public HSSFSheet sheet() {
+    public Sheet sheet() {
         return sheet;
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém o número total de folhas de cálculos.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the total number of spreadsheets.",
+                    howToUse = { })
+    }, parameters = {
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O número total de folhas de cálculos existentes no documento."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The total number of spreadsheets in the document."
+            )
+    })
+    public int getNumberOfSheets() {
+        return workbook.getNumberOfSheets();
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Lista com todas as folhas de cálculos.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "List of all spreadsheets.",
+                    howToUse = { })
+    }, parameters = {
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Todas as folhas de cálculos existentes no documento."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "All existing spreadsheets in the document."
+            )
+    })
+    public List<Sheet> getAllSheets() {
+        Iterator<Sheet> sheetIterator = workbook.sheetIterator();
+        List<Sheet> sheets = new ArrayList<>();
+        while (sheetIterator.hasNext()) {
+            sheets.add(sheetIterator.next());
+        }
+        return sheets;
     }
 
     @MethodDoc(dependency = "create", translations = {
@@ -279,7 +539,7 @@ public class XLS extends ResourceBase {
                     description = "Spreadsheet for the name."
             )
     })
-    public HSSFSheet getSheet(String name) {
+    public Sheet getSheet(String name) {
         return workbook.getSheet(name);
     }
 
@@ -313,7 +573,7 @@ public class XLS extends ResourceBase {
                     description = "Spreadsheet referring to the number (index)."
             )
     })
-    public HSSFSheet getSheet(int index) {
+    public Sheet getSheet(int index) {
         return workbook.getSheetAt(index);
     }
 
@@ -336,7 +596,7 @@ public class XLS extends ResourceBase {
                     description = "Spreadsheet created."
             )
     })
-    public HSSFSheet createSheet() {
+    public Sheet createSheet() {
         this.sheet = workbook.createSheet();
         return this.sheet;
     }
@@ -372,7 +632,7 @@ public class XLS extends ResourceBase {
                     description = "Spreadsheet created."
             )
     })
-    public HSSFSheet createSheet(String name) {
+    public Sheet createSheet(String name) {
         this.sheet = workbook.createSheet(name);
         return this.sheet;
     }
@@ -400,17 +660,53 @@ public class XLS extends ResourceBase {
     }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Folha de cálculos ativa."
+                description = "A instância atual do recurso XLS."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Active spreadsheet."
+                description = "A instância atual do recurso XLS."
         )
     })
-    public HSSFSheet activeSheet(int index) {
+    public XLS activeSheet(int index) {
         workbook.setActiveSheet(index);
         this.sheet = workbook.getSheetAt(index);
-        return this.sheet;
+        return this;
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define a folha de cálculos que fica ativa.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the spreadsheet that is active.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "index", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            description = "Objeto de referência da folha de cálculos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Spreadsheet reference object."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A instância atual do recurso XLS."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current instance of the XLS resource."
+            )
+    })
+    public XLS activeSheet(HSSFSheet sheet) {
+        sheet.setActive(true);
+        this.sheet = sheet;
+        return this;
     }
 
     @MethodDoc(translations = {
@@ -512,7 +808,7 @@ public class XLS extends ResourceBase {
                 description = "Line representation object."
         )
     })
-    public HSSFRow row(int rowIndex) {
+    public Row row(int rowIndex) {
         return row(sheet, rowIndex);
     }
 
@@ -558,8 +854,8 @@ public class XLS extends ResourceBase {
                 description = "Line representation object."
         )
     })
-    public HSSFRow row(HSSFSheet sheet, int rowIndex) {
-        HSSFRow row = sheet.getRow(rowIndex);
+    public Row row(Sheet sheet, int rowIndex) {
+        Row row = sheet.getRow(rowIndex);
         if (row == null) {
             row = sheet.createRow(rowIndex);
         }
@@ -608,7 +904,7 @@ public class XLS extends ResourceBase {
                 description = "Cell representation object."
         )
     })
-    public HSSFCell cell(int rowIndex, int colIndex) {
+    public Cell cell(int rowIndex, int colIndex) {
         return cell(sheet, rowIndex, colIndex);
     }
 
@@ -665,16 +961,209 @@ public class XLS extends ResourceBase {
                 description = "Cell representation object."
         )
     })
-    public HSSFCell cell(HSSFSheet sheet, int rowIndex, int colIndex) {
-        HSSFRow row = sheet.getRow(rowIndex);
+    public Cell cell(Sheet sheet, int rowIndex, int colIndex) {
+        Row row = sheet.getRow(rowIndex);
         if (row == null) {
             row = sheet.createRow(rowIndex);
         }
-        HSSFCell cell = row.getCell(colIndex);
+        Cell cell = row.getCell(colIndex);
         if (cell == null) {
             cell = row.createCell(colIndex);
         }
         return cell;
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém um objeto com os dados de uma célula da folha de cálculos.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets an object with data from a spreadsheet cell.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "rowIndex", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "linha",
+                            description = "Número da linha."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Line number."
+                    )
+            }),
+            @ParameterDoc(name = "colIndex", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "coluna",
+                            description = "Número da coluna."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Column number."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Informações de dados da célula."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Cell data information."
+            )
+    })
+    public Values getCellData(int rowIndex, int colIndex) {
+        return getCellData(sheet, rowIndex, colIndex);
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém um objeto com os dados de uma célula da folha de cálculos.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets an object with data from a spreadsheet cell.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "sheet", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "linha",
+                            description = "Objeto da folha de cálculos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Spreadsheet object."
+                    )
+            }),
+            @ParameterDoc(name = "rowIndex", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "linha",
+                            description = "Número da linha da folha."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Line number of the sheet."
+                    )
+            }),
+            @ParameterDoc(name = "colIndex", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "coluna",
+                            description = "Número da coluna."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Column number."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Informações de dados da célula."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Cell data information."
+            )
+    })
+    public Values getCellData(Sheet sheet, int rowIndex, int colIndex) {
+        Row row = sheet.getRow(rowIndex);
+        if (row == null) {
+            return null;
+        }
+        Cell cell = row.getCell(colIndex);
+        if (cell == null) {
+            return null;
+        }
+        return getCellData(cell);
+    }
+
+    @MethodDoc(dependency = "create", translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém um objeto com os dados de uma célula da folha de cálculos.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets an object with data from a spreadsheet cell.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "cell", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "celula",
+                            description = "Objeto que representa a célula."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Object that represents the cell."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Informações de dados da célula."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Cell data information."
+            )
+    })
+    public Values getCellData(Cell cell) {
+        Values cellData = new Values();
+        cellData.set("column", cell.getColumnIndex());
+        cellData.set("row", cell.getRowIndex());
+        cellData.set("address", cell.getAddress().formatAsString());
+        if (cell.getCellType() == CellType.STRING) {
+            cellData.set("type", "string");
+            cellData.set("value", cell.getStringCellValue());
+            cellData.set("richValue", cell.getRichStringCellValue());
+        } else if (cell.getCellType() == CellType.NUMERIC) {
+            cellData.set("type", "numeric");
+            cellData.set("value", cell.getNumericCellValue());
+            if (DateUtil.isCellDateFormatted(cell)) {
+                try {
+                    cellData.set("localDateTime", cell.getLocalDateTimeCellValue());
+                    cellData.set("localDate", cell.getLocalDateTimeCellValue().toLocalDate());
+                    cellData.set("localTime", cell.getLocalDateTimeCellValue().toLocalTime());
+                    cellData.set("instant", cell.getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()));
+                    cellData.set("date", cell.getDateCellValue());
+                } catch (NullPointerException e) {
+                    cellData.set("localDateTime", null);
+                    cellData.set("localDate", null);
+                    cellData.set("localTime", null);
+                    cellData.set("instant", null);
+                    cellData.set("date", null);
+                }
+            }
+        } else if (cell.getCellType() == CellType.BOOLEAN) {
+            cellData.set("type", "boolean");
+            cellData.set("value", cell.getBooleanCellValue());
+        } else if (cell.getCellType() == CellType.BLANK) {
+            cellData.set("type", "blank");
+        } else if (cell.getCellType() == CellType.FORMULA) {
+            cellData.set("type", "formula");
+            cellData.set("formula", cell.getCellFormula());
+            switch (cell.getCachedFormulaResultType()) {
+                case NUMERIC:
+                    cellData.set("value", cell.getNumericCellValue());
+                    break;
+                case STRING:
+                    cellData.set("value", cell.getStringCellValue());
+                    cellData.set("richValue", cell.getRichStringCellValue());
+                    break;
+            }
+        } else if (cell.getCellType() == CellType.ERROR) {
+            cellData.set("type", "error");
+            cellData.set("value", cell.getErrorCellValue());
+        }
+        return cellData;
     }
 
     @MethodDoc(dependency = "create", translations = {
@@ -720,9 +1209,9 @@ public class XLS extends ResourceBase {
     })
     public XLSPosition addDataTable(Map config, List data) {
         Values conf = new Values(config);
-        HSSFSheet sheet = this.sheet;
+        Sheet sheet = this.sheet;
         if (conf.hasKey("sheet")) {
-            sheet = (HSSFSheet)config.get("sheet");
+            sheet = (Sheet)config.get("sheet");
         }
         int rowIndex = conf.getInt("row");
         int colIndex = conf.getInt("col");
@@ -937,11 +1426,19 @@ public class XLS extends ResourceBase {
                 description = "Reference of the position of the last cell with data entered."
         )
     })
-    public XLSPosition addDataTable(HSSFSheet sheet, int rowIndex, int colIndex, List data, boolean vertical) {
+    public XLSPosition addDataTable(Sheet sheet, int rowIndex, int colIndex, List data) {
+        return addDataTable(sheet, rowIndex, colIndex, new Values(data), false);
+    }
+
+    public XLSPosition addDataTable(Sheet sheet, int rowIndex, int colIndex, Values data) {
+        return addDataTable(sheet, rowIndex, colIndex, new Values(data), false);
+    }
+
+    public XLSPosition addDataTable(Sheet sheet, int rowIndex, int colIndex, List data, boolean vertical) {
         return addDataTable(sheet, rowIndex, colIndex, new Values(data), vertical);
     }
     
-    public XLSPosition addDataTable(HSSFSheet sheet, int rowIndex, int colIndex, Values data, boolean vertical) {
+    public XLSPosition addDataTable(Sheet sheet, int rowIndex, int colIndex, Values data, boolean vertical) {
         if (data.isList()) {
             int rowCount = rowIndex;
             int colCount = colIndex;
@@ -953,8 +1450,7 @@ public class XLS extends ResourceBase {
                         colCount = position.getCol();
                         endWithList = true;
                     } else {
-                        HSSFCell cell = cell(sheet, rowCount, colCount);
-                        add(cell, values);
+                        setCellData(sheet, rowCount, colCount, values);
                         endWithList = false;
                     }
                     rowCount++;
@@ -971,8 +1467,7 @@ public class XLS extends ResourceBase {
                         rowCount = position.getRow();
                         endWithList = true;
                     } else {
-                        HSSFCell cell = cell(sheet, rowCount, colCount);
-                        add(cell, values);
+                        setCellData(sheet, rowCount, colCount, values);
                         endWithList = false;
                     }
                     colCount++;
@@ -1039,8 +1534,84 @@ public class XLS extends ResourceBase {
                 description = "The current instance of the XLS resource."
         )
     })
-    public XLS add(int row, int col, Map data) {
-        return add(cell(row, col), data);
+    public XLS setCellData(int row, int col, Map data) {
+        return setCellData(cell(row, col), data);
+    }
+
+    public XLS setCellData(int row, int col, Values data) {
+        return setCellData(cell(row, col), data);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Insere dados numa célula específica em uma planilha de cálculos.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Inserts data into a specific cell in a spreadsheet.",
+                    howToUse = { })
+    }, parameters = {
+            @ParameterDoc(name = "sheet", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "folhaCalculos",
+                            description = "Objeto da folha de cálculos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Spreadsheet object."
+                    )
+            }),
+            @ParameterDoc(name = "row", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "linha",
+                            description = "Número da linha."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Line number."
+                    )
+            }),
+            @ParameterDoc(name = "col", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "coluna",
+                            description = "Número da coluna."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Column number."
+                    )
+            }),
+            @ParameterDoc(name = "data", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "dados",
+                            description = "Dados que serão inseridos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Data to be inserted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A instância atual do recurso XLS."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current instance of the XLS resource."
+            )
+    })
+    public XLS setCellData(Sheet sheet, int row, int col, Map data) {
+        return setCellData(cell(sheet, row, col), data);
+    }
+
+    public XLS setCellData(Sheet sheet, int row, int col, Values data) {
+        return setCellData(cell(sheet, row, col), data);
     }
 
     @MethodDoc(translations = {
@@ -1085,11 +1656,11 @@ public class XLS extends ResourceBase {
                 description = "The current instance of the XLS resource."
         )
     })
-    public XLS add(HSSFCell cell, Map data) {
-        return add(cell, new Values(data));
+    public XLS setCellData(Cell cell, Map data) {
+        return setCellData(cell, new Values(data));
     }
     
-    public XLS add(HSSFCell cell, Values values) {
+    public XLS setCellData(Cell cell, Values values) {
         if (values.hasKey("value")) {
             Object val = values.get("value");
             if (val instanceof String) {
@@ -1138,7 +1709,7 @@ public class XLS extends ResourceBase {
             cell.setCellFormula(values.getString("formula"));
         }
         if (values.hasKey("style")) {
-            cell.setCellStyle((HSSFCellStyle) values.get("style"));
+            cell.setCellStyle((CellStyle) values.get("style"));
         }
         return this;
     }
@@ -1253,7 +1824,7 @@ public class XLS extends ResourceBase {
                 description = "The new font style created."
         )
     })
-    public HSSFFont font() {
+    public Font font() {
         return this.workbook.createFont();
     }
 
@@ -1277,7 +1848,7 @@ public class XLS extends ResourceBase {
                 description = "The new cell style created."
         )
     })
-    public HSSFCellStyle cellStyle() {
+    public CellStyle cellStyle() {
         return this.workbook.createCellStyle();
     }
 
@@ -1347,8 +1918,8 @@ public class XLS extends ResourceBase {
                 description = "The new cell style created with the configured format."
         )
     })
-    public HSSFCellStyle cellStyleFormat(String format) {
-        HSSFCellStyle cellStyle = cellStyle();
+    public CellStyle cellStyleFormat(String format) {
+        CellStyle cellStyle = cellStyle();
         cellStyle.setDataFormat(format(format));
         return cellStyle;
     }
@@ -1854,7 +2425,7 @@ public class XLS extends ResourceBase {
                         description = "The reference of the merged cell region."
                 )
     })
-    public int mergedRegion(HSSFSheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
+    public int mergedRegion(Sheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
         return sheet.addMergedRegion(this.cellRangeAddress(firstRow, lastRow, firstCol, lastCol));
     }
 
@@ -2291,7 +2862,7 @@ public class XLS extends ResourceBase {
                 description = "The reference object of the inserted image."
         )
     })
-    public Picture insertPicture(HSSFSheet sheet, Storage storage, ClientAnchor anchor) throws IOException {
+    public Picture insertPicture(Sheet sheet, Storage storage, ClientAnchor anchor) throws IOException {
         Drawing drawing = sheet.createDrawingPatriarch();
         
         int pictureIndex = workbook.addPicture(
@@ -2464,7 +3035,7 @@ public class XLS extends ResourceBase {
                 description = "The reference object of the inserted image."
         )
     })
-    public Picture insertPicture(HSSFSheet sheet, File file, ClientAnchor anchor) throws IOException {
+    public Picture insertPicture(Sheet sheet, File file, ClientAnchor anchor) throws IOException {
         Drawing drawing = sheet.createDrawingPatriarch();
         
         int pictureIndex = workbook.addPicture(
@@ -2544,6 +3115,14 @@ public class XLS extends ResourceBase {
         return new XLSPosition(rowIndex, colIndex);
     }
 
+    public Values read(Storage storage) throws IOException {
+        return read(storage, "", -1, false);
+    }
+
+    public Values read(Storage storage, String password) throws IOException {
+        return read(storage, password, -1, false);
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2586,11 +3165,11 @@ public class XLS extends ResourceBase {
         )
     })
     public Values read(Storage storage, boolean hiddenSheets) throws IOException {
-        return read(storage, -1, hiddenSheets);
+        return read(storage, "", -1, hiddenSheets);
     }
-    
-    public Values read(Storage storage) throws IOException {
-        return read(storage, -1, false);
+
+    public Values read(Storage storage, String password, boolean hiddenSheets) throws IOException {
+        return read(storage, password, -1, hiddenSheets);
     }
 
     @MethodDoc(translations = {
@@ -2635,7 +3214,11 @@ public class XLS extends ResourceBase {
         )
     })
     public Values read(Storage storage, int sheetNumber) throws IOException {
-        return read(storage, sheetNumber, true);
+        return read(storage, "", sheetNumber, true);
+    }
+
+    public Values read(Storage storage, String password, int sheetNumber) throws IOException {
+        return read(storage, password, sheetNumber, true);
     }
 
     @MethodDoc(translations = {
@@ -2691,59 +3274,111 @@ public class XLS extends ResourceBase {
         )
     })
     public Values read(Storage storage, int sheetNumber, boolean hiddenSheets) throws IOException {
+        return read(storage, "", sheetNumber, hiddenSheets);
+    }
+    public Values read(Storage storage, String password, int sheetNumber, boolean hiddenSheets) throws IOException {
         try (FileInputStream in = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage))) {
-            return read(in, sheetNumber, hiddenSheets);
+            return read(in, password, sheetNumber, hiddenSheets);
         }
     }
     
     public Values read(File file) throws IOException {
-        return read(file, -1, false);
+        return read(file, "", -1, false);
+    }
+
+    public Values read(File file, String password) throws IOException {
+        return read(file, password, -1, false);
     }
     
     public Values read(File file, int sheetNumber) throws IOException {
-        return read(file, sheetNumber, false);
+        return read(file, "", sheetNumber, false);
+    }
+
+    public Values read(File file, String password, int sheetNumber) throws IOException {
+        return read(file, password, sheetNumber, false);
     }
     
     public Values read(File file, boolean hiddenSheets) throws IOException {
-        return read(file, -1, hiddenSheets);
+        return read(file, "", -1, hiddenSheets);
+    }
+
+    public Values read(File file, String password, boolean hiddenSheets) throws IOException {
+        return read(file, password, -1, hiddenSheets);
     }
     
     public Values read(File file, int sheetNumber, boolean hiddenSheets) throws IOException {
+        return read(file, "", sheetNumber, hiddenSheets);
+    }
+
+    public Values read(File file, String password, int sheetNumber, boolean hiddenSheets) throws IOException {
         try (java.io.InputStream in = file.inputStream()) {
-            return read(in, sheetNumber, hiddenSheets);
+            return read(in, password, sheetNumber, hiddenSheets);
         }
     }
     
     public Values read(InputStream in) throws IOException {
-        return read(in, -1, false);
+        return read(in, "", -1, false);
+    }
+
+    public Values read(InputStream in, String password) throws IOException {
+        return read(in, password, -1, false);
     }
     
     public Values read(InputStream in, int sheetNumber) throws IOException {
-        return read(in, sheetNumber, false);
+        return read(in, "", sheetNumber, false);
+    }
+
+    public Values read(InputStream in, String password, int sheetNumber) throws IOException {
+        return read(in, password, sheetNumber, false);
     }
     
     public Values read(InputStream in, boolean hiddenSheets) throws IOException {
-        return read(in, -1, hiddenSheets);
+        return read(in, "", -1, hiddenSheets);
+    }
+
+    public Values read(InputStream in, String password, boolean hiddenSheets) throws IOException {
+        return read(in, password, -1, hiddenSheets);
     }
     
     public Values read(InputStream in, int sheetNumber, boolean hiddenSheets) throws IOException {
-        return read((java.io.InputStream)in, sheetNumber, hiddenSheets);
+        return read((java.io.InputStream)in, "", sheetNumber, hiddenSheets);
+    }
+
+    public Values read(InputStream in, String password, int sheetNumber, boolean hiddenSheets) throws IOException {
+        return read((java.io.InputStream)in, password, sheetNumber, hiddenSheets);
     }
     
     public Values read(java.io.InputStream in) throws IOException {
-        return read(in, -1, false);
+        return read(in, "", -1, false);
+    }
+
+    public Values read(java.io.InputStream in, String password) throws IOException {
+        return read(in, password, -1, false);
     }
     
     public Values read(java.io.InputStream in, int sheetNumber) throws IOException {
-        return read(in, sheetNumber, false);
+        return read(in, "", sheetNumber, false);
+    }
+
+    public Values read(java.io.InputStream in, String password, int sheetNumber) throws IOException {
+        return read(in, password, sheetNumber, false);
     }
     
     public Values read(java.io.InputStream in, boolean hiddenSheets) throws IOException {
-        return read(in, -1, hiddenSheets);
+        return read(in, "", -1, hiddenSheets);
+    }
+
+    public Values read(java.io.InputStream in, String password, boolean hiddenSheets) throws IOException {
+        return read(in, password, -1, hiddenSheets);
     }
     
-    public Values read(java.io.InputStream in, int sheetNumber, boolean hiddenSheets) throws IOException {
-        Workbook workbook = new XSSFWorkbook(in);
+    public Values read(java.io.InputStream in, String password, int sheetNumber, boolean hiddenSheets) throws IOException {
+        Workbook workbook = null;
+        if (password == null || password.isEmpty()) {
+            workbook = WorkbookFactory.create(in);
+        } else {
+            workbook = WorkbookFactory.create(in, password);
+        }
         Values sheets = new Values();
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             if (sheetNumber > -1 && sheetNumber != i) {
@@ -2768,54 +3403,8 @@ public class XLS extends ResourceBase {
                 row.set("columns", columns);
                 while (cellIterator.hasNext()) {
                     Cell currentCell = cellIterator.next();
-                    Values cell = new Values();
                     row.set("row", currentCell.getRowIndex());
-                    cell.set("column", currentCell.getColumnIndex());
-                    cell.set("row", currentCell.getRowIndex());
-                    cell.set("address", currentCell.getAddress().formatAsString());
-                    if (currentCell.getCellType() == CellType.STRING) {
-                        cell.set("type", "string");
-                        cell.set("value", currentCell.getStringCellValue());
-                        cell.set("richValue", currentCell.getRichStringCellValue());
-                    } else if (currentCell.getCellType() == CellType.NUMERIC) {
-                        cell.set("type", "numeric");
-                        cell.set("value", currentCell.getNumericCellValue());
-                        if (DateUtil.isCellDateFormatted(currentCell)) {
-                            try {
-                                cell.set("localDateTime", currentCell.getLocalDateTimeCellValue());
-                                cell.set("localDate", currentCell.getLocalDateTimeCellValue().toLocalDate());
-                                cell.set("localTime", currentCell.getLocalDateTimeCellValue().toLocalTime());
-                                cell.set("instant", currentCell.getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()));
-                                cell.set("date", currentCell.getDateCellValue());
-                            } catch (NullPointerException e) {
-                                cell.set("localDateTime", null);
-                                cell.set("localDate", null);
-                                cell.set("localTime", null);
-                                cell.set("instant", null);
-                                cell.set("date", null);
-                            }
-                        }
-                    } else if (currentCell.getCellType() == CellType.BOOLEAN) {
-                        cell.set("type", "boolean");
-                        cell.set("value", currentCell.getBooleanCellValue());
-                    } else if (currentCell.getCellType() == CellType.BLANK) {
-                        cell.set("type", "blank");
-                    } else if (currentCell.getCellType() == CellType.FORMULA) {
-                        cell.set("type", "formula");
-                        cell.set("formula", currentCell.getCellFormula());
-                        switch (currentCell.getCachedFormulaResultType()) {
-                            case NUMERIC:
-                                cell.set("value", currentCell.getNumericCellValue());
-                                break;
-                            case STRING:
-                                cell.set("value", currentCell.getStringCellValue());
-                                cell.set("richValue", currentCell.getRichStringCellValue());
-                                break;
-                        }
-                    } else if (currentCell.getCellType() == CellType.ERROR) {
-                        cell.set("type", "error");
-                        cell.set("value", currentCell.getErrorCellValue());
-                    }
+                    Values cell = getCellData(currentCell);
                     if (!cell.isEmpty()) {
                     	columns.add(cell);
                     }
