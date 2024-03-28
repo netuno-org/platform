@@ -59,6 +59,7 @@ import org.netuno.tritao.resource.util.ResourceException;
 })
 public class Out extends ResourceBase {
 
+    public int jsonIdentFactor = 0;
     public boolean jsonHTMLEscape = false;
     public List<OutputStream> mirrors = null;
 
@@ -756,6 +757,23 @@ public class Out extends ResourceBase {
         return this;
     }
 
+    public int jsonIdentFactor() {
+        return this.jsonIdentFactor;
+    }
+
+    public int getJSONIdentFactor() {
+        return jsonIdentFactor();
+    }
+
+    public Out jsonIdentFactor(int jsonIdentFactor) {
+        this.jsonIdentFactor = jsonIdentFactor;
+        return this;
+    }
+
+    public Out setJSONIdentFactor(int jsonIdentFactor) {
+        return jsonIdentFactor(jsonIdentFactor);
+    }
+
     public boolean jsonHTMLEscape() {
         return this.jsonHTMLEscape;
     }
@@ -779,17 +797,17 @@ public class Out extends ResourceBase {
     }
 
     public Out json(Values json) throws IOException, ProteuException {
-        getProteu().outputJSON(json, jsonHTMLEscape);
+        getProteu().outputJSON(json, jsonHTMLEscape, jsonIdentFactor);
         return this;
     }
 
     public Out json(Map json) throws IOException, ProteuException {
-        getProteu().outputJSON(new Values(json), jsonHTMLEscape);
+        getProteu().outputJSON(new Values(json), jsonHTMLEscape, jsonIdentFactor);
         return this;
     }
 
     public Out json(List<Values> json) throws IOException, ProteuException {
-        getProteu().outputJSON(json, jsonHTMLEscape);
+        getProteu().outputJSON(json, jsonHTMLEscape, jsonIdentFactor);
         return this;
     }
 
