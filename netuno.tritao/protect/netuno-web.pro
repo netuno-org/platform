@@ -43,6 +43,12 @@
 -keep class org.apache.** { *; }
 -dontwarn org.apache.**
 
+-keep class jdk.** { *; }
+-dontwarn jdk.**
+
+-keep class org.graalvm.** { *; }
+-dontwarn org.graalvm.**
+
 -keep interface * { *; }
 
 -keep public class * {
