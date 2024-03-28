@@ -551,7 +551,6 @@ class CheckServerStartedRunnable implements Runnable {
                     }
                     System.out.println();
                     System.out.println();
-                    System.out.println();
                     System.out.println(OS.consoleOutput("    @|yellow Applications available:|@"));
                     for (String app : Config.getAppConfig().keys()) {
                         if (appConfig != null && !appConfig.getString("name").equals(app)) {
@@ -560,7 +559,6 @@ class CheckServerStartedRunnable implements Runnable {
                         System.out.println();
                     	System.out.println(OS.consoleOutput("     - @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + server.getURI().getPort() + "/ |@"));
                     }
-                    System.out.println();
                     System.out.println();
                     System.out.println();
                     System.out.println(OS.consoleOutput("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@ @|cyan http://" + host + ":" + server.getURI().getPort() + "/ |@"));
