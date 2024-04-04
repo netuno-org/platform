@@ -17,7 +17,7 @@
 
 package org.netuno.tritao.util.hibernate;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 
 /**
  * Hibernate Pagination

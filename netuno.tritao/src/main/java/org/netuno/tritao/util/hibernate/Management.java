@@ -99,7 +99,7 @@ public class Management<T> extends Pagination {
         Session saveOrUpdateSession = sessionFactory.openSession();
         try {
             saveOrUpdateSession.beginTransaction();
-            saveOrUpdateSession.saveOrUpdate(obj);
+            saveOrUpdateSession.persist(obj);
             saveOrUpdateSession.getTransaction().commit();
             saveOrUpdateSession.flush();
         } catch (Throwable t) {

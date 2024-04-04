@@ -77,7 +77,7 @@ public class Indexer {
             .batchSizeToLoadObjects(25)
             .cacheMode(CacheMode.NORMAL)
             .threadsToLoadObjects(5)
-            .threadsForSubsequentFetching(20);
+            .threadsToLoadObjects(searchResultsSize);
     }
 
     public void indexAll(@SuppressWarnings("rawtypes") List list) {
@@ -111,7 +111,7 @@ public class Indexer {
     public void remove(Object obj) {
         FullTextSession fullTextSession = Search.getFullTextSession(mng.getSession());
         Transaction tx = fullTextSession.beginTransaction();
-        fullTextSession.delete(obj);
+        fullTextSession.remove(obj);
         tx.commit();
         fullTextSession.clear();
     }
@@ -122,7 +122,7 @@ public class Indexer {
         Transaction tx = fullTextSession.beginTransaction();
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, new StandardAnalyzer());
         Query query = parser.parse(keyword);
-        org.hibernate.Query hibQuery = fullTextSession.createFullTextQuery(query, c);
+        org.hibernate.query.Query hibQuery = fullTextSession.createFullTextQuery(query, c);
         List result = hibQuery.list();
         tx.commit();
         fullTextSession.clear();
@@ -196,8 +196,7 @@ public class Indexer {
                 }
             }
         }
-        
-        BooleanQuery.setMaxClauseCount(maxClauseCount);
+        query.setMinimumNumberShouldMatch(maxClauseCount);
         
         System.out.println("Query -  " + query.toString());
 
@@ -242,7 +241,7 @@ public class Indexer {
                 }
             }        
 
-        BooleanQuery.setMaxClauseCount(maxClauseCount);
+        query.setMinimumNumberShouldMatch(maxClauseCount);
 
         System.out.println("Query -  " + query.toString());
         org.hibernate.search.FullTextQuery fullTextQuery = fullTextSession.createFullTextQuery(query.build(), c);
@@ -286,7 +285,7 @@ public class Indexer {
                 }
             }
 
-        BooleanQuery.setMaxClauseCount(maxClauseCount);
+        query.setMinimumNumberShouldMatch(maxClauseCount);
         System.out.println("Query -  " + query.toString());
         org.hibernate.search.FullTextQuery fullTextQuery = fullTextSession.createFullTextQuery(query.build(), c);
 
