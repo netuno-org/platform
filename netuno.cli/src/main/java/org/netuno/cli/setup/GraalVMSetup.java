@@ -110,12 +110,12 @@ public class GraalVMSetup {
             logger.debug("GraalVM Version - Error:\n"+ versionError);
             */
 
-            String graalVMMainVersion = Constants.GRAALVM_VERSION.substring(0, Constants.GRAALVM_VERSION.indexOf("."));
+            String graalVMMainVersion = graalVMVersion.substring(0, graalVMVersion.indexOf("."));
             if (versionOutput.toString().contains("GraalVM CE "+ graalVMMainVersion +"+")
-                    || versionError.toString().contains("GraalVM CE "+ graalVMVersion +"+")) {
+                    || versionError.toString().contains("GraalVM CE "+ graalVMMainVersion +"+")) {
                 return true;
             } else {
-                logger.debug("Is not the GraalVM CE "+ graalVMVersion +" then reinstall.");
+                logger.debug("Is not the GraalVM CE "+ graalVMMainVersion +" then reinstall.");
                 return false;
             }
         }
