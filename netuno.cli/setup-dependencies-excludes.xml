@@ -23,17 +23,19 @@
                 <exclude>org.eclipse.jetty.http2:http2-server</exclude>
                 <exclude>org.eclipse.jetty.websocket:javax-websocket-server-impl</exclude>
                 <exclude>javax.servlet:javax.servlet-api</exclude>
-                <exclude>com.github.oshi:oshi-core</exclude>
-                <exclude>org.graalvm.js:graal-sdk</exclude>
-                <exclude>org.graalvm.js:js</exclude>
-                <exclude>org.graalvm.js:js-scriptengine</exclude>
+		        <exclude>com.github.oshi:oshi-core</exclude>
+                <exclude>org.graalvm.polyglot:polyglot</exclude>
+                <exclude>org.graalvm.polyglot:js</exclude>
+		        <exclude>org.graalvm.js:js-scriptengine</exclude>
                 <exclude>org.quartz-scheduler:quartz</exclude>
                 <exclude>org.quartz-scheduler:quartz-jobs</exclude>
                 <exclude>commons-net:commons-net</exclude>
                 <exclude>com.sun.mail:jakarta.mail</exclude>
                 <exclude>jakarta.mail:jakarta.mail-api</exclude>
                 <exclude>com.jcraft:jzlib</exclude>
-                <exclude>com.hierynomus:sshj</exclude>
+		        <exclude>com.hierynomus:sshj</exclude>
+                <exclude>org.bouncycastle:bcprov-jdk18on</exclude>
+                <exclude>org.bouncycastle:bcpkix-jdk18on</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

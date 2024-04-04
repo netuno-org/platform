@@ -9,7 +9,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.release>11</maven.compiler.release>
-        <jetty.version>9.4.48.v20220622</jetty.version>
+        <jetty.version>9.4.54.v20240208</jetty.version>
     </properties>
 
     <parent>
@@ -36,17 +36,17 @@
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.6.1</version>
+            <version>${picocli.version}</version>
         </dependency>
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
-            <version>2.3.2</version>
+            <version>${jansi.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vdurmont</groupId>
             <artifactId>emoji-java</artifactId>
-            <version>5.1.1</version>
+            <version>${emoji.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -61,22 +61,22 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.18.0</version>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.18.0</version>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20220320</version>
+            <version>${json.version}</version>
         </dependency>
         <dependency>
             <groupId>me.tongfei</groupId>
             <artifactId>progressbar</artifactId>
-            <version>0.9.3</version>
+            <version>${progressbar.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -123,7 +123,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.18.0</version>
+            <version>${log4j.version}</version>
         </dependency>
 
         <!-- JETTY -->
@@ -162,7 +162,7 @@
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>6.4.0</version>
+            <version>${oshi.version}</version>
 	    </dependency>
 
         <!-- GRAALVM -->
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.3.2</version>
+            <version>${quartz.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -198,7 +198,7 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
-            <version>2.3.2</version>
+            <version>${quartz.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -208,7 +208,7 @@
         </dependency>
     </dependencies>
     <scm>
-        <connection>scm:git:git://git.sitana.pt/Sitana/netuno.cli.git</connection>
+        <connection>scm:git:https://github.com/netuno-org/platform.git</connection>
     </scm>
     <build>
         <resources>
