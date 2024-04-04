@@ -73,6 +73,8 @@ public class SandboxManager implements AutoCloseable {
 
     private boolean stopped = false;
 
+    private Scriptable currentSandbox = null;
+
     static {
         sandboxesClasses = new ConcurrentHashMap<>();
 
@@ -112,6 +114,10 @@ public class SandboxManager implements AutoCloseable {
 
     public Hili getHili() {
         return hili;
+    }
+
+    public Scriptable currentSandbox() {
+        return currentSandbox;
     }
 
     public boolean isScriptsRunning() {
@@ -388,6 +394,7 @@ public class SandboxManager implements AutoCloseable {
             //ThreadMonitor threadMonitor = new ThreadMonitor(Config.getMaxCPUTime(), Config.getMaxMemory());
             //threadMonitor.setThreadToMonitor(Thread.currentThread());
             //threadMonitor.run();
+            currentSandbox = sandbox;
             sandbox.run(script, loadBindings(script));
             //threadMonitor.stopMonitor();
             /*RunScriptThread runScriptThread = new RunScriptThread(engine, script);
@@ -401,6 +408,8 @@ public class SandboxManager implements AutoCloseable {
             }*/
         } catch (Throwable t) {
             throwable = t;
+        } finally {
+            currentSandbox = null;
         }
         if (throwable != null) {
             if (scriptRequestErrorExecuted) {
