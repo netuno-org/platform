@@ -94,7 +94,7 @@ public final class Main implements Runnable {
      * @param args Arguments
      */
     public static void main(final String[] args) throws Exception {
-        StatusLogger.getLogger().setLevel(Level.OFF);
+        StatusLogger.getLogger().getFallbackListener().setLevel(Level.OFF);
         CommandLine.ParseResult commandLineParseResult = null;
         List<CommandLine> commandLineList = null;
         try {
@@ -153,6 +153,8 @@ public final class Main implements Runnable {
         } catch (CommandLine.UnmatchedArgumentException e) {
             logger.trace(e);
             commandLineList = null;
+        } catch (Throwable t) {
+            t.printStackTrace();
         } finally {
             if (commandLineList == null || commandLineList.size() < 2) {
                 System.out.println(OS.consoleOutput("@|red    The command-line argument is invalid. |@"));
