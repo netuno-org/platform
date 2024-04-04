@@ -36,7 +36,6 @@ import java.util.List;
 
 import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.auth.providers.HandlerProviders;
-import org.netuno.tritao.resource.JWT;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.event.EventExecutor;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -155,6 +154,9 @@ public class Service {
         proteu.getConfig().set("_service:instance", service);
         try {
             String method = proteu.getRequestHeader().getString("Method").toLowerCase();
+            if (method.equalsIgnoreCase("options")) {
+                service.allow();
+            }
             String scriptPathMethod = ScriptRunner.searchScriptFile(Config.getPathAppServices(proteu) + "/" + service.getPath() + "." + method);
             if (scriptPathMethod != null) {
                 service.method = method;
@@ -203,8 +205,12 @@ public class Service {
                     service.defaultEmptyOutput();
                     return;
                 }
-                JWT jwt = hili.resource().get(JWT.class);
-                if (!jwt.token().isEmpty() && !jwt.check()) {
+                if (!service.isMethod() && method.equalsIgnoreCase("options")) {
+                    EventExecutor.getInstance(proteu).runAppEvent(AppEventType.ServiceOptionsMethodAutoReply);
+                    return;
+                }
+                org.netuno.tritao.resource.Auth auth = hili.resource().get(org.netuno.tritao.resource.Auth.class);
+                if (!auth.jwtToken().isEmpty() && !auth.jwtTokenCheck()) {
                     proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
                     service.defaultEmptyOutput();
                     return;
