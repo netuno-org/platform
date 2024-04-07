@@ -62,13 +62,13 @@
     }
   },
   "setup": {
-    "enabled": true,
+    "enabled": false,
     "schema": {
-      "auto_create": true,
-      "execution": true
+      "auto_create": false,
+      "execution": false
     },
     "scripts": {
-      "execution": true
+      "execution": false
     }
   }
 }
