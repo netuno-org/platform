@@ -17,9 +17,10 @@
 
 package org.netuno.tritao.sandbox;
 
-import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
+
+import kotlin.script.experimental.jsr223.KotlinJsr223DefaultScriptEngineFactory;
 
 /**
  * Kotlin Sandbox
@@ -29,7 +30,7 @@ import org.netuno.psamata.script.ScriptRunner;
 public class KotlinSandbox extends JSR223GenericSandbox {
 
     static {
-        KotlinJsr223JvmLocalScriptEngineFactory kotlinEngineFactory = new KotlinJsr223JvmLocalScriptEngineFactory();
+        KotlinJsr223DefaultScriptEngineFactory kotlinEngineFactory = new KotlinJsr223DefaultScriptEngineFactory();
         ScriptRunner.getScriptEngineManager().registerEngineName("kotlin", kotlinEngineFactory);
     }
 
@@ -40,6 +41,9 @@ public class KotlinSandbox extends JSR223GenericSandbox {
     @Override
     public void run(ScriptSourceCode script, Values bindings) throws Exception {
         loadBindings(bindings);
+        /*
+        // LOAD SCRIPT BINDGINGS AS CONSTANTS
+        // Worked well in old Kotlin versions and may be useful in the future.
         String resourcesBindings = "";
         for (String key : bindings.keySet()) {
             if (key.contains(".")) {
@@ -53,15 +57,16 @@ public class KotlinSandbox extends JSR223GenericSandbox {
             resourcesBindings += "val " + valName + " = bindings[\"" + valName + "\"] as "
                     + resource.getClass().getName().replace("$", ".")
                     + ";\n";
-            /*try {
-                engine.eval(resourcesBindings);
-            } catch (Throwable t) {
-                logger.debug("Kotlin resource "+ valName +" not loaded.", t);
-                logger.warn("Kotlin resource "+ valName +" not loaded: "+ t.getMessage());
-            }*/
+            //try {
+            //    engine.eval(resourcesBindings);
+            //} catch (Throwable t) {
+            //    logger.debug("Kotlin resource "+ valName +" not loaded.", t);
+            //    logger.warn("Kotlin resource "+ valName +" not loaded: "+ t.getMessage());
+            //}
         }
         resourcesBindings += "\n\n";
         getEngine().eval(resourcesBindings);
+        */
         getEngine().eval(script.content());
     }
 }
