@@ -39,7 +39,7 @@ import java.util.stream.Stream;
 class H2Process {
     private static Logger logger = LogManager.getLogger(H2DatabaseMigration.class);
 
-    protected static void run(H2ProcessInfo processInfo, Path jar) {
+    protected static void run(H2ProcessInfo processInfo, H2Version version) {
         System.out.println();
         switch (processInfo.type()) {
             case EXPORTATION:
@@ -56,15 +56,11 @@ class H2Process {
         String[] command = new String[]{
                 Path.of(".", Constants.GRAALVM_FOLDER, "bin", "java").toAbsolutePath().toString(),
                 "-cp",
-                jar.toAbsolutePath().toString(),
+                version.getJAR().toAbsolutePath().toString(),
                 "org.h2.tools.Shell",
                 "-url",
                 "jdbc:h2:./"+ processInfo.dbName() +";"
-                        + (processInfo.type() == H2MigrationType.EXPORTATION ? 
-                                "MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;" : 
-                                processInfo.type() == H2MigrationType.IMPORTATION ?
-                                        "MODE=PostgreSQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;" :
-                                        "")
+                        + version.getJDBCParameters()
                         + "DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;MAX_LENGTH_INPLACE_LOB=1000000;",
                 "-user",
                 "sa",

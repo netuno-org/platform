@@ -32,10 +32,12 @@ import java.util.Scanner;
  */
 @CommandLine.Command(name = "migrate", helpCommand = true, description = "Tools to migrating operations.")
 public class Migrate implements MainArg {
-    @CommandLine.Option(names = { "h2" }, paramLabel = "export-v1|import-v2|clean", description = {
+    @CommandLine.Option(names = { "h2" }, paramLabel = "export-v1|import-v2|export-v2|import-v2.2|clean", description = {
             "Options available:",
             "export-v1: Exports all H2 databases (version 1.4+) used by Apps to SQL file; each SQL file is saved inside the same folder of the database original file.",
             "import-v2: Imports all SQL files exported before in a new database (version 2+); only for Apps using H2Database; this process makes a backup of original database files.",
+            "export-v2: Exports all H2 databases (version 2+) used by Apps to SQL file; each SQL file is saved inside the same folder of the database original file.",
+            "import-v2.2: Imports all SQL files exported before in a new database (version 2.2+); only for Apps using H2Database; this process makes a backup of original database files.",
             "clean: Clean all database backup and SQL files are deleted; this operation cannot be reversed, be careful."
     })
     protected String h2 = "";
@@ -54,9 +56,13 @@ public class Migrate implements MainArg {
         System.err.println();
         ConfigScript.loadEnv();
         if (h2.equalsIgnoreCase("export-v1")) {
-            H2DatabaseMigration.exportationVersion1(app);
+            H2DatabaseMigration.exportationVersion_1(app);
+        } else if (h2.equalsIgnoreCase("export-v2")) {
+            H2DatabaseMigration.exportationVersion_2(app);
         } else if (h2.equalsIgnoreCase("import-v2")) {
-            H2DatabaseMigration.importationVersion2(app);
+            H2DatabaseMigration.importationVersion_2(app);
+        } else if (h2.equalsIgnoreCase("import-v2.2")) {
+            H2DatabaseMigration.importationVersion_2_2(app);
         } else if (h2.equalsIgnoreCase("clean")) {
             boolean clear = true;
             if (clear) {
