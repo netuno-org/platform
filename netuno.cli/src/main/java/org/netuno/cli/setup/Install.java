@@ -163,7 +163,8 @@ public class Install implements MainArg {
 
         ConfigScript.loadEnv();
         
-        H2DatabaseMigration.exportationVersion1("*");
+        H2DatabaseMigration.exportationVersion_1("*");
+        H2DatabaseMigration.exportationVersion_2("*");
 
         int installNetuno = 0;
         installNetuno: while (installNetuno <= 1) {
@@ -452,7 +453,7 @@ public class Install implements MainArg {
                     logger.fatal("When looking for the obsoletes files into the folder: " + webWEBINFlib, e);
                 }
 
-                H2DatabaseMigration.importationVersion2("*");
+                H2DatabaseMigration.importationVersion_2_2("*");
                 H2DatabaseMigration.cleaning();
 
                 System.out.println();
