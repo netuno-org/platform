@@ -22,18 +22,20 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.MacAlgorithm;
+import io.jsonwebtoken.security.SignatureAlgorithm;
+
 import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.resource.util.ResourceException;
 
-import java.util.Date;
-import java.util.List;
+import javax.crypto.SecretKey;
+
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
 
@@ -54,34 +56,26 @@ import org.netuno.tritao.resource.event.AppEventType;
 public class JWT extends ResourceBase {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(JWT.class);
     private boolean enabled = false;
-    private int accessExpires = 60;
-    private int refreshExpires = 1440;
-    private String secret = "";
-    private String algorithm = null;
+    private SecretKey key = null;
 
     public JWT(Proteu proteu, Hili hili) {
         super(proteu, hili);
         if (!Config.isAppConfigLoaded(proteu)) {
             return;
         }
-        try {
-            init();
-        } catch (Exception e) {
-            logger.fatal("Initializing JWT...", e);
-        }
         isEnabled();
     }
 
-    public JWT(Proteu proteu, Hili hili, String secret, String algorithm) {
+    public JWT(Proteu proteu, Hili hili, SecretKey key) {
         super(proteu, hili);
-        this.secret = secret;
-        this.algorithm = algorithm;
+        this.key = key;
         isEnabled();
     }
     
     @AppEvent(type=AppEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         getProteu().getConfig().set("_jwt", getProteu().getConfig().getValues("_app:config").getValues("jwt"));
+        init();
     }
     
     @AppEvent(type=AppEventType.BeforeServiceConfiguration)
@@ -90,142 +84,86 @@ public class JWT extends ResourceBase {
     }
 
     public JWT init() throws ResourceException {
-        Values config = getProteu().getConfig().asValues("_jwt");
-        if (config == null) {
-            return null;
-        }
-        if (!isEnabled()) {
-            return null;
-        }
-        this.secret = config.getString("secret");
-        this.algorithm = config.getString("algorithm");
+        return new JWT(getProteu(), getHili());
+    }
+
+    public JWT init(String secret) throws ResourceException {
         if (secret.isEmpty() || secret.length() < 16) {
             throw new ResourceException("JWT secret is weak! Please choose a more secure secret with at least 16 characters.");
         }
-        if (algorithm.isEmpty() || signatureAlgorithm(algorithm) == null) {
-            throw new ResourceException("JWT algorithm is not defined! Please choose one and define in the environment configuration:\n"+
-                    " - ES256, ES384, ES512\n" +
-                    " - HS256, HS384, HS512\n" +
-                    " - PS256, PS384, PS512\n" +
-                    " - RS256, RS384, RS512\n"
-            );
-        }
-        return new JWT(getProteu(), getHili(), secret, algorithm);
+        JWT jwt = new JWT(getProteu(), getHili());
+        jwt.setHMACKeyFromSecret(secret);
+        return jwt;
     }
 
-    public JWT init(String secret, String algorithm) throws ResourceException {
-        return new JWT(getProteu(), getHili(), secret, algorithm);
+    public JWT init(SecretKey key) throws ResourceException {
+        JWT jwt = new JWT(getProteu(), getHili());
+        jwt.key(key);
+        return jwt;
     }
-    @MethodDoc(translations = {
+
+    @MethodDoc(
+        translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Verifica se um token está ativo.",
+                    description = "Verifica se o JWT está ativo.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Verify if a token is enable.",
+                    description = "Verify if the JWT is enable.",
                     howToUse = {})
-    },
-            parameters = {},
-            returns = {
+        },
+        parameters = {},
+        returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna ativado."
+                    description = "Retorna se está ativado."
             ),
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Returns enabled."
-                    )}
-    )
-    public boolean isEnabled() {
-        Values config = getProteu().getConfig().asValues("_jwt");
-        if (config != null) {
-            enabled = config.getBoolean("enabled");
-            getProteu().getConfig().set("_jwt:enabled", enabled);
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns if is enabled."
+            )
         }
+    )
+    public boolean enabled() {
         return enabled;
     }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Seta o tempo de expiração do token para o que está distipulado nas configs.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Sets the time of expiration of the token to the settings in configs.",
-                    howToUse = {})
-    },
-            parameters = {},
-            returns = {}
-    )
-    public int accessExpires() {
-        Values config = getProteu().getConfig().asValues("_jwt");
-        if (config != null) {
-            accessExpires = config.getInt("access_expires");
-            getProteu().getConfig().set("_jwt:expire", accessExpires);
-        }
-        return accessExpires;
+    public boolean isEnabled() {
+        return enabled();
     }
 
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Atualiza o tempo de expiração do token para o que está distipulado nas configs.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Updates the time of expiration of the token to the settings in configs.",
-                    howToUse = {})
-    },
-            parameters = {},
-            returns = {}
-    )
-    public int refreshExpires() {
-        Values config = getProteu().getConfig().asValues("_jwt");
-        if (config != null) {
-            refreshExpires = config.getInt("refresh_expires");
-            getProteu().getConfig().set("_jwt:expire", refreshExpires);
-        }
-        return refreshExpires;
+    public JWT enabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
+    public JWT setEnabled(boolean enabled) {
+        return enabled(enabled);
     }
 
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Verifica da existência um token autenticado.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Verify if exists an authenticated token.",
-                    howToUse = {})
-    },
-            parameters = {},
-            returns = {
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.PT,
-                            description = "Retorna o token."
-                    ),
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Returns the token."
-                    )
-            }
-    )
+    public JWT setHMACKeyFromSecret(String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        return this;
+    }
 
-    public String token() {
-        if (getProteu().getConfig().hasKey("_jwt:token")
-                && !getProteu().getConfig().getString("_jwt:token").isEmpty()) {
-            return getProteu().getConfig().getString("_jwt:token");
-        }
-        if (getProteu().getRequestHeader().has("Authorization")) {
-            String authorization = getProteu().getRequestHeader().getString("Authorization");
-            if (authorization.startsWith("Bearer ")) {
-                String token = authorization.substring("Bearer ".length()).trim();
-                getProteu().getConfig().set("_jwt:token", token);
-                return token;
-            }
-        }
-        return "";
+    public SecretKey getHMACKeyFromSecret(String secret) {
+        return Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    public SecretKey key() {
+        return key;
+    }
+
+    public SecretKey getKey() {
+        return key();
+    }
+
+    public JWT key(SecretKey key) {
+        this.key = key;
+        return this;
+    }
+
+    public JWT setKey(SecretKey key) {
+        return key(key);
     }
 
     @MethodDoc(translations = {
@@ -276,8 +214,9 @@ public class JWT extends ResourceBase {
         for (String key : data.keys()) {
             jwtBuilder.claim(key, data.get(key));
         }
-        return jwtBuilder.signWith(signatureAlgorithm(algorithm), secret).compact();
+        return jwtBuilder.signWith(key()).compact();
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -362,12 +301,12 @@ public class JWT extends ResourceBase {
     public String encode(Values header, Values body) {
         JwtBuilder jwtBuilder = Jwts.builder();
         header.keys().forEach(key -> {
-            jwtBuilder.setHeaderParam(key, header.get(key));
+            jwtBuilder.header().add(key, header.get(key));
         });
         body.keys().forEach(key -> {
             jwtBuilder.claim(key, body.get(key));
         });
-        return jwtBuilder.signWith(signatureAlgorithm(algorithm), secret).compact();
+        return jwtBuilder.signWith(key()).compact();
     }
     @MethodDoc(translations = {
             @MethodTranslationDoc(
@@ -403,30 +342,25 @@ public class JWT extends ResourceBase {
             )
     })
     public Values decode(String token) {
-        Jws<Claims> jwtParts = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+        Jws<Claims> jwtParts = Jwts.parser().verifyWith(key()).build().parseSignedClaims(token);
         JwsHeader jwtHeader = jwtParts.getHeader();
-        Claims jwtBody = jwtParts.getBody();
+        Claims jwtPayload = jwtParts.getPayload();
         Values header = new Values();
         jwtHeader.keySet().forEach(key -> {
             header.set(key.toString(), jwtHeader.get(key));
         });
         Values body = new Values();
-        jwtBody.keySet().forEach(key -> {
-            body.set(key, jwtBody.get(key));
+        jwtPayload.keySet().forEach(key -> {
+            body.set(key, jwtPayload.get(key));
         });
         return new Values().set("header", header)
                 .set("body", body)
-                .set("signature", jwtParts.getSignature());
-    }
-
-    public Values data() {
-        String token = token();
-        return !token.isEmpty() ? data(token()) : null;
+                .set("signature", jwtParts.getDigest());
     }
 
     public Values data(String token) {
         try {
-            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parser().verifyWith(key()).build().parseSignedClaims(token).getPayload();
             Values data = new Values();
             for (String key : claims.keySet()) {
                 data.set(key, claims.get(key));
@@ -441,297 +375,164 @@ public class JWT extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Verifica a existência de um token  .",
+                    description = "Obtém o tipo de algoritmo para assinatura do tipo ECDSA.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Verify if a token exists.",
-                    howToUse = {})
-    },
-            parameters = {},
-            returns = {
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.PT,
-                            description = "Retorna a validação."
-                    ),
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Returns the validation."
-                    )
-            }
-    )
-    public boolean check() {
-        JWT jwt = new JWT(getProteu(), getHili());
-        if (jwt.token() == null || jwt.token().isEmpty()) {
-        	return false;
-        }
-        return check(jwt.token());
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Este metódo faz a verifica o token inserido.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "This method verify the token.",
+                    description = "Gets the type of algorithm for signing of type ECDSA.",
                     howToUse = {})
     },
             parameters = {
-                    @ParameterDoc(name = "token", translations = {
+                    @ParameterDoc(name = "bits", translations = {
                             @ParameterTranslationDoc(
                                     language=LanguageDoc.PT,
-                                    name = "token",
-                                    description = "Token para validar."
+                                    name = "bits",
+                                    description = "Quantidade de bits do algoritmo de assinatura, pode ser 256, 384 ou 512."
                             ),
                             @ParameterTranslationDoc(
                                     language=LanguageDoc.EN,
-                                    description = "Token to be verify."
+                                    description = "Number of bits in the signature algorithm, it can be 256, 384 or 512."
                             )
                     })
             },
             returns = {
-            @ReturnTranslationDoc(
+                    @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna a validação."
+                    description = "Retorna o objeto do tipo de algoritmo da assinatura."
             ),
                     @ReturnTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Returns the validation."
+                            description = "Returns the signature algorithm type object."
                     )}
     )
-    public boolean check(String token) {
-        Values dbToken = dbRecord(token);
-        if (dbToken != null) {
-                return check(dbToken);
-        }
-        return false;
-    }
-
-    public boolean check(Values dbToken) {
-    	Time time = resource(Time.class);
-        Date expires = dbToken.getDate("access_expires");
-        if (expires.getTime() > time.instant().toEpochMilli()) {
-                return true;
-        }
-        return false;
-    }
-
-    public Values accessToken(Values contextData) {
-        return accessToken(0, contextData);
-    }
-
-    public Values dbRecord(String token) {
-        Data dbManagerData = new Data(getProteu(), getHili());
-        List<Values> dbTokens = dbManagerData.find(
-                "netuno_auth_jwt_token",
-                new Values().set("where",
-                        new Values()
-                                .set("access_token", new Values()
-                                		.set("type", "text")
-                                		.set("value", token)
-                                ).set("active", true)
-                )
-        );
-        if (dbTokens.size() == 1) {
-                return dbTokens.get(0);
-        }
-        return null;
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Este metódo acessa ao token de um determinado utilizador e retorna o seu conteúdo.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "This method access to the token of a user and returns the content.",
-                    howToUse = {})
-    },
-            parameters = {
-
-                    @ParameterDoc(name = "userId", translations = {
-                            @ParameterTranslationDoc(
-                                    language=LanguageDoc.PT,
-                                    name = "utilizadorId",
-                                    description = "Id do utilizador."
-                            ),
-                            @ParameterTranslationDoc(
-                                    language=LanguageDoc.EN,
-                                    description = "Id of user."
-                            )
-                    }),
-                    @ParameterDoc(name = "Values", translations = {
-                            @ParameterTranslationDoc(
-                                    language=LanguageDoc.PT,
-                                    name = "valores",
-                                    description = "Valores do utilizador."
-                            ),
-                            @ParameterTranslationDoc(
-                                    language=LanguageDoc.EN,
-                                    description = "Values of the user."
-                            )
-                    })
-            },
-            returns = {
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.PT,
-                            description = "Retorna o conteúdo do utilizador inserido."
-                    ),
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Returns the content of the user inserted."
-                    )
-            }
-    )
-
-    public Values accessToken(int userId, Values contextData) {
-        DB db = new DB(getProteu(), getHili());
-        Time time = new Time(getProteu(), getHili());
-        String accessToken = this.token(contextData);
-        Values tokenData = this.data(accessToken);
-        Data dbManagerData = new Data(getProteu(), getHili());
-        int tokenId = dbManagerData.insert(
-                "netuno_auth_jwt_token",
-                new Values()
-                        .set("uid", "'"+ tokenData.getString("uid") +"'")
-                        .set("user_id", userId)
-                        .set("access_token", "'"+ db.sanitize(accessToken) +"'")
-                        .set("created", "'"+ db.sanitize(db.timestamp().toString()) +"'")
-                        .set("access_expires", "'"+ db.sanitize(db.timestamp(time.localDateTime().plusMinutes(accessExpires())).toString()) +"'")
-                        .set("active", true)
-        );
-        Values dataToken = dbManagerData.get(
-                "netuno_auth_jwt_token",
-                tokenId
-        );
-        String refreshToken = this.token(
-                new Values()
-                        .set("token_uid", dataToken.getString("uid"))
-                        .set("expires_in", this.refreshExpires() * 60000)
-        );
-        dbManagerData.update(
-                "netuno_auth_jwt_token",
-                tokenId,
-                new Values()
-                        .set("refresh_token", "'"+ db.sanitize(refreshToken) +"'")
-                        .set("refresh_expires", "'"+ db.sanitize(db.timestamp(time.localDateTime().plusMinutes(refreshExpires())).toString()) +"'")
-        );
-        getProteu().getConfig().set(
-                "_jwt:auth:data",
-                new Values()
-                        .set("result", true)
-                        .set("access_token", accessToken)
-                        .set("refresh_token", refreshToken)
-                        .set("expires_in", accessExpires() * 60000)
-                        .set("refresh_expires_in", refreshExpires() * 60000)
-                        .set("token_type", "Bearer")
-        );
-        return getProteu().getConfig().getValues("_jwt:auth:data");
-    }
-
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Substitui um token antigo pelo o novo inserido.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Replaces an old token for the new on inserted.",
-                    howToUse = {})
-    },
-            parameters = {
-            @ParameterDoc(name = "refreshToken", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "tokenAtualizado",
-                            description = "Token para substituir."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Replace token."
-                    )
-            })
-            },
-            returns = {
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.PT,
-                            description = "Retorna o token atualizado."
-                    ),
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Returns the updated token."
-                    )
-            }
-    )
-
-    public Values refreshToken(String refreshToken) {
-        Data dbManagerData = new Data(getProteu(), getHili());
-        List<Values> dbOldTokens = dbManagerData.find(
-                "netuno_auth_jwt_token",
-                new Values().set("where",
-                        new Values().set("refresh_token", refreshToken)
-                                .set("active", true)
-                )
-        );
-        if (dbOldTokens.size() == 1) {
-            Time time = resource(Time.class);
-            Values dbOldToken = dbOldTokens.get(0);
-            if (dbOldToken.getDate("refresh_expires").getTime() > time.instant().toEpochMilli()) {
-                Values values = this.data(refreshToken);
-                if (values.getString("token_uid").equals(dbOldToken.getString("uid"))) {
-                    Values data = data(dbOldToken.getString("access_token"));
-                    data.unset("uid");
-                    Values token = accessToken(dbOldToken.getInt("id"), data);
-                    dbManagerData.update("netuno_auth_jwt_token", dbOldToken.getInt("id"), new Values().set("active", false));
-                    return token;
-                }
-            }
-        }
-        return null;
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Converte o conteúdo inserido para o padrão do JWT.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Converts the string to the standard JWT algorithm.",
-                    howToUse = {})
-    },
-            parameters = {
-                    @ParameterDoc(name = "algorithm", translations = {
-                            @ParameterTranslationDoc(
-                                    language=LanguageDoc.PT,
-                                    name = "algoritmo",
-                                    description = "Algoritmo inserido."
-                            ),
-                            @ParameterTranslationDoc(
-                                    language=LanguageDoc.EN,
-                                    description = "Inserted algorithm."
-                            )
-                    })
-            },
-            returns = {
-                    @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna o conteúdo convertido para o algoritmo padrão do JWT."
-            ),
-                    @ReturnTranslationDoc(
-                            language = LanguageDoc.EN,
-                            description = "Returns the converted content to the default algorithm of JWT."
-                    )}
-    )
-    private SignatureAlgorithm signatureAlgorithm(String algorithm) {
+    public SignatureAlgorithm algorithmES(int bits) {
         try {
-            return (SignatureAlgorithm)SignatureAlgorithm.class.getDeclaredField(algorithm.replace("-", "_").toUpperCase()).get(SignatureAlgorithm.class);
+            return (SignatureAlgorithm)Jwts.SIG.class.getDeclaredField("ES"+ bits).get(null);
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            return null;
+            throw new ResourceException(e.toString() +" >> The quantity of bits available in the signature algorithm is 256, 384, or 512.");
+        }
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o tipo de algoritmo para assinatura do tipo HMAC.",
+                howToUse = {}),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the type of algorithm for signing of type HMAC.",
+                howToUse = {})
+    },
+        parameters = {
+                @ParameterDoc(name = "bits", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "bits",
+                                description = "Quantidade de bits do algoritmo de assinatura, pode ser 256, 384 ou 512."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Number of bits in the signature algorithm, it can be 256, 384 or 512."
+                        )
+                })
+        },
+        returns = {
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.PT,
+                        description = "Retorna o objeto do tipo de algoritmo da assinatura."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "Returns the signature algorithm type object."
+                )}
+    )
+    public MacAlgorithm algorithmHS(int bits) {
+        try {
+            return (MacAlgorithm)Jwts.SIG.class.getDeclaredField("HS"+ bits).get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new ResourceException(e.toString() +" >> The quantity of bits available in the signature algorithm is 256, 384, or 512.");
+        }
+    }
+    
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o tipo de algoritmo para assinatura do tipo RSASS e MGF1.",
+                howToUse = {}),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the type of algorithm for signing of type RSASS and MGF1.",
+                howToUse = {})
+        },
+        parameters = {
+                @ParameterDoc(name = "bits", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "bits",
+                                description = "Quantidade de bits do algoritmo de assinatura, pode ser 256, 384 ou 512."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Number of bits in the signature algorithm, it can be 256, 384 or 512."
+                        )
+                })
+        },
+        returns = {
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.PT,
+                        description = "Retorna o objeto do tipo de algoritmo da assinatura."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "Returns the signature algorithm type object."
+                )}
+    )
+    public SignatureAlgorithm algorithmPS(int bits) {
+        try {
+            return (SignatureAlgorithm)Jwts.SIG.class.getDeclaredField("PS"+ bits).get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new ResourceException(e.toString() +" >> The quantity of bits available in the signature algorithm is 256, 384, or 512.");
+        }
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém o tipo de algoritmo para assinatura do tipo RSASSA-PKCS1-v1_5.",
+                howToUse = {}),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Gets the type of algorithm for signing of type RSASSA-PKCS1-v1_5.",
+                howToUse = {})
+        },
+        parameters = {
+                @ParameterDoc(name = "bits", translations = {
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.PT,
+                                name = "bits",
+                                description = "Quantidade de bits do algoritmo de assinatura, pode ser 256, 384 ou 512."
+                        ),
+                        @ParameterTranslationDoc(
+                                language=LanguageDoc.EN,
+                                description = "Number of bits in the signature algorithm, it can be 256, 384 or 512."
+                        )
+                })
+        },
+        returns = {
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.PT,
+                        description = "Retorna o objeto do tipo de algoritmo da assinatura."
+                ),
+                @ReturnTranslationDoc(
+                        language = LanguageDoc.EN,
+                        description = "Returns the signature algorithm type object."
+                )}
+    )
+    public SignatureAlgorithm algorithmRS(int bits) {
+        try {
+            return (SignatureAlgorithm)Jwts.SIG.class.getDeclaredField("RS"+ bits).get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new ResourceException(e.toString() +" >> The quantity of bits available in the signature algorithm is 256, 384, or 512.");
         }
     }
 }
