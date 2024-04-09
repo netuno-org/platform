@@ -17,10 +17,17 @@
 
 package org.netuno.tritao.resource;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
@@ -65,6 +72,10 @@ import org.netuno.tritao.resource.event.AppEventType;
 public class Auth extends ResourceBase {
 
     public Values allProvidersConfig = new Values();
+    private boolean jwtEnabled = true;
+    private Values jwtGroups = Values.newList();
+    private int jwtAccessExpires = 60;
+    private int jwtRefreshExpires = 1440;
 
     public Auth(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -126,9 +137,21 @@ public class Auth extends ResourceBase {
             }
     )
     public Auth load() {
-        Values auth = getProteu().getConfig().getValues("_auth");
-        if (auth == null) {
-            return this;
+        Values auth = getProteu().getConfig().getValues("_auth", Values.newMap());
+        Values jwt = auth.getValues("jwt", Values.newMap());
+        this.jwtEnabled = jwt.getBoolean("enabled", this.jwtEnabled);
+        this.jwtGroups = jwt.getValues("groups", Values.newList());
+        Values jwtExpires = jwt.getValues("expires", Values.newMap());
+        this.jwtAccessExpires = jwtExpires.getInt("access", this.jwtAccessExpires);
+        this.jwtRefreshExpires = jwtExpires.getInt("refresh", this.jwtRefreshExpires);
+        final String JWT_KEY = "netuno$"+ Config.getApp(getProteu()) +"$auth$jwt$key";
+        if (!org.netuno.proteu.Config.getConfig().containsKey(JWT_KEY)) {
+            JWT _jwt = resource(JWT.class);
+            if (jwt.containsKey("secret") && !jwt.getString("secret").isEmpty()) {
+                org.netuno.proteu.Config.getConfig().set(JWT_KEY, _jwt.getHMACKeyFromSecret(jwt.getString("secret")));
+            } else {
+                org.netuno.proteu.Config.getConfig().set(JWT_KEY, _jwt.algorithmHS(512).key().build());
+            }
         }
         allProvidersConfig = auth.getValues("providers", new Values());
         return this;
@@ -178,7 +201,6 @@ public class Auth extends ResourceBase {
         return allProvidersConfig;
     }
 
-    @SuppressWarnings("unused")
     public Values getAllProvidersConfig() {
         return allProvidersConfig;
     }
@@ -600,6 +622,7 @@ public class Auth extends ResourceBase {
     )
     public Auth logout() {
         org.netuno.tritao.auth.Auth.clearSession(getProteu(), getHili());
+        jwtInvalidateToken();
         return this;
     }
 
@@ -823,4 +846,575 @@ public class Auth extends ResourceBase {
                 password
         );
     }
+
+    public boolean attempt() {
+        return getProteu().getConfig().getBoolean("_auth:attempt", false);
+    }
+
+    public boolean isAttempt() {
+        return attempt();
+    }
+
+    public boolean attemptReject() {
+        return getProteu().getConfig().getBoolean("_auth:attempt:reject", false);
+    }
+
+    public boolean isAttemptReject() {
+        return attemptReject();
+    }
+
+    public Auth attemptReject(boolean reject) {
+        getProteu().getConfig().set("_auth:attempt:reject", reject);
+        return this;
+    }
+
+    public Auth setAttemptReject(boolean reject) {
+        return attemptReject(reject);
+    }
+
+    public Values attemptRejectWithData() {
+        return getProteu().getConfig().getValues("_auth:attempt:reject:data", Values.newMap());
+    }
+
+    public Values getAttemptRejectWithData(Values data) {
+        return attemptRejectWithData();
+    }
+
+    public Auth attemptRejectWithData(List<?> data) {
+        attemptRejectWithData(Values.of(data));
+        return this;
+    }
+
+    public Auth setAttemptRejectWithData(List<?> data) {
+        return attemptRejectWithData(data);
+    }
+
+    public Auth attemptRejectWithData(Map<?, ?> data) {
+        attemptRejectWithData(Values.of(data));
+        return this;
+    }
+
+    public Auth setAttemptRejectWithData(Map<?, ?> data) {
+        return attemptRejectWithData(data);
+    }
+
+    public Auth attemptRejectWithData(Values data) {
+        attemptReject(true);
+        getProteu().getConfig().set("_auth:attempt:reject:data", data);
+        return this;
+    }
+
+    public Auth setAttemptRejectWithData(Values data) {
+        return attemptRejectWithData(data);
+    }
+
+    public Values signInExtraData() {
+        return getProteu().getConfig().getValues("_auth:sign-in:extra:data", Values.newMap());
+    }
+
+    public Values getSignInExtraData(Values data) {
+        return signInExtraData();
+    }
+
+    public Auth signInExtraData(List<?> data) {
+        return signInExtraData(Values.of(data));
+    }
+
+    public Auth setSignInExtraData(List<?> data) {
+        return signInExtraData(data);
+    }
+
+    public Auth signInExtraData(Map<?, ?> data) {
+        return signInExtraData(Values.of(data));
+    }
+
+    public Auth setSignInExtraData(Map<?, ?> data) {
+        return signInExtraData(data);
+    }
+
+    public Auth signInExtraData(Values data) {
+        getProteu().getConfig().set("_auth:sign-in:extra:data", data);
+        return this;
+    }
+
+    public Auth setSignInExtraData(Values data) {
+        return signInExtraData(data);
+    }
+
+    public boolean signInAbort() {
+        return getProteu().getConfig().getBoolean("_auth:sign-in:abort", false);
+    }
+
+    public boolean isSignInAbort() {
+        return signInAbort();
+    }
+
+    public Auth signInAbort(boolean abort) {
+        getProteu().getConfig().set("_auth:sign-in:abort", abort);
+        return this;
+    }
+
+    public Auth setSignInAbort(boolean abort) {
+        return signInAbort(abort);
+    }
+
+    public Values signInAbortWithData() {
+        return getProteu().getConfig().getValues("_auth:sign-in:abort:data", Values.newMap());
+    }
+
+    public Values getSignInAbortWithData(Values data) {
+        return signInAbortWithData();
+    }
+
+    public Auth signInAbortWithData(List<?> data) {
+        signInAbortWithData(Values.of(data));
+        return this;
+    }
+
+    public Auth setSignInAbortWithData(List<?> data) {
+        return signInAbortWithData(data);
+    }
+
+    public Auth signInAbortWithData(Map<?, ?> data) {
+        signInAbortWithData(Values.of(data));
+        return this;
+    }
+
+    public Auth setSignInAbortWithData(Map<?, ?> data) {
+        return signInAbortWithData(data);
+    }
+
+    public Auth signInAbortWithData(Values data) {
+        signInAbort(true);
+        getProteu().getConfig().set("_auth:sign-in:abort:data", data);
+        return this;
+    }
+
+    public Auth setSignInAbortWithData(Values data) {
+        return signInAbortWithData(data);
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se o JWT está ativo.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Verify if the JWT is enable.",
+                    howToUse = {})
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna se está ativado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns if is enabled."
+            )
+        }
+    )
+    public boolean jwtEnabled() {
+        return jwtEnabled;
+    }
+
+    public Auth jwtEnabled(boolean enabled) {
+        this.jwtEnabled = enabled;
+        return this;
+    }
+
+    public SecretKey jwtKey() {
+        final String JWT_KEY = "netuno$"+ Config.getApp(getProteu()) +"$auth$jwt$key";
+        return org.netuno.proteu.Config.getConfig().get(JWT_KEY, SecretKey.class);
+    }
+
+    public Auth jwtSignIn(int userId, Values contextData) {
+        Values data = jwtCreateAccessToken(userId, contextData);
+        getProteu().getConfig().set("_auth:jwt:token", data.getString("access_token"));
+        getProteu().getConfig().set("_auth:jwt:data", data);
+        resource(User.class).load();
+        resource(Group.class).load();
+        return this;
+    }
+
+    public Values jwtSignInData() {
+        return getProteu().getConfig().getValues("_auth:jwt:data");
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Verifica da existência um token autenticado.",
+                howToUse = {}),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Verify if exists an authenticated token.",
+                howToUse = {})
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna o token."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns the token."
+        )
+    })
+    public String jwtToken() {
+        if (getProteu().getConfig().hasKey("_auth:jwt:token")
+            && !getProteu().getConfig().getString("_auth:jwt:token").isEmpty()) {
+            return getProteu().getConfig().getString("_auth:jwt:token");
+        }
+        if (getProteu().getRequestHeader().has("Authorization")) {
+            String authorization = getProteu().getRequestHeader().getString("Authorization");
+            if (authorization.startsWith("Bearer ")) {
+                String token = authorization.substring("Bearer ".length()).trim();
+                getProteu().getConfig().set("_auth:jwt:token", token);
+                return token;
+            }
+        }
+        return "";
+    }
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Verifica a existência de um token  .",
+                howToUse = {}),
+        @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Verify if a token exists.",
+                howToUse = {})
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna a validação."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns the validation."
+        )
+    })
+    public boolean jwtTokenCheck() {
+        String token = jwtToken();
+        if (token == null || token.isEmpty()) {
+                return false;
+        }
+        return jwtCheckToken(token);
+    }
+
+    public Values jwtData() {
+        String token = jwtToken();
+        return !token.isEmpty() ? resource(JWT.class).init(jwtKey()).data(token) : null;
+    }
+
+    public boolean jwtInvalidateToken() {
+        boolean result = jwtInvalidateToken(jwtToken());
+        if (result) {
+            getProteu().getConfig().unset("_auth:jwt:token");
+        }
+        return result;
+    }
+
+    public boolean jwtInvalidateToken(String token) {
+        Values dbToken = jwtDBRecord(token);
+        if (dbToken != null) {
+            Data dbManagerData = new Data(getProteu(), getHili());
+            dbManagerData.update(
+                "netuno_auth_jwt_token",
+                dbToken.getInt("id"),
+                new Values().set("active", false)
+            );
+            return true;
+        }
+        return false;
+    }
+    
+    public Values jwtGroups() {
+        return this.jwtGroups;
+    }
+
+    public Values getJWTGroups() {
+        return this.jwtGroups;
+    }
+
+    public boolean checkUserInJWTGroups(int userId) {
+        if (jwtGroups.isEmpty()) {
+            return true;
+        }
+        User user = resource(User.class);
+        Values dbUser = user.get(userId);
+        Group group = resource(Group.class);
+        Values dbGroup = group.get(dbUser.getInt("group_id"));
+        return jwtGroups.contains(dbGroup.getString("code"));
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Seta o tempo de expiração do token para o que está distipulado nas configs.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the time of expiration of the token to the settings in configs.",
+                    howToUse = {})
+        },
+        parameters = {},
+        returns = {}
+    )
+    public int jwtAccessExpires() {
+        return jwtAccessExpires;
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Atualiza o tempo de expiração do token para o que está distipulado nas configs.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Updates the time of expiration of the token to the settings in configs.",
+                    howToUse = {})
+        },
+        parameters = {},
+        returns = {}
+    )
+    public int jwtRefreshExpires() {
+        return jwtRefreshExpires;
+    }
+
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Este metódo faz a verifica o token inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "This method verify the token.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "token", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "token",
+                                    description = "Token para validar."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Token to be verify."
+                            )
+                    })
+            },
+            returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna a validação."
+            ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the validation."
+                    )}
+    )
+    public boolean jwtCheckToken(String token) {
+        Values dbToken = jwtDBRecord(token);
+        if (dbToken != null) {
+            return jwtCheckTokenDataExpiration(dbToken);
+        }
+        return false;
+    }
+
+    public boolean jwtCheckTokenDataExpiration(Values dbToken) {
+    	Time time = resource(Time.class);
+        Date expires = dbToken.getDate("access_expires");
+        if (expires.getTime() > time.instant().toEpochMilli()) {
+                return true;
+        }
+        return false;
+    }
+
+    public Values jwtDBRecord(String token) {
+        Data dbManagerData = new Data(getProteu(), getHili());
+        List<Values> dbTokens = dbManagerData.find(
+                "netuno_auth_jwt_token",
+                new Values().set("where",
+                        new Values()
+                                .set("access_token", new Values()
+                                		.set("type", "text")
+                                		.set("value", token)
+                                ).set("active", true)
+                )
+        );
+        if (dbTokens.size() == 1) {
+                return dbTokens.get(0);
+        }
+        return null;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria o token para um determinado utilizador e realiza a autenticação dele.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "This method access to the token of a user and returns the content.",
+                    howToUse = {})
+    },
+            parameters = {
+
+                    @ParameterDoc(name = "userId", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "utilizadorId",
+                                    description = "Id do utilizador."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Id of user."
+                            )
+                    }),
+                    @ParameterDoc(name = "Values", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "valores",
+                                    description = "Valores do utilizador."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Values of the user."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o conteúdo do utilizador inserido."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the content of the user inserted."
+                    )
+            }
+    )
+
+    public Values jwtCreateAccessToken(Values contextData) {
+        return jwtCreateAccessToken(0, contextData);
+    }
+
+    public Values jwtCreateAccessToken(int userId, Values contextData) {
+        JWT _jwt = resource(JWT.class).init(jwtKey());
+        DB db = new DB(getProteu(), getHili());
+        Time time = new Time(getProteu(), getHili());
+        String accessToken = _jwt.token(contextData);
+        Values tokenData = _jwt.data(accessToken);
+        Data dbManagerData = new Data(getProteu(), getHili());
+        int tokenId = dbManagerData.insert(
+                "netuno_auth_jwt_token",
+                new Values()
+                        .set("uid", "'"+ tokenData.getString("uid") +"'")
+                        .set("user_id", userId)
+                        .set("access_token", "'"+ db.sanitize(accessToken) +"'")
+                        .set("created", "'"+ db.sanitize(db.timestamp().toString()) +"'")
+                        .set("access_expires", "'"+ db.sanitize(db.timestamp(time.localDateTime().plusMinutes(jwtAccessExpires())).toString()) +"'")
+                        .set("active", true)
+        );
+        Values dataToken = dbManagerData.get(
+                "netuno_auth_jwt_token",
+                tokenId
+        );
+        String refreshToken = _jwt.token(
+                new Values()
+                        .set("token_uid", dataToken.getString("uid"))
+                        .set("expires_in", jwtRefreshExpires() * 60000)
+        );
+        dbManagerData.update(
+                "netuno_auth_jwt_token",
+                tokenId,
+                new Values()
+                        .set("refresh_token", "'"+ db.sanitize(refreshToken) +"'")
+                        .set("refresh_expires", "'"+ db.sanitize(db.timestamp(time.localDateTime().plusMinutes(jwtRefreshExpires())).toString()) +"'")
+        );
+        return new Values()
+                        .set("result", true)
+                        .set("access_token", accessToken)
+                        .set("refresh_token", refreshToken)
+                        .set("expires_in", jwtAccessExpires() * 60000)
+                        .set("refresh_expires_in", jwtRefreshExpires() * 60000)
+                        .set("token_type", "Bearer");
+    }
+
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Substitui um token antigo pelo o novo inserido.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Replaces an old token for the new on inserted.",
+                    howToUse = {})
+    },
+            parameters = {
+            @ParameterDoc(name = "refreshToken", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "tokenAtualizado",
+                            description = "Token para substituir."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Replace token."
+                    )
+            })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o token atualizado."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the updated token."
+                    )
+            }
+    )
+
+    public Values jwtRefreshAccessToken(String refreshToken) {
+        Data dbManagerData = new Data(getProteu(), getHili());
+        List<Values> dbOldTokens = dbManagerData.find(
+                "netuno_auth_jwt_token",
+                new Values().set("where",
+                        new Values().set("refresh_token", refreshToken)
+                                .set("active", true)
+                )
+        );
+        if (dbOldTokens.size() == 1) {
+            Time time = resource(Time.class);
+            Values dbOldToken = dbOldTokens.get(0);
+            if (dbOldToken.getDate("refresh_expires").getTime() > time.instant().toEpochMilli()) {
+                JWT _jwt = resource(JWT.class).init(jwtKey());
+                Values values = _jwt.data(refreshToken);
+                if (values.getString("token_uid").equals(dbOldToken.getString("uid"))) {
+                    Values data = _jwt.data(dbOldToken.getString("access_token"));
+                    data.unset("uid");
+                    Values token = jwtCreateAccessToken(dbOldToken.getInt("id"), data);
+                    dbManagerData.update("netuno_auth_jwt_token", dbOldToken.getInt("id"), new Values().set("active", false));
+                    return token;
+                }
+            }
+        }
+        return null;
+    }
+
 }
