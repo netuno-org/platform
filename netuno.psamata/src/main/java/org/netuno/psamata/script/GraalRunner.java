@@ -19,6 +19,7 @@ package org.netuno.psamata.script;
 
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.Context.Builder;
+import org.graalvm.polyglot.io.IOAccess;
 
 import java.util.*;
 
@@ -86,7 +87,7 @@ public class GraalRunner implements AutoCloseable {
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLookup(className -> true)
                 .allowExperimentalOptions(true)
-                .allowIO(true)
+                .allowIO(IOAccess.ALL)
                 .allowAllAccess(true)
                 .allowCreateThread(true)
                 .allowHostAccess(hostAccess);
@@ -198,6 +199,14 @@ public class GraalRunner implements AutoCloseable {
 
     public String getString(String language, String var) {
         return context.getBindings(language).getMember(var).asString();
+    }
+
+    public void enter() {
+        context.enter();
+    }
+
+    public void leave() {
+        context.leave();
     }
 
     public Object eval(String language, String code) {
