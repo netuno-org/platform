@@ -84,8 +84,11 @@ public class Auth extends WebMaster {
                     && proteu.getConfig().getValues("_auth:jwt:db:user") != null) {
                 return proteu.getConfig().getValues("_auth:jwt:db:user");
             }
-            JWT jwt = new JWT(proteu, hili);
-            Values values = jwt.data();
+            org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
+            Values values = auth.jwtData();
+            if (values == null) {
+                return null;
+            }
             Values user = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).getUserByUId(values.getString("_user_uid"));
             proteu.getConfig().set("_auth:jwt:db:user", user);
             return user;
@@ -118,8 +121,11 @@ public class Auth extends WebMaster {
                     && proteu.getConfig().getValues("_auth:jwt:db:group") != null) {
                 return proteu.getConfig().getValues("_auth:jwt:db:group");
             }
-            JWT jwt = new JWT(proteu, hili);
-            Values values = jwt.data();
+            org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
+            Values values = auth.jwtData();
+            if (values == null) {
+                return null;
+            }
             return org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).getGroupByUId(values.getString("_group_uid"));
         }
         if (type == Type.SESSION) {
@@ -140,8 +146,8 @@ public class Auth extends WebMaster {
     public static boolean isAdminAuthenticated(Proteu proteu, Hili hili, Type type, boolean redirect) {
         if (isAuthenticated(proteu, hili, type, redirect)) {
             if (type == Type.JWT) {
-                JWT jwt = new JWT(proteu, hili);
-                Values values = jwt.data();
+                org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
+                Values values = auth.jwtData();
                 return values.getBoolean("_admin");
             }
             if (type == Type.SESSION) {
@@ -159,8 +165,8 @@ public class Auth extends WebMaster {
     public static boolean isDevAuthenticated(Proteu proteu, Hili hili, Type type, boolean redirect) {
         if (isAuthenticated(proteu, hili, type, redirect)) {
             if (type == Type.JWT) {
-                JWT jwt = new JWT(proteu, hili);
-                Values values = jwt.data();
+                org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
+                Values values = auth.jwtData();
                 return values.getBoolean("_dev");
             }
             if (type == Type.SESSION) {
@@ -182,8 +188,8 @@ public class Auth extends WebMaster {
     public static boolean isAuthenticated(Proteu proteu, Hili hili, Type type, boolean redirect) {
         boolean result = false;
         if (type == Type.JWT) {
-            JWT jwt = new JWT(proteu, hili);
-            return jwt.check();
+            org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
+            return auth.jwtTokenCheck();
         }
         if (type == Type.SESSION) {
             result = !proteu.getSession().getString("_user_uid").isEmpty()
@@ -222,8 +228,11 @@ public class Auth extends WebMaster {
         Values contextData = createContextData(proteu, hili, dbUser, profile);
         if (contextData != null) {
             if (type == Type.JWT) {
-                JWT jwt = new JWT(proteu, hili);
-                jwt.accessToken(dbUser.getInt("id"), contextData);
+                org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
+                if (!auth.jwtEnabled() || !auth.checkUserInJWTGroups(dbUser.getInt("id"))) {
+                    return false;
+                }
+                auth.jwtSignIn(dbUser.getInt("id"), contextData);
                 return true;
             } else if (type == Type.SESSION) {
                 proteu.getSession().merge(contextData);
@@ -386,6 +395,19 @@ public class Auth extends WebMaster {
         return false;
     }
 
+    private boolean groupAllowed(Proteu proteu, Hili hili, Type type) throws ProteuException, IOException {
+        Group _group = resource(Group.class);
+        _group.load();
+        App _app = resource(App.class);
+        Values groups = _app.config().getValues("auth", new Values()).getValues("groups");
+        if (groups != null && groups.size() > 0) {
+            if (groups.contains(_group.code)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void authenticatorProviders(Proteu proteu, Hili hili) throws ProteuException, IOException {
         Header header = resource(Header.class);
         Out out = resource(Out.class);
@@ -441,9 +463,8 @@ public class Auth extends WebMaster {
                         DBManager.updateUser(user);
                         if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
                             header.status(Proteu.HTTPStatus.OK200);
-                            proteu.outputJSON(
-                                    proteu.getConfig().getValues("_jwt:auth:data")
-                            );
+                            org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
+                            proteu.outputJSON(auth.jwtSignInData());
                             return;
                         }
                     } else {
@@ -462,8 +483,9 @@ public class Auth extends WebMaster {
                                 DBManager.updateUser(user);
                                 if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
                                     header.status(Proteu.HTTPStatus.OK200);
+                                    org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
                                     proteu.outputJSON(
-                                            proteu.getConfig().getValues("_jwt:auth:data")
+                                        auth.jwtSignInData()
                                     );
                                     return;
                                 }
@@ -532,9 +554,8 @@ public class Auth extends WebMaster {
                 DBManager.clearOldAuthProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
                 if (signIn(proteu, hili, values, Type.JWT, Profile.ALL)) {
                     header.status(Proteu.HTTPStatus.OK200);
-                    proteu.outputJSON(
-                            proteu.getConfig().getValues("_jwt:auth:data")
-                    );
+                    org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
+                    proteu.outputJSON(auth.jwtSignInData());
                     return;
                 }
                 header.status(Proteu.HTTPStatus.Forbidden403);
@@ -555,12 +576,12 @@ public class Auth extends WebMaster {
         }
         
         Req req = resource(Req.class);
-        JWT jwt = resource(JWT.class);
+        org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
         
         boolean jwtRequest = req.hasKey("jwt") && req.getBoolean("jwt");
         
         if (jwtRequest) {
-            if (!jwt.isEnabled()) {
+            if (!auth.jwtEnabled()) {
                 header.status(Proteu.HTTPStatus.ServiceUnavailable503);
                 out.json(new Values().set("result", false));
                 logger.warn("JWT Authentication is not activated.");
@@ -569,17 +590,45 @@ public class Auth extends WebMaster {
         }
 
         Credentials credentials = getCredentials(getProteu(), getHili());
-        
+        getProteu().getConfig().set("_auth:attempt", true);
+
         if (req.hasKey("secret") && req.hasKey("provider")){
             authenticatorProviders(getProteu(), getHili());
         } else if (credentials != null) {
             if (jwtRequest) {
+                if (getHili().sandbox().runScriptIfExists(
+                        Config.getPathAppCore(getProteu()), "_auth_attempt"
+                    ).isError()) {
+                    header.status(Proteu.HTTPStatus.InternalServerError500);
+                    return;
+                }
+                if (auth.isAttemptReject()) {
+                    header.status(Proteu.HTTPStatus.NotAcceptable406);
+                    out.json(auth.attemptRejectWithData());
+                    return;
+                }
                 if (signIn(getProteu(), getHili(), Type.JWT, profile)) {
-
-                    header.status(Proteu.HTTPStatus.OK200);
-                    getProteu().outputJSON(
-                            getProteu().getConfig().getValues("_jwt:auth:data")
-                    );
+                    if (getHili().sandbox().runScriptIfExists(
+                            Config.getPathAppCore(getProteu()), "_auth_sign_in"
+                        ).isError()) {
+                        header.status(Proteu.HTTPStatus.InternalServerError500);
+                        return;
+                    }
+                    if (auth.isJWT()) {
+                        if (auth.signInAbort()) {
+                            auth.jwtInvalidateToken();
+                            header.status(Proteu.HTTPStatus.NotAcceptable406);
+                            out.json(auth.signInAbortWithData());
+                            return;
+                        }
+                        header.status(Proteu.HTTPStatus.OK200);
+                        Values jwtData = auth.jwtSignInData();
+                        jwtData.set("extra", auth.signInExtraData());
+                        out.json(jwtData);
+                    } else {
+                        header.status(Proteu.HTTPStatus.NotAcceptable406);
+                        out.json(new Values().set("result", false));
+                    }
                 } else {
                     header.status(Proteu.HTTPStatus.Forbidden403);
                     out.json(new Values().set("result", false));
@@ -587,10 +636,7 @@ public class Auth extends WebMaster {
             } else {
                 if (signIn(getProteu(), getHili(), Type.SESSION, profile)) {
                     header.status(Proteu.HTTPStatus.OK200);
-                    getProteu().outputJSON(
-                            new Values()
-                                    .set("result", true)
-                    );
+                    out.json(new Values().set("result", true));
                 } else {
                     header.status(Proteu.HTTPStatus.Forbidden403);
                     out.json(new Values().set("result", false));
@@ -600,7 +646,7 @@ public class Auth extends WebMaster {
             if (jwtRequest) {
                 if (req.hasKey("refresh_token")) {
                     String refreshToken = req.getString("refresh_token");
-                    Values refreshTokenData = jwt.refreshToken(refreshToken);
+                    Values refreshTokenData = auth.jwtRefreshAccessToken(refreshToken);
                     if (refreshTokenData != null) {
                         header.status(Proteu.HTTPStatus.OK200);
                         out.json(refreshTokenData);
