@@ -88,6 +88,24 @@ public class CORS extends ResourceBase {
                         service.setNotFoundDefaultError(false);
                         getProteu().outputJSON(new Values().set("result", true));
                     } catch (IOException | ProteuException e) {
+                        logger.debug("Service not found with auto response failed to the method OPTIONS when executing the service path: "+ service.path(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    @AppEvent(type=AppEventType.ServiceOptionsMethodAutoReply)
+    private void serviceOptionsMethodAutoReply() {
+        if (getProteu().getRequestHeader().getString("Method").equalsIgnoreCase("options")) {
+            Values entry = getProteu().getConfig().getValues("_cors:entry");
+            if (entry != null && getProteu().getResponseHeader().has("Access-Control-Allow-Origin", getProteu().getRequestHeader().getString("Origin"))) {
+                if (entry.getBoolean("optionsAutoResponse", true)) {
+                    Service service = Service.getInstance(getProteu());
+                    try {
+                        service.setNotFoundDefaultError(false);
+                        getProteu().outputJSON(new Values().set("result", true));
+                    } catch (IOException | ProteuException e) {
                         logger.debug("Auto response failed to the method OPTIONS when executing the service path: "+ service.path(), e);
                     }
                 }
@@ -295,6 +313,7 @@ public class CORS extends ResourceBase {
                         origin = getProteu().getRequestHeader().getString("Origin");
                     }
                     if (origin.equals(getProteu().getRequestHeader().getString("Origin"))) {
+                        entry.set("optionsAutoResponse", entry.getBoolean("optionsAutoResponse", true));
                         getProteu().getConfig().set("_cors:entry", entry);
                         Values header = new Values()
                         .set("Access-Control-Allow-Origin", origin)
