@@ -405,9 +405,10 @@ public class HandlerProviders extends WebMaster {
             );
             return;
         }
+        Auth auth = resource(Auth.class);
         out.json(
                 new Values()
-                        .set("token", proteu.getConfig().getValues("_jwt:auth:data"))
+                        .set("token", auth.jwtSignInData())
                         .set(
                                 "provider",
                                 new Values()
