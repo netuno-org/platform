@@ -71,8 +71,12 @@ public class User extends ResourceBase {
         super(proteu, hili);
     }
     
-    @AppEvent(type=AppEventType.AfterConfiguration)
-    private void beforeConfiguration() {
+    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    private void beforeServiceConfiguration() {
+        load();
+    }
+
+    public User load() {
         Values userData = Auth.getUser(getProteu(), getHili());
         if (userData != null) {
              id = userData.getInt("id");
@@ -81,6 +85,7 @@ public class User extends ResourceBase {
              name = userData.getString("name");
              code = userData.getString("code");
         }
+        return this;
     }
 
     @MethodDoc(translations = {
