@@ -69,14 +69,20 @@ public class Group extends ResourceBase {
         super(proteu, hili);
     }
     
-    @AppEvent(type=AppEventType.AfterConfiguration)
-    private void beforeConfiguration() {
+    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    private void beforeServiceConfiguration() {
+        load();
+    }
+
+    public Group load() {
         if (Auth.getGroup(getProteu(), getHili()) != null) {
-            id = Auth.getGroup(getProteu(), getHili()).getInt("id");
-            uid = Auth.getGroup(getProteu(), getHili()).getString("uid");
-            name = Auth.getGroup(getProteu(), getHili()).getString("name");
-            code = Auth.getGroup(getProteu(), getHili()).getString("code");
+            Values dbGroup = Auth.getGroup(getProteu(), getHili());
+            id = dbGroup.getInt("id");
+            uid = dbGroup.getString("uid");
+            name = dbGroup.getString("name");
+            code = dbGroup.getString("code");
         }
+        return this;
     }
 
     @MethodDoc(translations = {
