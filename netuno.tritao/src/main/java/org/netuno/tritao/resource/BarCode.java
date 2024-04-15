@@ -2,12 +2,14 @@ package org.netuno.tritao.resource;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.tritao.hili.Hili;
+import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.backend.Code128;
 import uk.org.okapibarcode.backend.HumanReadableLocation;
 import uk.org.okapibarcode.output.Java2DRenderer;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
