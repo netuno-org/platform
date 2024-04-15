@@ -81,7 +81,9 @@ public class EventExecutor {
                                 throw new EventError(message, e).setLogFatal(true);
                             } catch (InvocationTargetException e) {
                                 String message = "\n"
-                                        +"# "+ EmojiParser.parseToUnicode(":skull_crossbones:") +" Resource "+ resource.name() +" with invocation error on method "+ method.getName() +".";
+                                        +"#\n"
+                                        +"# "+ EmojiParser.parseToUnicode(":skull_crossbones:") +" Resource "+ resource.name() +" with invocation error on method "+ method.getName() +".\n"
+                                        +"#\n";
                                 if (e.getCause() != null && e.getCause() instanceof ProteuError) {
                                     throw new EventError(message, e.getCause()).setLogFatal(true);
                                 }

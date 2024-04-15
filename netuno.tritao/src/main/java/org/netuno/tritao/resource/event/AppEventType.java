@@ -64,6 +64,10 @@ public enum AppEventType {
      */
     AfterServiceConfiguration,
     /**
+     * To execute when receive an options method request and need an auto reply.
+     */
+    ServiceOptionsMethodAutoReply,
+    /**
      * To execute before the service start.
      */
     BeforeServiceStart,
