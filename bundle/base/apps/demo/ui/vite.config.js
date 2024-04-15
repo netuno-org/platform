@@ -33,6 +33,18 @@ export default defineConfig({
         },
         chunkFileNames: "ui-chunk.js",
         manualChunks: undefined,
+      },
+      onLog(level, log, handler) {
+        if (log.cause && log.cause.message === `Can't resolve original location of error.`) {
+          return;
+        }
+        handler(level, log);
+      },
+      onwarn: (warning, warn) => {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE' || warning.code == 'EVAL') {
+          return;
+        }
+        warn(warning);
       }
     }
   }

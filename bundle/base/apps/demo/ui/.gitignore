@@ -7,6 +7,8 @@ node_modules/
 .metadata/
 .vscode
 package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 .Trash
 

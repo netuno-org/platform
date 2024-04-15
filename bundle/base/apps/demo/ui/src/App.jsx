@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
 import { IntlProvider } from "react-intl";
-import flatten from 'flat';
+import { flatten } from 'flat';
 
 import DashboardContainer from "./containers/DashboardContainer";
 

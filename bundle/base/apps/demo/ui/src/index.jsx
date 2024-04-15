@@ -27,8 +27,7 @@ if (dashboardContainer) {
           colorPrimary: '#5b5ce1',
           colorLink: '#5b5ce1',
           borderRadius: 5,
-        },
-        algorithm: theme.darkAlgorithm
+        }
       }}
       locale={
         {

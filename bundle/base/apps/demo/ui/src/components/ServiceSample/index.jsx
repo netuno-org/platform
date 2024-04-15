@@ -98,7 +98,7 @@ function ServiceSample({name, title, intro, langs, params}) {
         <p><b>{intl.formatMessage({ id: `${messages}.services.modal.source-code` })} {langTitles[modalLanguage]}:</b></p>
         <Editor height="200px" language={modalLanguage} value={modalSource} editorDidMount={handleEditorDidMount} />
         <hr />
-        <Button type="primary" onClick={() => { window.open(`${servicePrefix}/${modalLanguage}/${servicePath}`); }}>{intl.formatMessage({ id: `${messages}.services.modal.execute-button` })}</Button>
+        <Button type="primary" href={`${servicePrefix}/${modalLanguage}/${servicePath}`} target="_blank">{intl.formatMessage({ id: `${messages}.services.modal.execute-button` })}</Button>
       </Modal>
     );
   }
