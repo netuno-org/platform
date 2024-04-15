@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { Button } from 'antd';
 
 function MyButton({ text, onClick }) {
@@ -10,11 +9,6 @@ function MyButton({ text, onClick }) {
       </Button>
     </div>
   );
-};
-
-MyButton.propTypes = {
-  text: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired
 };
 
 export default MyButton;

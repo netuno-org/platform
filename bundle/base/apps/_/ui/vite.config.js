@@ -1,25 +1,32 @@
+import { promises as fs } from 'fs';
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
-// https://vitejs.dev/config/
-
-
-/**
- * Library Mode
- * https://vitejs.dev/guide/build.html#library-mode
- */
+const outputBasePath = './../public';
+const outputFilePath = 'scripts/ui.js';
 
 export default defineConfig({
   plugins: [
-    react()
+    react(),
+    {
+      closeBundle: async() => {
+        // Hack Ant.Design v5 Performance Issues
+        // Using Tables causes very slow interactions on the entire page because of an infinite loop,
+        // that executes the scrollTo function repeatedly stressing the browser.
+        const bundlePath = `${outputBasePath}/${outputFilePath}`
+        let data = await fs.readFile(bundlePath, 'utf-8');
+        data = data.replace('function scrollTo(o){', 'function $_scrollTo_antd_bug_$(o){');
+        await fs.writeFile(bundlePath, data, 'utf-8');
+      }
+    }
   ],
   build: {
     sourcemap: true,
     rollupOptions: {
       input: 'src/index.jsx',
       output: {
-        dir: './../public',
-        entryFileNames: 'scripts/ui.js',
+        dir: outputBasePath,
+        entryFileNames: outputFilePath,
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split(".");
           let extType = info[info.length - 1];
@@ -33,6 +40,18 @@ export default defineConfig({
         },
         chunkFileNames: "ui-chunk.js",
         manualChunks: undefined,
+      },
+      onLog(level, log, handler) {
+        if (log.cause && log.cause.message === `Can't resolve original location of error.`) {
+          return;
+        }
+        handler(level, log);
+      },
+      onwarn: (warning, warn) => {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE' || warning.code == 'EVAL') {
+          return;
+        }
+        warn(warning);
       }
     }
   }
