@@ -62,7 +62,7 @@
     }
   },
   "setup": {
-    "enabled": false,
+    "enabled": true,
     "schema": {
       "auto_create": false,
       "execution": false
