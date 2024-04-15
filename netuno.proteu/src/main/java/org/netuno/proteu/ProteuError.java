@@ -62,7 +62,7 @@ public class ProteuError extends Error {
         if (t == null) {
             return "";
         }
-        String cause = "\n#     > "+ t.getMessage();
+        String cause = "\n#     > "+ (t.getMessage() != null ? t.getMessage() : t.toString());
         return cause + chainOfCausesMessages(t.getCause());
     }
     
@@ -73,7 +73,9 @@ public class ProteuError extends Error {
             if (throwable instanceof ProteuError) {
                 message += ((ProteuError)throwable).getLogMessage() + "\n";
             }
-            throwable = throwable.getCause();
+            if (throwable.getCause() != null) {
+                throwable = throwable.getCause();
+            }
             break;
         }
         if (throwable != null) {
