@@ -7,5 +7,18 @@ cp -rf ../target/netuno-tritao-*.jar out/artifacts/netuno-tritao.jar
 
 PROGUARD_HOME=../../proguard
 
-../../proguard/bin/proguard.sh @netuno-web.pro
+#../../proguard/bin/proguard.sh @netuno-web.pro
+
+#
+# BYPASS PROGUARD BELOW
+#
+
+mkdir temp
+
+(cd temp; unzip -uo ../out/artifacts/netuno-proteu.jar)
+(cd temp; unzip -uo ../out/artifacts/netuno-tritao.jar)
+
+jar -cvf out/proguard/netuno-web.jar -C temp .
+
+rm -rf temp
 
