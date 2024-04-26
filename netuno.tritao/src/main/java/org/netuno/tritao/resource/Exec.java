@@ -18,20 +18,14 @@
 package org.netuno.tritao.resource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import org.graalvm.polyglot.Value;
+import java.util.function.Function;
+
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.SafePath;
-import org.netuno.psamata.script.GraalRunner;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
@@ -369,182 +363,180 @@ public class Exec extends ResourceBaseValues {
     }, parameters = { }, returns = {})
     public void gc() {
         System.gc();
-        System.runFinalization();
+    }
+
+    public void beforeClose(Function<Object[], Object> function) {
+        
+    }
+
+    public void afterClose(Function<Object[], Object> function) {
+
     }
     
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Execução de funções de forma assíncrona.",
+                    description = "Gerencia a execução de funções.",
                     howToUse = { }),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Execution of functions asynchronously.",
+                    description = "Manages the execution of functions.",
                     howToUse = { })
     }, parameters = {}, returns = {})
-    public Async async(Value... functions) throws ResourceException {
-        return new Async(functions);
+    public Functions functions() throws ResourceException {
+        return new Functions();
+    }
+    public Functions functions(Function<Object[], Object>... functions) throws ResourceException {
+        return new Functions(functions);
     }
     
-    public Async asyncData(Object data, Value... functions) throws ResourceException {
-        return new Async(data, functions);
+    public Functions functions(Object data) throws ResourceException {
+        return new Functions(data);
     }
     
-    public Async asyncList(Values list, Value function) throws ResourceException {
-        return new Async(function, list);
+    public Functions functions(Object data, Function<Object[], Object>... functions) throws ResourceException {
+        return new Functions(data, functions);
     }
     
     @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
-                title = "Async",
-                introduction = "Orquestra os modos de execução assíncrona.",
+                title = "Functions",
+                introduction = "Orquestra a execução de funções.",
                 howToUse = {}
         ),
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
-                title = "Async",
-                introduction = "Orchestrates asynchronous execution modes.",
+                title = "Functions",
+                introduction = "Orchestrates the execution of functions.",
                 howToUse = {}
         )
     })
-    public class Async {
-        private ExecutorService executor = null;
-        private Value[] functions = null;
+    public class Functions {
+        private List<Function<Object[], Object>> functions = new ArrayList<>();
+        private Function<Object[], Object> end = null;
         private Object data = null;
-        private Values list = null;
+        private List<Metric> metrics = new ArrayList<>(); 
         
-        public Async(Value... functions) {
-            this.functions = functions;
-            executor = Executors.newFixedThreadPool(functions.length);
+        private Functions() {
+
+        }
+
+        private Functions(Function<Object[], Object>[] functions) {
+            this.functions.addAll(Arrays.asList(functions));
         }
         
-        public Async(Object data, Value... functions) {
-            this.functions = functions;
+        private Functions(Object data) {
             this.data = data;
-            executor = Executors.newFixedThreadPool(functions.length);
         }
         
-        public Async(Value function, Values list) {
-            this.functions = new Value[] { function };
-            this.list = list;
-            if (!this.list.isList()) {
-                throw new ResourceException("The asyncList only accept object of list type.");
-            }
-            executor = Executors.newFixedThreadPool(list.size());
+        private Functions(Object data, Function<Object[], Object>[] functions) {
+            this.functions.addAll(Arrays.asList(functions));
+            this.data = data;
         }
-        
-        private List<Callable<Object>> listOfCallables() {
-            List<Callable<Object>> callables = new ArrayList<>();
-            if (list != null && functions.length == 1) {
-                list.forEach((i) -> {
-                    callables.add(() -> {
-                        return GraalRunner.toObject(functions[0].execute(i));
-                    });
-                });
-            } else {
-                for (int i = 0; i < functions.length; i++) {
-                    final int index = i;
-                    callables.add(() -> {
-                        if (data != null) {
-                            return GraalRunner.toObject(functions[index].execute(data));
-                        } else {
-                            return GraalRunner.toObject(functions[index].execute());
-                        }
-                    });
-                }
-            }
-            return callables;
-        }
-        
-        public List<Object> invokeAll() {
-            List<Object> results = new ArrayList<>();
-            try {
-                List<Future<Object>> futures = executor.invokeAll(listOfCallables());
-                executor.shutdown();
-                for (Future<Object> future : futures) {
-                    results.add(future.get());
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ResourceException("Fail to invoke the execution of all async functions.", e);
-            }
-            return results;
-        }
-        
-        public List<Object> invokeAll(long timeout) {
-            List<Object> results = new ArrayList<>();
-            try {
-                List<Future<Object>> futures = executor.invokeAll(listOfCallables(), timeout, TimeUnit.SECONDS);
-                executor.shutdown();
-                for (Future<Object> future : futures) {
-                    results.add(future.get());
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ResourceException("Fail to invoke the execution of all async functions with timeout of "+ timeout +" seconds.", e);
-            }
-            return results;
-        }
-        
-        public Object invokeAny() {
-            Object result = null;
-            try {
-                result = executor.invokeAny(listOfCallables());
-                executor.shutdown();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ResourceException("Fail to invoke the execution of any async functions.", e);
-            }
-            return result;
-        }
-        
-        public Object invokeAny(long timeout) {
-            Object result = null;
-            try {
-                result = executor.invokeAny(listOfCallables(), timeout, TimeUnit.SECONDS);
-                executor.shutdown();
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                throw new ResourceException("Fail to invoke the execution of any async functions with timeout of "+ timeout +" seconds.", e);
-            }
-            return result;
-        }
-        
-        public Async start() {
-            if (list != null && functions.length == 1) {
-                list.forEach((i) -> {
-                    executor.execute(new Thread() {
-                        public void run() {
-                            functions[0].execute(i);
-                        }
-                    });
-                });
-            } else {
-                for (int i = 0; i < functions.length; i++) {
-                    final int index = i;
-                    executor.execute(new Thread() {
-                        public void run() {
-                            if (data != null) {
-                                functions[index].execute(data);
-                            } else {
-                                functions[index].execute();
-                            }
-                        }
-                    });
-                }
-            }
-            executor.shutdown();
+
+        public Functions add(Function<Object[], Object> function) {
+            this.functions.add(function);
             return this;
         }
-        
-        public boolean await() {
-            return executor.isTerminated();
+
+        public Object data() {
+            return data;
         }
-        
-        public boolean await(long timeout) throws InterruptedException {
-            return executor.awaitTermination(timeout, TimeUnit.SECONDS);
+
+        public Object getData() {
+            return this.data();
         }
-        
-        public Async stop() {
-            executor.shutdownNow();
+
+        public Functions data(Object data) {
+            this.data = data;
             return this;
+        }
+
+        public Functions setData(Object data) {
+            return this.data(data);
+        }
+
+        public Functions atEnd(Function<Object[], Object> end) {
+            this.end = end;
+            return this;
+        }
+
+        public Functions setAtEnd(Function<Object[], Object> end) {
+            return this.atEnd(end);
+        }
+
+        public List<Metric> metrics() {
+            return metrics;
+        }
+
+        public List<Metric> getMetrics() {
+            return metrics();
+        }
+        
+        public Functions start() {
+            for (int i = 0; i < functions.size(); i++) {
+                Function<Object[], Object> function = functions.get(i);
+                Metric metric = new Metric(i);
+                metric.start();
+                if (data != null) {
+                    function.apply(new Object[] { data });
+                } else {
+                    function.apply(new Object[] {});
+                }
+                metric.end();
+                metrics.add(metric);
+            }
+            if (end != null) {
+                Metric metric = new Metric();
+                metric.start();
+                if (data != null) {
+                    end.apply(new Object[] { data });
+                } else {
+                    end.apply(new Object[] {});
+                }
+                metric.end();
+                metrics.add(metric);
+            }
+            return this;
+        }
+
+        public class Metric {
+            public int index = -1;
+            public long time = 0L;
+            private long timer = 0L;
+
+            private Metric() {
+
+            }
+
+            private Metric(int index) {
+                this.index = index;
+            }
+
+            public int index() {
+                return index;
+            }
+
+            public int getIndex() {
+                return index();
+            }
+
+            public long time() {
+                return time;
+            }
+
+            public long getTime() {
+                return time();
+            }
+
+            private void start() {
+                timer = System.currentTimeMillis();
+            }
+
+            private void end() {
+                time = System.currentTimeMillis() - timer;
+            }
         }
     }
 
