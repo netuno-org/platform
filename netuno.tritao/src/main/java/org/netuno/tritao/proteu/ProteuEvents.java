@@ -37,6 +37,7 @@ import org.netuno.tritao.util.TemplateBuilder;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.Function;
 import org.netuno.tritao.db.DBError;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.event.EventExecutor;
@@ -661,6 +662,9 @@ public class ProteuEvents implements Events {
     }
 
     public void beforeClose(Proteu proteu, Object faros) {
+        for (Function<Object[], Object> func : proteu.getConfig().getValues("_exec:proteu:events:beforeClose", Values.newList()).list(Function.class)) {
+            func.apply(null);
+        }
         Hili hili = (Hili)faros;
         if (proteu.getConfig().getValues("_app:config") != null) {
             hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_close");
@@ -668,7 +672,9 @@ public class ProteuEvents implements Events {
     }
 
     public void afterClose(Proteu proteu, Object faros) {
-
+        for (Function<Object[], Object> func : proteu.getConfig().getValues("_exec:proteu:events:afterClose", Values.newList()).list(Function.class)) {
+            func.apply(null);
+        }
     }
 
     public void beforeEnd(Proteu proteu, Object faros) {
