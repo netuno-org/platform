@@ -366,11 +366,24 @@ public class Exec extends ResourceBaseValues {
     }
 
     public void beforeClose(Function<Object[], Object> function) {
-        
+        if (getProteu().getConfig().getValues("_exec:proteu:events:beforeClose") == null) {
+            getProteu().getConfig().set("_exec:proteu:events:beforeClose", Values.newList());
+        }
+        getProteu().getConfig().getValues("_exec:proteu:events:beforeClose").add(function);
     }
 
     public void afterClose(Function<Object[], Object> function) {
+        if (getProteu().getConfig().getValues("_exec:proteu:events:afterClose") == null) {
+            getProteu().getConfig().set("_exec:proteu:events:afterClose", Values.newList());
+        }
+        getProteu().getConfig().getValues("_exec:proteu:events:afterClose").add(function);
+    }
 
+    public void onError(Function<Object[], Object> function) {
+        if (getProteu().getConfig().getValues("_exec:service:onError") == null) {
+            getProteu().getConfig().set("_exec:service:onError", Values.newList());
+        }
+        getProteu().getConfig().getValues("_exec:service:onError").add(function);
     }
     
     @MethodDoc(translations = {
