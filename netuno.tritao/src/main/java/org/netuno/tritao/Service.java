@@ -33,6 +33,7 @@ import org.netuno.tritao.hili.HiliError;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.auth.providers.HandlerProviders;
@@ -294,7 +295,13 @@ public class Service {
                     .runScript(Config.getPathAppServices(proteu), file)
                     .whenError((t) -> {
                         proteu.setResponseHeader(Proteu.HTTPStatus.InternalServerError500);
-                        core("_service_error");
+                        try {
+                            for (Function<Object[], Object> func : proteu.getConfig().getValues("_exec:service:onError", Values.newList()).list(Function.class)) {
+                                func.apply(new Object[] {t, file});
+                            }
+                        } finally {
+                            core("_service_error");
+                        }
                     })
                     .isSuccess();
         } else if (!file.equals("config")) {
