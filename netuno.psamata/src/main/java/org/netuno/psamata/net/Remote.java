@@ -631,16 +631,16 @@ public class Remote {
                 builder.method(method.toUpperCase(), HttpRequest.BodyPublishers.ofString(dataReady));
             } else if (data != null && !data.isEmpty() && contentType.equals(contentTypeMultipartFormData)) {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, getCharset()), true);
-                for (String key : data.keys()) {
-                    Object value = data.get(key);
-                    multipartFormDataAppend(outputStream, writer, boundary, key, value);
+                try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, getCharset()), true)) {
+                    for (String key : data.keys()) {
+                        Object value = data.get(key);
+                        multipartFormDataAppend(outputStream, writer, boundary, key, value);
+                    }
+                    if (data.keys().size() > 0) {
+                        writer.append("--" + boundary + "--").append(LINE_FEED);
+                    }
                 }
-                if (data.keys().size() > 0) {
-                    writer.append("--" + boundary + "--").append(LINE_FEED);
-                }
-                writer.close();
-                builder.method(method, HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()));
+                builder.method(method.toUpperCase(), HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()));
             }
 
             HttpRequest request = builder.build();
@@ -912,23 +912,23 @@ public class Remote {
             writer.append("--" + boundary).append(LINE_FEED);
             writer.append(
                     "Content-Disposition: form-data; name=\"" + key
-                    + "\"; filename=\"" + fileName + "\"")
-                    .append(LINE_FEED);
+                    + "\"; filename=\"" + fileName + "\""
+                    ).append(LINE_FEED);
             writer.append(
-                    "Content-Type: "
-                    + URLConnection.guessContentTypeFromName(fileName))
-                    .append(LINE_FEED);
-            writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
+                    "Content-Type: " // application/octet-stream
+                    + URLConnection.guessContentTypeFromName(fileName)
+                    ).append(LINE_FEED);
+            //writer.append("Content-Transfer-Encoding: BINARY").append(LINE_FEED);
             writer.append(LINE_FEED);
             writer.flush();
-            InputStream inputStream = file.getInputStream();
-            byte[] buffer = new byte[4 * 1024];
-            int bytesRead = -1;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
+            try (InputStream inputStream = file.getInputStream()) {
+                byte[] buffer = new byte[16 * 1024];
+                int bytesRead = -1;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                outputStream.flush();
             }
-            outputStream.flush();
-            inputStream.close();
             writer.append(LINE_FEED);
             writer.flush();
         } else {
