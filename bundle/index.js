@@ -197,14 +197,16 @@ var loadJars = (jarsFolder, jarsFolderIndex) => {
         console.log('$ '+ cmd)
         exec(cmd, { cwd: config.output.bundle, maxBuffer: 1024 * 10000 }, (err, stdout, stderr) => {
             if (err) {
-                console.log(err)
+                console.log(cmd, err)
                 return
             }
 
-            console.log(`stdout: ${stdout}`);
-            console.log(`stderr: ${stderr}`);
+            console.log(cmd, `stdout: ${stdout}`);
+            console.log(cmd, `stderr: ${stderr}`);
 
             fs.removeSync(config.output.bundle +'/logs/netuno.log')
+/*
+            console.log('Zipping...')
 
             try {
                 const zip = new AdmZip();
@@ -216,6 +218,7 @@ var loadJars = (jarsFolder, jarsFolderIndex) => {
                 console.log(config.output.bundleName)
                 console.log(`Something went wrong. ${e}`);
             }
+*/
         });
         
 /* -> OLD
@@ -330,4 +333,3 @@ let toFile = (folder, file) => {
         file, name, version, folder
     }
 };
-

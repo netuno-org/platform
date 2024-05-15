@@ -57,6 +57,8 @@ cd netuno.tritao/protect && ./run.sh && cd ../..
 
 cd bundle && node index.js && cd ..
 
+cd bundle/out && zip -r netuno.zip netuno/ && cd ../..
+
 mkdir -p bundle/dist
 
 cp netuno.cli/protect/out/proguard/netuno-setup.jar bundle/dist/netuno-setup.jar

@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "adm-zip": "^0.5.9",
     "fs-extra": "^10.0.0"
   }
 }
