@@ -137,6 +137,7 @@ public class Server implements MainArg {
         boolean webHomeConfigOverride = this.webHome.equals(Config.getWebHome());
         GraalVMSetup.checkAndSetup();
         if (!ConfigScript.run()) {
+            logger.fatal("Script of the global configuration was not found.");
             return;
         }
         if (nameConfigOverride) {
