@@ -17,10 +17,22 @@
 
 package org.netuno.psamata.ftp;
 
+import org.netuno.library.doc.LanguageDoc;
+import org.netuno.library.doc.LibraryDoc;
+import org.netuno.library.doc.LibraryTranslationDoc;
+
 /**
  * FTP Configurations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "FTPConfig",
+                introduction = "Definição da configuração do FTP.",
+                howToUse = {}
+        )
+})
 public class FTPConfig {
     private boolean enabled = true;
     private boolean debug = false;
