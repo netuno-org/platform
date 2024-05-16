@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 const { exec, execSync } = require('child_process')
 const path = require('path');
 const folder = require('path').dirname(require.main.filename)
-const AdmZip = require("adm-zip");
+//const AdmZip = require("adm-zip");
 
 const config = {
     base: {
