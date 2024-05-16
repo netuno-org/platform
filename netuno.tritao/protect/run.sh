@@ -17,7 +17,7 @@ mkdir temp
 
 (cd temp; unzip -uo ../out/artifacts/netuno-proteu.jar)
 (cd temp; unzip -uo ../out/artifacts/netuno-tritao.jar)
-
+mkdir -p out/proguard
 jar -cvf out/proguard/netuno-web.jar -C temp .
 
 rm -rf temp
