@@ -25,8 +25,12 @@ import java.util.Enumeration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.psamata.*;
+
 import java.util.Calendar;
+
+import org.netuno.psamata.io.Buffer;
 import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.SafePath;
 
 /**
  * Build Http Protocol
@@ -209,6 +213,9 @@ public class HTTP implements AutoCloseable {
     	DataSource httpMultipartDataSource = new HttpMultipartDataSource((java.io.InputStream)in, requestHead.getString("Content-Type"));
     	MimeMultipart mimeMultipart = new MimeMultipart(httpMultipartDataSource);
     	
+        java.io.File fileTempPath = new java.io.File(Config.getUpload(), Thread.currentThread().getName());
+        fileTempPath.mkdirs();
+        String tempPath = fileTempPath.getAbsolutePath();
 	    for (int i = 0; i < mimeMultipart.getCount(); i++) {
 	    	BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 	    	Enumeration<Header> enumerationHeaders = bodyPart.getAllHeaders();
@@ -229,8 +236,12 @@ public class HTTP implements AutoCloseable {
 	    	String fieldFileName = fieldContentDisposition.getString("filename").replace("\"", "");
 	    	if (fieldContentType != null
 	    			&& fieldFileName.length() > 0) {
-	    		byte[] bytes = InputStream.readAllBytes(bodyPart.getInputStream());
-	    		org.netuno.psamata.io.File file = new org.netuno.psamata.io.File(fieldFileName, fieldContentType, new java.io.ByteArrayInputStream(bytes));
+	    		String fileName = org.netuno.psamata.io.File.getSequenceName(tempPath, SafePath.fileName(fieldFileName));
+                java.io.File ioFile = new java.io.File(tempPath, fileName);
+                try (java.io.OutputStream fileOutput = new java.io.FileOutputStream(ioFile)) {
+                    new Buffer().copy(bodyPart.getInputStream(), fileOutput);
+                }
+                org.netuno.psamata.io.File file = new org.netuno.psamata.io.File(ioFile.getAbsolutePath()).setContentType(fieldContentType);
                 Object value = requestPost.get(fieldName);
                 if (fieldName.endsWith("[]")) {
                     if (value != null && value.getClass().isArray() && value.getClass().isInstance(new org.netuno.psamata.io.File[0])) {
@@ -434,6 +445,23 @@ public class HTTP implements AutoCloseable {
     public InputStream getInputStream() {
         return in;
     }
+
+    public static void clearUploadFolder() {
+        new org.netuno.psamata.io.File(
+            new java.io.File(
+                Config.getUpload()
+            ).getAbsolutePath()
+        ).deleteAll();
+    }
+
+    public static void clearRequestUploadFolder() {
+        new org.netuno.psamata.io.File(
+            new java.io.File(
+                Config.getUpload(),
+                Thread.currentThread().getName()
+            ).getAbsolutePath()
+        ).deleteAll();
+    }
     
     @Override
     public void close() {
@@ -450,5 +478,6 @@ public class HTTP implements AutoCloseable {
         requestCookie = null;
         responseHead = null;
         responseCookie = null;
+        clearRequestUploadFolder();
     }
 }

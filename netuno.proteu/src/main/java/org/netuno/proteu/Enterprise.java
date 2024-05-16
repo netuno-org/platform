@@ -260,6 +260,8 @@ public class Enterprise extends HttpServlet {
         } catch (Throwable e) {
             logger.error("Enterprise Event - onStarting", e);
         }
+
+        HTTP.clearUploadFolder();
     }
     
     /**
@@ -301,6 +303,8 @@ public class Enterprise extends HttpServlet {
         } catch (Exception e) {
             logger.error("Enterprise Event - onDestroying", e);
         }
+
+        HTTP.clearUploadFolder();
     }
     
     /** 
@@ -554,7 +558,6 @@ public class Enterprise extends HttpServlet {
                         throw new Error(t);
                     } finally {
                         try {
-
                             try {
                                 if (faros != null && faros instanceof AutoCloseable) {
                                     ((AutoCloseable)faros).close();
