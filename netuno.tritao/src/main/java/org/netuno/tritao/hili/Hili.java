@@ -24,6 +24,7 @@ import org.apache.velocity.script.VelocityScriptEngineFactory;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.LangResource;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.io.FileManager;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.resource.Resource;
@@ -126,6 +127,7 @@ public class Hili implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
+        FileManager.clear();
         sandbox.close();
         resource.close();
 
