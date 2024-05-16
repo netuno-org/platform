@@ -63,6 +63,9 @@ public class File {
      * Bytes.
      */
     private ByteArrayInputStream bytes;
+
+    private FileManager manager = FileManager.get();
+
     /**
      * File.
      * @param filePath Path
@@ -131,6 +134,11 @@ public class File {
             //throw new PsamataException("Jail was already sets and can not be set again.");
         }
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return fullPath();
     }
 
     /**
@@ -493,12 +501,20 @@ public class File {
     public final String getContentType() {
         return contentType;
     }
+
+    public final File contentType(String contentType) {
+        return setContentType(contentType);
+    }
+    public final File setContentType(String contentType) {
+        this.contentType = contentType;
+        return this;
+    }
     /**
      * Get Output Stream.
      * @return Output Stream
      */
     public org.netuno.psamata.io.OutputStream output() {
-        return new org.netuno.psamata.io.OutputStream(this.getOutputStream());
+        return manager.onOutput(this, new org.netuno.psamata.io.OutputStream(this.getOutputStream()));
     }
     public final java.io.OutputStream outputStream() {
     	return getOutputStream();
@@ -506,13 +522,13 @@ public class File {
     public final java.io.OutputStream getOutputStream() {
         if (!physicalPath.isEmpty()) {
             try {
-                return new FileOutputStream(physicalPath);
+                return manager.onOutputStream(this, new FileOutputStream(physicalPath));
             } catch (Exception e) {
                 return null;
             }
         } else if (!jail.isEmpty() && !path.isEmpty()) {
             try {
-                return new FileOutputStream(jail + java.io.File.separator + path);
+                return manager.onOutputStream(this, new FileOutputStream(jail + java.io.File.separator + path));
             } catch (Exception e) {
                 return null;
             }
@@ -528,7 +544,7 @@ public class File {
      * @return Input Stream
      */
     public org.netuno.psamata.io.InputStream input() {
-        return new org.netuno.psamata.io.InputStream(this.getInputStream());
+        return manager.onInput(this, new org.netuno.psamata.io.InputStream(this.getInputStream()));
     }
     public final java.io.InputStream inputStream() {
     	return getInputStream();
@@ -547,13 +563,13 @@ public class File {
     public final java.io.InputStream getInputStream() {
         if (!physicalPath.isEmpty()) {
             try {
-                return new FileInputStream(physicalPath);
+                return manager.onInputStream(this, new FileInputStream(physicalPath));
             } catch (Exception e) {
                 return null;
             }
         } else if (!jail.isEmpty() && !path.isEmpty()) {
             try {
-                return new FileInputStream(jail + java.io.File.separator + path);
+                return manager.onInputStream(this, new FileInputStream(jail + java.io.File.separator + path));
             } catch (Exception e) {
                 return null;
             }
@@ -565,20 +581,27 @@ public class File {
         return new java.io.InputStreamReader(this.getInputStream());
     }
     
-    public java.io.Reader readerBOM() throws UnsupportedEncodingException {
+    public java.io.Reader readerBOM() throws UnsupportedEncodingException, IOException {
         return readerBOM("UTF-8");
     }
 
-    public java.io.Reader readerBOM(String charsetName) throws UnsupportedEncodingException {
-        return new java.io.InputStreamReader(new org.apache.commons.io.input.BOMInputStream(this.getInputStream()), charsetName);
+    public java.io.Reader readerBOM(String charsetName) throws UnsupportedEncodingException, IOException {
+        return new java.io.InputStreamReader(
+            org.apache.commons.io.input.BOMInputStream
+                .builder()
+                .setInputStream(this.getInputStream())
+                .setCharset(charsetName)
+                .get(),
+            charsetName
+        );
     }
     
     public java.io.BufferedReader bufferedReader() throws FileNotFoundException {
-        return new java.io.BufferedReader(new java.io.FileReader(this.physicalPath), Buffer.DEFAULT_LENGTH);
+        return new java.io.BufferedReader(manager.onReader(this, new java.io.FileReader(this.physicalPath)), Buffer.DEFAULT_LENGTH);
     }
     
     public java.io.BufferedReader bufferedReader(int bufferSize) throws FileNotFoundException {
-        return new java.io.BufferedReader(new java.io.FileReader(this.physicalPath), bufferSize);
+        return new java.io.BufferedReader(manager.onReader(this, new java.io.FileReader(this.physicalPath)), bufferSize);
     }
     
     public java.io.BufferedReader bufferedReader(int bufferSize, String charset) throws FileNotFoundException, IOException {
@@ -586,7 +609,7 @@ public class File {
     }
     
     public java.io.BufferedReader bufferedReader(int bufferSize, Charset charset) throws FileNotFoundException, IOException {
-        return new java.io.BufferedReader(new java.io.FileReader(this.physicalPath, charset), bufferSize);
+        return new java.io.BufferedReader(manager.onReader(this, new java.io.FileReader(this.physicalPath, charset)), bufferSize);
     }
     
     public java.io.BufferedReader bufferedReader(String charset) throws FileNotFoundException, IOException {
@@ -594,7 +617,7 @@ public class File {
     }
     
     public java.io.BufferedReader bufferedReader(Charset charset) throws FileNotFoundException, IOException {
-        return new java.io.BufferedReader(new java.io.FileReader(this.physicalPath, charset), Buffer.DEFAULT_LENGTH);
+        return new java.io.BufferedReader(manager.onReader(this, new java.io.FileReader(this.physicalPath, charset)), Buffer.DEFAULT_LENGTH);
     }
     
     /**
