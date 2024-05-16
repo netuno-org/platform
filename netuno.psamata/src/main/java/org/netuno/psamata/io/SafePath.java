@@ -42,6 +42,8 @@ public class SafePath {
                 path = path.replace("?", "");
             } else if (path.indexOf("\"") != -1) {
                 path = path.replace("\"", "");
+            } else if (path.indexOf("'") != -1) {
+                path = path.replace("'", "");
             } else if (path.indexOf("<") != -1) {
                 path = path.replace("<", "");
             } else if (path.indexOf(">") != -1) {
