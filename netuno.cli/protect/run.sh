@@ -9,6 +9,6 @@ PROGUARD_HOME=../../proguard
 #
 # BYPASS PROGUARD BELOW
 #
-
+mkdir -p out/proguard
 cp out/artifacts/netuno-cli.jar out/proguard/netuno.jar
 
