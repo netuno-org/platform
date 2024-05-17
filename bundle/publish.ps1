@@ -63,6 +63,10 @@ npm install
 node index.js
 cd ..
 
+cd bundle/out
+Compress-Archive -Path netuno -DestinationPath netuno.zip
+cd ../..
+
 mkdir -p bundle/dist
 
 copy "./netuno.cli/protect/out/proguard/netuno-setup.jar" "./bundle/dist/netuno-setup.jar"

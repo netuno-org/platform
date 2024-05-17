@@ -10,3 +10,4 @@ New-Item -ItemType Directory -Force -Path out/proguard
 copy "../target/netuno-cli.jar" "out/proguard/netuno.jar"
 
 #../../proguard/bin/proguard.bat @netuno-cli.pro
+
