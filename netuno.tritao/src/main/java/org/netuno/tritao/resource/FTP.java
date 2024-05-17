@@ -1184,11 +1184,11 @@ public class FTP extends ResourceBase implements AutoCloseable {
         translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Envia um comando específico.",
+                    description = "Envia um comando específico com argumentos adicionais necessários para o comando FTP.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Send a specific command.",
+                    description = "Sends a specific command with additional arguments required for the FTP command.",
                     howToUse = {})},
         parameters = {
             @ParameterDoc(name = "command", translations = {
@@ -1232,6 +1232,37 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Envia um comando específico.",
+                            howToUse = {}),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Sends a specific command.",
+                            howToUse = {})},
+            parameters = {
+                    @ParameterDoc(name = "command", translations = {
+                            @ParameterTranslationDoc(
+                                    name = "comando",
+                                    language = LanguageDoc.PT,
+                                    description = "Comando que deve ser enviado."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Command that must be sent."
+                            )})},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Resultado do comando."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Command result."
+                    )}
+    )
     public int sendCommand(String command) {
         try {
             return client.sendCommand(command);
@@ -1244,6 +1275,27 @@ public class FTP extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Interrompe a operação de transferência de dados em andamento.",
+                howToUse = {}),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = " Abort the current data transfer operation",
+                howToUse = {}
+            )
+    }, parameters = {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O recurso FTP atual."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The current FTP resource."
+        )
+    })
     public FTP abort() {
         try {
             client.abort();
