@@ -111,8 +111,12 @@ public class GraalVMSetup {
             */
 
             String graalVMMainVersion = graalVMVersion.substring(0, graalVMVersion.indexOf("."));
+            /*
             if (versionOutput.toString().contains("GraalVM CE "+ graalVMMainVersion +"+")
                     || versionError.toString().contains("GraalVM CE "+ graalVMMainVersion +"+")) {
+             */
+            if (versionOutput.toString().contains("GraalVM CE "+ graalVMVersion)
+                    || versionError.toString().contains("GraalVM CE "+ graalVMVersion)) {
                 return true;
             } else {
                 logger.debug("Is not the GraalVM CE "+ graalVMMainVersion +" then reinstall.");

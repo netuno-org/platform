@@ -33,7 +33,7 @@
         <emoji.version>5.1.1</emoji.version>
         <quartz.version>2.3.2</quartz.version>
         <lucene.version>9.10.0</lucene.version>
-        <graalvm.version>24.0.0</graalvm.version>
+        <graalvm.version>24.0.1</graalvm.version>
         <jython.version>2.7.3</jython.version>
         <groovy.version>4.0.20</groovy.version>
         <jruby.version>9.4.6.0</jruby.version>
