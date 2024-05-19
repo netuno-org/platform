@@ -368,6 +368,10 @@ public class Schema extends WebMaster {
                                             endpoint.set("description", schemaIn.getString("description"));
                                             schemaIn.unset("description");
                                         }
+                                        if (schemaIn.hasKey("tags")) {
+                                            endpoint.set("tags", schemaIn.getList("tags"));
+                                            schemaIn.unset("tags");
+                                        }
                                         if (schemaIn.hasKey("security")) {
                                             endpoint.set("security", schemaIn.getValues("security"));
                                             schemaIn.unset("security");
