@@ -108,11 +108,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto FTP atual."
+                description = "Objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current FTP object."
+                description = "Current object."
             )
         }
     )
@@ -178,11 +178,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto FTP atual."
+                description = "Objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current FTP object."
+                description = "Current object."
             )
         }
     )
@@ -208,11 +208,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Host do objeto FTP atual."
+                description = "Host do objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Host of the current FTP object."
+                description = "Host of the current object."
             )
         }
     )
@@ -248,11 +248,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
@@ -278,11 +278,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Porta do objeto FTP atual."
+                description = "Porta do objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Port of the current FTP object."
+                description = "Port of the current object."
             )
         }
     )
@@ -318,11 +318,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
@@ -376,7 +376,7 @@ public class FTPConfig {
             @ParameterDoc(name = "conectionTimeout", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "tempo limite de conexão",
+                    name = "conectionTimeout",
                     description = "Tempo limite de conexão a ser definido."
                 ),
                 @ParameterTranslationDoc(
@@ -388,11 +388,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
@@ -418,11 +418,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Utilizador do objeto FTP atual."
+                description = "Utilizador do objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Username of the current FTP object."
+                description = "Username of the current object."
             )
         }
     )
@@ -446,7 +446,7 @@ public class FTPConfig {
             @ParameterDoc(name = "username", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "utilizador",
+                    name = "username",
                     description = "Utilizador a ser definido."
                 ),
                 @ParameterTranslationDoc(
@@ -458,11 +458,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
@@ -488,11 +488,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Palavra-passe do objeto FTP atual."
+                description = "Palavra-passe do objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Password of the current FTP object."
+                description = "Password of the current object."
             )
         }
     )
@@ -516,8 +516,8 @@ public class FTPConfig {
             @ParameterDoc(name = "password", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "palavra-passe",
-                    description = "Palavra-passe a ser definido."
+                    name = "password",
+                    description = "Palavra-passe a ser definida."
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
@@ -528,11 +528,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
@@ -558,11 +558,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Se está ativo ou inactivo no objeto FTP atual."
+                description = "Se está ativo ou inactivo no objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Whether it is active or inactive on the current FTP object."
+                description = "Whether it is active or inactive on the current object."
             )
         }
     )
@@ -598,11 +598,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
@@ -628,11 +628,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Se está ativo ou inactivo no objeto FTP atual."
+                description = "Se está ativo ou inactivo no objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Whether it is active or inactive on the current FTP object."
+                description = "Whether it is active or inactive on the current object."
             )
         }
     )
@@ -668,11 +668,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
@@ -698,11 +698,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Se está ativo ou inactivo no objeto FTP atual."
+                description = "Se está ativo ou inactivo no objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Whether it is active or inactive on the current FTP object."
+                description = "Whether it is active or inactive on the current object."
             )
         }
     )
@@ -738,11 +738,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
@@ -768,11 +768,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Se está ativo ou inactivo no objeto FTP atual."
+                description = "Se está ativo ou inactivo no objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Whether it is active or inactive on the current FTP object."
+                description = "Whether it is active or inactive on the current object."
             )
         }
     )
@@ -808,11 +808,11 @@ public class FTPConfig {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o objeto FTP atual."
+                description = "Retorna o objeto atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the current FTP object."
+                description = "Returns the current object."
             )
         }
     )
