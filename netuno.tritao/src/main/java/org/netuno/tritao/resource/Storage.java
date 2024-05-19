@@ -29,6 +29,7 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
 import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.psamata.io.File;
+import org.netuno.psamata.io.IO;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -57,7 +58,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
                 howToUse = { }
         )
 })
-public class Storage extends ResourceBase {
+public class Storage extends ResourceBase implements IO {
 
     private boolean database = false;
     private boolean fileSystem = false;
@@ -896,6 +897,10 @@ public class Storage extends ResourceBase {
     public org.netuno.psamata.io.OutputStream output() {
         return new org.netuno.psamata.io.OutputStream(file().getOutputStream());
     }
+
+    public org.netuno.psamata.io.OutputStream getOutput() {
+        return output();
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -918,6 +923,9 @@ public class Storage extends ResourceBase {
     })
     public java.io.OutputStream outputStream() {
         return file().getOutputStream();
+    }
+    public java.io.OutputStream getOutputStream() {
+        return outputStream();
     }
 
     @MethodDoc(translations = {
@@ -969,6 +977,9 @@ public class Storage extends ResourceBase {
             throw new ResourceException("storage.input("+ file().fullPath() +"):\nThe path is not a file.");
         }
     }
+    public org.netuno.psamata.io.InputStream getInput() {
+        return input();
+    }
     
     @MethodDoc(translations = {
         @MethodTranslationDoc(
@@ -995,6 +1006,9 @@ public class Storage extends ResourceBase {
         } else {            
             throw new ResourceException("storage.inputStream("+ file().fullPath() +"):\nThe path is not a file.");
         }
+    }
+    public java.io.InputStream getInputStream() {
+        return inputStream();
     }
 
     @MethodDoc(translations = {
