@@ -55,7 +55,7 @@ public class FTPConfig {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o estado do objeto, se está o não ativado.",
+                description = "Retorna o estado do objeto, se está ou não ativado.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
@@ -84,7 +84,7 @@ public class FTPConfig {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define o estado do objeto, se está o não ativado.",
+                description = "Define o estado do objeto, se está ou não ativado.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
@@ -154,7 +154,7 @@ public class FTPConfig {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define se está o não ativado.",
+                description = "Define se está ou não ativado.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
@@ -306,8 +306,8 @@ public class FTPConfig {
             @ParameterDoc(name = "port", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "port",
-                    description = "Porta a ser definido."
+                    name = "porta",
+                    description = "Porta a ser definida."
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
@@ -545,7 +545,7 @@ public class FTPConfig {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna se o SSL está ativo objeto atual.",
+                description = "Retorna se o SSL está ativo no objeto atual.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
@@ -615,7 +615,7 @@ public class FTPConfig {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna se o TSL está ativo objeto atual.",
+                description = "Retorna se o TSL está ativo no objeto atual.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
@@ -685,7 +685,7 @@ public class FTPConfig {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna se o FTPS implícito está ativo objeto atual.",
+                description = "Retorna se o FTPS implícito está ativo no objeto atual.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
@@ -755,7 +755,7 @@ public class FTPConfig {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna se o modo passivo está ativo objeto atual.",
+                description = "Retorna se o modo passivo está ativo no objeto atual.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
