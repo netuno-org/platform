@@ -42,7 +42,7 @@ import org.netuno.library.doc.*;
                 howToUse = {}
         )
 })
-public class File {
+public class File implements IO {
     /**
      * Path.
      */
@@ -513,12 +513,19 @@ public class File {
      * Get Output Stream.
      * @return Output Stream
      */
-    public org.netuno.psamata.io.OutputStream output() {
+    @Override
+    public OutputStream getOutput() {
+        return output();
+    }
+    @Override
+    public OutputStream output() {
         return manager.onOutput(this, new org.netuno.psamata.io.OutputStream(this.getOutputStream()));
     }
+    @Override
     public final java.io.OutputStream outputStream() {
     	return getOutputStream();
     }
+    @Override
     public final java.io.OutputStream getOutputStream() {
         if (!physicalPath.isEmpty()) {
             try {
@@ -543,9 +550,15 @@ public class File {
      * Get Input Stream.
      * @return Input Stream
      */
+    @Override
+    public InputStream getInput() {
+        return input();
+    }
+    @Override
     public org.netuno.psamata.io.InputStream input() {
         return manager.onInput(this, new org.netuno.psamata.io.InputStream(this.getInputStream()));
     }
+    @Override
     public final java.io.InputStream inputStream() {
     	return getInputStream();
     }
@@ -560,6 +573,7 @@ public class File {
                     howToUse = {})
     }, parameters = {
     }, returns = {})
+    @Override
     public final java.io.InputStream getInputStream() {
         if (!physicalPath.isEmpty()) {
             try {
@@ -577,6 +591,7 @@ public class File {
             return bytes;
         }
     }
+
     public java.io.Reader reader() {
         return new java.io.InputStreamReader(this.getInputStream());
     }
