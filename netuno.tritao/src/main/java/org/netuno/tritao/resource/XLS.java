@@ -3319,38 +3319,6 @@ public class XLS extends ResourceBase {
         }
     }
     
-    public Values read(InputStream in) throws IOException {
-        return read(in, "", -1, false);
-    }
-
-    public Values read(InputStream in, String password) throws IOException {
-        return read(in, password, -1, false);
-    }
-    
-    public Values read(InputStream in, int sheetNumber) throws IOException {
-        return read(in, "", sheetNumber, false);
-    }
-
-    public Values read(InputStream in, String password, int sheetNumber) throws IOException {
-        return read(in, password, sheetNumber, false);
-    }
-    
-    public Values read(InputStream in, boolean hiddenSheets) throws IOException {
-        return read(in, "", -1, hiddenSheets);
-    }
-
-    public Values read(InputStream in, String password, boolean hiddenSheets) throws IOException {
-        return read(in, password, -1, hiddenSheets);
-    }
-    
-    public Values read(InputStream in, int sheetNumber, boolean hiddenSheets) throws IOException {
-        return read((java.io.InputStream)in, "", sheetNumber, hiddenSheets);
-    }
-
-    public Values read(InputStream in, String password, int sheetNumber, boolean hiddenSheets) throws IOException {
-        return read((java.io.InputStream)in, password, sheetNumber, hiddenSheets);
-    }
-    
     public Values read(java.io.InputStream in) throws IOException {
         return read(in, "", -1, false);
     }
