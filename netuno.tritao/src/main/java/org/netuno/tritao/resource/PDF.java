@@ -35,6 +35,8 @@ import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.properties.AreaBreakType;
+
+import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.PDFText2HTML;
 import org.apache.tika.Tika;
@@ -61,6 +63,7 @@ import java.io.FileInputStream;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 /**
  * PDF - Resource
@@ -77,6 +80,8 @@ import java.net.MalformedURLException;
         )
 })
 public class PDF extends ResourceBase {
+    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(PDF.class);
+
     public PdfWriter writer = null;
     public PdfDocument pdfDocument = null;
     public PdfReader reader = null;
@@ -231,34 +236,36 @@ public class PDF extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Obtém a definição do tamanho da página atráves da largura e altura.",
-                    howToUse = {
-                    })
-    }, parameters = {}, returns = {})
-    public @ReturnDoc(
-            translations = @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Definição da página."
-            )
-    ) PageSize pageSize(
-            @ParameterDoc(name = "width", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura da página."
-                    )
-            }) float width,
-            @ParameterDoc(name = "height", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "altura",
-                            description = "Altura da página."
-                    )
-            }) float height) {
+        @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Obtém a definição do tamanho da página atráves da largura e altura.",
+                howToUse = {
+                })
+    }, parameters = {
+        @ParameterDoc(name = "width", translations = {
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.PT,
+                        name = "largura",
+                        description = "Largura da página."
+                )
+        }),
+        @ParameterDoc(name = "height", translations = {
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.PT,
+                        name = "altura",
+                        description = "Altura da página."
+                )
+        })
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Definição da página."
+        )
+    })
+    public PageSize pageSize(float width, float height) {
         return new PageSize(width, height);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -280,15 +287,6 @@ public class PDF extends ResourceBase {
             description = "Creates a new PDF document.",
             howToUse = {})
     }, parameters = {}, returns = {})
-    public Document newDocument(Storage storage) {
-        return newDocument(storage, PageSize.A4);
-    }
-    public Document newDocument(File file) {
-        return newDocument(file, PageSize.A4);
-    }
-    public Document newDocument(OutputStream out) {
-        return newDocument(out, PageSize.A4);
-    }
     public Document newDocument(java.io.OutputStream out) {
         return newDocument(out, PageSize.A4);
     }
@@ -372,14 +370,8 @@ public class PDF extends ResourceBase {
                     description = "Returns PDF document with the page size inserted."
             )
     })
-    public Document newDocument(Storage storage, PageSize pageSize) {
-        return newDocument(storage.output(), pageSize);
-    }
-    public Document newDocument(File file, PageSize pageSize) {
-        return newDocument(file.outputStream(), pageSize);
-    }
-    public Document newDocument(OutputStream out, PageSize pageSize) {
-        return newDocument((java.io.OutputStream)out, pageSize);
+    public Document newDocument(org.netuno.psamata.io.IO out, PageSize pageSize) {
+        return newDocument(out.getOutputStream(), pageSize);
     }
     public Document newDocument(java.io.OutputStream out, PageSize pageSize) {
         writer = new PdfWriter(out);
@@ -426,14 +418,8 @@ public class PDF extends ResourceBase {
             })
     }, returns = {
     })
-    public PdfDocument newPdfDocument(Storage storage) {
-        return newPdfDocument(storage.output());
-    }
-    public PdfDocument newPdfDocument(File file) {
-        return newPdfDocument(file.outputStream());
-    }
-    public PdfDocument newPdfDocument(OutputStream out) {
-        return newPdfDocument((java.io.OutputStream)out);
+    public PdfDocument newPdfDocument(org.netuno.psamata.io.IO out) {
+        return newPdfDocument(out.getOutputStream());
     }
     public PdfDocument newPdfDocument(java.io.OutputStream out) {
         writer = new PdfWriter(out);
@@ -471,14 +457,36 @@ public class PDF extends ResourceBase {
                     description = "Returns PDF document openned."
             )
     })
-    public PdfDocument openPdfDocument(String path) throws IOException {
+    public PdfDocument openPdfDocument(org.netuno.psamata.io.IO io) throws IOException {
+        return openPdfDocument(io.getInputStream());
+    }
+
+    public PdfDocument openPdfDocument(java.io.InputStream in) throws IOException {
         writer = new PdfWriter(getProteu().getOutput());
-        reader = new PdfReader(Config.getPathAppFileSystem(getProteu()) +
-            java.io.File.separator +
-            getProteu().safePath(path));
+        reader = new PdfReader(in);
         pdfDocument = new PdfDocument(reader, writer);
         return pdfDocument;
     }
+
+    public PdfDocument openPdfDocument(org.netuno.psamata.io.IO in, java.io.OutputStream out) throws IOException {
+        return openPdfDocument(in.getInputStream(), out);
+    }
+
+    public PdfDocument openPdfDocument(org.netuno.psamata.io.IO in, org.netuno.psamata.io.IO out) throws IOException {
+        return openPdfDocument(in.getInputStream(), out.getOutputStream());
+    }
+
+    public PdfDocument openPdfDocument(java.io.InputStream in, org.netuno.psamata.io.IO out) throws IOException {
+        return openPdfDocument(in, out.getOutputStream());
+    }
+
+    public PdfDocument openPdfDocument(java.io.InputStream in, java.io.OutputStream out) throws IOException {
+        writer = new PdfWriter(out);
+        reader = new PdfReader(in);
+        pdfDocument = new PdfDocument(reader, writer);
+        return pdfDocument;
+    }
+    
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
