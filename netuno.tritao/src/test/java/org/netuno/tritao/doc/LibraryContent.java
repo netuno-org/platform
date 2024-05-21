@@ -42,6 +42,7 @@ import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
+import org.netuno.psamata.io.IO;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.resource.Storage;
@@ -234,7 +235,7 @@ public class LibraryContent {
                             Class classParameter = parameter.getType();
                             if (classWithDocParameter.equals(java.io.InputStream.class) || classParameter.equals(java.io.InputStream.class)
                                 || classWithDocParameter.equals(java.io.OutputStream.class) || classParameter.equals(java.io.OutputStream.class)
-                                || classWithDocParameter.equals(java.io.File.class) || classParameter.equals(java.io.File.class)) {
+                                || classParameter.equals(java.io.File.class)) {
                                 /*System.out.println("Invalid Java IO parameter documented!");
                                 System.out.println(getMethodSignature(method) +" X "+ getMethodSignature(methodWithDoc));
                                 System.exit(0);
@@ -249,10 +250,10 @@ public class LibraryContent {
                             } else if ((classWithDocParameter.equals(Values.class) || classWithDocParameter.equals(List.class))
                                 && (classParameter.equals(Values.class) || classParameter.equals(List.class))) {
                                 sameParameter = true;
-                            } else if ((classWithDocParameter.equals(Storage.class) || classWithDocParameter.equals(File.class)
+                            } else if ((classWithDocParameter.equals(Storage.class) || classWithDocParameter.equals(File.class) || classParameter.equals(IO.class)
                                      || classWithDocParameter.equals(InputStream.class) || classWithDocParameter.equals(OutputStream.class)
                                      || classWithDocParameter.equals(java.io.InputStream.class) || classWithDocParameter.equals(java.io.OutputStream.class))
-                                && (classParameter.equals(Storage.class) || classParameter.equals(File.class)
+                                && (classParameter.equals(Storage.class) || classParameter.equals(File.class) || classParameter.equals(IO.class)
                                      || classParameter.equals(InputStream.class) || classParameter.equals(OutputStream.class)
                                      || classParameter.equals(java.io.InputStream.class) || classParameter.equals(java.io.OutputStream.class))
                             ) {
@@ -519,7 +520,6 @@ public class LibraryContent {
         if (cls == null) {
             content = "void";
         } else {
-            String name = cls.getSimpleName();
             String clsName = cls.getName();
             boolean objectTypeArray = false;
             if (clsName.equals("java.lang.String")) {
@@ -543,9 +543,16 @@ public class LibraryContent {
                     clsName = clsName.substring(2);
                     objectTypeArray = true;
                 }
+                if (cls.getName().equals(java.io.InputStream.class.getName())) {
+                    cls = InputStream.class;
+                    clsName = cls.getName();
+                } else if (cls.getName().equals(java.io.OutputStream.class.getName())) {
+                    cls = OutputStream.class;
+                    clsName = cls.getName();
+                }
                 if (content.isEmpty()) {
-                    List<Class> objectsTypes = new ArrayList<>();
                     List<Class> resourcesTypes = new ArrayList<>();
+                    List<Class> objectsTypes = new ArrayList<>();
                     if (cls.isInterface()) {
                         for (Class c : resources) {
                             if (cls.isAssignableFrom(c)) {
