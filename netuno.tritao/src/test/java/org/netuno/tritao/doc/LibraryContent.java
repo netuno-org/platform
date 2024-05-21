@@ -571,7 +571,7 @@ public class LibraryContent {
                     }
                     for (Class _class : resourcesTypes) {
                         if (!content.isEmpty()) {
-                            content += " | ";
+                            content += " \\| ";
                         }
                         content += "[" + _class.getSimpleName() + "](../../resources/" + _class.getSimpleName() + ")";
                         if (objectTypeArray) {
