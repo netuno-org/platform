@@ -62,9 +62,10 @@ public class BuildLibraryTest {
                     ).enableAllInfo()
                     .scan();
             ClassInfoList libraryClasses = scanResult.getClassesWithAnnotation(LibraryDoc.class.getName());
+            List<String> docClasses = libraryClasses.getNames();
             List<Class> objects = new ArrayList<>();
             List<Class> resources = new ArrayList<>();
-            for (String _resourcesClass : libraryClasses.getNames()) {
+            for (String _resourcesClass : docClasses) {
                 Class _class = Class.forName(_resourcesClass);
                 Resource resource = (Resource) _class.getAnnotation(Resource.class);
                 if (resource == null) {
@@ -73,7 +74,7 @@ public class BuildLibraryTest {
                     resources.add(_class);
                 }
             }
-            for (String _resourcesClass : libraryClasses.getNames()) {
+            for (String _resourcesClass : docClasses) {
                 Class _class = Class.forName(_resourcesClass);
                 Resource resource = (Resource) _class.getAnnotation(Resource.class);
                 if (resource == null) {
@@ -97,7 +98,7 @@ public class BuildLibraryTest {
                 }
             }
 
-            for (String _resourcesClass : libraryClasses.getNames()) {
+            for (String _resourcesClass : docClasses) {
                 Class _class = Class.forName(_resourcesClass);
                 Resource resource = (Resource) _class.getAnnotation(Resource.class);
                 if (resource != null) {

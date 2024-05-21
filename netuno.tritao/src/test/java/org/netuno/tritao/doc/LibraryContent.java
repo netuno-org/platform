@@ -345,6 +345,7 @@ public class LibraryContent {
                 }
                 content.append("---\n");
                 content.append("\n");
+
                 if (methodDoc == null || methodDoc.dependency().isEmpty()) {
                     content.append("#### ");
                     if (isResource) {
@@ -405,6 +406,7 @@ public class LibraryContent {
                         if (!parametersWithoutDoc.isEmpty()) {
                             parametersWithoutDoc += ", ";
                         }
+
                         parametersWithoutDoc += parameter.getName() + ":"+ parameter.getType().getName();
                     }
                     
@@ -542,23 +544,49 @@ public class LibraryContent {
                     objectTypeArray = true;
                 }
                 if (content.isEmpty()) {
-                    for (Class _class : objects) {
-                        if (_class.getName().equals(clsName)) {
-                            content += "[" + _class.getSimpleName() + "](../../objects/" + _class.getSimpleName() + ")";
-                            break;
+                    List<Class> objectsTypes = new ArrayList<>();
+                    List<Class> resourcesTypes = new ArrayList<>();
+                    if (cls.isInterface()) {
+                        for (Class c : resources) {
+                            if (cls.isAssignableFrom(c)) {
+                                resourcesTypes.add(c);
+                            }
+                        }
+                        for (Class c : objects) {
+                            if (cls.isAssignableFrom(c)) {
+                                objectsTypes.add(c);
+                            }
+                        }
+                    } else {
+                        for (Class _class : resources) {
+                            if (_class.getName().equals(clsName)) {
+                                resourcesTypes.add(_class);
+                            }
+                        }
+                        for (Class _class : objects) {
+                            if (_class.getName().equals(clsName)) {
+                                objectsTypes.add(_class);
+                            }
                         }
                     }
-                }
-                if (content.isEmpty()) {
-                    for (Class _class : resources) {
-                        if (_class.getName().equals(clsName)) {
-                            content += "[" + _class.getSimpleName() + "](../../resources/" + _class.getSimpleName() + ")";
-                            break;
+                    for (Class _class : resourcesTypes) {
+                        if (!content.isEmpty()) {
+                            content += " | ";
+                        }
+                        content += "[" + _class.getSimpleName() + "](../../resources/" + _class.getSimpleName() + ")";
+                        if (objectTypeArray) {
+                            content += "[]";
                         }
                     }
-                }
-                if (objectTypeArray && !content.isEmpty()) {
-                    content += "[]";
+                    for (Class _class : objectsTypes) {
+                        if (!content.isEmpty()) {
+                            content += " \\| ";
+                        }
+                        content += "[" + _class.getSimpleName() + "](../../objects/" + _class.getSimpleName() + ")";
+                        if (objectTypeArray) {
+                            content += "[]";
+                        }
+                    }
                 }
                 if (content.isEmpty()) {
                     content = cls.getName();
