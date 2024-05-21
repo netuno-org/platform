@@ -571,7 +571,7 @@ public class LibraryContent {
                     }
                     for (Class _class : resourcesTypes) {
                         if (!content.isEmpty()) {
-                            content += " \\| ";
+                            content += " &#124; ";
                         }
                         content += "[" + _class.getSimpleName() + "](../../resources/" + _class.getSimpleName() + ")";
                         if (objectTypeArray) {
@@ -580,7 +580,7 @@ public class LibraryContent {
                     }
                     for (Class _class : objectsTypes) {
                         if (!content.isEmpty()) {
-                            content += " \\| ";
+                            content += " &#124; ";
                         }
                         content += "[" + _class.getSimpleName() + "](../../objects/" + _class.getSimpleName() + ")";
                         if (objectTypeArray) {
