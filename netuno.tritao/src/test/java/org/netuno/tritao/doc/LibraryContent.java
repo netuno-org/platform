@@ -247,8 +247,18 @@ public class LibraryContent {
                             } else if ((classWithDocParameter.equals(Values.class) || classWithDocParameter.equals(Map.class))
                                 && (classParameter.equals(Values.class) || classParameter.equals(Map.class))) {
                                 sameParameter = true;
-                            } else if ((classWithDocParameter.equals(Values.class) || classWithDocParameter.equals(List.class))
-                                && (classParameter.equals(Values.class) || classParameter.equals(List.class))) {
+                            } else if ((classWithDocParameter.equals(Values.class) || classWithDocParameter.equals(List.class)
+                                    || classWithDocParameter.equals(byte[].class) || classWithDocParameter.equals(short[].class)
+                                    || classWithDocParameter.equals(int[].class) || classWithDocParameter.equals(long[].class)
+                                    || classWithDocParameter.equals(float[].class) || classWithDocParameter.equals(double[].class)
+                                    || classWithDocParameter.equals(boolean[].class) || classWithDocParameter.equals(char[].class)
+                                    || classWithDocParameter.equals(String[].class))
+                                && (classParameter.equals(Values.class) || classParameter.equals(List.class))
+                                    || classParameter.equals(byte[].class) || classParameter.equals(short[].class)
+                                    || classParameter.equals(int[].class) || classParameter.equals(long[].class)
+                                    || classParameter.equals(float[].class) || classParameter.equals(double[].class)
+                                    || classParameter.equals(boolean[].class) || classParameter.equals(char[].class)
+                                    || classParameter.equals(String[].class)) {
                                 sameParameter = true;
                             } else if ((classWithDocParameter.equals(Storage.class) || classWithDocParameter.equals(File.class) || classParameter.equals(IO.class)
                                      || classWithDocParameter.equals(InputStream.class) || classWithDocParameter.equals(OutputStream.class)
