@@ -100,14 +100,29 @@ public class PDF extends ResourceBase {
                                     type = SourceCodeTypeDoc.JavaScript,
                                     code = "const pdf = _pdf.init();"
                             )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a new resource object to build PDFs.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const pdf = _pdf.init();"
+                            )
                     })
-    }, parameters = {}, returns = {})
-    public @ReturnDoc(
-            translations = @ReturnTranslationDoc(
+    },
+    parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Nova instância do recurso PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "New instance of the PDF resource."
             )
-    ) PDF init() {
+    })
+    public PDF init() {
         return new PDF(getProteu(), getHili());
     }
 
@@ -115,15 +130,26 @@ public class PDF extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Obtém o objecto PdfWriter do iText para a escrita dos bytes do arquivo PDF.",
-                    howToUse = {
-                    })
-    }, parameters = {}, returns = {})
-    public @ReturnDoc(
-            translations = @ReturnTranslationDoc(
+                    howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the PdfWriter object of the iText to bytes write in the PDF file.",
+                    howToUse = {}
+            )
+    },
+    parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Gere a escrita dos bytes do arquivo PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Manage the bytes write in the PDF file."
             )
-    ) PdfWriter getPdfWriter() {
+    })
+    public PdfWriter getPdfWriter() {
         return writer;
     }
 
@@ -131,15 +157,26 @@ public class PDF extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Obtém o objecto PdfDocument do iText para a construção do documento PDF.",
-                    howToUse = {
-                    })
-    }, parameters = {}, returns = {})
-    public @ReturnDoc(
-            translations = @ReturnTranslationDoc(
+                    howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the PdfDocument object of the iText to build the PDf document.",
+                    howToUse = {}
+            )
+    },
+    parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Gere a construção do documento PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Manage the PDF document build."
             )
-    ) PdfDocument getPdfDocument() {
+    })
+    public PdfDocument getPdfDocument() {
         return pdfDocument;
     }
 
@@ -147,15 +184,24 @@ public class PDF extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Obtém o objecto PdfReader do iText para a leitura do documento PDF.",
-                    howToUse = {
-                    })
-    }, parameters = {}, returns = {})
-    public @ReturnDoc(
-            translations = @ReturnTranslationDoc(
+                    howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the PdfReader object of the iText to read the PDF document.",
+                    howToUse = {}
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Gere a leitura de documento PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Manage the PDF document read."
             )
-    ) PdfReader getPdfReader() {
+    })
+    public PdfReader getPdfReader() {
         return reader;
     }
 
@@ -163,24 +209,40 @@ public class PDF extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Obtém o objecto Document do iText para a estrutura do documento PDF.",
-                    howToUse = {
-                    })
-    }, parameters = {}, returns = {})
-    public @ReturnDoc(
-            translations = @ReturnTranslationDoc(
+                    howToUse = {}
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Gere a estrutura do documento."
             )
-    ) Document getDocument() {
+    })
+    public Document getDocument() {
         return document;
     }
 
-    public @ReturnDoc(
-            translations = @ReturnTranslationDoc(
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Recurso atual de PDF."
+                    description = "Define o objeto de documento PDF do iText.",
+                    howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the PDF document object of the iText.",
+                    howToUse = {}
             )
-    ) PDF setDocument(Document document) {
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A instância atual do recurso PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The current instance of the PDF resource."
+            )
+    })
+    public PDF setDocument(Document document) {
         this.document = document;
         return this;
     }
@@ -236,17 +298,26 @@ public class PDF extends ResourceBase {
     }
 
     @MethodDoc(translations = {
-        @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Obtém a definição do tamanho da página atráves da largura e altura.",
-                howToUse = {
-                })
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém a definição do tamanho da página atráves da largura e altura.",
+                    howToUse = {
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Gets the page size definition from the width and height.",
+                    howToUse = {
+                    })
     }, parameters = {
         @ParameterDoc(name = "width", translations = {
                 @ParameterTranslationDoc(
                         language=LanguageDoc.PT,
                         name = "largura",
                         description = "Largura da página."
+                ),
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.EN,
+                        description = "Width of the page."
                 )
         }),
         @ParameterDoc(name = "height", translations = {
@@ -254,13 +325,21 @@ public class PDF extends ResourceBase {
                         language=LanguageDoc.PT,
                         name = "altura",
                         description = "Altura da página."
+                ),
+                @ParameterTranslationDoc(
+                        language=LanguageDoc.EN,
+                        description = "Height of the page."
                 )
         })
     }, returns = {
-        @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Definição da página."
-        )
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Definição da página."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Page Definition."
+            )
     })
     public PageSize pageSize(float width, float height) {
         return new PageSize(width, height);
@@ -279,14 +358,23 @@ public class PDF extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Cria um novo documento PDF.",
+                    description = "Cria um novo documento PDF com tamanho de página A4.",
                     howToUse = {
                     }),
             @MethodTranslationDoc(
             language = LanguageDoc.EN,
-            description = "Creates a new PDF document.",
+            description = "Creates a new PDF document with A4 page size.",
             howToUse = {})
-    }, parameters = {}, returns = {})
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna um novo documento com o tamanho de página A4."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns PDF document with the page size A4."
+            )
+    })
     public Document newDocument(java.io.OutputStream out) {
         return newDocument(out, PageSize.A4);
     }
@@ -294,18 +382,18 @@ public class PDF extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Cria um novo documento PDF com o número de páginas inserida.",
+                    description = "Cria um novo documento PDF com tamanho de página específica.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Creates a PDF document with the page size inserted.",
+                    description = "Creates a PDF document with specific page size.",
                     howToUse = {})
     }, parameters = {
             @ParameterDoc(name = "pageSize", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
-                            name = "nPaginas",
-                            description = "Número de páginas."
+                            name = "tamanhoPagina",
+                            description = "Tamanho da página."
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
@@ -315,11 +403,11 @@ public class PDF extends ResourceBase {
     }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna um novo documento com o número de páginas inseridas."
+                    description = "Retorna um novo documento com o tamanho de página definida."
             ),
             @ReturnTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Returns PDF document with the page size inserted."
+                    description = "Returns PDF document with the page size defined."
             )
     })
     public Document newDocument(PageSize pageSize) {
@@ -331,17 +419,17 @@ public class PDF extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Cria um novo documento PDF com o número de páginas inseridas.",
+                    description = "Cria um novo documento PDF com tamanho de página específica.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Creates a PDF document with the page size inserted.",
+                    description = "Creates a PDF document with specific page size.",
                     howToUse = {})
     }, parameters = {
-            @ParameterDoc(name = "storage", translations = {
+            @ParameterDoc(name = "out", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
-                            name = "armazenamento",
+                            name = "saida",
                             description = "Caminho do ficheiro."
                     ),
                     @ParameterTranslationDoc(
@@ -363,11 +451,11 @@ public class PDF extends ResourceBase {
     }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna um novo documento com o número de páginas inseridas."
+                    description = "Retorna um novo documento com o tamanho de página definida."
             ),
             @ReturnTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Returns PDF document with the page size inserted."
+                    description = "Returns PDF document with the page size defined."
             )
     })
     public Document newDocument(org.netuno.psamata.io.IO out, PageSize pageSize) {
@@ -379,53 +467,7 @@ public class PDF extends ResourceBase {
         document = new Document(pdfDocument, pageSize);
         return document;
     }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria um novo documento PDF.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a PDF document.",
-                    howToUse = {})
-    }, parameters = {}, returns = {
-    })
-    public PdfDocument newPdfDocument() {
-        writer = new PdfWriter(getProteu().getOutput());
-        pdfDocument = new PdfDocument(writer);
-        return pdfDocument;
-    }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria um novo documento PDF.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a PDF document.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "storage", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "armazenamento",
-                            description = "Caminho do ficheiro."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "File path."
-                    )
-            })
-    }, returns = {
-    })
-    public PdfDocument newPdfDocument(org.netuno.psamata.io.IO out) {
-        return newPdfDocument(out.getOutputStream());
-    }
-    public PdfDocument newPdfDocument(java.io.OutputStream out) {
-        writer = new PdfWriter(out);
-        pdfDocument = new PdfDocument(writer);
-        return pdfDocument;
-    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -457,34 +499,36 @@ public class PDF extends ResourceBase {
                     description = "Returns PDF document openned."
             )
     })
-    public PdfDocument openPdfDocument(org.netuno.psamata.io.IO io) throws IOException {
-        return openPdfDocument(io.getInputStream());
+    public Document openDocument(org.netuno.psamata.io.IO io) throws IOException {
+        return openDocument(io.getInputStream());
     }
 
-    public PdfDocument openPdfDocument(java.io.InputStream in) throws IOException {
+    public Document openDocument(java.io.InputStream in) throws IOException {
         writer = new PdfWriter(getProteu().getOutput());
         reader = new PdfReader(in);
         pdfDocument = new PdfDocument(reader, writer);
-        return pdfDocument;
+        document = new Document(pdfDocument);
+        return document;
     }
 
-    public PdfDocument openPdfDocument(org.netuno.psamata.io.IO in, java.io.OutputStream out) throws IOException {
-        return openPdfDocument(in.getInputStream(), out);
+    public Document openDocument(org.netuno.psamata.io.IO in, java.io.OutputStream out) throws IOException {
+        return openDocument(in.getInputStream(), out);
     }
 
-    public PdfDocument openPdfDocument(org.netuno.psamata.io.IO in, org.netuno.psamata.io.IO out) throws IOException {
-        return openPdfDocument(in.getInputStream(), out.getOutputStream());
+    public Document openDocument(org.netuno.psamata.io.IO in, org.netuno.psamata.io.IO out) throws IOException {
+        return openDocument(in.getInputStream(), out.getOutputStream());
     }
 
-    public PdfDocument openPdfDocument(java.io.InputStream in, org.netuno.psamata.io.IO out) throws IOException {
-        return openPdfDocument(in, out.getOutputStream());
+    public Document openDocument(java.io.InputStream in, org.netuno.psamata.io.IO out) throws IOException {
+        return openDocument(in, out.getOutputStream());
     }
 
-    public PdfDocument openPdfDocument(java.io.InputStream in, java.io.OutputStream out) throws IOException {
+    public Document openDocument(java.io.InputStream in, java.io.OutputStream out) throws IOException {
         writer = new PdfWriter(out);
         reader = new PdfReader(in);
         pdfDocument = new PdfDocument(reader, writer);
-        return pdfDocument;
+        document = new Document(pdfDocument);
+        return document;
     }
     
     @MethodDoc(translations = {
@@ -659,229 +703,39 @@ public class PDF extends ResourceBase {
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Creates a table with the columns width inserted.",
+                    description = "Creates a table with the columns width defined.",
                     howToUse = {})
     }, parameters = {
             @ParameterDoc(name = "columnWidth", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "largura",
-                            description = "Largura das colunas da tabela."
+                            description = "Lista com as larguras de cada coluna da tabela."
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
-                            description = "Column's width of the table."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna uma tabela com colunas da largura inseridas."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns a table with the columns width inserted."
-            )
-    })
-    public Table table(java.util.List<?> columnWidths) {
-        float[] widths = new float[columnWidths.size()];
-        for (int i = 0; i < columnWidths.size(); i++) {
-            widths[i] = Float.valueOf(columnWidths.get(i).toString()).floatValue();
-        }
-        return table(widths);
-    }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela com colunas da largura definida.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a table with the columns width inserted.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas da tabela."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Column width of the table."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna uma tabela com a largura das colunas inseridas."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns a table with the columns width inserted."
-            )
-    })
-    public Table table(Values columnWidths) {
-        float[] widths = new float[columnWidths.size()];
-        for (int i = 0; i < columnWidths.size(); i++) {
-            widths[i] = columnWidths.getFloat(i);
-        }
-        return table(widths);
-    }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela com colunas da largura definida.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a table with the columns width inserted.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas da tabela."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Column widthof the table."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna uma tabela com a largura das colunas inseridas."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns a table with the columns width inserted."
-            )
-    })
-    public Table table(int[] columnWidths) {
-        float[] widths = new float[columnWidths.length];
-        for (int i = 0; i < columnWidths.length; i++) {
-            widths[i] = (float)columnWidths[i];
-        }
-        return table(widths);
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela com colunas da largura definida.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a table with the columns width inserted.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas da tabela."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Column widthof the table."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna uma tabela com a largura das colunas inseridas."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns a table with the columns width inserted."
-            )
-    })
-    public Table table(double[] columnWidths) {
-        float[] widths = new float[columnWidths.length];
-        for (int i = 0; i < columnWidths.length; i++) {
-            widths[i] = (float)columnWidths[i];
-        }
-        return table(widths);
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela com colunas da largura definida.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a table with the columns width inserted.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas da tabela."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Column widthof the table."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna uma tabela com a largura das colunas inseridas."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns a table with the columns width inserted."
-            )
-    })
-    public Table table(float[] columnWidths) {
-        return new Table(columnWidths);
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a new table.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Columns width."
+                            description = "List of widths of each table column."
                     )
             }),
             @ParameterDoc(name = "largeTable", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
-                            name = "colunaLarga",
-                            description = "Coluna de tamanho grande."
+                            name = "tabelaLarga",
+                            description = "Define que a tabela é larga."
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
-                            description = "Large table."
+                            description = "Define as large table."
                     )
             })
-
     }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna a tabela criada."
+                    description = "Retorna uma tabela com a largura das colunas definidas."
             ),
             @ReturnTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Returns the created table."
+                    description = "Returns a table with the columns width has been defined."
             )
     })
     public Table table(java.util.List<?> columnWidths, boolean largeTable) {
@@ -891,49 +745,7 @@ public class PDF extends ResourceBase {
         }
         return table(widths, largeTable);
     }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a new table.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Columns width."
-                    )
-            }),
-            @ParameterDoc(name = "largeTable", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "colunaLarga",
-                            description = "Coluna de tamanho grande."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Large table."
-                    )
-            })
 
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna a tabela criada."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns the created table."
-            )
-    })
     public Table table(Values columnWidths, boolean largeTable) {
         float[] widths = new float[columnWidths.size()];
         for (int i = 0; i < columnWidths.size(); i++) {
@@ -941,49 +753,7 @@ public class PDF extends ResourceBase {
         }
         return table(widths, largeTable);
     }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a new table.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Columns width."
-                    )
-            }),
-            @ParameterDoc(name = "largeTable", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "colunaLarga",
-                            description = "Coluna de tamanho grande."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Large table."
-                    )
-            })
 
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna a tabela criada."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns the created table."
-            )
-    })
     public Table table(int[] columnWidths, boolean largeTable) {
         float[] widths = new float[columnWidths.length];
         for (int i = 0; i < columnWidths.length; i++) {
@@ -991,49 +761,7 @@ public class PDF extends ResourceBase {
         }
         return table(widths, largeTable);
     }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a new table.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Columns width."
-                    )
-            }),
-            @ParameterDoc(name = "largeTable", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "colunaLarga",
-                            description = "Coluna de tamanho grande."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Large table."
-                    )
-            })
 
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna a tabela criada."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns the created table."
-            )
-    })
     public Table table(double[] columnWidths, boolean largeTable) {
         float[] widths = new float[columnWidths.length];
         for (int i = 0; i < columnWidths.length; i++) {
@@ -1041,52 +769,47 @@ public class PDF extends ResourceBase {
         }
         return table(widths, largeTable);
     }
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Cria uma tabela.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Creates a new table.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "columnWidth", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "largura",
-                            description = "Largura das colunas."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Columns width."
-                    )
-            }),
-            @ParameterDoc(name = "largeTable", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "colunaLarga",
-                            description = "Coluna de tamanho grande."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Large table."
-                    )
-            })
 
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna a tabela criada."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns the created table."
-            )
-    })
     public Table table(float[] columnWidths, boolean largeTable) {
         return new Table(columnWidths, largeTable);
     }
+
+    public Table table(java.util.List<?> columnWidths) {
+        float[] widths = new float[columnWidths.size()];
+        for (int i = 0; i < columnWidths.size(); i++) {
+            widths[i] = Float.valueOf(columnWidths.get(i).toString()).floatValue();
+        }
+        return table(widths);
+    }
+
+    public Table table(Values columnWidths) {
+        float[] widths = new float[columnWidths.size()];
+        for (int i = 0; i < columnWidths.size(); i++) {
+            widths[i] = columnWidths.getFloat(i);
+        }
+        return table(widths);
+    }
+
+    public Table table(int[] columnWidths) {
+        float[] widths = new float[columnWidths.length];
+        for (int i = 0; i < columnWidths.length; i++) {
+            widths[i] = (float)columnWidths[i];
+        }
+        return table(widths);
+    }
+
+    public Table table(double[] columnWidths) {
+        float[] widths = new float[columnWidths.length];
+        for (int i = 0; i < columnWidths.length; i++) {
+            widths[i] = (float)columnWidths[i];
+        }
+        return table(widths);
+    }
+
+    public Table table(float[] columnWidths) {
+        return new Table(columnWidths);
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1109,6 +832,7 @@ public class PDF extends ResourceBase {
     public Cell cell() {
         return new Cell();
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
