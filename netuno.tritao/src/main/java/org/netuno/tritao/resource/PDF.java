@@ -49,6 +49,7 @@ import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
+import org.netuno.psamata.io.IO;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.config.Config;
@@ -4320,20 +4321,8 @@ public class PDF extends ResourceBase {
                     description = "Returns the extracted content."
             )
     })
-    public Values extract(Storage storage) throws Exception {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage));
-            return extract(fis);
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
-        }
-    }
-
-    public Values extract(File file) throws Exception {
-        try (java.io.InputStream in = file.inputStream()) {
+    public Values extract(IO io) throws Exception {
+        try (InputStream in = io.input()) {
             return extract(in);
         }
     }
