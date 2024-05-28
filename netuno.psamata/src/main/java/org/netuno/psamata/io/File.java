@@ -496,10 +496,23 @@ public class File implements IO {
      */
 
     public final String contentType() {
+        if (contentType == null || contentType.isEmpty()) {
+            contentType = java.net.URLConnection.guessContentTypeFromName(getName());
+            if (contentType == null || contentType.isEmpty()) {
+                try {
+                    contentType = java.nio.file.Files.probeContentType(java.nio.file.Path.of(getPath()));
+                } catch (java.io.IOException e) {
+                    contentType = "";
+                }
+            }
+        }
+        if (contentType == null) {
+            contentType = "";
+        }
         return contentType;
     }
     public final String getContentType() {
-        return contentType;
+        return contentType();
     }
 
     public final File contentType(String contentType) {
