@@ -45,6 +45,7 @@ import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.IO;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
+import org.netuno.tritao.resource.Resource;
 import org.netuno.tritao.resource.Storage;
 
 public class LibraryContent {
@@ -539,6 +540,8 @@ public class LibraryContent {
                     content = "byte[]";
                 } else if (clsName.equals("[S")) {
                     content = "short[]";
+                } else if (clsName.equals("[I")) {
+                    content = "int[]";
                 } else if (clsName.equals("[J")) {
                     content = "long[]";
                 } else if (clsName.equals("[F")) {
@@ -590,7 +593,8 @@ public class LibraryContent {
                         if (!content.isEmpty()) {
                             content += " &#124; ";
                         }
-                        content += "[" + _class.getSimpleName() + "](../../resources/" + _class.getSimpleName() + ")";
+                        Resource resource = (Resource)_class.getAnnotation(Resource.class);
+                        content += "[" + _class.getSimpleName() + "](../../resources/" + resource.name() + ")";
                         if (objectTypeArray) {
                             content += "[]";
                         }
