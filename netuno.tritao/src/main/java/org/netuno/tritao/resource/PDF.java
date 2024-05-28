@@ -50,8 +50,6 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.InputStream;
-import org.netuno.psamata.io.OutputStream;
-import org.netuno.tritao.config.Config;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -63,7 +61,6 @@ import java.io.FileInputStream;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 
 /**
  * PDF - Resource
@@ -118,7 +115,7 @@ public class PDF extends ResourceBase {
                     description = "Nova instância do recurso PDF."
             ),
             @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
+                    language = LanguageDoc.EN,
                     description = "New instance of the PDF resource."
             )
     })
@@ -232,7 +229,19 @@ public class PDF extends ResourceBase {
                     description = "Sets the PDF document object of the iText.",
                     howToUse = {}
             )
-    }, parameters = {}, returns = {
+    }, parameters = {
+        @ParameterDoc(name = "document", translations = {
+            @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "documento",
+                    description = "Objeto de documento do iText."
+            ),
+            @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Document object of the iText."
+            )
+        })
+    }, returns = {
             @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "A instância atual do recurso PDF."
@@ -250,7 +259,42 @@ public class PDF extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Obtém a definição do tamanho de página, suporta:<br>"+
+                    description = "Obtém definição de tamanho de página, códigos de páginas suportados:<br>"+
+                        "<ul>"+
+                        "<li>A0</li>"+
+                        "<li>A1</li>"+
+                        "<li>A2</li>"+
+                        "<li>A3</li>"+
+                        "<li>A4</li>"+
+                        "<li>A5</li>"+
+                        "<li>A6</li>"+
+                        "<li>A7</li>"+
+                        "<li>A8</li>"+
+                        "<li>A9</li>"+
+                        "<li>A10</li>"+
+                        "<li>B0</li>"+
+                        "<li>B1</li>"+
+                        "<li>B2</li>"+
+                        "<li>B3</li>"+
+                        "<li>B4</li>"+
+                        "<li>B5</li>"+
+                        "<li>B6</li>"+
+                        "<li>B7</li>"+
+                        "<li>B8</li>"+
+                        "<li>B9</li>"+
+                        "<li>B10</li>"+
+                        "<li>default</li>"+
+                        "<li>executive</li>"+
+                        "<li>ledger</li>"+
+                        "<li>legal</li>"+
+                        "<li>letter</li>"+
+                        "<li>tabloid</li>"+
+                        "</ul>",
+                    howToUse = {
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets page size definition, pages codes supported:<br>"+
                         "<ul>"+
                         "<li>A0</li>"+
                         "<li>A1</li>"+
@@ -283,12 +327,30 @@ public class PDF extends ResourceBase {
                         "</ul>",
                     howToUse = {
                     })
-    }, parameters = {}, returns = {})
+    }, parameters = {
+        @ParameterDoc(name = "page", translations = {
+            @ParameterTranslationDoc(
+                    language=LanguageDoc.PT,
+                    name = "pagina",
+                    description = "Código do tipo de página."
+            ),
+            @ParameterTranslationDoc(
+                    language=LanguageDoc.EN,
+                    description = "Page type code."
+            )
+        })
+    }, returns = {})
     public @ReturnDoc(
-            translations = @ReturnTranslationDoc(
+            translations = {
+                @ReturnTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Definição da página."
-            )
+                ),
+                @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Page definition."
+                )
+            }
     ) PageSize pageSize(String page) {
         try {
             return (PageSize)PageSize.class.getDeclaredField(page.toUpperCase()).get(PageSize.class);
@@ -304,7 +366,7 @@ public class PDF extends ResourceBase {
                     howToUse = {
                     }),
             @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
+                    language = LanguageDoc.EN,
                     description = "Gets the page size definition from the width and height.",
                     howToUse = {
                     })
