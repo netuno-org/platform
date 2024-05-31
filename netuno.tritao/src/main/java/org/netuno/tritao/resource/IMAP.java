@@ -1,12 +1,15 @@
 package org.netuno.tritao.resource;
 
+import java.util.List;
+
+import org.netuno.library.doc.IgnoreDoc;
+import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
-import org.netuno.library.doc.ReturnDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
@@ -17,10 +20,6 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.event.AppEvent;
 import org.netuno.tritao.resource.event.AppEventType;
 import org.netuno.tritao.resource.util.ResourceException;
-
-import java.util.List;
-
-import org.netuno.library.doc.LanguageDoc;
 
 /**
  * IMAP Client - Resource
@@ -370,70 +369,445 @@ public class IMAP extends ResourceBase implements AutoCloseable {
         return setEnabled(enabled);
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Retorna o objeto IMAPClient onde estão as configurações do recurso.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Returns the IMAPClient object where the resource settings are located.",
+            howToUse = {}
+        )
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Objeto IMAPClient."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "IMAPClient object."
+        )
+    })
     public IMAPClient getClient() {
         return client;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Define uma nova configuração de SMTP diferente da atual.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Defines a new SMTP configuration different from the current one.",
+            howToUse = {}
+        )
+    },
+    parameters = {
+        @ParameterDoc(name = "smtp", translations = {
+            @ParameterTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Configuração SMTP a ser usada."
+            ),
+            @ParameterTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "SMTP configuration to be used."
+            )
+        })
+    },
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Recurso IMAP atual."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Current IMAP feature."
+        )
+    })
     public IMAP with(SMTP smtp) {
         client.with(smtp.getTransport());
         return this;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Efetua a conexão ao servidor IMAP.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Makes the connection to the IMAP server.",
+            howToUse = {}
+        )
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Objeto IMAPClient."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "IMAPClient object."
+        )
+    })
     public IMAP connect() {
         client.connect();
         return this;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Abre a pasta INBOX do servidor (modo leitura).",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Opens the server's INBOX folder (reading mode).",
+            howToUse = {}
+        )
+    },
+    parameters = {
+        @ParameterDoc(name = "name", translations = {
+            @ParameterTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Nome da past INBOX.",
+                name = "nome"
+            ),
+            @ParameterTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "INBOX folder name."
+            )
+        })
+    },
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Recurso IMAP atual."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Current IMAP feature."
+        )
+    })
     public IMAP openFolder(String name) {
         client.openFolder(name);
         return this;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Abre a pasta INBOX do servidor porém, especificando se é em modo de escrita ou não.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Opens the server's INBOX folder, however, specifying whether it is in writing mode or not.",
+            howToUse = {}
+        )
+    },
+    parameters = {
+        @ParameterDoc(name = "name", translations = {
+            @ParameterTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Nome da past INBOX.",
+                name = "nome"
+            ),
+            @ParameterTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "INBOX folder name."
+            )
+        }),
+        @ParameterDoc(name = "write", translations = {
+            @ParameterTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Se é ou não em modo de escrita.",
+                name = "escrita"
+            ),
+            @ParameterTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Whether or not it is in writing mode."
+            )
+        })
+    },
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Recurso IMAP atual."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Current IMAP feature."
+        )
+    })
     public IMAP openFolder(String name, boolean write) {
         client.openFolder(name, write);
         return this;
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Retorna o tamanho (em bytes) das mensagens de uma pasta IMAP.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Returns the size (in bytes) of messages in an IMAP folder.",
+            howToUse = {}
+        )
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Tamanho (em bytes) das mensagens."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "The size (in bytes) of messages."
+        )
+    })
     public int size() {
         return client.size();
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Deleta as mensagens de uma pasta IMAP e retorna o tamanho (em bytes) das mensagens excluídas.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Deletes messages from an IMAP folder and returns the size (in bytes) of deleted messages.",
+            howToUse = {}
+        )
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Tamanho (em bytes) das mensagens excluídas."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Size (in bytes) of deleted messages."
+        )
+    })
     public int deletedSize() {
         return client.deletedSize();
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Retorna o tamanho (em bytes) das novas mensagens (não lidas) em uma pasta IMAP.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Returns the size (in bytes) of new (unread) messages in an IMAP folder.",
+            howToUse = {}
+        )
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Tamanho (em bytes) das mensagens novas mensagens não lidas."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Size (in bytes) of messages new unread messages."
+        )
+    })
     public int newSize() {
         return client.newSize();
     }
 
+
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Retorna o tamanho (em bytes) de todas as mensagens não lidas em uma pasta IMAP.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Returns the size (in bytes) of all unread messages in an IMAP folder.",
+            howToUse = {}
+        )
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Tamanho (em bytes) das mensagens não lidas."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Size (in bytes) of unread messages."
+        )
+    })
     public int unreadSize() {
         return client.unreadSize();
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Retorna todas as mensagens contidas na pasta.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Returns all messages contained in the folder.",
+            howToUse = {}
+        )
+    },
+    parameters = {},
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Lista de mensagens"
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Message list."
+        )
+    })
     public List<Mail> mails() {
         return getMails();
     }
 
+    @IgnoreDoc
     public List<Mail> getMails() {
         return client.getMails();
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Retorna um intervalo específico de mensagens contidas na pasta IMAP.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Returns a specific range of messages contained in the IMAP folder.",
+            howToUse = {}
+        )
+    },
+    parameters = {
+        @ParameterDoc(name = "start", translations = {
+            @ParameterTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Índice da primeira mensagem.",
+                name = "início"
+            ),
+            @ParameterTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "First message index"
+            )
+        }),
+        @ParameterDoc(name = "start", translations = {
+            @ParameterTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Índice da última mensagem.",
+                name = "final"
+            ),
+            @ParameterTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Index of last message."
+            )
+        })
+    },
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Lista de mensagens"
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Message list."
+        )
+    })
     public List<Mail> mails(int start, int end) {
         return getMails(start, end);
     }
 
+    @IgnoreDoc
     public List<Mail> getMails(int start, int end) {
         return client.getMails(start, end);
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Retorna uma mensagem específica na pasta IMAP.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Returns a specific message in the IMAP folder.",
+            howToUse = {}
+        )
+    },
+    parameters = {
+        @ParameterDoc(name = "position", translations = {
+            @ParameterTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Índice da mensagem.",
+                name = "posicao"
+            ),
+            @ParameterTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Message index"
+            )
+        })
+    },
+    returns = {
+        @ReturnTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Mensagem."
+        ),
+        @ReturnTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Message."
+        )
+    })
     public Mail mail(int position) {
         return client.getMail(position);
     }
 
+    @IgnoreDoc
     public Mail getMail(int position) {
         return client.getMail(position);
     }
 
+    @MethodDoc(translations = {
+        @MethodTranslationDoc(
+            language = LanguageDoc.PT,
+            description = "Fecha e encerra a conexão com pasta IMAP atual.",
+            howToUse = {}
+        ),
+        @MethodTranslationDoc(
+            language = LanguageDoc.EN,
+            description = "Closes and terminates the connection to the current IMAP folder.",
+            howToUse = {}
+        )
+    },
+    parameters = {},
+    returns = {})
     @Override
     public void close() throws Exception {
         if (client != null) {
