@@ -61,7 +61,7 @@ pdfDocument.add(
 )
 
 pdfDocument.add(
-    _pdf.paragraph('\n\nTable with flexible columns:\n')
+    _pdf.paragraph("\n\nTable with flexible columns:\n")
         .setFont(helvetica)
         .setFontSize(15)
 )
@@ -175,7 +175,7 @@ pdfDocument.add(
 )
 
 pdfDocument.add(
-    _pdf.paragraph('\nTable with fixed columns width:\n')
+    _pdf.paragraph("\nTable with fixed columns width:\n")
         .setFont(helvetica)
         .setFontSize(15)
 )
