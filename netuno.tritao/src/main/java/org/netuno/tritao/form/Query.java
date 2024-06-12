@@ -73,16 +73,12 @@ public class Query {
     }
 
     public Query link(Relation relation) {
-        this.link.put(relation.getTableName(), new Link().setRelation(relation).setTable(this.tableName));
-        return this;
-    }
-
-    public Query link(Relation relation, Where where) {
-        where.setTable(relation.getTableName());
         Link newLink = new Link();
         newLink.setTable(this.tableName);
         newLink.setRelation(relation);
-        newLink.setWhere(where);
+        if (relation.getWhere() != null) {
+            newLink.setWhere(relation.getWhere());
+        }
         this.link.put(relation.getTableName(), newLink);
         return this;
     }

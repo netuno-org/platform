@@ -9,6 +9,23 @@ public class Relation {
     private String column;
     private RelationType type = RelationType.ManyToOne;
     private Map<String, Link> subRelations = new HashMap<>();
+    private Where where;
+
+    public Relation() {}
+
+    public Relation(String tableName, String column, Where where,  RelationType type) {
+        this.tableName = tableName;
+        this.column = column;
+        this.where = where;
+        this.where.setTable(tableName);
+        this.type = type;
+    }
+
+    public Relation(String tableName, String column, RelationType type) {
+        this.tableName = tableName;
+        this.column = column;
+        this.type = type;
+    }
 
     public String getTableName() {
         return tableName;
@@ -46,19 +63,22 @@ public class Relation {
         return this;
     }
 
+    public Where getWhere() {
+        return where;
+    }
+
+    public Relation setWhere(Where where) {
+        this.where = where;
+        return this;
+    }
+
     public Relation link(Relation relation) {
         Link link  = new Link();
         link.setTable(this.getTableName());
         link.setRelation(relation);
-        this.subRelations.put(new Random().toString(), link);
-        return this;
-    }
-
-    public Relation link(Relation relation, Where where) {
-        Link link  = new Link();
-        link.setTable(this.getTableName());
-        link.setRelation(relation);
-        link.setWhere(where.setTable(relation.getTableName()));
+        if (relation.getWhere() != null) {
+            link.setWhere(relation.getWhere());
+        }
         this.subRelations.put(new Random().toString(), link);
         return this;
     }
