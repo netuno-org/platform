@@ -13,6 +13,7 @@ public class Query {
     private Map<String, Where> where = new HashMap<>();
     private Map<String, Link> link = new HashMap<>();
     private QueryEngine queryEngine;
+    private Order order;
 
     public Query(String tableName, QueryEngine queryEngine) {
         this.tableName = tableName;
@@ -62,6 +63,15 @@ public class Query {
         return this;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public Query setOrder(Order order) {
+        this.order = order;
+        return this;
+    }
+
     public Query link(Relation relation) {
         this.link.put(relation.getTableName(), new Link().setRelation(relation).setTable(this.tableName));
         return this;
@@ -82,7 +92,16 @@ public class Query {
         return this;
     }
 
+    public Query order(String column, String order) {
+        this.order = new Order(column, order);
+        return this;
+    }
+
     public List<Values> all () {
         return queryEngine.all(this);
+    }
+
+    public Values first () {
+        return queryEngine.first(this);
     }
 }
