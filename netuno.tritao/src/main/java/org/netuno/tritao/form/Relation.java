@@ -54,18 +54,12 @@ public class Relation {
         return this;
     }
 
-    public Relation oneToMany() {
-        this.type = RelationType.OneToMany;
-        return this;
-    }
-
-    public Relation manyToOne() {
-        this.type = RelationType.ManyToOne;
-        return this;
-    }
-
-    public Relation oneToOne() {
-        this.type = RelationType.OneToOne;
+    public Relation link(Relation relation, Where where) {
+        Link link  = new Link();
+        link.setTable(this.getTableName());
+        link.setRelation(relation);
+        link.setWhere(where.setTable(relation.getTableName()));
+        this.subRelations.put(new Random().toString(), link);
         return this;
     }
 }

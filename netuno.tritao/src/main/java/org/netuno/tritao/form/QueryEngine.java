@@ -28,6 +28,12 @@ public class QueryEngine extends Data {
             if (link.getWhere() != null) {
                 whereSQL += " " + link.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(link.getWhere());
             }
+            for(Map.Entry<String, Link> entrySubLink : link.getRelation().getSubRelations().entrySet()) {
+                final Link subLink = entrySubLink.getValue();
+                if (subLink.getWhere() != null) {
+                    whereSQL += " " + subLink.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(subLink.getWhere());
+                }
+            }
         }
         if (whereSQL.length() > 0) {
             whereSQL = " WHERE" + whereSQL;
@@ -50,8 +56,6 @@ public class QueryEngine extends Data {
             relationSQL += table+"."+relation.getColumn() + " = " + relation.getTableName()+".id";
         } else if (relation.getType().equals(RelationType.OneToMany)) {
             relationSQL += relation.getTableName()+"."+relation.getColumn() + " = " + table+".id";
-        } else if (relation.getType().equals(RelationType.OneToOne)) {
-            relationSQL += table+"."+relation.getColumn() + " = " + relation.getTableName()+".id";
         }
         for(Map.Entry<String, Link> subRelationEntry : relation.getSubRelations().entrySet()) {
             Link link = subRelationEntry.getValue();
@@ -105,22 +109,35 @@ public class QueryEngine extends Data {
         return conditionSQL;
     }
 
-    public String buildSelectCommandSQL(Query query) {
+    public List<Values> all(Query query) {
         String select = "select " + query.getTableName()+".*" + " from ";
         if (query.getFields().size() > 0) {
             select = "select " + String.join(", ", query.getFields()) + " from ";
         }
-
-        final String SelectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
-        return SelectCommandSQL;
-    }
-
-    public List<Values> all(Query query) {
-        final String selectCommandSQL = this.buildSelectCommandSQL(query);
+        String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        if (query.getOrder() != null) {
+            selectCommandSQL += " ORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+        }
         List<Values> items = getManager().query(selectCommandSQL);
         if (items.size() == 0) {
             return new ArrayList<Values>();
         }
         return items;
+    }
+    public Values first(Query query) {
+        String select = "select " + query.getTableName()+".*" + " from ";
+        if (query.getFields().size() > 0) {
+            select = "select " + String.join(", ", query.getFields()) + " from ";
+        }
+        String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        if (query.getOrder() != null) {
+            selectCommandSQL += " ORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+        }
+        selectCommandSQL += " LIMIT 1";
+        List<Values> items = getManager().query(selectCommandSQL);
+        if (items.size() == 0) {
+            return new Values();
+        }
+        return items.get(0);
     }
 }

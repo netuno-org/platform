@@ -150,8 +150,18 @@ public class Form extends TableBuilderResourceBase {
         return new Where(column, relationOperator);
     }
 
-    public Relation relation(String tableName, String column) {
-        return new Relation().setTableName(tableName).setColumn(column);
+    public Relation manyToOne(String tableName, String column) {
+        return new Relation()
+                .setTableName(tableName)
+                .setColumn(column)
+                .setType(RelationType.ManyToOne);
+    }
+
+    public Relation oneToMany(String tableName, String column) {
+        return new Relation()
+                .setTableName(tableName)
+                .setColumn(column)
+                .setType(RelationType.OneToMany);
     }
 
     public RelationOperator startsWith(Object value) {
