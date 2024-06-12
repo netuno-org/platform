@@ -1,9 +1,14 @@
 package org.netuno.tritao.form;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
 public class Relation {
     private String tableName;
     private String column;
     private RelationType type = RelationType.ManyToOne;
+    private Map<String, Link> subRelations = new HashMap<>();
 
     public String getTableName() {
         return tableName;
@@ -29,6 +34,23 @@ public class Relation {
 
     public Relation setType(RelationType type) {
         this.type = type;
+        return this;
+    }
+
+    public Map<String, Link> getSubRelations() {
+        return subRelations;
+    }
+
+    public Relation setSubRelations(Map<String, Link> subRelations) {
+        this.subRelations = subRelations;
+        return this;
+    }
+
+    public Relation link(Relation relation) {
+        Link link  = new Link();
+        link.setTable(this.getTableName());
+        link.setRelation(relation);
+        this.subRelations.put(new Random().toString(), link);
         return this;
     }
 

@@ -18,12 +18,15 @@
 package org.netuno.tritao.resource;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.form.*;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.CoreData;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
@@ -60,7 +63,7 @@ _form.get("cliente").link(_form.fatura, "cliente_id")
 		_form.equals,
 		true
 	))
-	.and(_form.cliente.field("nif")
+	.and(_form.field("client.nif")
                 .lowerCase()
                 .trim()
                 .concat("#")
@@ -108,6 +111,7 @@ _form.get("cliente").link(_form.fatura, "cliente_id")
 })
 public class Form extends TableBuilderResourceBase {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Form.class);
+    private QueryEngine queryEngine = new QueryEngine(getProteu(), getHili());
 
     public Form(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -128,5 +132,41 @@ public class Form extends TableBuilderResourceBase {
             return null;
         }
         return CoreData.primaryKeys(getProteu(), formData.getString("name"));
+    }
+
+    public Query query(String tableName) {
+        return new Query(tableName, queryEngine);
+    }
+
+    public Query query(String tableName, Where where) {
+        return new Query(tableName, where, queryEngine);
+    }
+
+    public Where where(String column, Object value) {
+        return new Where(column, value);
+    }
+
+    public Where where(String column, RelationOperator relationOperator) {
+        return new Where(column, relationOperator);
+    }
+
+    public Relation relation(String tableName, String column) {
+        return new Relation().setTableName(tableName).setColumn(column);
+    }
+
+    public RelationOperator startsWith(Object value) {
+        return new RelationOperator(RelationOperatorType.StartsWith, value);
+    }
+
+    public RelationOperator endsWith(Object value) {
+        return new RelationOperator(RelationOperatorType.EndsWith, value);
+    }
+
+    public RelationOperator contains(Object value) {
+        return new RelationOperator(RelationOperatorType.Contains, value);
+    }
+
+    public RelationOperator in(Values values) {
+        return new RelationOperator(RelationOperatorType.In, values);
     }
 }

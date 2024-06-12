@@ -3,13 +3,13 @@ package org.netuno.tritao.form;
 public class Condition {
 
     private String column;
-    private Object value;
     private ConditionOperator operator;
+    private RelationOperator relationOperator;
     private Where subCondition;
 
-    public Condition(String column, Object value, ConditionOperator operator) {
+    public Condition(String column, ConditionOperator operator, RelationOperator relationOperator) {
         this.column = column;
-        this.value = value;
+        this.relationOperator = relationOperator;
         this.operator = operator;
     }
 
@@ -27,21 +27,21 @@ public class Condition {
         return this;
     }
 
-    public Object getValue() {
-        return value;
-    }
-
-    public Condition setValue(Object value) {
-        this.value = value;
-        return this;
-    }
-
     public ConditionOperator getOperator() {
         return operator;
     }
 
     public Condition setOperator(ConditionOperator operator) {
         this.operator = operator;
+        return this;
+    }
+
+    public RelationOperator getRelationOperator() {
+        return relationOperator;
+    }
+
+    public Condition setRelationOperator(RelationOperator relationOperator) {
+        this.relationOperator = relationOperator;
         return this;
     }
 
