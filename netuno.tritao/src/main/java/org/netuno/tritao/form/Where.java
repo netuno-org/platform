@@ -10,7 +10,12 @@ public class Where {
     private Map <String, Condition> conditions = new HashMap<>();
 
     public Where(String column, Object value) {
-        this.firstCondition = new Condition(column, value, ConditionOperator.AND);
+        RelationOperator relationOperator = new RelationOperator(RelationOperatorType.Equals, value);
+        this.firstCondition = new Condition(column, ConditionOperator.AND, relationOperator);
+    }
+
+    public Where(String column, RelationOperator relationOperator) {
+        this.firstCondition = new Condition(column, ConditionOperator.AND, relationOperator);
     }
 
     public String getTable() {
@@ -41,12 +46,14 @@ public class Where {
     }
 
     public Where and(String column, Object value) {
-        conditions.put(column, new Condition(column, value,ConditionOperator.AND));
+        RelationOperator relationOperator = new RelationOperator(RelationOperatorType.Equals, value);
+        conditions.put(column, new Condition(column, ConditionOperator.AND, relationOperator));
         return this;
     }
 
     public Where or(String column, Object value) {
-        conditions.put(column, new Condition(column, value, ConditionOperator.OR));
+        RelationOperator relationOperator = new RelationOperator(RelationOperatorType.Equals, value);
+        conditions.put(column, new Condition(column, ConditionOperator.OR, relationOperator));
         return this;
     }
 
@@ -57,6 +64,16 @@ public class Where {
 
     public Where or(Where where) {
         conditions.put(new Random().toString(), new Condition(where, ConditionOperator.OR));
+        return this;
+    }
+
+    public Where and(String column, RelationOperator relationOperator) {
+        conditions.put(column, new Condition(column, ConditionOperator.AND, relationOperator));
+        return this;
+    }
+
+    public Where or(String column, RelationOperator relationOperator) {
+        conditions.put(column, new Condition(column, ConditionOperator.AND, relationOperator));
         return this;
     }
 }
