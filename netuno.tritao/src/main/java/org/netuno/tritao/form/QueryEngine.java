@@ -17,36 +17,36 @@ public class QueryEngine extends Data {
     }
 
     public String buildQuerySQL(Query query) {
-        String linkSQL = "";
+        String joinSQL = "";
         String whereSQL = "";
         for(Map.Entry<String, Where> whereEntry : query.getWhere().entrySet()) {
             whereSQL += this.buildWhereSQL(whereEntry.getValue());
         }
-        for(Map.Entry<String, Link> linkEntry : query.getLink().entrySet()) {
-            final Link link = linkEntry.getValue();
-            linkSQL += this.buildLinkSQL(link);
-            if (link.getWhere() != null) {
-                whereSQL += " " + link.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(link.getWhere());
+        for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
+            final Join join = entryJoin.getValue();
+            joinSQL += this.buildJoinSQL(join);
+            if (join.getWhere() != null) {
+                whereSQL += " " + join.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(join.getWhere());
             }
-            for(Map.Entry<String, Link> entrySubLink : link.getRelation().getSubRelations().entrySet()) {
-                final Link subLink = entrySubLink.getValue();
-                if (subLink.getWhere() != null) {
-                    whereSQL += " " + subLink.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(subLink.getWhere());
+            for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
+                final Join subJoin = entrySubJoin.getValue();
+                if (subJoin.getWhere() != null) {
+                    whereSQL += " " + subJoin.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(subJoin.getWhere());
                 }
             }
         }
         if (whereSQL.length() > 0) {
             whereSQL = " WHERE" + whereSQL;
         }
-        final String SQL = linkSQL + whereSQL;
+        final String SQL = joinSQL + whereSQL;
         return SQL;
     }
 
-    public String buildLinkSQL(Link link) {
-        String linkSQL = "INNER JOIN";
-        final Relation relation = link.getRelation();
-        linkSQL += this.buildRelation(relation, link.getTable());
-        return " " + linkSQL;
+    public String buildJoinSQL(Join join) {
+        String joinSQL = "INNER JOIN";
+        final Relation relation = join.getRelation();
+        joinSQL += this.buildRelation(relation, join.getTable());
+        return " " + joinSQL;
     }
 
     public String buildRelation(Relation relation, String table) {
@@ -57,9 +57,9 @@ public class QueryEngine extends Data {
         } else if (relation.getType().equals(RelationType.OneToMany)) {
             relationSQL += relation.getTableName()+"."+relation.getColumn() + " = " + table+".id";
         }
-        for(Map.Entry<String, Link> subRelationEntry : relation.getSubRelations().entrySet()) {
-            Link link = subRelationEntry.getValue();
-            relationSQL += this.buildLinkSQL(link);
+        for(Map.Entry<String, Join> subRelationEntry : relation.getSubRelations().entrySet()) {
+            Join join = subRelationEntry.getValue();
+            relationSQL += this.buildJoinSQL(join);
         }
         return " " + relationSQL;
     }

@@ -11,7 +11,7 @@ public class Query {
     private String tableName;
     private List<String> fields = new ArrayList<>();
     private Map<String, Where> where = new HashMap<>();
-    private Map<String, Link> link = new HashMap<>();
+    private Map<String, Join> join = new HashMap<>();
     private QueryEngine queryEngine;
     private Order order;
 
@@ -54,12 +54,12 @@ public class Query {
         return this;
     }
 
-    public Map<String, Link> getLink() {
-        return link;
+    public Map<String, Join> getJoin() {
+        return join;
     }
 
-    public Query setLink(Map<String, Link> link) {
-        this.link = link;
+    public Query setJoin(Map<String, Join> join) {
+        this.join = join;
         return this;
     }
 
@@ -72,14 +72,14 @@ public class Query {
         return this;
     }
 
-    public Query link(Relation relation) {
-        Link newLink = new Link();
-        newLink.setTable(this.tableName);
-        newLink.setRelation(relation);
+    public Query join(Relation relation) {
+        Join newJoin = new Join();
+        newJoin.setTable(this.tableName);
+        newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
-            newLink.setWhere(relation.getWhere());
+            newJoin.setWhere(relation.getWhere());
         }
-        this.link.put(relation.getTableName(), newLink);
+        this.join.put(relation.getTableName(), newJoin);
         return this;
     }
 

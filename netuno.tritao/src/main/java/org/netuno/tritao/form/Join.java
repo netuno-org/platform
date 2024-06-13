@@ -1,6 +1,6 @@
 package org.netuno.tritao.form;
 
-public class Link {
+public class Join {
     private String table;
     private Relation relation;
     private Where where;
@@ -9,7 +9,7 @@ public class Link {
         return table;
     }
 
-    public Link setTable(String table) {
+    public Join setTable(String table) {
         this.table = table;
         return this;
     }
@@ -18,7 +18,7 @@ public class Link {
         return relation;
     }
 
-    public Link setRelation(Relation relation) {
+    public Join setRelation(Relation relation) {
         this.relation = relation;
         return this;
     }
@@ -27,7 +27,7 @@ public class Link {
         return where;
     }
 
-    public Link setWhere(Where where) {
+    public Join setWhere(Where where) {
         this.where = where;
         return this;
     }
