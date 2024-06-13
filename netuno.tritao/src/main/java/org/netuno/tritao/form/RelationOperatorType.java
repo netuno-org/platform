@@ -6,4 +6,9 @@ public enum RelationOperatorType {
     EndsWith,
     Contains,
     In,
+    GreaterThan,
+    LessThan,
+    GreaterOrEqualsThan,
+    LessOrEqualsThan,
+    Different
 }

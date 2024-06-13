@@ -1,6 +1,7 @@
 package org.netuno.tritao.form;
 
 import org.netuno.proteu.Proteu;
+import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.hili.Hili;
@@ -76,14 +77,18 @@ public class QueryEngine extends Data {
         return whereSQL;
     }
 
+    public String objectToValue(Object object) {
+        if (object instanceof String) {
+            return "'"+ DB.sqlInjection(object.toString()) +"'";
+        } else {
+            return object.toString();
+        }
+    }
+
     public String buildRelationOperatorSQL(RelationOperator relationOperator, String table, String column) {
         String relationOperatorSQL = "";
         if (relationOperator.getOperatorType().equals(RelationOperatorType.Equals)) {
-            if (relationOperator.getValue() instanceof String) {
-                relationOperatorSQL = " " + table+"."+column + " = " + "'"+relationOperator.getValue().toString()+"'";
-            } else {
-                relationOperatorSQL = " " + table+"."+column + " = " + relationOperator.getValue().toString();
-            }
+            relationOperatorSQL = " " + table+"."+column + " = " + this.objectToValue(relationOperator.getValue());
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.StartsWith)) {
             relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('"+relationOperator.getValue().toString()+"%')";
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.EndsWith)) {
@@ -93,6 +98,18 @@ public class QueryEngine extends Data {
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.In)) {
            List values = relationOperator.getInValues().list().stream().map(value -> value instanceof String ? "'"+value+"'" : value.toString()).collect(Collectors.toList());
             relationOperatorSQL = " " + table+"."+column + " IN " + "("+String.join(",", values)+")";
+        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.GreaterThan)) {
+            relationOperatorSQL = " " + table+"."+column + " > " + this.objectToValue(relationOperator.getValue());
+        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.LessThan)) {
+            relationOperatorSQL = " " + table+"."+column + " < " + this.objectToValue(relationOperator.getValue());
+        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.GreaterOrEqualsThan)) {
+            relationOperatorSQL = " " + table+"."+column + " >= " + this.objectToValue(relationOperator.getValue());
+        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.LessOrEqualsThan)) {
+            relationOperatorSQL = " " + table+"."+column + " <= " + this.objectToValue(relationOperator.getValue());
+        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.Different)) {
+            relationOperatorSQL = " " + table+"."+column + " <> " + this.objectToValue(relationOperator.getValue());
+        } else {
+            //Not exists relational operator X
         }
         return relationOperatorSQL;
     }

@@ -178,6 +178,26 @@ public class Form extends TableBuilderResourceBase {
         return new RelationOperator(RelationOperatorType.Contains, value);
     }
 
+    public RelationOperator lessThan(Object value) {
+        return new RelationOperator(RelationOperatorType.LessThan, value);
+    }
+
+    public RelationOperator greaterThan(Object value) {
+        return new RelationOperator(RelationOperatorType.GreaterThan, value);
+    }
+
+    public RelationOperator lessOrEqualsThan(Object value) {
+        return new RelationOperator(RelationOperatorType.LessOrEqualsThan, value);
+    }
+
+    public RelationOperator greaterOrEqualsThan(Object value) {
+        return new RelationOperator(RelationOperatorType.GreaterOrEqualsThan, value);
+    }
+
+    public RelationOperator different(Object value) {
+        return new RelationOperator(RelationOperatorType.Different, value);
+    }
+
     public RelationOperator in(Values values) {
         return new RelationOperator(RelationOperatorType.In, values);
     }
