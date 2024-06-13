@@ -10,10 +10,11 @@ import java.util.Map;
 public class Query {
     private String tableName;
     private List<String> fields = new ArrayList<>();
-    private Map<String, Where> where = new HashMap<>();
+    private Where where;
     private Map<String, Join> join = new HashMap<>();
     private QueryEngine queryEngine;
     private Order order;
+    private Group group;
 
     public Query(String tableName, QueryEngine queryEngine) {
         this.tableName = tableName;
@@ -23,7 +24,7 @@ public class Query {
     public Query(String tableName, Where where, QueryEngine queryEngine) {
         this.tableName = tableName;
         where.setTable(tableName);
-        this.where.put(where.getTable()+"."+where.getFirstCondition().getColumn(), where);
+        this.where = where;
         this.queryEngine = queryEngine;
     }
 
@@ -45,11 +46,11 @@ public class Query {
         return this;
     }
 
-    public Map<String, Where> getWhere() {
+    public Where getWhere() {
         return where;
     }
 
-    public Query setWhere(Map<String, Where> where) {
+    public Query setWhere(Where where) {
         this.where = where;
         return this;
     }
@@ -72,6 +73,15 @@ public class Query {
         return this;
     }
 
+    public Group getGroup() {
+        return group;
+    }
+
+    public Query setGroup(Group group) {
+        this.group = group;
+        return this;
+    }
+
     public Query join(Relation relation) {
         Join newJoin = new Join();
         newJoin.setTable(this.tableName);
@@ -90,6 +100,11 @@ public class Query {
 
     public Query order(String column, String order) {
         this.order = new Order(column, order);
+        return this;
+    }
+
+    public Query groupBy(String column) {
+        this.group = new Group(column);
         return this;
     }
 

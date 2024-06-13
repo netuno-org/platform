@@ -1,5 +1,6 @@
 package org.netuno.tritao.form;
 
+import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
@@ -16,12 +17,13 @@ public class QueryEngine extends Data {
     public QueryEngine(Proteu proteu, Hili hili) {
         super(proteu, hili);
     }
+    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(QueryEngine.class);
 
     public String buildQuerySQL(Query query) {
         String joinSQL = "";
         String whereSQL = "";
-        for(Map.Entry<String, Where> whereEntry : query.getWhere().entrySet()) {
-            whereSQL += this.buildWhereSQL(whereEntry.getValue());
+        if (query.getWhere() != null) {
+            whereSQL += " " + query.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(query.getWhere());
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
             final Join join = entryJoin.getValue();
@@ -37,7 +39,7 @@ public class QueryEngine extends Data {
             }
         }
         if (whereSQL.length() > 0) {
-            whereSQL = " WHERE" + whereSQL;
+            whereSQL = " WHERE 1 = 1" + whereSQL;
         }
         final String SQL = joinSQL + whereSQL;
         return SQL;
@@ -132,9 +134,13 @@ public class QueryEngine extends Data {
             select = "select " + String.join(", ", query.getFields()) + " from ";
         }
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        if (query.getGroup() != null) {
+            selectCommandSQL += " GROUP BY " + query.getGroup().getColumn();
+        }
         if (query.getOrder() != null) {
             selectCommandSQL += " ORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
+        logger.warn(selectCommandSQL);
         List<Values> items = getManager().query(selectCommandSQL);
         if (items.size() == 0) {
             return new ArrayList<Values>();
@@ -147,10 +153,14 @@ public class QueryEngine extends Data {
             select = "select " + String.join(", ", query.getFields()) + " from ";
         }
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        if (query.getGroup() != null) {
+            selectCommandSQL += " GROUP BY " + query.getGroup().getColumn();
+        }
         if (query.getOrder() != null) {
             selectCommandSQL += " ORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
         selectCommandSQL += " LIMIT 1";
+
         List<Values> items = getManager().query(selectCommandSQL);
         if (items.size() == 0) {
             return new Values();
