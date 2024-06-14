@@ -73,7 +73,7 @@ public class Where {
     }
 
     public Where or(String column, RelationOperator relationOperator) {
-        conditions.put(column, new Condition(column, ConditionOperator.AND, relationOperator));
+        conditions.put(column, new Condition(column, ConditionOperator.OR, relationOperator));
         return this;
     }
 }

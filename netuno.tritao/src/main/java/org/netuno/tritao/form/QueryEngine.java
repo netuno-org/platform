@@ -1,5 +1,4 @@
 package org.netuno.tritao.form;
-
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
@@ -23,24 +22,22 @@ public class QueryEngine extends Data {
         String joinSQL = "";
         String whereSQL = "";
         if (query.getWhere() != null) {
-            whereSQL += " " + query.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(query.getWhere());
+            whereSQL += "\n\t" + query.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(query.getWhere());
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
             final Join join = entryJoin.getValue();
-            joinSQL += this.buildJoinSQL(join);
+            joinSQL += "\t"+this.buildJoinSQL(join);
             if (join.getWhere() != null) {
-                whereSQL += " " + join.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(join.getWhere());
+                whereSQL += "\n\t" + join.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(join.getWhere());
             }
             for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
                 final Join subJoin = entrySubJoin.getValue();
                 if (subJoin.getWhere() != null) {
-                    whereSQL += " " + subJoin.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(subJoin.getWhere());
+                    whereSQL += "\n\t" + subJoin.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(subJoin.getWhere());
                 }
             }
         }
-        if (whereSQL.length() > 0) {
-            whereSQL = " WHERE 1 = 1" + whereSQL;
-        }
+        whereSQL = "\nWHERE 1 = 1" + whereSQL;
         final String SQL = joinSQL + whereSQL;
         return SQL;
     }
@@ -49,7 +46,7 @@ public class QueryEngine extends Data {
         String joinSQL = "INNER JOIN";
         final Relation relation = join.getRelation();
         joinSQL += this.buildRelation(relation, join.getTable());
-        return " " + joinSQL;
+        return "\n\t" + joinSQL;
     }
 
     public String buildRelation(Relation relation, String table) {
@@ -92,13 +89,13 @@ public class QueryEngine extends Data {
         if (relationOperator.getOperatorType().equals(RelationOperatorType.Equals)) {
             relationOperatorSQL = " " + table+"."+column + " = " + this.objectToValue(relationOperator.getValue());
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.StartsWith)) {
-            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('"+relationOperator.getValue().toString()+"%')";
+            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.EndsWith)) {
-            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+relationOperator.getValue().toString()+"')";
+            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"')";
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.Contains)) {
-            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+relationOperator.getValue().toString()+"%')";
+            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.In)) {
-           List values = relationOperator.getInValues().list().stream().map(value -> value instanceof String ? "'"+value+"'" : value.toString()).collect(Collectors.toList());
+           List values = relationOperator.getInValues().list().stream().map(value -> this.objectToValue(value)).collect(Collectors.toList());
             relationOperatorSQL = " " + table+"."+column + " IN " + "("+String.join(",", values)+")";
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.GreaterThan)) {
             relationOperatorSQL = " " + table+"."+column + " > " + this.objectToValue(relationOperator.getValue());
@@ -110,8 +107,6 @@ public class QueryEngine extends Data {
             relationOperatorSQL = " " + table+"."+column + " <= " + this.objectToValue(relationOperator.getValue());
         } else if (relationOperator.getOperatorType().equals(RelationOperatorType.Different)) {
             relationOperatorSQL = " " + table+"."+column + " <> " + this.objectToValue(relationOperator.getValue());
-        } else {
-            //Not exists relational operator X
         }
         return relationOperatorSQL;
     }
@@ -129,18 +124,20 @@ public class QueryEngine extends Data {
     }
 
     public List<Values> all(Query query) {
-        String select = "select " + query.getTableName()+".*" + " from ";
+        String select = "SELECT \n" + query.getTableName()+".*" + " \nFROM ";
         if (query.getFields().size() > 0) {
-            select = "select " + String.join(", ", query.getFields()) + " from ";
+            select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
         }
-        String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        String selectCommandSQL = select + query.getTableName()+ this.buildQuerySQL(query);
         if (query.getGroup() != null) {
-            selectCommandSQL += " GROUP BY " + query.getGroup().getColumn();
+            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
         if (query.getOrder() != null) {
-            selectCommandSQL += " ORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+            selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
-        logger.warn(selectCommandSQL);
+        if (query.isDebug()) {
+            logger.warn("SQL Command executed: \n"+selectCommandSQL);
+        }
         List<Values> items = getManager().query(selectCommandSQL);
         if (items.size() == 0) {
             return new ArrayList<Values>();
@@ -148,19 +145,21 @@ public class QueryEngine extends Data {
         return items;
     }
     public Values first(Query query) {
-        String select = "select " + query.getTableName()+".*" + " from ";
+        String select = "SELECT " + query.getTableName()+".*" + " FROM ";
         if (query.getFields().size() > 0) {
-            select = "select " + String.join(", ", query.getFields()) + " from ";
+            select = "SELECT " + String.join(", ", query.getFields()) + " FROM ";
         }
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
-            selectCommandSQL += " GROUP BY " + query.getGroup().getColumn();
+            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
         if (query.getOrder() != null) {
-            selectCommandSQL += " ORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+            selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
         selectCommandSQL += " LIMIT 1";
-
+        if (query.isDebug()) {
+            logger.warn("SQL Command executed: \n"+selectCommandSQL);
+        }
         List<Values> items = getManager().query(selectCommandSQL);
         if (items.size() == 0) {
             return new Values();

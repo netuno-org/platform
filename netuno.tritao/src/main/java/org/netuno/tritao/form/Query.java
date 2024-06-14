@@ -15,6 +15,7 @@ public class Query {
     private QueryEngine queryEngine;
     private Order order;
     private Group group;
+    private boolean debug = false;
 
     public Query(String tableName, QueryEngine queryEngine) {
         this.tableName = tableName;
@@ -79,6 +80,20 @@ public class Query {
 
     public Query setGroup(Group group) {
         this.group = group;
+        return this;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public Query setDebug(boolean debug) {
+        this.debug = debug;
+        return this;
+    }
+
+    public Query debug(boolean enabled) {
+        this.debug = enabled;
         return this;
     }
 
