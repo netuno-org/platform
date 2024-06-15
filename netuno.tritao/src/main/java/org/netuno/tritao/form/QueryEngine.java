@@ -145,9 +145,9 @@ public class QueryEngine extends Data {
         return items;
     }
     public Values first(Query query) {
-        String select = "SELECT " + query.getTableName()+".*" + " FROM ";
+        String select = "SELECT \n" + query.getTableName()+".*" + " \nFROM ";
         if (query.getFields().size() > 0) {
-            select = "SELECT " + String.join(", ", query.getFields()) + " FROM ";
+            select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
         }
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
@@ -156,7 +156,7 @@ public class QueryEngine extends Data {
         if (query.getOrder() != null) {
             selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
-        selectCommandSQL += " LIMIT 1";
+        selectCommandSQL += "\nLIMIT 1";
         if (query.isDebug()) {
             logger.warn("SQL Command executed: \n"+selectCommandSQL);
         }
