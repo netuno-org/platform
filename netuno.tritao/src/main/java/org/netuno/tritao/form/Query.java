@@ -15,6 +15,7 @@ public class Query {
     private QueryEngine queryEngine;
     private Order order;
     private Group group;
+    private boolean distinct;
     private Pagination pagination;
     private boolean debug = false;
 
@@ -84,6 +85,15 @@ public class Query {
         return this;
     }
 
+    public boolean isDistinct() {
+        return distinct;
+    }
+
+    public Query setDistinct(boolean distinct) {
+        this.distinct = distinct;
+        return this;
+    }
+
     public Pagination getPagination() {
         return pagination;
     }
@@ -130,6 +140,11 @@ public class Query {
 
     public Query groupBy(String column) {
         this.group = new Group(column);
+        return this;
+    }
+
+    public Query distinct(boolean distinct) {
+        this.distinct = distinct;
         return this;
     }
 

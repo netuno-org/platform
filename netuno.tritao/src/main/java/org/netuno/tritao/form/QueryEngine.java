@@ -128,6 +128,12 @@ public class QueryEngine extends Data {
         if (query.getFields().size() > 0) {
             select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
         }
+        if (query.isDistinct()) {
+            select = "SELECT DISTINCT\n" + query.getTableName()+".*" + " \nFROM ";
+            if (query.getFields().size() > 0) {
+                select = "SELECT DISTINCT\n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
+            }
+        }
         String selectCommandSQL = select + query.getTableName()+ this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
@@ -149,6 +155,12 @@ public class QueryEngine extends Data {
         if (query.getFields().size() > 0) {
             select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
         }
+        if (query.isDistinct()) {
+            select = "SELECT DISTINCT\n" + query.getTableName()+".*" + " \nFROM ";
+            if (query.getFields().size() > 0) {
+                select = "SELECT DISTINCT\n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
+            }
+        }
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
@@ -169,6 +181,9 @@ public class QueryEngine extends Data {
 
     public int count(Query query) {
         String select = "SELECT COUNT("+query.getTableName()+".id"+") AS total \nFROM ";
+        if (query.isDistinct()) {
+            select = "SELECT COUNT(DISTINCT "+query.getTableName()+".id"+") AS total \nFROM ";
+        }
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
@@ -184,6 +199,12 @@ public class QueryEngine extends Data {
         String select = "SELECT \n" + query.getTableName()+".*" + " \nFROM ";
         if (query.getFields().size() > 0) {
             select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
+        }
+        if (query.isDistinct()) {
+            select = "SELECT DISTINCT\n" + query.getTableName()+".*" + " \nFROM ";
+            if (query.getFields().size() > 0) {
+                select = "SELECT DISTINCT\n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
+            }
         }
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
