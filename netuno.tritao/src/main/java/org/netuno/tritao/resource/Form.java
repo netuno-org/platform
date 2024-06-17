@@ -150,6 +150,14 @@ public class Form extends TableBuilderResourceBase {
         return new Where(column, relationOperator);
     }
 
+    public Where where(ConditionOperator operator, String column, Object value) {
+        return new Where(operator, column, value);
+    }
+
+    public Where where(ConditionOperator operator, String column, RelationOperator relationOperator) {
+        return new Where(operator, column, relationOperator);
+    }
+
     public Relation manyToOne(String tableName, String column) {
         return new Relation(tableName, column, RelationType.ManyToOne);
     }
@@ -192,6 +200,14 @@ public class Form extends TableBuilderResourceBase {
 
     public RelationOperator greaterOrEqualsThan(Object value) {
         return new RelationOperator(RelationOperatorType.GreaterOrEqualsThan, value);
+    }
+
+    public ConditionOperator AND() {
+        return ConditionOperator.AND;
+    }
+
+    public ConditionOperator OR() {
+        return ConditionOperator.OR;
     }
 
     public RelationOperator different(Object value) {

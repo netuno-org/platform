@@ -18,6 +18,15 @@ public class Where {
         this.firstCondition = new Condition(column, ConditionOperator.AND, relationOperator);
     }
 
+    public Where(ConditionOperator operator, String column, Object value) {
+        RelationOperator relationOperator = new RelationOperator(RelationOperatorType.Equals, value);
+        this.firstCondition = new Condition(column, operator, relationOperator);
+    }
+
+    public Where(ConditionOperator operator, String column, RelationOperator relationOperator) {
+        this.firstCondition = new Condition(column, operator, relationOperator);
+    }
+
     public String getTable() {
         return table;
     }
