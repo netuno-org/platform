@@ -166,4 +166,39 @@ public class QueryEngine extends Data {
         }
         return items.get(0);
     }
+
+    public int count(Query query) {
+        String select = "SELECT COUNT("+query.getTableName()+".id"+") AS total \nFROM ";
+        String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        if (query.getGroup() != null) {
+            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
+        }
+        if (query.getOrder() != null) {
+            selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+        }
+
+        return (int) getManager().query(selectCommandSQL).get(0).getLong("total");
+    }
+
+    public Page page(Query query) {
+        String select = "SELECT \n" + query.getTableName()+".*" + " \nFROM ";
+        if (query.getFields().size() > 0) {
+            select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
+        }
+        String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        if (query.getGroup() != null) {
+            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
+        }
+        if (query.getOrder() != null) {
+            selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+        }
+        selectCommandSQL += "\nLIMIT "+query.getPagination().getPageSize() +" OFFSET " + query.getPagination().getOffset();
+        if (query.isDebug()) {
+            logger.warn("SQL Command executed: \n"+selectCommandSQL);
+        }
+        List<Values> items = getManager().query(selectCommandSQL);
+        int total = this.count(query);
+        Page page = new Page(items, total, query.getPagination());
+        return page;
+    }
 }

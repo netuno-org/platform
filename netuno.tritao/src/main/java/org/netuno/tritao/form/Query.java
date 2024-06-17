@@ -15,6 +15,7 @@ public class Query {
     private QueryEngine queryEngine;
     private Order order;
     private Group group;
+    private Pagination pagination;
     private boolean debug = false;
 
     public Query(String tableName, QueryEngine queryEngine) {
@@ -83,6 +84,15 @@ public class Query {
         return this;
     }
 
+    public Pagination getPagination() {
+        return pagination;
+    }
+
+    public Query setPagination(Pagination pagination) {
+        this.pagination = pagination;
+        return this;
+    }
+
     public boolean isDebug() {
         return debug;
     }
@@ -123,11 +133,15 @@ public class Query {
         return this;
     }
 
-    public List<Values> all () {
+    public List<Values> all() {
         return queryEngine.all(this);
     }
 
-    public Values first () {
+    public Values first() {
         return queryEngine.first(this);
+    }
+
+    public Page page(Pagination pagination) {
+        return queryEngine.page(this.setPagination(pagination));
     }
 }

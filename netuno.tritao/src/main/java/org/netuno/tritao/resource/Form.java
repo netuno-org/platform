@@ -201,4 +201,8 @@ public class Form extends TableBuilderResourceBase {
     public RelationOperator in(Values values) {
         return new RelationOperator(RelationOperatorType.In, values);
     }
+
+    public Pagination pagination(int page, int pageSize) {
+        return new Pagination(page, pageSize);
+    }
 }
