@@ -1,4 +1,6 @@
-package org.netuno.tritao.form;
+package org.netuno.tritao.form.join;
+
+import org.netuno.tritao.form.where.Where;
 
 import java.util.HashMap;
 import java.util.Map;

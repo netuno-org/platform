@@ -1,4 +1,4 @@
-package org.netuno.tritao.form;
+package org.netuno.tritao.form.where;
 
 import org.netuno.psamata.Values;
 

@@ -1,4 +1,4 @@
-package org.netuno.tritao.form;
+package org.netuno.tritao.form.pagination;
 
 public class Pagination {
     private int page = 1;

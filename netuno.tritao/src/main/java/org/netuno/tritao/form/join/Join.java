@@ -1,4 +1,6 @@
-package org.netuno.tritao.form;
+package org.netuno.tritao.form.join;
+
+import org.netuno.tritao.form.where.Where;
 
 public class Join {
     private String table;

@@ -18,7 +18,6 @@
 package org.netuno.tritao.resource;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.LanguageDoc;
@@ -27,6 +26,13 @@ import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.form.*;
+import org.netuno.tritao.form.join.Relation;
+import org.netuno.tritao.form.pagination.Pagination;
+import org.netuno.tritao.form.where.RelationOperator;
+import org.netuno.tritao.form.where.RelationOperatorType;
+import org.netuno.tritao.form.join.RelationType;
+import org.netuno.tritao.form.where.ConditionOperator;
+import org.netuno.tritao.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.CoreData;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
