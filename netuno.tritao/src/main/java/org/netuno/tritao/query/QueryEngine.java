@@ -130,7 +130,7 @@ public class QueryEngine extends Data {
     }
 
     public List<Values> all(Query query) {
-        String select = "SELECT \n" + query.getTableName()+".*" + " \nFROM ";
+        String select = "SELECT \n\t" + query.getTableName()+".*" + " \nFROM ";
         if (query.getFields().size() > 0) {
             select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
         }
@@ -157,7 +157,7 @@ public class QueryEngine extends Data {
         return items;
     }
     public Values first(Query query) {
-        String select = "SELECT \n" + query.getTableName()+".*" + " \nFROM ";
+        String select = "SELECT \n\t" + query.getTableName()+".*" + " \nFROM ";
         if (query.getFields().size() > 0) {
             select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
         }
@@ -202,7 +202,7 @@ public class QueryEngine extends Data {
     }
 
     public Page page(Query query) {
-        String select = "SELECT \n" + query.getTableName()+".*" + " \nFROM ";
+        String select = "SELECT \n\t" + query.getTableName()+".*" + " \nFROM ";
         if (query.getFields().size() > 0) {
             select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
         }
