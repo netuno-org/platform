@@ -1,4 +1,4 @@
-package org.netuno.tritao.form.where;
+package org.netuno.tritao.query.where;
 
 import java.util.HashMap;
 import java.util.Map;

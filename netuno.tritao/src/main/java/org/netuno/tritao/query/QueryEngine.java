@@ -1,15 +1,15 @@
-package org.netuno.tritao.form;
+package org.netuno.tritao.query;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.db.manager.Data;
-import org.netuno.tritao.form.join.*;
-import org.netuno.tritao.form.pagination.Page;
-import org.netuno.tritao.form.where.Condition;
-import org.netuno.tritao.form.where.RelationOperator;
-import org.netuno.tritao.form.where.RelationOperatorType;
-import org.netuno.tritao.form.where.Where;
+import org.netuno.tritao.query.join.*;
+import org.netuno.tritao.query.pagination.Page;
+import org.netuno.tritao.query.where.Condition;
+import org.netuno.tritao.query.where.RelationOperator;
+import org.netuno.tritao.query.where.RelationOperatorType;
+import org.netuno.tritao.query.where.Where;
 import org.netuno.tritao.hili.Hili;
 
 import java.util.ArrayList;

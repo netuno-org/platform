@@ -1,11 +1,11 @@
-package org.netuno.tritao.form;
+package org.netuno.tritao.query;
 
 import org.netuno.psamata.Values;
-import org.netuno.tritao.form.join.Join;
-import org.netuno.tritao.form.join.Relation;
-import org.netuno.tritao.form.pagination.Page;
-import org.netuno.tritao.form.pagination.Pagination;
-import org.netuno.tritao.form.where.Where;
+import org.netuno.tritao.query.join.Join;
+import org.netuno.tritao.query.join.Relation;
+import org.netuno.tritao.query.pagination.Page;
+import org.netuno.tritao.query.pagination.Pagination;
+import org.netuno.tritao.query.where.Where;
 
 import java.util.ArrayList;
 import java.util.HashMap;

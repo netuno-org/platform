@@ -1,4 +1,4 @@
-package org.netuno.tritao.form.join;
+package org.netuno.tritao.query.join;
 
 public enum RelationType {
    OneToMany,

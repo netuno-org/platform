@@ -1,4 +1,4 @@
-package org.netuno.tritao.form.pagination;
+package org.netuno.tritao.query.pagination;
 
 import org.netuno.psamata.Values;
 

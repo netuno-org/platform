@@ -1,4 +1,4 @@
-package org.netuno.tritao.form;
+package org.netuno.tritao.query;
 
 public class Group {
     private String column;
