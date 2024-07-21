@@ -113,6 +113,7 @@ public class Manager {
             logger.info(Config.getDabaBase(proteu, key) + " query executed: " + sql);
             return result;
         } catch (Exception e) {
+            logger.trace("Query executing on " + Config.getDabaBase(proteu, key), e);
             throw new DBError(e).setLogError("Query executing on " + Config.getDabaBase(proteu, key) + ": " + sql);
         }
     }
@@ -128,6 +129,7 @@ public class Manager {
             logger.info(Config.getDabaBase(proteu, key) + " query executed: " + sql);
             return result;
         } catch (Exception e) {
+            logger.trace("Query executing on " + Config.getDabaBase(proteu, key), e);
             throw new DBError(e).setLogError("Query executing on " + Config.getDabaBase(proteu, key) + ": " + sql);
         }
     }
@@ -236,14 +238,6 @@ public class Manager {
 
     public DateFormat getDateTimeFormat() {
         return DB.getDateTimeFormat();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        /*
-        GC TEST
-        closeConnections();
-        */
     }
 
     private class DBConnection {
