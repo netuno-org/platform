@@ -8,11 +8,10 @@ import org.netuno.tritao.query.join.*;
 import org.netuno.tritao.query.pagination.Page;
 import org.netuno.tritao.query.where.Condition;
 import org.netuno.tritao.query.where.RelationOperator;
-import org.netuno.tritao.query.where.RelationOperatorType;
 import org.netuno.tritao.query.where.Where;
 import org.netuno.tritao.hili.Hili;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,10 +57,9 @@ public class QueryEngine extends Data {
     public String buildRelation(Relation relation, String table) {
         String relationSQL = "";
         relationSQL = relation.getTableName() + " ON ";
-        if (relation.getType().equals(RelationType.ManyToOne)) {
-            relationSQL += table+"."+relation.getColumn() + " = " + relation.getTableName()+".id";
-        } else if (relation.getType().equals(RelationType.OneToMany)) {
-            relationSQL += relation.getTableName()+"."+relation.getColumn() + " = " + table+".id";
+        switch (relation.getType()) {
+            case ManyToOne -> relationSQL += table+"."+relation.getColumn() + " = " + relation.getTableName()+".id";
+            case OneToMany -> relationSQL += relation.getTableName()+"."+relation.getColumn() + " = " + table+".id";
         }
         for(Map.Entry<String, Join> subRelationEntry : relation.getSubRelations().entrySet()) {
             Join join = subRelationEntry.getValue();
@@ -83,38 +81,33 @@ public class QueryEngine extends Data {
     }
 
     public String objectToValue(Object object) {
-        if (object instanceof String) {
-            return "'"+ DB.sqlInjection(object.toString()) +"'";
-        } else {
-            return object.toString();
-        }
+        return switch (object) {
+            case String s -> "'" + DB.sqlInjection(s) + "'";
+            default -> object.toString();
+        };
     }
 
     public String buildRelationOperatorSQL(RelationOperator relationOperator, String table, String column) {
-        String relationOperatorSQL = "";
-        if (relationOperator.getOperatorType().equals(RelationOperatorType.Equals)) {
-            relationOperatorSQL = " " + table+"."+column + " = " + this.objectToValue(relationOperator.getValue());
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.StartsWith)) {
-            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.EndsWith)) {
-            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"')";
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.Contains)) {
-            relationOperatorSQL = " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.In)) {
-           List values = relationOperator.getInValues().list().stream().map(value -> this.objectToValue(value)).collect(Collectors.toList());
-            relationOperatorSQL = " " + table+"."+column + " IN " + "("+String.join(",", values)+")";
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.GreaterThan)) {
-            relationOperatorSQL = " " + table+"."+column + " > " + this.objectToValue(relationOperator.getValue());
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.LessThan)) {
-            relationOperatorSQL = " " + table+"."+column + " < " + this.objectToValue(relationOperator.getValue());
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.GreaterOrEqualsThan)) {
-            relationOperatorSQL = " " + table+"."+column + " >= " + this.objectToValue(relationOperator.getValue());
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.LessOrEqualsThan)) {
-            relationOperatorSQL = " " + table+"."+column + " <= " + this.objectToValue(relationOperator.getValue());
-        } else if (relationOperator.getOperatorType().equals(RelationOperatorType.Different)) {
-            relationOperatorSQL = " " + table+"."+column + " <> " + this.objectToValue(relationOperator.getValue());
-        }
-        return relationOperatorSQL;
+//        getHili().resource().get(org.netuno.tritao.resource.DB.class).isPostgreSQL();
+        return switch (relationOperator.getOperatorType()) {
+            case Equals -> " " + table+"."+column + " = " + this.objectToValue(relationOperator.getValue());
+            case StartsWith ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
+            case EndsWith ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"')";
+            case Contains ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
+            case In -> {
+                List values = relationOperator.getInValues().list().stream().map(
+                        value -> this.objectToValue(value)).collect(Collectors.toList());
+                yield  " " + table+"."+column + " IN " + "("+String.join(",", values)+")";
+            }
+            case GreaterThan -> " " + table+"."+column + " > " + this.objectToValue(relationOperator.getValue());
+            case LessThan -> " " + table+"."+column + " < " + this.objectToValue(relationOperator.getValue());
+            case GreaterOrEqualsThan -> " " + table+"."+column + " >= " + this.objectToValue(relationOperator.getValue());
+            case LessOrEqualsThan -> " " + table+"."+column + " <= " + this.objectToValue(relationOperator.getValue());
+            case Different -> " " + table+"."+column + " <> " + this.objectToValue(relationOperator.getValue());
+        };
     }
 
     private String buildCondition(Condition condition, String table) {
@@ -152,7 +145,7 @@ public class QueryEngine extends Data {
         }
         List<Values> items = getManager().query(selectCommandSQL);
         if (items.size() == 0) {
-            return new ArrayList<Values>();
+            return Collections.EMPTY_LIST;
         }
         return items;
     }
@@ -225,7 +218,7 @@ public class QueryEngine extends Data {
         }
         List<Values> items = getManager().query(selectCommandSQL);
         int total = this.count(query);
-        Page page = new Page(items, total, query.getPagination());
+        Page page = new Page(items.size() == 0 ? Collections.EMPTY_LIST : items , total, query.getPagination());
         return page;
     }
 }
