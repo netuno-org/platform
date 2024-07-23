@@ -27,6 +27,9 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.query.*;
 import org.netuno.tritao.query.join.Relation;
+import org.netuno.tritao.query.link.Link;
+import org.netuno.tritao.query.link.LinkEngine;
+import org.netuno.tritao.query.link.RelationLink;
 import org.netuno.tritao.query.pagination.Pagination;
 import org.netuno.tritao.query.where.RelationOperator;
 import org.netuno.tritao.query.where.RelationOperatorType;
@@ -118,6 +121,7 @@ _form.get("cliente").link(_form.fatura, "cliente_id")
 public class Form extends TableBuilderResourceBase {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Form.class);
     private QueryEngine queryEngine = new QueryEngine(getProteu(), getHili());
+    private LinkEngine linkEngine = new LinkEngine(getProteu(), getHili());
 
     public Form(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -141,11 +145,11 @@ public class Form extends TableBuilderResourceBase {
     }
 
     public Query query(String tableName) {
-        return new Query(tableName, queryEngine);
+        return new Query(tableName, queryEngine, linkEngine);
     }
 
     public Query query(String tableName, Where where) {
-        return new Query(tableName, where, queryEngine);
+        return new Query(tableName, where, queryEngine, linkEngine);
     }
 
     public Where where(String column, Object value) {
@@ -226,5 +230,19 @@ public class Form extends TableBuilderResourceBase {
 
     public Pagination pagination(int page, int pageSize) {
         return new Pagination(page, pageSize);
+    }
+
+    public Link link(String formLink) {
+        return new Link(new RelationLink(formLink));
+    }
+
+    public Link link(String formLink, Where where) {
+        return new Link(new RelationLink(formLink), where);
+    }
+
+    public Link link(String formLink, Where where, Link link) {
+        link.getSubLink().setFormLink(formLink);
+        link.setWhere(where);
+        return link;
     }
 }

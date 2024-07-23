@@ -3,37 +3,40 @@ package org.netuno.tritao.query;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.query.join.Join;
 import org.netuno.tritao.query.join.Relation;
+import org.netuno.tritao.query.link.Link;
+import org.netuno.tritao.query.link.LinkEngine;
+import org.netuno.tritao.query.link.RelationLink;
 import org.netuno.tritao.query.pagination.Page;
 import org.netuno.tritao.query.pagination.Pagination;
 import org.netuno.tritao.query.where.Where;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Query {
     private String tableName;
-    private List<String> fields = new ArrayList<>();
+    private List<String> fields = Collections.EMPTY_LIST;
     private Where where;
     private Map<String, Join> join = new HashMap<>();
-    private QueryEngine queryEngine;
     private Order order;
     private Group group;
     private boolean distinct;
     private Pagination pagination;
     private boolean debug = false;
+    private QueryEngine queryEngine;
+    private LinkEngine linkEngine;
 
-    public Query(String tableName, QueryEngine queryEngine) {
+    public Query(String tableName, QueryEngine queryEngine, LinkEngine linkEngine) {
         this.tableName = tableName;
         this.queryEngine = queryEngine;
+        this.linkEngine = linkEngine;
     }
 
-    public Query(String tableName, Where where, QueryEngine queryEngine) {
+    public Query(String tableName, Where where, QueryEngine queryEngine, LinkEngine linkEngine) {
         this.tableName = tableName;
         where.setTable(tableName);
         this.where = where;
         this.queryEngine = queryEngine;
+        this.linkEngine = linkEngine;
     }
 
     public String getTableName() {
@@ -133,6 +136,36 @@ public class Query {
         return this;
     }
 
+    public Query link(String formLink) {
+        Link link = new Link(this.tableName, new RelationLink(formLink));
+        this.join.put(formLink, linkEngine.buildJoin(link));
+        return this;
+    }
+
+    public Query link(String formLink, Where where) {
+        Link link = new Link(this.tableName, new RelationLink(formLink));
+        Join join = linkEngine.buildJoin(link);
+        join.setWhere(where.setTable(formLink));
+        this.join.put(formLink, join);
+        return this;
+    }
+
+    public Query link(String formLink, Link subLink) {
+        subLink.setForm(formLink);
+        Link link = new Link(this.tableName, new RelationLink(formLink, subLink));
+        this.join.put(formLink, linkEngine.buildJoin(link));
+        return this;
+    }
+
+    public Query link(String formLink, Where where, Link subLink) {
+        subLink.setForm(formLink);
+        Link link = new Link(this.tableName, new RelationLink(formLink, subLink));
+        Join join = linkEngine.buildJoin(link);
+        join.setWhere(where.setTable(formLink));
+        this.join.put(formLink, join);
+        return this;
+    }
+
     public Query fields(String... fields) {
         this.setFields(List.of(fields));
         return this;
@@ -143,7 +176,7 @@ public class Query {
         return this;
     }
 
-    public Query groupBy(String column) {
+    public Query group(String column) {
         this.group = new Group(column);
         return this;
     }
@@ -161,7 +194,7 @@ public class Query {
         return queryEngine.first(this);
     }
 
-    public Page page(Pagination pagination) {
-        return queryEngine.page(this.setPagination(pagination));
+    public Values page(Pagination pagination) {
+        return queryEngine.page(this.setPagination(pagination)).toValues();
     }
 }
