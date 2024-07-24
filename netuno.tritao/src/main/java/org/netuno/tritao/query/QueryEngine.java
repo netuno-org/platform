@@ -122,17 +122,25 @@ public class QueryEngine extends Data {
         return conditionSQL;
     }
 
-    public List<Values> all(Query query) {
+    public String buildSelectSQL(Query query) {
         String select = "SELECT \n\t" + query.getTableName()+".*" + " \nFROM ";
-        if (query.getFields().size() > 0) {
-            select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
+        List <String> fields = query.getFields().stream().map(field ->
+                field.getElias() != null ? field.getColumn() + " AS " + field.getElias() : field.getColumn()
+        ).collect(Collectors.toList());
+        if (fields.size() > 0) {
+            select = "SELECT \n\t" + String.join(", \n\t", fields) + " \nFROM ";
         }
         if (query.isDistinct()) {
             select = "SELECT DISTINCT\n" + query.getTableName()+".*" + " \nFROM ";
-            if (query.getFields().size() > 0) {
-                select = "SELECT DISTINCT\n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
+            if (fields.size() > 0) {
+                select = "SELECT DISTINCT\n\t" + String.join(", \n\t", fields) + " \nFROM ";
             }
         }
+        return select;
+    }
+
+    public List<Values> all(Query query) {
+        String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + query.getTableName()+ this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
@@ -150,16 +158,7 @@ public class QueryEngine extends Data {
         return items;
     }
     public Values first(Query query) {
-        String select = "SELECT \n\t" + query.getTableName()+".*" + " \nFROM ";
-        if (query.getFields().size() > 0) {
-            select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
-        }
-        if (query.isDistinct()) {
-            select = "SELECT DISTINCT\n" + query.getTableName()+".*" + " \nFROM ";
-            if (query.getFields().size() > 0) {
-                select = "SELECT DISTINCT\n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
-            }
-        }
+        String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
@@ -195,16 +194,7 @@ public class QueryEngine extends Data {
     }
 
     public Page page(Query query) {
-        String select = "SELECT \n\t" + query.getTableName()+".*" + " \nFROM ";
-        if (query.getFields().size() > 0) {
-            select = "SELECT \n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
-        }
-        if (query.isDistinct()) {
-            select = "SELECT DISTINCT\n" + query.getTableName()+".*" + " \nFROM ";
-            if (query.getFields().size() > 0) {
-                select = "SELECT DISTINCT\n\t" + String.join(", \n\t", query.getFields()) + " \nFROM ";
-            }
-        }
+        String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();

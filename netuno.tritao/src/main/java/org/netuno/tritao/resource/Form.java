@@ -245,4 +245,12 @@ public class Form extends TableBuilderResourceBase {
         link.setWhere(where);
         return link;
     }
+
+    public Field field(String column, String elias) {
+        return new Field(column, elias);
+    }
+
+    public Field field(String column) {
+        return new Field(column);
+    }
 }

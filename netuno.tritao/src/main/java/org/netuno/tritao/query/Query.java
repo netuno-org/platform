@@ -14,7 +14,7 @@ import java.util.*;
 
 public class Query {
     private String tableName;
-    private List<String> fields = Collections.EMPTY_LIST;
+    private List<Field> fields = Collections.EMPTY_LIST;
     private Where where;
     private Map<String, Join> join = new HashMap<>();
     private Order order;
@@ -48,11 +48,11 @@ public class Query {
         return this;
     }
 
-    public List<String> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 
-    public Query setFields(List<String> fields) {
+    public Query setFields(List<Field> fields) {
         this.fields = fields;
         return this;
     }
@@ -166,7 +166,7 @@ public class Query {
         return this;
     }
 
-    public Query fields(String... fields) {
+    public Query fields(Field... fields) {
         this.setFields(List.of(fields));
         return this;
     }
