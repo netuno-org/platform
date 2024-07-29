@@ -204,6 +204,7 @@ public class QueryEngine extends Data {
         if (items.size() == 0) {
             return new Values();
         }
+        items = query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
         return items.get(0);
     }
 
@@ -237,6 +238,7 @@ public class QueryEngine extends Data {
             logger.warn("SQL Command executed: \n"+selectCommandSQL);
         }
         List<Values> items = getManager().query(selectCommandSQL);
+        items = query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
         int total = this.count(query);
         Page page = new Page(items.size() == 0 ? Collections.EMPTY_LIST : items , total, query.getPagination());
         return page;
