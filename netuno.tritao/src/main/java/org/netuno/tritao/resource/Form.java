@@ -253,4 +253,8 @@ public class Form extends TableBuilderResourceBase {
     public Field field(String column) {
         return new Field(column);
     }
+
+    public List<Field> fields(Field... fields) {
+        return List.of(fields);
+    }
 }

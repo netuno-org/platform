@@ -6,6 +6,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.query.join.*;
 import org.netuno.tritao.query.pagination.Page;
+import org.netuno.tritao.query.populate.Populate;
 import org.netuno.tritao.query.where.Condition;
 import org.netuno.tritao.query.where.RelationOperator;
 import org.netuno.tritao.query.where.Where;
@@ -139,6 +140,35 @@ public class QueryEngine extends Data {
         return select;
     }
 
+    public List<Values> populateResults(List<Values> results, Query query) {
+        String querySQLPart = this.buildQuerySQL(query);
+        for (int i = 0; i < results.size();i++) {
+            for (Populate populate : query.getTablesToPopulate()) {
+                List<String> fieldList = populate.getFields().stream().map(
+                        field -> field.getElias() != null ? field.getColumn() + " AS " + field.getElias() : field.getColumn())
+                        .collect(Collectors.toList());
+                String selectSQLPart = "SELECT DISTINCT "
+                        + (fieldList.size() > 0 ? String.join(", ", fieldList) : populate.getTable() + ".*")
+                        + " FROM " + query.getTableName();
+                String commandSQL = selectSQLPart + " " + querySQLPart;
+                commandSQL += " AND "
+                        + populate.getFilter().getColumn() + " = "
+                        + "'" + results.get(i).get((
+                                populate.getFilter().getElias() != null
+                                        ? populate.getFilter().getElias()
+                                        : populate.getFilter().getColumn().split("\\.")[1]
+                )).toString() + "'";
+                List<Values> items = getManager().query(commandSQL);
+                if (items.size() == 0) {
+                    results.get(i).set(populate.getTable(), Collections.EMPTY_LIST);
+                    continue;
+                }
+                results.get(i).set(populate.getTable(), items.size() > 1 ? items : items.get(0));
+            }
+        }
+        return results;
+    }
+
     public List<Values> all(Query query) {
         String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + query.getTableName()+ this.buildQuerySQL(query);
@@ -155,7 +185,7 @@ public class QueryEngine extends Data {
         if (items.size() == 0) {
             return Collections.EMPTY_LIST;
         }
-        return items;
+        return query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
     }
     public Values first(Query query) {
         String select = this.buildSelectSQL(query);
