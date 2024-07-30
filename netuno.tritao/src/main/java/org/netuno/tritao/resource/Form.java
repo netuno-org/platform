@@ -18,12 +18,24 @@
 package org.netuno.tritao.resource;
 
 import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.query.*;
+import org.netuno.tritao.query.join.Relation;
+import org.netuno.tritao.query.link.Link;
+import org.netuno.tritao.query.link.LinkEngine;
+import org.netuno.tritao.query.link.RelationLink;
+import org.netuno.tritao.query.pagination.Pagination;
+import org.netuno.tritao.query.where.RelationOperator;
+import org.netuno.tritao.query.where.RelationOperatorType;
+import org.netuno.tritao.query.join.RelationType;
+import org.netuno.tritao.query.where.ConditionOperator;
+import org.netuno.tritao.query.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.CoreData;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
@@ -60,7 +72,7 @@ _form.get("cliente").link(_form.fatura, "cliente_id")
 		_form.equals,
 		true
 	))
-	.and(_form.cliente.field("nif")
+	.and(_form.field("client.nif")
                 .lowerCase()
                 .trim()
                 .concat("#")
@@ -108,6 +120,8 @@ _form.get("cliente").link(_form.fatura, "cliente_id")
 })
 public class Form extends TableBuilderResourceBase {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Form.class);
+    private QueryEngine queryEngine = new QueryEngine(getProteu(), getHili());
+    private LinkEngine linkEngine = new LinkEngine(getProteu(), getHili());
 
     public Form(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -128,5 +142,115 @@ public class Form extends TableBuilderResourceBase {
             return null;
         }
         return CoreData.primaryKeys(getProteu(), formData.getString("name"));
+    }
+
+    public Query query(String tableName) {
+        return new Query(tableName, queryEngine, linkEngine);
+    }
+
+    public Query query(String tableName, Where where) {
+        return new Query(tableName, where, queryEngine, linkEngine);
+    }
+
+    public Where where(String column, Object value) {
+        return new Where(column, value);
+    }
+
+    public Where where(String column, RelationOperator relationOperator) {
+        return new Where(column, relationOperator);
+    }
+
+    public Where where(ConditionOperator operator, String column, Object value) {
+        return new Where(operator, column, value);
+    }
+
+    public Where where(ConditionOperator operator, String column, RelationOperator relationOperator) {
+        return new Where(operator, column, relationOperator);
+    }
+
+    public Relation manyToOne(String tableName, String column) {
+        return new Relation(tableName, column, RelationType.ManyToOne);
+    }
+
+    public Relation oneToMany(String tableName, String column) {
+        return new Relation(tableName, column, RelationType.OneToMany);
+    }
+
+    public Relation manyToOne(String tableName, String column, Where where) {
+        return new Relation(tableName, column, where, RelationType.ManyToOne);
+    }
+
+    public Relation oneToMany(String tableName, String column, Where where) {
+        return new Relation(tableName, column, where, RelationType.OneToMany);
+    }
+
+    public RelationOperator startsWith(Object value) {
+        return new RelationOperator(RelationOperatorType.StartsWith, value);
+    }
+
+    public RelationOperator endsWith(Object value) {
+        return new RelationOperator(RelationOperatorType.EndsWith, value);
+    }
+
+    public RelationOperator contains(Object value) {
+        return new RelationOperator(RelationOperatorType.Contains, value);
+    }
+
+    public RelationOperator lessThan(Object value) {
+        return new RelationOperator(RelationOperatorType.LessThan, value);
+    }
+
+    public RelationOperator greaterThan(Object value) {
+        return new RelationOperator(RelationOperatorType.GreaterThan, value);
+    }
+
+    public RelationOperator lessOrEqualsThan(Object value) {
+        return new RelationOperator(RelationOperatorType.LessOrEqualsThan, value);
+    }
+
+    public RelationOperator greaterOrEqualsThan(Object value) {
+        return new RelationOperator(RelationOperatorType.GreaterOrEqualsThan, value);
+    }
+
+    public ConditionOperator AND() {
+        return ConditionOperator.AND;
+    }
+
+    public ConditionOperator OR() {
+        return ConditionOperator.OR;
+    }
+
+    public RelationOperator different(Object value) {
+        return new RelationOperator(RelationOperatorType.Different, value);
+    }
+
+    public RelationOperator in(Values values) {
+        return new RelationOperator(RelationOperatorType.In, values);
+    }
+
+    public Pagination pagination(int page, int pageSize) {
+        return new Pagination(page, pageSize);
+    }
+
+    public Link link(String formLink) {
+        return new Link(new RelationLink(formLink));
+    }
+
+    public Link link(String formLink, Where where) {
+        return new Link(new RelationLink(formLink), where);
+    }
+
+    public Link link(String formLink, Where where, Link link) {
+        link.getRelationLink().setFormLink(formLink);
+        link.setWhere(where);
+        return link;
+    }
+
+    public Field field(String column, String elias) {
+        return new Field(column, elias);
+    }
+
+    public Field field(String column) {
+        return new Field(column);
     }
 }
