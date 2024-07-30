@@ -150,16 +150,16 @@ public class Query {
         return this;
     }
 
-    public Query link(String formLink, Link subLink) {
-        subLink.setForm(formLink);
-        Link link = new Link(this.tableName, new RelationLink(formLink, subLink));
+    public Query link(String formLink, Link relationLink) {
+        relationLink.setForm(formLink);
+        Link link = new Link(this.tableName, new RelationLink(formLink, relationLink));
         this.join.put(formLink, linkEngine.buildJoin(link));
         return this;
     }
 
-    public Query link(String formLink, Where where, Link subLink) {
-        subLink.setForm(formLink);
-        Link link = new Link(this.tableName, new RelationLink(formLink, subLink));
+    public Query link(String formLink, Where where, Link relationLink) {
+        relationLink.setForm(formLink);
+        Link link = new Link(this.tableName, new RelationLink(formLink, relationLink));
         Join join = linkEngine.buildJoin(link);
         join.setWhere(where.setTable(formLink));
         this.join.put(formLink, join);

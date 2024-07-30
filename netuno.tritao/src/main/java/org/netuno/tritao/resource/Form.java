@@ -241,7 +241,7 @@ public class Form extends TableBuilderResourceBase {
     }
 
     public Link link(String formLink, Where where, Link link) {
-        link.getSubLink().setFormLink(formLink);
+        link.getRelationLink().setFormLink(formLink);
         link.setWhere(where);
         return link;
     }

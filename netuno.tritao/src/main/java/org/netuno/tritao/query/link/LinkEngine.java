@@ -21,10 +21,10 @@ public class LinkEngine extends TableBuilderResourceBase {
 
     public Join buildJoin(Link link) {
         Join join = new Join();
-        join.setRelation(this.buildRelation(link.getForm(),link.getSubLink()));
+        join.setRelation(this.buildRelation(link.getForm(),link.getRelationLink()));
         join.setTable(link.getForm());
         if (link.getWhere() != null) {
-            join.setWhere(link.getWhere().setTable(link.getSubLink().getFormLink()));
+            join.setWhere(link.getWhere().setTable(link.getRelationLink().getFormLink()));
         }
         return join;
     }

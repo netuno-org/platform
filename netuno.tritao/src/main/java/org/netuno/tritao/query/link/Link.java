@@ -7,17 +7,17 @@ public class Link {
     private RelationLink relationLink;
     private Where where;
 
-    public Link(String form, RelationLink subLink) {
+    public Link(String form, RelationLink relationLink) {
         this.form = form;
-        this.relationLink = subLink;
+        this.relationLink = relationLink;
     }
 
-    public Link(RelationLink subLink) {
-        this.relationLink = subLink;
+    public Link(RelationLink relationLink) {
+        this.relationLink = relationLink;
     }
 
-    public Link(RelationLink subLink, Where where) {
-        this.relationLink = subLink;
+    public Link(RelationLink relationLink, Where where) {
+        this.relationLink = relationLink;
         this.where = where;
     }
 
@@ -30,12 +30,12 @@ public class Link {
         return this;
     }
 
-    public RelationLink getSubLink() {
+    public RelationLink getRelationLink() {
         return relationLink;
     }
 
-    public Link setSubLink(RelationLink subLink) {
-        this.relationLink = subLink;
+    public Link setRelationLink(RelationLink relationLink) {
+        this.relationLink = relationLink;
         return this;
     }
 

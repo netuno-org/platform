@@ -14,7 +14,7 @@ public class RelationLink {
     public RelationLink(String formLink, Link subLink) {
         this.formLink = formLink;
         subLink.setForm(this.formLink);
-        this.subLinks.put(subLink.getSubLink().getFormLink(), subLink);
+        this.subLinks.put(subLink.getRelationLink().getFormLink(), subLink);
     }
 
     public String getFormLink() {
