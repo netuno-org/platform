@@ -16,6 +16,7 @@ import org.netuno.tritao.query.link.LinkEngine;
 import org.netuno.tritao.query.link.RelationLink;
 import org.netuno.tritao.query.pagination.Page;
 import org.netuno.tritao.query.pagination.Pagination;
+import org.netuno.tritao.query.populate.Populate;
 import org.netuno.tritao.query.where.Where;
 
 import java.util.*;
@@ -30,7 +31,7 @@ import java.util.*;
 })
 public class Query {
     private String tableName;
-    private List<Field> fields = Collections.EMPTY_LIST;
+    private List<Field> fields = new ArrayList<>();
     private Where where;
     private Map<String, Join> join = new HashMap<>();
     private Order order;
@@ -38,6 +39,7 @@ public class Query {
     private boolean distinct;
     private Pagination pagination;
     private boolean debug = false;
+    private List<Populate> tablesToPopulate = new ArrayList<>();
     private QueryEngine queryEngine;
     private LinkEngine linkEngine;
 
@@ -700,6 +702,15 @@ public class Query {
         return this;
     }
 
+    public List<Populate> getTablesToPopulate() {
+        return tablesToPopulate;
+    }
+
+    public Query setTablesToPopulate(List<Populate> tablesToPopulate) {
+        this.tablesToPopulate = tablesToPopulate;
+        return this;
+    }
+
     public Query join(Relation relation) {
         Join newJoin = new Join();
         newJoin.setTable(this.tableName);
@@ -998,6 +1009,16 @@ public class Query {
 
     public Query distinct(boolean distinct) {
         this.distinct = distinct;
+        return this;
+    }
+
+    public Query populate(String table, Field filter) {
+        this.tablesToPopulate.add(new Populate(table, filter));
+        return this;
+    }
+
+    public Query populate(String table, Field filter, List<Field> fields) {
+        this.tablesToPopulate.add(new Populate(table, filter, fields));
         return this;
     }
 
