@@ -1060,7 +1060,7 @@ public class Query {
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Retorna o primeiro registro resultante da execução da consulta, caso nenhum, retorna null.",
+                description = "Returns the first record resulting from the query execution, if none, returns null.",
                 howToUse = {}
             )
         },
