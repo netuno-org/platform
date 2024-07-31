@@ -59,8 +59,7 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 return relation;
             } else {
-                return null;
-                //not exists relation between forms
+                throw new IllegalArgumentException("There is no relationship between the forms " + form + " and " + subLink.getFormLink());
             }
         }
     }
