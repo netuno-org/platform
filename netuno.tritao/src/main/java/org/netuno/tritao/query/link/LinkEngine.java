@@ -30,12 +30,13 @@ public class LinkEngine extends TableBuilderResourceBase {
     }
 
     public List<Values> getSelectComponents(String formName) {
-        List<Values> selectComponents = getAllComponents(formName).stream().filter(
-                values -> values.get("type").toString().equalsIgnoreCase("select")).collect(Collectors.toList());
-        if (selectComponents.size() == 0) {
-            return Collections.EMPTY_LIST;
+        List<Values> selectComponents = getAllComponents(formName);
+        System.out.println("");
+        if (selectComponents == null) {
+            throw new UnsupportedOperationException("No forms found with the name " + formName);
         }
-        return selectComponents;
+        return selectComponents.stream().filter(
+                values -> values.get("type").toString().equalsIgnoreCase("select")).collect(Collectors.toList());
     }
 
     public Relation buildRelation(String form, RelationLink subLink) {
