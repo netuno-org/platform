@@ -10,6 +10,7 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.query.join.Join;
+import org.netuno.tritao.query.join.JoinType;
 import org.netuno.tritao.query.join.Relation;
 import org.netuno.tritao.query.link.Link;
 import org.netuno.tritao.query.link.LinkEngine;
@@ -713,6 +714,30 @@ public class Query {
 
     public Query join(Relation relation) {
         Join newJoin = new Join();
+        newJoin.setTable(this.tableName);
+        newJoin.setRelation(relation);
+        if (relation.getWhere() != null) {
+            newJoin.setWhere(relation.getWhere());
+        }
+        this.join.put(relation.getTableName(), newJoin);
+        return this;
+    }
+
+    public Query leftJoin(Relation relation) {
+        Join newJoin = new Join();
+        newJoin.setJoinType(JoinType.LEFT_JOIN);
+        newJoin.setTable(this.tableName);
+        newJoin.setRelation(relation);
+        if (relation.getWhere() != null) {
+            newJoin.setWhere(relation.getWhere());
+        }
+        this.join.put(relation.getTableName(), newJoin);
+        return this;
+    }
+
+    public Query rightJoin(Relation relation) {
+        Join newJoin = new Join();
+        newJoin.setJoinType(JoinType.RIGHT_JOIN);
         newJoin.setTable(this.tableName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {

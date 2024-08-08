@@ -19,11 +19,11 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class Field {
     private String column;
-    private String elias;
+    private String alias;
 
-    public Field(String column, String elias) {
+    public Field(String column, String alias) {
         this.column = column;
-        this.elias = elias;
+        this.alias = alias;
     }
 
     public Field(String column) {
@@ -126,8 +126,8 @@ public class Field {
             )
         }
     )
-    public String getElias() {
-        return elias;
+    public String getAlias() {
+        return alias;
     }
 
     @MethodDoc(
@@ -167,8 +167,8 @@ public class Field {
             )
         }
     )
-    public Field setElias(String elias) {
-        this.elias = elias;
+    public Field setAlias(String alias) {
+        this.alias = alias;
         return this;
     }
 }

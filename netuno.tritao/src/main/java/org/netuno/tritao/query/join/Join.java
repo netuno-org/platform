@@ -21,6 +21,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class Join {
     private String table;
+    private JoinType joinType = JoinType.INNER_JOIN;
     private Relation relation;
     private Where where;
 
@@ -93,6 +94,15 @@ public class Join {
     )
     public Join setTable(String table) {
         this.table = table;
+        return this;
+    }
+
+    public JoinType getJoinType() {
+        return joinType;
+    }
+
+    public Join setJoinType(JoinType joinType) {
+        this.joinType = joinType;
         return this;
     }
 

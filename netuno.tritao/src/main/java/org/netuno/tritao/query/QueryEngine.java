@@ -49,7 +49,11 @@ public class QueryEngine extends Data {
     }
 
     public String buildJoinSQL(Join join) {
-        String joinSQL = "INNER JOIN";
+        String joinSQL = switch (join.getJoinType()) {
+            case INNER_JOIN -> "INNER JOIN";
+            case LEFT_JOIN -> "LEFT JOIN";
+            case RIGHT_JOIN -> "RIGHT JOIN";
+        };
         final Relation relation = join.getRelation();
         joinSQL += this.buildRelation(relation, join.getTable());
         return "\n\t" + joinSQL;
@@ -126,7 +130,7 @@ public class QueryEngine extends Data {
     public String buildSelectSQL(Query query) {
         String select = "SELECT \n\t" + query.getTableName()+".*" + " \nFROM ";
         List <String> fields = query.getFields().stream().map(field ->
-                field.getElias() != null ? field.getColumn() + " AS " + field.getElias() : field.getColumn()
+                field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn()
         ).collect(Collectors.toList());
         if (fields.size() > 0) {
             select = "SELECT \n\t" + String.join(", \n\t", fields) + " \nFROM ";
@@ -145,7 +149,7 @@ public class QueryEngine extends Data {
         for (int i = 0; i < results.size();i++) {
             for (Populate populate : query.getTablesToPopulate()) {
                 List<String> fieldList = populate.getFields().stream().map(
-                        field -> field.getElias() != null ? field.getColumn() + " AS " + field.getElias() : field.getColumn())
+                        field -> field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn())
                         .collect(Collectors.toList());
                 String selectSQLPart = "SELECT DISTINCT "
                         + (fieldList.size() > 0 ? String.join(", ", fieldList) : populate.getTable() + ".*")
@@ -154,8 +158,8 @@ public class QueryEngine extends Data {
                 commandSQL += " AND "
                         + populate.getFilter().getColumn() + " = "
                         + "'" + results.get(i).get((
-                                populate.getFilter().getElias() != null
-                                        ? populate.getFilter().getElias()
+                                populate.getFilter().getAlias() != null
+                                        ? populate.getFilter().getAlias()
                                         : populate.getFilter().getColumn().split("\\.")[1]
                 )).toString() + "'";
                 List<Values> items = getManager().query(commandSQL);

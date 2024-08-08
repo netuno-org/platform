@@ -450,4 +450,28 @@ public class Relation {
         this.subRelations.put(new Random().toString(), join);
         return this;
     }
+
+    public Relation leftJoin(Relation relation) {
+        Join join  = new Join();
+        join.setJoinType(JoinType.LEFT_JOIN);
+        join.setTable(this.getTableName());
+        join.setRelation(relation);
+        if (relation.getWhere() != null) {
+            join.setWhere(relation.getWhere());
+        }
+        this.subRelations.put(new Random().toString(), join);
+        return this;
+    }
+
+    public Relation rightJoin(Relation relation) {
+        Join join  = new Join();
+        join.setJoinType(JoinType.RIGHT_JOIN);
+        join.setTable(this.getTableName());
+        join.setRelation(relation);
+        if (relation.getWhere() != null) {
+            join.setWhere(relation.getWhere());
+        }
+        this.subRelations.put(new Random().toString(), join);
+        return this;
+    }
 }
