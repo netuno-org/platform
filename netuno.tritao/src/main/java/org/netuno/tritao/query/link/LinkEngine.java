@@ -31,7 +31,6 @@ public class LinkEngine extends TableBuilderResourceBase {
 
     public List<Values> getSelectComponents(String formName) {
         List<Values> selectComponents = getAllComponents(formName);
-        System.out.println("");
         if (selectComponents == null) {
             throw new UnsupportedOperationException("No forms found with the name " + formName);
         }

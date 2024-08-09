@@ -407,12 +407,12 @@ public class Relation {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define um segundo nivel de relação no objeto atual.",
+                description = "Define um segundo nivel de relação INNER JOIN no objeto atual.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Defines a second level of relationship on the current object.",
+                description = "Defines a second level of INNER JOIN relationship on the current object.",
                 howToUse = {}
             )
         },
@@ -420,12 +420,12 @@ public class Relation {
             @ParameterDoc(name = "relation", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Relação de segundo nivel.",
+                    description = "Relação INNER JOIN de segundo nivel.",
                     name = "relacao"
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Second level relationship."
+                    description = "Second level INNER JOIN relationship."
                 )
             })
         },
@@ -451,6 +451,43 @@ public class Relation {
         return this;
     }
 
+     @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define um segundo nivel de relação LEFT JOIN no objeto atual.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines a second level of LEFT JOIN relationship on the current object.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "relation", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Relação LEFT JOIN de segundo nivel.",
+                    name = "relacao"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Second level LEFT JOIN relationship."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Relation atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Relation object."
+            )
+        }
+    )
     public Relation leftJoin(Relation relation) {
         Join join  = new Join();
         join.setJoinType(JoinType.LEFT_JOIN);
@@ -463,6 +500,43 @@ public class Relation {
         return this;
     }
 
+     @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define um segundo nivel de relação RIGHT JOIN no objeto atual.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines a second level of RIGHT JOIN relationship on the current object.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "relation", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Relação RIGHT JOIN de segundo nivel.",
+                    name = "relacao"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Second level RIGHT JOIN relationship."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Relation atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Relation object."
+            )
+        }
+    )
     public Relation rightJoin(Relation relation) {
         Join join  = new Join();
         join.setJoinType(JoinType.RIGHT_JOIN);

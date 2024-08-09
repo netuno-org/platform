@@ -97,10 +97,72 @@ public class Join {
         return this;
     }
 
+       @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna o tipo da junção do relacionamento.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns the type of the joint or the relationship.",
+                howToUse = {}
+            )
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Tipo da junção."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The type of the joint"
+            )
+        }
+    )
     public JoinType getJoinType() {
         return joinType;
     }
 
+      @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define o tipo da junção do relacionamento.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines the type of the joint or the relationship.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "joinType", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Tipo da junção.",
+                    name = "juncaoTipo"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The type of the joint."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Join atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Join object."
+            )
+        }
+    )
     public Join setJoinType(JoinType joinType) {
         this.joinType = joinType;
         return this;

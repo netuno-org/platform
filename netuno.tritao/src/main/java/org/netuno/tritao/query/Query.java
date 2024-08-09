@@ -712,6 +712,43 @@ public class Query {
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define uma relacão de tipo INNER JOIN com uma tabela.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines an INNER JOIN relationship with a table.",
+                howToUse = {}
+            )
+            },
+        parameters = {
+            @ParameterDoc(name = "relation", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Relação do tipo INNER JOIN.",
+                    name = "relacao"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "INNER JOIN type relationship."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Query join(Relation relation) {
         Join newJoin = new Join();
         newJoin.setTable(this.tableName);
@@ -723,6 +760,43 @@ public class Query {
         return this;
     }
 
+     @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define uma relacão de tipo LEFT JOIN com uma tabela.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines an LEFT JOIN relationship with a table.",
+                howToUse = {}
+            )
+            },
+        parameters = {
+            @ParameterDoc(name = "relation", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Relação do tipo LEFT JOIN.",
+                    name = "relacao"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "LEFT JOIN type relationship."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Query leftJoin(Relation relation) {
         Join newJoin = new Join();
         newJoin.setJoinType(JoinType.LEFT_JOIN);
@@ -735,6 +809,43 @@ public class Query {
         return this;
     }
 
+     @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define uma relacão de tipo RIGHT JOIN com uma tabela.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines an RIGHT JOIN relationship with a table.",
+                howToUse = {}
+            )
+            },
+        parameters = {
+            @ParameterDoc(name = "relation", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Relação do tipo RIGHT JOIN.",
+                    name = "relacao"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "RIGHT JOIN type relationship."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Query rightJoin(Relation relation) {
         Join newJoin = new Join();
         newJoin.setJoinType(JoinType.RIGHT_JOIN);
