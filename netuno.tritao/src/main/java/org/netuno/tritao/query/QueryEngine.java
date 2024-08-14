@@ -112,6 +112,11 @@ public class QueryEngine extends Data {
             case GreaterOrEqualsThan -> " " + table+"."+column + " >= " + this.objectToValue(relationOperator.getValue());
             case LessOrEqualsThan -> " " + table+"."+column + " <= " + this.objectToValue(relationOperator.getValue());
             case Different -> " " + table+"."+column + " <> " + this.objectToValue(relationOperator.getValue());
+            case InRaw -> {
+                String columnName = " " + table+"."+column;
+                String expression = relationOperator.getValue().toString().replaceAll("\\?", columnName);
+                yield expression;
+            }
         };
     }
 

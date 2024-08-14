@@ -738,6 +738,10 @@ public class Form extends TableBuilderResourceBase {
         return new RelationOperator(RelationOperatorType.In, values);
     }
 
+    public RelationOperator inRaw(Object value) {
+        return new RelationOperator(RelationOperatorType.InRaw, value);
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(

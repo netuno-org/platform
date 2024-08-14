@@ -10,5 +10,6 @@ public enum RelationOperatorType {
     LessThan,
     GreaterOrEqualsThan,
     LessOrEqualsThan,
-    Different
+    Different,
+    InRaw
 }
