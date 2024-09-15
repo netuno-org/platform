@@ -392,6 +392,25 @@ public class Setup extends Base {
             );
             sequence.create("netuno_auth_jwt_token_id");
 
+            table.create("netuno_query_history",
+                    table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
+                    table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
+                    table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(),
+                    table.newColumn().setName("command").setType(Column.Type.TEXT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("count").setType(Column.Type.INT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("time").setType(Column.Type.INT).setNotNull(true).setDefault()
+            );
+            sequence.create("netuno_query_history_id");
+
+            table.create("netuno_query_stored",
+                    table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
+                    table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
+                    table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
+                    table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(),
+                    table.newColumn().setName("command").setType(Column.Type.TEXT).setNotNull(true).setDefault()
+            );
+            sequence.create("netuno_query_stored_id");
+
             table.create("netuno_statistic_type",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
