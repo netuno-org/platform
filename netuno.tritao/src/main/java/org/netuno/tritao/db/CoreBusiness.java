@@ -3198,6 +3198,75 @@ public class CoreBusiness extends Base {
         return relations;
     }
 
+    public List<Values> queryHistoryList(int page) {
+        String sql = "SELECT * FROM netuno_query_history";
+        sql += " ORDER BY moment DESC";
+        int pageSize = 10;
+        if (isMSSQL()) {
+            if (page > 0) {
+                sql += " OFFSET "+ (page * pageSize) +" ROWS";
+            }
+            sql += " FETCH NEXT "+ pageSize +" ROWS ONLY";
+        } else {
+            sql += " LIMIT "+ pageSize;
+            if (page > 0) {
+                sql += " OFFSET "+ (page * pageSize);
+            }
+        }
+        return getManager().query(sql);
+    }
+
+    public void queryHistoryInsert(Values values) {
+        Values data = new Values();
+        data.set("uid", "'" + UUID.randomUUID() + "'");
+        data.set("moment", getBuilder().getCurrentTimeStampFunction());
+        if (values.hasKey("command")) {
+            data.set("command", "'" + DB.sqlInjection(values.getString("command")) + "'");
+        }
+        if (values.hasKey("count")) {
+            data.set("count", DB.sqlInjectionInt(values.getString("count")));
+        }
+        if (values.hasKey("time")) {
+            data.set("time", DB.sqlInjectionInt(values.getString("time")));
+        }
+        insertInto("netuno_query_history", data);
+    }
+
+    public void querySave(Values values) {
+        Values data = new Values();
+        data.set("uid", "'" + UUID.randomUUID() + "'");
+        data.set("moment", getBuilder().getCurrentTimeStampFunction());
+        if (values.hasKey("name")) {
+            data.set("name", "'" + DB.sqlInjection(values.getString("name")) + "'");
+        }
+        if (values.hasKey("command")) {
+            data.set("command", "'" + DB.sqlInjection(values.getString("command")) + "'");
+        }
+        insertInto("netuno_query_stored", data);
+    }
+
+    public void queryDelete(String uid) {
+        getManager().execute("DELETE FROM netuno_query_stored WHERE uid = '" + DB.sqlInjection(uid) + "'");
+    }
+
+    public List<Values> queryStoredList(int page) {
+        String sql = "SELECT * FROM netuno_query_stored";
+        sql += " ORDER BY name DESC";
+        int pageSize = 10;
+        if (isMSSQL()) {
+            if (page > 0) {
+                sql += " OFFSET "+ (page * pageSize) +" ROWS";
+            }
+            sql += " FETCH NEXT "+ pageSize +" ROWS ONLY";
+        } else {
+            sql += " LIMIT "+ pageSize;
+            if (page > 0) {
+                sql += " OFFSET "+ (page * pageSize);
+            }
+        }
+        return getManager().query(sql);
+    }
+
     public boolean tableExists(String table) {
         return new CheckExists(this).table(table);
     }
