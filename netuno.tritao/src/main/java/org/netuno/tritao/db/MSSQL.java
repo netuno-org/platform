@@ -622,6 +622,26 @@ public class MSSQL implements Builder {
         return coreBusiness.getRelations(rowTable, designXY);
     }
 
+    public List<Values> queryHistoryList(int page) {
+        return coreBusiness.queryHistoryList(page);
+    }
+
+    public void queryHistoryInsert(Values data) {
+        coreBusiness.queryHistoryInsert(data);
+    }
+
+    public void querySave(Values data) {
+        coreBusiness.querySave(data);
+    }
+
+    public void queryDelete(String uid) {
+        coreBusiness.queryDelete(uid);
+    }
+
+    public List<Values> queryStoredList(int page) {
+        return coreBusiness.queryStoredList(page);
+    }
+
     public boolean tableExists(String table) {
         return coreBusiness.tableExists(table);
     }
