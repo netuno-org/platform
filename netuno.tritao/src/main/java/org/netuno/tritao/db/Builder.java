@@ -301,6 +301,12 @@ public interface Builder {
 
     List<Values> getRelations(Values rowTable, List<Values> rsTritaoDesignXY);
 
+    List<Values> queryHistoryList(int page);
+    void queryHistoryInsert(Values data);
+    void querySave(Values data);
+    void queryDelete(String uid);
+    List<Values> queryStoredList(int page);
+
     boolean tableExists(String table);
 
     boolean columnExists(String table, String column);
