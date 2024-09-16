@@ -305,10 +305,14 @@
       }
     });
     $('#managementForm_buttonSave').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#managementForm_execute').val('save');
       if (!netuno.submitDev('management_form', 'managementForm', true, function () {
               netuno.loadDevMenu();
+              that.prop('disabled', false);
           })) {
+        that.prop('disabled', false);
         $('#managementForm_execute').val('');
       }
     });
