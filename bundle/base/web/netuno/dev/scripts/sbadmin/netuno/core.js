@@ -298,9 +298,9 @@
 
   netuno.loadCodeEditor = function(container) {
     return container.find("textarea[code-editor]").each(function() {
-      var element;
+      var editor, element;
       element = $(this);
-      return CodeMirror.fromTextArea(element[0], {
+      editor = CodeMirror.fromTextArea(element[0], {
         value: element[0].value,
         mode: element.attr('code-editor'),
         indentWithTabs: true,
@@ -308,6 +308,9 @@
         lineNumbers: true,
         matchBrackets: true,
         autofocus: true
+      });
+      return element.data({
+        editor: editor
       });
     });
   };

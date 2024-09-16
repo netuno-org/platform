@@ -229,7 +229,7 @@ netuno.loadValidationDev = (id) ->
 netuno.loadCodeEditor = (container) ->
   container.find("textarea[code-editor]").each ()->
     element = $(this)
-    CodeMirror.fromTextArea(element[0], {
+    editor = CodeMirror.fromTextArea(element[0], {
       value: element[0].value,
       mode: element.attr('code-editor'),
       indentWithTabs: true,
@@ -238,6 +238,9 @@ netuno.loadCodeEditor = (container) ->
       matchBrackets: true,
       autofocus: true
     })
+    element.data(
+        editor: editor
+    )
 
 netuno.addContentLoad (container)->
   netuno.loadDevLinks(container)
