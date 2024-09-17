@@ -195,10 +195,14 @@
       }
     });
     $('#managementReport_buttonSave').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
       $('#managementReport_execute').val('save');
       if (!netuno.submitDev('management_report', 'managementReport', true, function () {
           netuno.loadDevMenu();
+          that.prop('disabled', false);
       })) {
+        that.prop('disabled', false);
         $('#managementReport_execute').val('');
       }
     });
