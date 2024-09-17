@@ -28,6 +28,7 @@ import org.netuno.tritao.util.TemplateBuilder;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Query Service
@@ -39,15 +40,47 @@ public class Query {
             return;
         }
     	proteu.getResponseHeader().set("X-Frame-Options", "SAMEORIGIN");
+        if (proteu.getRequestPost().getString("action").equalsIgnoreCase("history")) {
+            List<Values> items = Config.getDataBaseBuilder(proteu).queryHistoryList(proteu.getRequestPost().getInt("page", 0));
+            Values data = new Values();
+            data.set("items", items);
+            TemplateBuilder.output(proteu, hili, "dev/query/history", data);
+            return;
+        } else if (proteu.getRequestPost().getString("action").equalsIgnoreCase("save")) {
+            if (!proteu.getRequestPost().getString("name").isEmpty()
+                && !proteu.getRequestPost().getString("command").isEmpty()) {
+                Config.getDataBaseBuilder(proteu).querySave(
+                        Values.newMap()
+                                .set("name", proteu.getRequestPost().getString("name"))
+                                .set("command", proteu.getRequestPost().getString("command"))
+                );
+            }
+            proteu.getOutput().println();
+            return;
+        } else if (proteu.getRequestPost().getString("action").equalsIgnoreCase("delete")) {
+            if (!proteu.getRequestPost().getString("uid").isEmpty()) {
+                Config.getDataBaseBuilder(proteu).queryDelete(
+                        proteu.getRequestPost().getString("uid")
+                );
+            }
+            proteu.getOutput().println();
+            return;
+        } else if (proteu.getRequestPost().getString("action").equalsIgnoreCase("stored")) {
+            List<Values> items = Config.getDataBaseBuilder(proteu).queryStoredList(proteu.getRequestPost().getInt("page", 0));
+            Values data = new Values();
+            data.set("items", items);
+            TemplateBuilder.output(proteu, hili, "dev/query/stored", data);
+            return;
+        }
         Values data = new Values();
-        TemplateBuilder.output(proteu, hili, "dev/query_form", data);
+        TemplateBuilder.output(proteu, hili, "dev/query/form", data);
         if (!proteu.getRequestPost().getString("query").equals("")) {
-            String[] lines = proteu.getRequestPost().getString("query").split("\\;");
+            String[] lines = proteu.getRequestPost().getString("query").split("\\n\\s*\\;{2,}\\s*\\n");
             for (String line : lines) {
                 try {
                     if (line.trim().toLowerCase().startsWith("select") || line.trim().toLowerCase().startsWith("script")) {
                         data.set("command.line", line.trim());
-                        String selectResultTable = TemplateBuilder.getOutput(proteu, hili, "dev/query_select_table_head", data);
+                        String selectResultTable = TemplateBuilder.getOutput(proteu, hili, "dev/query/select_table_head", data);
                         int count = 0;
                         Statement stat = null;
                         ResultSet rs = null;
@@ -96,12 +129,19 @@ public class Query {
                                 }
                             }
                         }
-                        selectResultTable += TemplateBuilder.getOutput(proteu, hili, "dev/query_select_table_foot", data);
+                        time = java.lang.System.currentTimeMillis() - time;
+                        selectResultTable += TemplateBuilder.getOutput(proteu, hili, "dev/query/select_table_foot", data);
                         data.set("command.result", selectResultTable);
-                        data.set("command.total", count);
-                        data.set("command.time", java.lang.System.currentTimeMillis() - time);
+                        data.set("command.count", count);
+                        data.set("command.time", time);
                         if (!hadError) {
-                        	TemplateBuilder.output(proteu, hili, "dev/query_select", data);
+                            Config.getDataBaseBuilder(proteu).queryHistoryInsert(
+                                    Values.newMap()
+                                            .set("command", line)
+                                            .set("count", count)
+                                            .set("time", time)
+                            );
+                        	TemplateBuilder.output(proteu, hili, "dev/query/select", data);
                         }
                     } else {
                         Statement stat = null;
@@ -113,7 +153,7 @@ public class Query {
                             data.set("command.result", "");
                             data.set("command.total", count);
                             data.set("command.time", java.lang.System.currentTimeMillis() - time);
-                            TemplateBuilder.output(proteu, hili, "dev/query_generic", data);
+                            TemplateBuilder.output(proteu, hili, "dev/query/generic", data);
                         } catch (SQLException e) {
                             printError(proteu, hili, e, data);
                         } finally {
@@ -142,6 +182,6 @@ public class Query {
         	stack = stack.concat(ste.toString() +"\n");
         }
     	data.set("stack", stack);
-    	TemplateBuilder.output(proteu, hili, "dev/query_error", data);
+    	TemplateBuilder.output(proteu, hili, "dev/query/error", data);
     }
 }
