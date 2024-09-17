@@ -15,7 +15,7 @@ netuno.query = { form: { history: null, stored: null, load: null } };
                 var items = historyModalBody.children('div');
                 historyModal.find('.modal-footer button[data-type="next"]').hide();
                 if (items.length == 0) {
-                    historyModalBody.text('No more history...');
+                    historyModalBody.text(historyModalBody.data().empty);
                 } else if (items.length == 10) {
                     historyModal.find('.modal-footer button[data-type="next"]').show();
                 }
@@ -103,7 +103,7 @@ netuno.query = { form: { history: null, stored: null, load: null } };
                 var items = storedModalBody.children('div');
                 storedModal.find('.modal-footer button[data-type="next"]').hide();
                 if (items.length == 0) {
-                    storedModalBody.text('No more query stored...');
+                    storedModalBody.text(storedModalBody.data().empty);
                 } else if (items.length == 10) {
                     storedModal.find('.modal-footer button[data-type="next"]').show();
                 }
