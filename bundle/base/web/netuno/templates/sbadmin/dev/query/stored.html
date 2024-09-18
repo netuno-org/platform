@@ -1,0 +1,33 @@
+#set( $formatDateStart = $_time.simpleDateFormat("yyyy-MM-dd HH:mm:ss") )
+#foreach($item in $data.get('items'))
+    <div style="margin: 20px 0;" data-uid="$item.getString('uid')">
+        <div class="row" style="padding: 5px 10px;">
+            <div class="col-xs-5">
+                <strong>$item.getString('name')</strong>
+            </div>
+            <div class="col-xs-5" style="text-align: right;">
+                $formatDateStart.format($item.getSQLTimestamp('moment'))
+            </div>
+            <div class="col-xs-2" style="text-align: right;">
+                <button data-delete
+                        type="button"
+                        class="btn btn-danger"
+                        style="padding: 0 5px;"
+                        data-toggle="confirmation"
+                        data-btn-ok-label="_{&lang=netuno.form.button.yes}"
+                        data-btn-ok-class="btn-danger"
+                        data-btn-ok-icon="fa fa-trash"
+                        data-btn-cancel-label="_{&lang=netuno.form.button.no}"
+                        data-btn-cancel-class="btn-default"
+                        data-btn-cancel-icon="fa fa-check"
+                        data-title="_{&data=displayname}"
+                        data-content="_{&lang=netuno.form.button.delete_confirm}">
+                    <span>
+                        <i class="fa fa-trash"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <pre>$item.getString('command')</pre>
+    </div>
+#end

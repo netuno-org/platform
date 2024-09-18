@@ -1,0 +1,14 @@
+#set( $formatDateStart = $_time.simpleDateFormat("yyyy-MM-dd HH:mm:ss") )
+#foreach($item in $data.get('items'))
+    <div style="margin: 20px 0;">
+        <pre>$item.getString('command')</pre>
+        <div class="row" style="padding: 0 10px;">
+            <div class="col-xs-6">
+                $item.getString('count') - $item.getString('time') ms
+            </div>
+            <div class="col-xs-6" style="text-align: right;">
+                $formatDateStart.format($item.getSQLTimestamp('moment'))
+            </div>
+        </div>
+    </div>
+#end

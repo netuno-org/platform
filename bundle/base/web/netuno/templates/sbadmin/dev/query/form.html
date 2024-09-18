@@ -1,0 +1,126 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">
+      <i class="fa fa-database"></i> _{&lang=netuno.dev.query.title}
+    </h1>
+    <ol class="breadcrumb">
+      <li>
+        <i class="fa fa-wrench"></i> _{&lang=netuno.dev.menu.management}
+      </li>
+      <li>
+        <i class="fa fa-database"></i> _{&lang=netuno.dev.query.title}
+      </li>
+    </ol>
+  </div>
+</div>
+
+<form id="formQuery" name="formQuery" method="post" action="Query_{netuno-config=extension}">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="form-group">
+        <label for="managementQueryCommands">_{&lang=netuno.dev.query.label.commands}</label>
+        <textarea id="managementQueryCommands" name="query" class="form-control" rows="10" code-editor="text/x-plsql">_{&request=query}</textarea>
+      </div>
+    </div>
+  </div>
+</form>
+<div class="buttons">
+  <div class="row">
+    <div class="col-xs-6">
+      <button id="managementQueryButtonRun" type="button" class="btn btn-primary"><i class="fa fa-bolt"></i> _{lang=netuno.form.button.execute}</button>
+      <button id="managementQueryButtonHistory" type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalHistory"><i class="fa fa-history"></i> _{lang=netuno.dev.query.button.history}</button>
+    </div>
+    <div class="col-xs-6" style="text-align: right;">
+      <button type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalSave"><i class="fa fa-bookmark"></i> _{lang=netuno.dev.query.button.save}</button>
+      <button id="managementQueryButtonStored" type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalStored"><i class="fa fa-book"></i> _{lang=netuno.dev.query.button.stored}</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="managementQueryModalHistory" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{lang=netuno.dev.query.modal.history.title}</h4>
+      </div>
+      <div class="modal-body" data-empty="_{&lang=netuno.dev.query.modal.history.empty}">
+      </div>
+      <div class="modal-footer">
+        <div class="row">
+          <div class="col-xs-6" style="text-align: left;">
+            <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{lang=netuno.form.button.previous}</button>
+          </div>
+          <div class="col-xs-6">
+            <button type="button" data-type="next" class="btn btn-default">_{lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="managementQueryModalSave" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{lang=netuno.dev.query.modal.save.title}</h4>
+      </div>
+      <div class="modal-body">
+        <form id="managementQueryModalSaveForm" name="managementQueryModalSaveForm" method="post" action="Query_{netuno-config=extension}" data-success="The query was been saved.">
+          <input type="hidden" name="action" id="managementQueryModalSaveForm_action" value="save"/>
+          <input type="hidden" name="command" id="managementQueryModalSaveForm_command" value="" data-required="_{&lang=netuno.dev.query.modal.save.command.required}"/>
+          <div class="form-group">
+            <label for="managementQueryModalSaveForm_name">* _{&lang=netuno.dev.formdesign.label.name}</label>
+            <input class="form-control" type="text" id="managementQueryModalSaveForm_name" name="name" value="" size="40" validation="required" data-required="_{&lang=netuno.dev.query.modal.save.name.required}">
+          </div>
+        </form>
+        <div id="managementQueryModalSaveContainer"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default">_{&lang=netuno.form.button.save}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="managementQueryModalStored" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">_{lang=netuno.dev.query.modal.stored.title}</h4>
+      </div>
+      <div class="modal-body" data-empty="_{&lang=netuno.dev.query.modal.stored.empty}">
+      </div>
+      <div class="modal-footer">
+        <div class="row">
+          <div class="col-xs-6" style="text-align: left;">
+            <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{lang=netuno.form.button.previous}</button>
+          </div>
+          <div class="col-xs-6">
+            <button type="button" data-type="next" class="btn btn-default">_{lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  //$('#managementQueryCommands').data().editor.getValue()
+  //$('#managementQueryCommands').data().editor.setValue('aaaa')
+
+  (function (netuno, $) {
+    $('#managementQueryButtonRun').on("click", function () {
+      var that = $(this);
+      that.prop('disabled', true);
+      netuno.submitDev('management_query', 'formQuery', false, function () {
+        that.prop('disabled', false);
+      });
+    });
+    
+    netuno.query.form.load();
+  })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
+</script>
