@@ -62,3 +62,9 @@
 .CodeMirror {
     border: 1px solid #f1f1f1;
 }
+
+
+#managementQueryModalHistory .modal-body > div > pre,
+#managementQueryModalStored .modal-body > div > pre {
+    cursor: pointer;
+} 

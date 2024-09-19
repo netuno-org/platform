@@ -26,7 +26,7 @@ netuno.query = { form: { history: null, stored: null, load: null } };
                 }
                 items.each(function () {
                     var item = $(this);
-                    item.on('click', function () {
+                    item.children('pre').on('click', function () {
                         var commands = $('#managementQueryCommands');
                         if (commands.data().editor.getValue().trim() == '') {
                             commands.data().editor.setValue(
@@ -37,7 +37,7 @@ netuno.query = { form: { history: null, stored: null, load: null } };
                                 commands.data().editor.getValue()
                                 + '\n'
                                 + ';;'
-                                + '\n\n'
+                                + '\n'
                                 + item.children('pre').text()
                             );
                         }
