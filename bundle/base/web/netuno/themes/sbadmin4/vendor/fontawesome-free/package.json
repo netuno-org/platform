@@ -31,7 +31,7 @@
   "bugs": {
     "url": "http://github.com/FortAwesome/Font-Awesome/issues"
   },
-  "bundleDependencies": false,
+  "bundleDependencies": [],
   "contributors": [
     {
       "name": "Brian Talbot",
@@ -54,7 +54,9 @@
       "url": "http://twitter.com/mw77"
     }
   ],
-  "dependencies": {},
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "file:"
+  },
   "deprecated": false,
   "description": "The iconic font, CSS, and SVG framework",
   "engines": {

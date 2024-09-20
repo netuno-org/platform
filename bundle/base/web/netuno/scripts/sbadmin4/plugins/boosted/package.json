@@ -99,6 +99,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "boosted": "file:",
     "sass-math-pow": "^0.1.5",
     "swiper": "^4.3.3"
   },

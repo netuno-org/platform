@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "bootstrap": "3.3.2",
-    "font-awesome": "4.2.0",
-    "datatables": "1.10.5-dev"
+    "datatables": "1.10.5-dev",
+    "datatables-plugins-bootstrap3": "file:",
+    "font-awesome": "4.2.0"
   }
 }

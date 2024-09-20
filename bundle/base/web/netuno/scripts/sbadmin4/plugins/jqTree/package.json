@@ -26,6 +26,7 @@
         "coveralls": "coveralls < coverage/lcov.info"
     },
     "dependencies": {
+        "jqtree": "file:",
         "jquery": ">=1.9"
     },
     "devDependencies": {

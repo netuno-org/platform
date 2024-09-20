@@ -46,5 +46,8 @@
     "preversion": "npm test",
     "version": "npm run build && git add -A js",
     "postversion": "git push --tags origin master master:gh-pages && npm publish"
+  },
+  "dependencies": {
+    "blueimp-canvas-to-blob": "file:"
   }
 }

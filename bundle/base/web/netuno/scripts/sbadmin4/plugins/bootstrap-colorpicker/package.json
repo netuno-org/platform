@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^4.0",
+    "bootstrap-colorpicker": "file:",
     "jquery": ">=2.1.0"
   },
   "scripts": {

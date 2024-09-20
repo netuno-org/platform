@@ -2,7 +2,10 @@
     "name": "jqtree",
     "version": "1.4.3",
     "description": "Tree widget for jQuery",
-    "keywords": ["jquery-plugin", "tree"],
+    "keywords": [
+        "jquery-plugin",
+        "tree"
+    ],
     "license": "Apache-2.0",
     "main": "./lib/tree.jquery.js",
     "types": "./src/tree.jquery.d.ts",
@@ -11,12 +14,10 @@
         "url": "https://github.com/mbraak/jqtree"
     },
     "scripts": {
-        "test":
-            "karma start --browsers PhantomJS --single-run && tslint src/*.ts src_test/*.ts",
+        "test": "karma start --browsers PhantomJS --single-run && tslint src/*.ts src_test/*.ts",
         "lint": "tslint src/*.ts src_test/*.ts",
         "watch": "webpack",
-        "production":
-            "webpack --config webpack.config.production && gulp && cp build/tree.jquery.js .",
+        "production": "webpack --config webpack.config.production && gulp && cp build/tree.jquery.js .",
         "karma": "karma start --browsers PhantomJS",
         "jekyll-build": "jekyll build",
         "jekyll-serve": "jekyll serve",
@@ -24,6 +25,7 @@
         "prettier": "prettier src/*.ts src_test/*.ts --write --tab-width 4"
     },
     "dependencies": {
+        "jqtree": "file:",
         "jquery": ">=1.9"
     },
     "devDependencies": {

@@ -56,5 +56,8 @@
     "version": "npm run build && git add -A js",
     "postversion": "git push --tags origin master master:gh-pages && npm publish"
   },
-  "main": "js/index.js"
+  "main": "js/index.js",
+  "dependencies": {
+    "blueimp-load-image": "file:"
+  }
 }

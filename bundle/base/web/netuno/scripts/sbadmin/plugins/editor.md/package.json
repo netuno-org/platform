@@ -38,5 +38,8 @@
     "gulp-ruby-sass": "^1.0.1",
     "gulp-uglifyjs": "^0.6.1",
     "gulp-util": "^3.0.1"
+  },
+  "dependencies": {
+    "editor.md": "file:"
   }
 }

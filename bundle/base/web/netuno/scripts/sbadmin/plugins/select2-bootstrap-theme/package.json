@@ -39,5 +39,8 @@
     "grunt-gh-pages": "^0.10.0",
     "grunt-jekyll": "^0.4.2",
     "matchdep": "~0.3.0"
+  },
+  "dependencies": {
+    "select2-bootstrap-theme": "file:"
   }
 }

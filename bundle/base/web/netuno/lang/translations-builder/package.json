@@ -12,6 +12,7 @@
     "fs": "0.0.1-security",
     "html-entities": "^1.2.1",
     "java-properties": "^1.0.2",
+    "lang": "file:",
     "xlsx": "^0.15.6"
   }
 }

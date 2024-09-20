@@ -10,6 +10,7 @@
     "react": "16.12.0",
     "react-dom": "16.12.0",
     "react-scripts": "3.0.1",
+    "swagger-ui": "file:",
     "swagger-ui-react": "3.40.0"
   },
   "scripts": {

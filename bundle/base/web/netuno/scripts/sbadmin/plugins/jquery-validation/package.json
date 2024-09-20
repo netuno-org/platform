@@ -25,7 +25,9 @@
 	"scripts": {
 		"test": "grunt"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"jquery-validation": "file:"
+	},
 	"devDependencies": {
 		"commitplease": "1.11.0",
 		"grunt": "0.4.4",

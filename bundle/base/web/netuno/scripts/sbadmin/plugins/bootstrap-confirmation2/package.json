@@ -43,5 +43,8 @@
   },
   "scripts": {
     "test": "grunt test"
+  },
+  "dependencies": {
+    "bootstrap-confirmation2": "file:"
   }
 }

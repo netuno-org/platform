@@ -65,5 +65,8 @@
     "start": "npm run compile && npm-run-all --parallel watch server",
     "test": "npm run lint",
     "watch": "nodemon --watch src --ext js --exec \"npm run compile\""
+  },
+  "dependencies": {
+    "bootstrap-confirmation2": "file:"
   }
 }
