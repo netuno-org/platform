@@ -19,7 +19,6 @@ package org.netuno.tritao;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
 import org.netuno.proteu.Proteu;
 import java.io.IOException;
 
@@ -27,14 +26,10 @@ import org.netuno.proteu.ProteuException;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 
-import java.util.List;
-
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.Lang;
 import org.netuno.tritao.resource.Template;
-import org.netuno.tritao.util.Translation;
+import org.netuno.tritao.util.MenuLoader;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
 
@@ -47,7 +42,6 @@ import javax.script.ScriptException;
 @Path("/org/netuno/tritao/Main")
 public class Main extends WebMaster {
     private static Logger logger = LogManager.getLogger(Main.class);
-    private Lang lang = null;
 
     public Main(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -64,7 +58,6 @@ public class Main extends WebMaster {
             Auth.isAuthenticated(getProteu(), getHili(), Auth.Type.SESSION, true);
             return;
         }
-        this.lang = resource(Lang.class);
         Values data = new Values();
         data.set("user", user.getString("user"));
         data.set("user.code", user.getString("code"));
@@ -84,21 +77,21 @@ public class Main extends WebMaster {
         } else {
             data.set("user.dev", "false");
         }
-
+        MenuLoader menuLoader = new MenuLoader(getProteu(), getHili());
         Values jsonMenu = new Values();
         Values jsonArrayForms = new Values();
         jsonArrayForms.toList();
-        if (haveAnyChildTableToAccess("0")) {
-            jsonMenuTables(jsonArrayForms, "0");
-            jsonMenuTablesOrphans(jsonArrayForms);
+        if (menuLoader.haveAnyChildTableToAccess("0")) {
+            menuLoader.loadTables(jsonArrayForms, "0");
+            menuLoader.loadTablesOrphans(jsonArrayForms);
         }
         jsonMenu.put("forms", jsonArrayForms);
         getProteu().getRequestAll().set("report", "true");
         Values jsonArrayReports = new Values();
         jsonArrayReports.toList();
-        if (haveAnyChildTableToAccess("0")) {
-            jsonMenuTables(jsonArrayReports, "0");
-            jsonMenuTablesOrphans(jsonArrayReports);
+        if (menuLoader.haveAnyChildTableToAccess("0")) {
+            menuLoader.loadTables(jsonArrayReports, "0");
+            menuLoader.loadTablesOrphans(jsonArrayReports);
         }
         getProteu().getRequestAll().set("report", "false");
         jsonMenu.put("reports", jsonArrayReports);
@@ -108,50 +101,5 @@ public class Main extends WebMaster {
         template.out("includes/head", data);
         template.out("main", data);
         template.out("includes/foot", data);
-    }
-    
-    private void addTable(Values jsonArray, Values rowTable) throws IOException, JSONException {
-    	if (haveAnyChildTableToAccess(rowTable.getString("id"))) {
-            //if (Rule.getRule(proteu, rowTritaoTableByParent.getString("id")).haveAccess()) {
-            Values jsonArrayChilds = new Values();
-            jsonMenuTables(jsonArrayChilds, rowTable.getString("id"));
-            Values jsonObject = new Values();
-            jsonObject.put("uid", rowTable.getString("uid"));
-            jsonObject.put("name", rowTable.getString("name"));
-            jsonObject.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(
-                    Translation.formTitle(lang, rowTable)
-            ));
-            jsonObject.put("items", jsonArrayChilds);
-            jsonArray.add(jsonObject);
-            //}
-        }
-    }
-    
-    private void jsonMenuTablesOrphans(Values jsonArray) throws IOException, JSONException {
-    	List<Values> rsTableByOrphans = Config.getDataBaseBuilder(getProteu()).selectTablesByOrphans();
-        for (Values rowTritaoTableByOrphans : rsTableByOrphans) {
-            addTable(jsonArray, rowTritaoTableByOrphans);
-        }
-    }
-    
-	private void jsonMenuTables(Values jsonArray, String id) throws IOException, JSONException {
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(getProteu()).selectTablesByParent(id);
-        for (Values rowTritaoTableByParent : rsTableByParent) {
-            addTable(jsonArray, rowTritaoTableByParent);
-        }
-    }
-
-    private boolean haveAnyChildTableToAccess(String id) throws IOException {
-        if (Rule.getRule(getProteu(), getHili(), id).haveAccess()) {
-            return true;
-        }
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(getProteu()).selectTablesByParent(id);
-        for (Values rowTritaoTableByParent : rsTableByParent) {
-            if (Rule.getRule(getProteu(), getHili(), rowTritaoTableByParent.getString("id")).haveAccess()
-            	|| haveAnyChildTableToAccess(rowTritaoTableByParent.getString("id"))) {
-                return true;
-            }
-        }
-        return false;
     }
 }
