@@ -728,10 +728,15 @@
   });
 
   netuno.addContentLoad(function(container) {
-    return container.find("select").select2({
-      theme: "bootstrap",
-      placeholder: "",
-      maximumSelectionSize: 6
+    return container.find("select").each(function() {
+      var that;
+      that = $(this);
+      return that.select2({
+        theme: "bootstrap",
+        placeholder: netuno.config.com.lang.select["defaulttext"],
+        maximumSelectionSize: 6,
+        allowClear: that.is("[allow-clear]")
+      });
     });
   });
 

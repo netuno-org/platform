@@ -550,10 +550,14 @@ netuno.addContentLoad (container)->
   netuno.loadLinks(container)
 
 netuno.addContentLoad (container)->
-  container.find("select").select2(
-    theme: "bootstrap"
-    placeholder: ""
-    maximumSelectionSize: 6
+  container.find("select").each(()->
+    that = $(this)
+    that.select2(
+      theme: "bootstrap"
+      placeholder: netuno.config.com.lang.select["defaulttext"]
+      maximumSelectionSize: 6
+      allowClear: that.is("[allow-clear]")
+    )
   )
 
 netuno.addContentLoad (container)->
