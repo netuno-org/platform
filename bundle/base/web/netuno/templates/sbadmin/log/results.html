@@ -1,0 +1,43 @@
+#set( $formatMoment = $_time.simpleDateFormat("yyyy-MM-dd HH:mm:ss") )
+#foreach($item in $data.get('items'))
+    <div style="margin: 20px 0;" data-uid="$item.getString('uid')">
+        <div class="row">
+            <div class="col-xs-6">
+                _{&lang=netuno.log.table}: 
+                <strong>$item.getString('table_name')</strong>
+            </div>
+            <div class="col-xs-6">
+                _{&lang=netuno.log.item_id}: 
+                <strong>$item.getString('item_id')</strong>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                _{&lang=netuno.log.user}: 
+                <strong>$item.getString('user_user')</strong>
+            </div>
+            <div class="col-xs-6">
+                _{&lang=netuno.log.group}: 
+                <strong>$item.getString('group_name')</strong>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                _{&lang=netuno.log.moment}: 
+                <strong>$formatMoment.format($item.getSQLTimestamp('moment'))</strong>
+            </div>
+            <div class="col-xs-6">
+                _{&lang=netuno.log.action}:
+                <strong>
+                    #if($item.getInt('action') == 1)
+                        _{lang=netuno.log.action.insert}
+                    #elseif($item.getInt('action') == 2)
+                        _{lang=netuno.log.action.update}
+                    #elseif($item.getInt('action') == 3)
+                        _{lang=netuno.log.action.delete}
+                    #end
+                </strong>
+            </div>
+        </div>
+    </div>
+#end

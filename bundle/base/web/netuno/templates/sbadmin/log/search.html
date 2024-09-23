@@ -1,52 +1,68 @@
 <h1>_{&lang=netuno.log.title}</h1>
 <form id="netunoAdminLog" name="netunoAdminLog" method="post" action="Log_{netuno-config=extension}">
+    <input type="hidden" name="page" id="netuno_log_page" value="0">
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-sm-6">
             <div class="form-group">
-                <label for="netuno_log_table_id">_{&lang=netuno.log.table}</div>
-                <select name="table_id" id="netuno_log_table_id"></select>
+                <label for="netuno_log_table_uid">_{&lang=netuno.log.table}</label>
+                <select name="table_uid" id="netuno_log_table_uid" allow-clear style="width: 100%;">
+                    <option value="">&nbsp;</option>
+                    #foreach($item in $data.get('forms'))
+                    <option value="$item.getString('uid')">
+                        $item.getString('path')
+                    </option>
+                    #end
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label>_{lang=netuno.log.item_id}</label>
+                <input type="text" class="form-control" name="item_id" id="netuno_log_item_id" value="" maxlength="10" validation="numeric" />
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-sm-6">
             <div class="form-group">
-                <label>_{lang=netuno.log.user}</label>
-                <input type="hidden" name="user_id" id="netuno_log_user_id" value="" />
+                <label for="netuno_log_user_uid">_{lang=netuno.log.user}</label>
+                <select name="user_uid" id="netuno_log_user_uid" value="" netuno-select-service="User_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" style="width: 100%;">
+                </select>
             </div>
         </div>
-        <div class="col-lg-6">
+        <div class="col-sm-6">
             <div class="form-group">
-                <label>_{lang=netuno.log.group}</label>
-                <input type="hidden" name="group_id" id="netuno_log_group_id" value="" />
+                <label for="netuno_log_group_uid">_{lang=netuno.log.group}</label>
+                <select name="group_uid" id="netuno_log_group_uid" value="" netuno-select-service="Group_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" style="width: 100%;">
+                </select>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-sm-6">
             <div class="form-group">
-                <label>_{&lang=netuno.log.timestamp.start}</label>
+                <label>_{&lang=netuno.log.moment.start}</label>
                 <div class="row netuno-com-datetime">
                     <div class="col-sm-7">
-                        <div class="input-group date" id="netuno_log_timestamp_start_date_" style="position: relative;">
-                            <input type="text" class="form-control" name="start_date" id="netuno_log_timestamp_start_date" value="" maxlength="10" validation="date" netuno-type="date" />
+                        <div class="input-group date" id="netuno_log_moment_start_date_" style="position: relative;">
+                            <input type="text" class="form-control" name="start_date" id="netuno_log_moment_start_date" value="" maxlength="10" validation="date" netuno-type="date" />
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                         </div>
                     </div>
                     <div class="col-sm-5">
-                        <div class="input-group clockpicker" id="netuno_log_timestamp_start_time_">
-                            <input type="text" class="form-control" name="start_time" id="netuno_log_timestamp_start_time" value="" maxlength="5" validation="time" netuno-type="time">
+                        <div class="input-group clockpicker" id="netuno_log_moment_start_time_">
+                            <input type="text" class="form-control" name="start_time" id="netuno_log_moment_start_time" value="" maxlength="5" validation="time" netuno-type="time">
                             <span class="input-group-addon">
                                 <span class="fa fa-clock-o"></span>
                             </span>
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="timestamp_start" id="netuno_log_timestamp_start" value="" />
+                <input type="hidden" name="moment_start" id="netuno_log_moment_start" value="" />
                 <script type="text/javascript">
                     (function () {
                         if (typeof $ !== 'undefined') {
-                            $('#netuno_log_timestamp_start_date').on('click', function (e) {
+                            $('#netuno_log_moment_start_date').on('click', function (e) {
                                 $('.datepicker').css('z-index', 1000000);
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -54,45 +70,45 @@
                                 e.preventDefault();
                                 e.stopPropagation();
                             });
-                            netuno.com.date.load("netuno_log_timestamp_start_date", "netuno_log_timestamp_start_date_", function () {
-                                var valueDate = $('#netuno_log_timestamp_start_date').val();
-                                var valueTime = $('#netuno_log_timestamp_start_time').val();
-                                $("#netuno_log_timestamp_start").val(valueDate + ' ' + valueTime + ':00');
+                            netuno.com.date.load("netuno_log_moment_start_date", "netuno_log_moment_start_date_", function () {
+                                var valueDate = $('#netuno_log_moment_start_date').val();
+                                var valueTime = $('#netuno_log_moment_start_time').val();
+                                $("#netuno_log_moment_start").val(valueDate + ' ' + valueTime + ':00');
                             });
-                            netuno.com.time.load("netuno_log_timestamp_start_time", "netuno_log_timestamp_start_time_", function () {
-                                var valueDate = $('#netuno_log_timestamp_start_date').val();
-                                var valueTime = $('#netuno_log_timestamp_start_time').val();
-                                $("#netuno_log_timestamp_start").val(valueDate + ' ' + valueTime + ':00');
+                            netuno.com.time.load("netuno_log_moment_start_time", "netuno_log_moment_start_time_", function () {
+                                var valueDate = $('#netuno_log_moment_start_date').val();
+                                var valueTime = $('#netuno_log_moment_start_time').val();
+                                $("#netuno_log_moment_start").val(valueDate + ' ' + valueTime + ':00');
                             });
                         }
                     })();
                 </script>
             </div>
         </div>
-        <div class="col-lg-6">
+        <div class="col-sm-6">
             <div class="form-group">
-                <label>_{&lang=netuno.log.timestamp.end}</label>
+                <label>_{&lang=netuno.log.moment.end}</label>
                 <div class="row netuno-com-datetime">
                     <div class="col-sm-7">
-                        <div class="input-group date" id="netuno_log_timestamp_end_date_" style="position: relative;">
-                            <input type="text" class="form-control" name="end_date" id="netuno_log_timestamp_end_date" value="" maxlength="10" validation="date" netuno-type="date" />
+                        <div class="input-group date" id="netuno_log_moment_end_date_" style="position: relative;">
+                            <input type="text" class="form-control" name="end_date" id="netuno_log_moment_end_date" value="" maxlength="10" validation="date" netuno-type="date" />
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                         </div>
                     </div>
                     <div class="col-sm-5">
-                        <div class="input-group clockpicker" id="netuno_log_timestamp_end_time_">
-                            <input type="text" class="form-control" name="end_time" id="netuno_log_timestamp_end_time" value="" maxlength="5" validation="time" netuno-type="time">
+                        <div class="input-group clockpicker" id="netuno_log_moment_end_time_">
+                            <input type="text" class="form-control" name="end_time" id="netuno_log_moment_end_time" value="" maxlength="5" validation="time" netuno-type="time">
                             <span class="input-group-addon">
                                 <span class="fa fa-clock-o"></span>
                             </span>
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="timestamp_end" id="netuno_log_timestamp_end" value="" />
+                <input type="hidden" name="moment_end" id="netuno_log_moment_end" value="" />
                 <script type="text/javascript">
                     (function () {
                         if (typeof $ !== 'undefined') {
-                            $('#netuno_log_timestamp_end_date').on('click', function (e) {
+                            $('#netuno_log_moment_end_date').on('click', function (e) {
                                 $('.datepicker').css('z-index', 1000000);
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -100,15 +116,15 @@
                                 e.preventDefault();
                                 e.stopPropagation();
                             });
-                            netuno.com.date.load("netuno_log_timestamp_end_date", "netuno_log_timestamp_end_date_", function () {
-                                var valueDate = $('#netuno_log_timestamp_end_date').val();
-                                var valueTime = $('#netuno_log_timestamp_end_time').val();
-                                $("#netuno_log_timestamp_end").val(valueDate + ' ' + valueTime + ':00');
+                            netuno.com.date.load("netuno_log_moment_end_date", "netuno_log_moment_end_date_", function () {
+                                var valueDate = $('#netuno_log_moment_end_date').val();
+                                var valueTime = $('#netuno_log_moment_end_time').val();
+                                $("#netuno_log_moment_end").val(valueDate + ' ' + valueTime + ':00');
                             });
-                            netuno.com.time.load("netuno_log_timestamp_end_time", "netuno_log_timestamp_end_time_", function () {
-                                var valueDate = $('#netuno_log_timestamp_end_date').val();
-                                var valueTime = $('#netuno_log_timestamp_end_time').val();
-                                $("#netuno_log_timestamp_end").val(valueDate + ' ' + valueTime + ':00');
+                            netuno.com.time.load("netuno_log_moment_end_time", "netuno_log_moment_end_time_", function () {
+                                var valueDate = $('#netuno_log_moment_end_date').val();
+                                var valueTime = $('#netuno_log_moment_end_time').val();
+                                $("#netuno_log_moment_end").val(valueDate + ' ' + valueTime + ':00');
                             });
                         }
                     })();
@@ -117,45 +133,116 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-sm-6">
             <div class="form-group">
                 <label>_{&lang=netuno.log.action}</label>
-                <select name="action_id" id="netuno_log_action_id">
-                    <option value="0">&nbsp;</option>
+                <select name="action" id="netuno_log_action" allow-clear style="width: 100%;">
+                    <option value="">&nbsp;</option>
                     <option value="1">_{lang=netuno.log.action.insert}</option>
                     <option value="2">_{lang=netuno.log.action.update}</option>
                     <option value="3">_{lang=netuno.log.action.delete}</option>
                 </select>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="form-group">
-                <label>_{lang=netuno.log.item}</label>
-                <input type="text" class="form-control" name="item_id" id="netuno_log_item_id" value="" maxlength="10" validation="numeric" />
-            </div>
-        </div>
     </div>
 </form>
 <div class="netuno_buttons" id="netunoAdminLogButtons">
-	<button class="btn" onclick="$.netuno.search.loadDataTable('_{request=netuno_table_uid}');">
+	<button class="btn" id="netunoAdminLogSearch">
 		_{&lang=netuno.form.button.search}
 	</button>
 </div>
-<table id="netunoAdminLogTable" style="width: 100%;" class="table">
-	<thead>
-		<tr>
-			<th>_{&lang=netuno.log.id}</th>
-			<th>_{&lang=netuno.log.table}</th>
-			<th>_{&lang=netuno.log.user}</th>
-			<th>_{&lang=netuno.log.group}</th>
-			<th>_{&lang=netuno.log.timestamp}</th>
-			<th>_{&lang=netuno.log.action}</th>
-			<th>_{&lang=netuno.log.item}</th>
-		</tr>
-	</thead>
-	<tbody></tbody>
-</table>
+<div id="netunoAdminLogResults" class="netuno-admin-log-results"></div>
+<div class="row" id="netunoAdminLogResultsNavigation" data-empty="">
+    <div class="col-xs-6" style="text-align: left;">
+        <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{lang=netuno.form.button.previous}</button>
+    </div>
+    <div class="col-xs-6" style="text-align: right;">
+        <button type="button" data-type="next" class="btn btn-default">_{lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
+    </div>
+</div>
+<div class="modal fade netuno-admin-log-detail" id="netunoAdminLogDetail" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">_{&lang=netuno.log.detail.modal.title}</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">_{&lang=netuno.form.button.close}</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-$.netuno.loadDynamicSelect('netuno_log_user_id', 'User_{netuno-config=extension}?service=json');
-$.netuno.loadDynamicSelect('netuno_log_group_id', 'Group_{netuno-config=extension}?service=json');
+    (function (netuno, $) {
+        var page = 0;
+        var results = $('#netunoAdminLogResults');
+        var resultsNavigation = $('#netunoAdminLogResultsNavigation');
+        resultsNavigation.hide();
+        function loadPage() {
+            $('#netuno_log_page').val(page);
+            $('#netunoAdminLog').ajaxForm({
+                success: function(response) {
+                    $('#netunoAdminLogSearch').prop('disabled', false);
+                    results.html(response);
+                    netuno.contentLoaded(results);
+                    var items = results.children('div');
+                    resultsNavigation.find('button[data-type="next"]').hide();
+                    if (items.length == 0) {
+                        resultsNavigation.text(resultsNavigation.data().empty);
+                    } else if (items.length == 10) {
+                        resultsNavigation.find('button[data-type="next"]').show();
+                    }
+                    if (page > 0) {
+                        resultsNavigation.find('button[data-type="prev"]').show();
+                    } else {
+                        resultsNavigation.find('button[data-type="prev"]').hide();
+                    }
+                    resultsNavigation.show();
+                    results.find('div[data-uid]').each(function () {
+                        var entry = $(this);
+                        entry.prop('disabled', true);
+                        entry.on("click", function () {
+                            $.ajax({
+                                type: 'POST',
+                                url: 'Log_{netuno-config=extension}',
+                                data: { uid: entry.attr('data-uid') },
+                                success: function(response) {
+                                    entry.prop('disabled', false);
+                                    netuno.contentLoaded($('#netunoAdminLogDetail .modal-body').html(response));
+                                    var detailModal = $('#netunoAdminLogDetail');
+                                    detailModal.modal('show');
+                                },
+                                error: function() {
+                                    entry.prop('disabled', false);
+                                }
+                            });
+                        });
+                    });
+                    $('html, body').animate({
+                        scrollTop: results.offset().top - 150
+                    }, 250);
+                },
+                error: function () {
+                    $('#netunoAdminLogSearch').prop('disabled', false);
+                }
+            }).submit();
+        };
+        $('#netunoAdminLogSearch').on("click", function () {
+            var that = $(this);
+            that.prop('disabled', true);
+            page = 0;
+            loadPage();
+        });
+        resultsNavigation.find('button[data-type="prev"]').on("click", function () {
+            page--;
+            loadPage();
+        });
+        resultsNavigation.find('button[data-type="next"]').on("click", function () {
+            page++;
+            loadPage();
+        });
+    })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
 </script>

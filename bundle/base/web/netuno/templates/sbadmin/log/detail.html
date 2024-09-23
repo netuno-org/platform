@@ -1,0 +1,52 @@
+#set( $formatMoment = $_time.simpleDateFormat("yyyy-MM-dd HH:mm:ss") )
+<div class="row">
+    <div class="col-xs-6">
+        _{&lang=netuno.log.table}: 
+        <strong>$data.getString('table_name')</strong>
+    </div>
+    <div class="col-xs-6">
+        _{&lang=netuno.log.item_id}: 
+        <strong>$data.getString('item_id')</strong>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6">
+        _{&lang=netuno.log.user}: 
+        <strong>$data.getString('user_user')</strong>
+    </div>
+    <div class="col-xs-6">
+        _{&lang=netuno.log.group}: 
+        <strong>$data.getString('group_name')</strong>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-6">
+        _{&lang=netuno.log.moment}: 
+        <strong>$formatMoment.format($data.getSQLTimestamp('moment'))</strong>
+    </div>
+    <div class="col-xs-6">
+        _{&lang=netuno.log.action}:
+        <strong>
+            #if($data.getInt('action') == 1)
+                _{lang=netuno.log.action.insert}
+            #elseif($data.getInt('action') == 2)
+                _{lang=netuno.log.action.update}
+            #elseif($data.getInt('action') == 3)
+                _{lang=netuno.log.action.delete}
+            #end
+        </strong>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        Log ID &middot; UID: 
+        <strong>$data.getString('id')</strong>
+        &middot;
+        <strong>$data.getString('uid')</strong>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12"> 
+        <pre>$data.getString('data')</pre>
+    </div>
+</div>
