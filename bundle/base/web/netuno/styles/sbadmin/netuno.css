@@ -483,3 +483,23 @@ a {
 .netuno-search-table tr.selected.odd:hover, .netuno-search-table tr.selected.even:hover {
     background-color: #f0a986;
 }
+
+.netuno-admin-log-results > div {
+    border: 1px solid #c1c1c1;
+    border-radius: 5px;
+    padding: 0 10px 10px 10px; 
+}
+
+.netuno-admin-log-results > div > div {
+    margin-top: 10px;
+}
+
+.netuno-admin-log-results > div:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.netuno-admin-log-detail .modal-body > div {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
