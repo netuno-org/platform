@@ -64,4 +64,28 @@ public class MenuLoader {
         }
         return false;
     }
+
+    public Values flattenWithPath(Values items) {
+        return flattenWithPath(Values.newList(), items, "", "");
+    }
+
+    private Values flattenWithPath(Values flatten, Values items, String nameBasePath, String textBasePath) {
+        for (Values item : items.listOfValues()) {
+            String namePath = nameBasePath;
+            String textPath = textBasePath;
+            if (!namePath.isEmpty()) {
+                namePath += ".";
+            }
+            if (!textPath.isEmpty()) {
+                textPath += " > ";
+            }
+            namePath += item.getString("name");
+            textPath += item.getString("text");
+            item.set("name_path", namePath);
+            item.set("text_path", textPath);
+            flatten.add(item);
+            flattenWithPath(flatten, item.getValues("items"), namePath, textPath);
+        }
+        return flatten;
+    }
 }

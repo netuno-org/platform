@@ -47,11 +47,25 @@ public class Log extends WebMaster {
         }
         Header header = resource(Header.class);
         Req req = resource(Req.class);
+        MenuLoader menuLoader = new MenuLoader(getProteu(), getHili());
+        Values jsonForms = Values.newList();
+        if (menuLoader.haveAnyChildTableToAccess("0")) {
+            menuLoader.loadTables(jsonForms, "0");
+            menuLoader.loadTablesOrphans(jsonForms);
+        }
+        Values flattenForms = menuLoader.flattenWithPath(jsonForms);
         if (header.isPost() && req.hasKey("uid")) {
             Values detail = Config.getDataBaseBuilder(getProteu()).logDetail(req.getString("uid"));
             if (detail == null) {
                 header.status(Proteu.HTTPStatus.NotFound404);
                 return;
+            }
+            for (Values form : flattenForms.listOfValues()) {
+                if (detail.getString("table_name").equals(form.getString("name"))) {
+                    detail.set("table_name_path", form.getString("name_path"));
+                    detail.set("table_text_path", form.getString("text_path"));
+                    break;
+                }
             }
             detail.set("data", Values.fromJSON(detail.getString("data")).toJSON(true, 4));
             TemplateBuilder.output(getProteu(), getHili(), "log/detail", detail);
@@ -67,38 +81,22 @@ public class Log extends WebMaster {
                             .set("action", req.getString("action"))
                             .set("item_id", req.getString("item_id"))
             );
+            for (Values item : items) {
+                for (Values form : flattenForms.listOfValues()) {
+                    if (item.getString("table_name").equals(form.getString("name"))) {
+                        item.set("table_name_path", form.getString("name_path"));
+                        item.set("table_text_path", form.getString("text_path"));
+                        break;
+                    }
+                }
+            }
             Values data = new Values();
             data.set("items", items);
             TemplateBuilder.output(getProteu(), getHili(), "log/results", data);
             return;
         }
-        MenuLoader menuLoader = new MenuLoader(getProteu(), getHili());
         Values data = new Values();
-        Values jsonForms = new Values();
-        jsonForms.toList();
-        if (menuLoader.haveAnyChildTableToAccess("0")) {
-            menuLoader.loadTables(jsonForms, "0");
-            menuLoader.loadTablesOrphans(jsonForms);
-        }
-        data.put("forms", flattenForms(Values.newList(), jsonForms));
+        data.put("forms", flattenForms);
         TemplateBuilder.output(getProteu(), getHili(), "log/search", data);
-    }
-
-    private Values flattenForms(Values flatten, Values items) {
-        return flattenForms(flatten, items, "");
-    }
-
-    private Values flattenForms(Values flatten, Values items, String basePath) {
-        for (Values item : items.listOfValues()) {
-            String path = basePath;
-            if (!path.isEmpty()) {
-                path += " > ";
-            }
-            path += item.getString("text");
-            item.set("path", path);
-            flatten.add(item);
-            flattenForms(flatten, item.getValues("items"), path);
-        }
-        return flatten;
     }
 }

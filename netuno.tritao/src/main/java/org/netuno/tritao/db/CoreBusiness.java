@@ -3202,7 +3202,8 @@ public class CoreBusiness extends Base {
         String sql = "SELECT";
         sql += " id, uid, item_id, moment, action, ";
         sql += " (SELECT name FROM netuno_table WHERE id = table_id) table_name, ";
-        sql += " (SELECT name FROM netuno_user WHERE id = user_id) user_user, ";
+        sql += " (SELECT "+ getBuilder().escape("user") +" FROM netuno_user WHERE id = user_id) user_user, ";
+        sql += " (SELECT name FROM netuno_user WHERE id = user_id) user_name, ";
         sql += " (SELECT name FROM netuno_group WHERE id = group_id) group_name ";
         sql += " FROM netuno_log";
         sql += " WHERE 1 = 1";
@@ -3250,7 +3251,8 @@ public class CoreBusiness extends Base {
         String sql = "SELECT";
         sql += " id, uid, item_id, moment, action, ";
         sql += " (SELECT name FROM netuno_table WHERE id = table_id) table_name, ";
-        sql += " (SELECT name FROM netuno_user WHERE id = user_id) user_user, ";
+        sql += " (SELECT "+ getBuilder().escape("user") +" FROM netuno_user WHERE id = user_id) user_user, ";
+        sql += " (SELECT name FROM netuno_user WHERE id = user_id) user_name, ";
         sql += " (SELECT name FROM netuno_group WHERE id = group_id) group_name, ";
         sql += " data";
         sql += " FROM netuno_log";
