@@ -301,6 +301,10 @@ public interface Builder {
 
     List<Values> getRelations(Values rowTable, List<Values> rsTritaoDesignXY);
 
+    List<Values> logSearch(int page, Values filters);
+
+    Values logDetail(String uid);
+
     List<Values> queryHistoryList(int page);
     void queryHistoryInsert(Values data);
     void querySave(Values data);

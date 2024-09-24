@@ -619,6 +619,14 @@ public class H2 implements Builder {
         return coreBusiness.getRelations(rowTable, designXY);
     }
 
+    public List<Values> logSearch(int page, Values filters) {
+        return coreBusiness.logSearch(page, filters);
+    }
+
+    public Values logDetail(String uid) {
+        return coreBusiness.logDetail(uid);
+    }
+
     public List<Values> queryHistoryList(int page) {
         return coreBusiness.queryHistoryList(page);
     }
