@@ -3198,6 +3198,72 @@ public class CoreBusiness extends Base {
         return relations;
     }
 
+    public List<Values> logSearch(int page, Values filters) {
+        String sql = "SELECT";
+        sql += " id, uid, item_id, moment, action, ";
+        sql += " (SELECT name FROM netuno_table WHERE id = table_id) table_name, ";
+        sql += " (SELECT name FROM netuno_user WHERE id = user_id) user_user, ";
+        sql += " (SELECT name FROM netuno_group WHERE id = group_id) group_name ";
+        sql += " FROM netuno_log";
+        sql += " WHERE 1 = 1";
+        if (filters.hasKey("table_uid") && !filters.getString("table_uid").isEmpty()) {
+            sql += " AND table_id =";
+            sql += " (SELECT id FROM netuno_table WHERE uid = '" + DB.sqlInjection(filters.getString("table_uid")) + "')";
+        }
+        if (filters.hasKey("user_uid") && !filters.getString("user_uid").isEmpty()) {
+            sql += " AND user_id =";
+            sql += " (SELECT id FROM netuno_user WHERE uid = '" + DB.sqlInjection(filters.getString("user_uid")) + "')";
+        }
+        if (filters.hasKey("group_uid") && !filters.getString("group_uid").isEmpty()) {
+            sql += " AND group_id =";
+            sql += " (SELECT id FROM netuno_user WHERE uid = '" + DB.sqlInjection(filters.getString("group_uid")) + "')";
+        }
+        if (filters.hasKey("moment_start") && !filters.getString("moment_start").isEmpty()) {
+            sql += " AND moment >= '"+ DB.sqlInjection(filters.getString("moment_start")) +"'";
+        }
+        if (filters.hasKey("moment_end") && !filters.getString("moment_end").isEmpty()) {
+            sql += " AND moment <= '"+ DB.sqlInjection(filters.getString("moment_end")) +"'";
+        }
+        if (filters.hasKey("action") && !filters.getString("action").isEmpty()) {
+            sql += " AND action = "+ DB.sqlInjectionInt(filters.getString("action"));
+        }
+        if (filters.hasKey("item_id") && !filters.getString("item_id").isEmpty()) {
+            sql += " AND item_id = "+ DB.sqlInjectionInt(filters.getString("item_id"));
+        }
+        sql += " ORDER BY moment DESC";
+        int pageSize = 10;
+        if (isMSSQL()) {
+            if (page > 0) {
+                sql += " OFFSET "+ (page * pageSize) +" ROWS";
+            }
+            sql += " FETCH NEXT "+ pageSize +" ROWS ONLY";
+        } else {
+            sql += " LIMIT "+ pageSize;
+            if (page > 0) {
+                sql += " OFFSET "+ (page * pageSize);
+            }
+        }
+        return getManager().query(sql);
+    }
+
+    public Values logDetail(String uid) {
+        String sql = "SELECT";
+        sql += " id, uid, item_id, moment, action, ";
+        sql += " (SELECT name FROM netuno_table WHERE id = table_id) table_name, ";
+        sql += " (SELECT name FROM netuno_user WHERE id = user_id) user_user, ";
+        sql += " (SELECT name FROM netuno_group WHERE id = group_id) group_name, ";
+        sql += " data";
+        sql += " FROM netuno_log";
+        sql += " WHERE 1 = 1";
+        sql += " AND uid = '"+ DB.sqlInjection(uid) +"'";
+        sql += " ORDER BY moment DESC";
+        List<Values> results = getManager().query(sql);
+        if (results.size() == 0) {
+            return null;
+        }
+        return results.get(0);
+    }
+
     public List<Values> queryHistoryList(int page) {
         String sql = "SELECT * FROM netuno_query_history";
         sql += " ORDER BY moment DESC";
