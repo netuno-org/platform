@@ -4,7 +4,9 @@
         <div class="row">
             <div class="col-xs-6">
                 _{&lang=netuno.log.table}: 
-                <strong>$item.getString('table_name')</strong>
+                <strong title="$item.getString('table_name')">
+                    $item.getString('table_text_path')
+                </strong>
             </div>
             <div class="col-xs-6">
                 _{&lang=netuno.log.item_id}: 
@@ -14,7 +16,9 @@
         <div class="row">
             <div class="col-xs-6">
                 _{&lang=netuno.log.user}: 
-                <strong>$item.getString('user_user')</strong>
+                <strong title="$item.getString('user_user')">
+                    $item.getString('user_name')
+                </strong>
             </div>
             <div class="col-xs-6">
                 _{&lang=netuno.log.group}: 
