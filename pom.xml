@@ -27,27 +27,27 @@
         <netuno.psamata.version>7.0.0</netuno.psamata.version>
         <netuno.tritao.version>7.0.0</netuno.tritao.version>
         <netuno.library.doc.version>7.0.0</netuno.library.doc.version>
-        <picocli.version>4.7.5</picocli.version>
+        <picocli.version>4.7.6</picocli.version>
         <jansi.version>2.4.1</jansi.version>
         <progressbar.version>0.10.1</progressbar.version>
         <emoji.version>5.1.1</emoji.version>
         <quartz.version>2.3.2</quartz.version>
-        <lucene.version>9.10.0</lucene.version>
-        <graalvm.version>24.0.1</graalvm.version>
-        <jython.version>2.7.3</jython.version>
-        <groovy.version>4.0.20</groovy.version>
-        <jruby.version>9.4.6.0</jruby.version>
-        <kotlin.version>1.9.23</kotlin.version>
+        <lucene.version>9.11.1</lucene.version>
+        <graalvm.version>24.1.0</graalvm.version>
+        <jython.version>2.7.4</jython.version>
+        <groovy.version>4.0.23</groovy.version>
+        <jruby.version>9.4.8.0</jruby.version>
+        <kotlin.version>2.0.20</kotlin.version>
         <arrow.version>1.2.3</arrow.version>
-        <jjwt.version>0.12.5</jjwt.version>
-        <apache.poi.version>5.2.5</apache.poi.version>
-        <apache.tika.version>2.9.1</apache.tika.version>
+        <jjwt.version>0.12.6</jjwt.version>
+        <apache.poi.version>5.3.0</apache.poi.version>
+        <apache.tika.version>2.9.2</apache.tika.version>
         <apache.velocity.version>2.3</apache.velocity.version>
         <classgraph.version>4.8.163</classgraph.version>
-        <json.version>20231013</json.version>
-        <itext.version>8.0.3</itext.version>
-        <log4j.version>2.23.1</log4j.version>
-        <oshi.version>6.5.0</oshi.version>
+        <json.version>20240303</json.version>
+        <itext.version>8.0.5</itext.version>
+        <log4j.version>2.24.0</log4j.version>
+        <oshi.version>6.6.4</oshi.version>
     </properties>
 
     <dependencyManagement>
