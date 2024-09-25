@@ -108,12 +108,14 @@ public class Image extends ComponentBase {
                     String tableName = getTableData().getString("name");
                     String fieldName = getDesignData().getString("name");
                     String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator + value;
-                    String path = FilenameUtils.getPath(databasePath);
+                    String urlPath = FilenameUtils.getPath(databasePath)
+                            .replace("\\", "%2F")
+                            .replace("/", "%2F");
                     String file = FilenameUtils.getName(databasePath);
                     String fileName = FilenameUtils.getBaseName(databasePath);
                     getDesignData().set("com.image.name", file);
-                    getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + path + fileName + "___form." + fileExt + "\" height=\"200\"/>");
-                    getDesignData().set("com.image.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + path + fileName + "." + fileExt);
+                    getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "___form." + fileExt + "\" height=\"200\"/>");
+                    getDesignData().set("com.image.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "." + fileExt);
                     Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath);
                     if (Files.exists(filePath)) {
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
@@ -155,12 +157,14 @@ public class Image extends ComponentBase {
                     String fieldName = getDesignData().getString("name");
                     String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator + value;
                     String path = FilenameUtils.getPath(databasePath);
+                    String urlPath = path.replace("\\", "%2F")
+                            .replace("/", "%2F");
                     String file = FilenameUtils.getName(databasePath);
                     String fileName = FilenameUtils.getBaseName(file);
                     File fileImage = new File(Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + File.separator + fileName + "___search." + fileExt);
                     if (fileImage.exists()) {
                         org.netuno.psamata.ImageTools imgTools = new org.netuno.psamata.ImageTools(Config.getPathAppStorageDatabase(getProteu()) + "/" + path + fileName + "___search." + fileExt);
-                        getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + path + fileName + "___search." + fileExt + "\" width=\"" + (imgTools.getWidth() / 2) + "\" height=\"" + (imgTools.getHeight() / 2) + "\"/>");
+                        getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "___search." + fileExt + "\" width=\"" + (imgTools.getWidth() / 2) + "\" height=\"" + (imgTools.getHeight() / 2) + "\"/>");
                         return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/image", getDesignData());
                     }
                 } catch (Exception e) {
