@@ -98,8 +98,8 @@ public class File extends ComponentBase {
                 String tableName = getTableData().getString("name");
                 String fieldName = getDesignData().getString("name");
                 String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator + value;
-                getDesignData().set("com.file.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + databasePath);
-                String path = FilenameUtils.getPath(databasePath);
+                String databaseURLPath = tableName + "%2F" + fieldName + "%2F" + value;
+                getDesignData().set("com.file.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + databaseURLPath);
                 String file = FilenameUtils.getName(databasePath);
                 getDesignData().set("com.file.name", file);
                 Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath);
@@ -136,7 +136,7 @@ public class File extends ComponentBase {
         if (value != null && value.length() > 0) {
             String tableName = getTableData().getString("name");
             String fieldName = getDesignData().getString("name");
-            String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator + value;
+            String databasePath = tableName + "%2F" + fieldName + "%2F" + value;
             getDesignData().set("com.file.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + databasePath);
             try {
                 return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/file", getDesignData());
