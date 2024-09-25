@@ -185,34 +185,36 @@ public class Image extends ComponentBase {
 
     public Component onSave() {
         String requestName = getValuesPrefix().concat(getDesignData().getString("name"));
-        if ((getValues().hasKey(requestName + ":value") || getValues().hasKey(requestName))
-                && !getValues().getString(requestName + ":null").equals("true")) {
+        if ((getValues().hasKey(requestName + ":value") || getValues().hasKey(requestName))) {
             org.netuno.psamata.io.File file = null;
             if (getValues().getFile(requestName) != null) {
                 if (getValues().get(requestName) instanceof org.netuno.psamata.io.File) {
                     file = (org.netuno.psamata.io.File) getValues().get(requestName);
                 }
             }
-            if (file != null && file.available() > 0) {
-                try {
-                    String tableName = getTableData().getString("name");
-                    String fieldName = getDesignData().getString("name");
-                    String oldValue = "";
-                    Values databaseValues = getDatabaseValues();
-                    if (getDatabaseValues() != null) {
-                        oldValue = databaseValues.getString(fieldName);
-                    }
-                    String path = tableName + File.separator + fieldName + File.separator;
-                    getValues().getString(fieldName + ":value");
-                    if (!oldValue.isEmpty()) {
-                        getValues().set(fieldName + ":old", oldValue);
-                        String subPath = FilenameUtils.getPath(oldValue);
-                        String fileBaseName = FilenameUtils.getBaseName(oldValue);
-                        String fileExt = FilenameUtils.getExtension(oldValue);
-                        Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, oldValue));
-                        Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, subPath, fileBaseName + "___form." + fileExt));
-                        Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, subPath, fileBaseName + "___search." + fileExt));
-                    }
+            if (file == null && !getValues().getString(requestName + ":null").equals("true")) {
+                return this;
+            }
+            try {
+                String tableName = getTableData().getString("name");
+                String fieldName = getDesignData().getString("name");
+                String oldValue = "";
+                Values databaseValues = getDatabaseValues();
+                if (getDatabaseValues() != null) {
+                    oldValue = databaseValues.getString(fieldName);
+                }
+                String path = tableName + File.separator + fieldName + File.separator;
+                getValues().getString(fieldName + ":value");
+                if (!oldValue.isEmpty()) {
+                    getValues().set(fieldName + ":old", oldValue);
+                    String subPath = FilenameUtils.getPath(oldValue);
+                    String fileBaseName = FilenameUtils.getBaseName(oldValue);
+                    String fileExt = FilenameUtils.getExtension(oldValue);
+                    Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, oldValue));
+                    Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, subPath, fileBaseName + "___form." + fileExt));
+                    Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, subPath, fileBaseName + "___search." + fileExt));
+                }
+                if (file != null && file.available() > 0) {
                     String fileBaseName = FilenameUtils.getBaseName(file.getName());
                     String fileExt = FilenameUtils.getExtension(file.getName()).toLowerCase();
                     String fileName = "";
@@ -255,9 +257,9 @@ public class Image extends ComponentBase {
                     getValues().set(requestName + ":value", fileName);
                     getValues().set(requestName + ":new", fileName);
                     getValues().set(requestName + ":path", fileFullName);
-                } catch (IOException e) {
-                    throw new Error(e);
                 }
+            } catch (IOException e) {
+                throw new Error(e);
             }
         }
         return this;
