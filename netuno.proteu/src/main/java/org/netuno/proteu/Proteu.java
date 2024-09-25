@@ -1079,8 +1079,8 @@ public class Proteu {
     }
 
     public void setResponseHeaderNoCache() {
-        getResponseHeader().set("Pragma", "no-store, no-cache, must-revalidate");
-        getResponseHeader().set("Cache-Control", "private, max-age=0, no-cache");
+        getResponseHeader().set("Cache-Control", "no-cache, no-store, must-revalidate");
+        getResponseHeader().set("Pragma", "no-cache");
         getResponseHeader().set("Expires", "0");
     }
 
