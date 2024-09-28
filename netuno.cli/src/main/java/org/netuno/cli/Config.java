@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +45,7 @@ public final class Config {
     private static Logger logger = LogManager.getLogger(Config.class);
 
     public static final String VERSION = "7";
-    public static final String VERSION_YEAR = "2024";
+    public static final String VERSION_YEAR = Year.now().toString();
 
     public static final String OS = System.getProperty("os.name").toLowerCase();
 
