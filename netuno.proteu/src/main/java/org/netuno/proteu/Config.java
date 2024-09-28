@@ -17,6 +17,7 @@
 
 package org.netuno.proteu;
 
+import java.time.Year;
 import java.util.*;
 
 import org.netuno.psamata.Values;
@@ -33,7 +34,7 @@ import java.util.regex.Pattern;
 public final class Config {
 
     public static final String VERSION = "7";
-    public static final String VERSION_YEAR = "2023";
+    public static final String VERSION_YEAR = Year.now().toString();
     
     public static String BUILD_NUMBER = "99999999.9999";
 
