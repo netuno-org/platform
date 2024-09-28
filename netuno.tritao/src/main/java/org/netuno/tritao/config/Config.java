@@ -32,6 +32,7 @@ import org.netuno.tritao.util.PasswordSHA256Hex;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import org.netuno.tritao.definition.Definition;
@@ -46,7 +47,7 @@ public class Config {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Config.class);
 
     public static final String VERSION = "7";
-    public static final String VERSION_YEAR = "2023";
+    public static final String VERSION_YEAR = Year.now().toString();
     
     public static String BUILD_NUMBER = "99999999.9999";
 
