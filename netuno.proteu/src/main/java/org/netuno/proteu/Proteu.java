@@ -380,7 +380,11 @@ public class Proteu {
             	host = url.substring(0, url.indexOf("/"));
                 requestHeader.set("Host", host);
             }
-            url = url.substring(url.indexOf("/"));
+            if (url.indexOf("/") > -1) {
+                url = url.substring(url.indexOf("/"));
+            } else {
+                url = "/";
+            }
         } else if (requestHeader.has("Host")) {
             url = _url.substring(_url.indexOf(requestHeader.getString("Host")) + requestHeader.getString("Host").length());
         }
