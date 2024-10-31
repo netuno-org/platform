@@ -289,37 +289,30 @@ public class ProteuEvents implements Events {
                 try {
                     if (dbEngine.equalsIgnoreCase("h2")
                             || dbEngine.equalsIgnoreCase("h2database")) {
-                        /*
-                        var dsH2 = new org.h2.jdbcx.JdbcConnectionPool(
-                            'jdbc:h2:./dbs/'+ appConfig['db']['name'] +';IGNORECASE=TRUE;MODE=PostgreSQL;DATABASE_TO_UPPER=false',
-                            appConfig['db'].getString('username', 'sa'),
-                            appConfig['db'].getString('password')
-                        );
-                        dsH2.setMaxConnections(appConfig['db'].getInt('maxConnections', 10));
-                        */
-                        org.h2.jdbcx.JdbcDataSource dsH2 = new org.h2.jdbcx.JdbcDataSource();
-                        String dbURLConfigs = ";MODE=PostgreSQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_ON_EXIT=TRUE;FILE_LOCK=NO;";
+                        HikariConfig config = new HikariConfig();
+                        config.setDriverClassName("org.h2.Driver");
+                        String dbURLConfigs = ";MODE=PostgreSQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_ON_EXIT=TRUE;";
                         try {
                             if (db.hasKey("url")) {
-                                dsH2.setURL(db.getString("url"));
+                                config.setJdbcUrl(db.getString("url"));
                             } else if (db.hasKey("path")) {
-                                    dsH2.setURL("jdbc:h2:./" + db.getString("path") + dbURLConfigs);
+                                config.setJdbcUrl("jdbc:h2:./" + db.getString("path") + dbURLConfigs);
                             } else if (db.hasKey("home")) {
-                                    dsH2.setURL("jdbc:h2:./" + db.getString("home") + "/" + db.getString("name") + dbURLConfigs);
+                                config.setJdbcUrl("jdbc:h2:./" + db.getString("home") + "/" + db.getString("name") + dbURLConfigs);
                             } else {
-                                dsH2.setURL("jdbc:h2:./" + Config.getAppsHome() +"/"+ appConfig.getString("home") + "/dbs/" + db.getString("name") + dbURLConfigs);
+                                config.setJdbcUrl("jdbc:h2:./" + Config.getAppsHome() +"/"+ appConfig.getString("home") + "/dbs/" + db.getString("name") + dbURLConfigs);
                             }
                         } catch (Exception e) {
                             throw new DBError("App "+ app +" with invalid H2Database configuration.", e).setLogFatal(true);
                         }
-                        dsH2.setUser("sa");
-                        dsH2.setPassword("");
-                        org.netuno.proteu.Config.getDataSources().set(Config.getDabaBase(proteu, key), dsH2);
+                        config.setUsername("sa");
+                        config.setPassword("");
+                        loadHikariConfig(app, config, db);
+                        org.netuno.proteu.Config.getDataSources().set(Config.getDabaBase(proteu, key), new HikariDataSource(config));
                     } else if (dbEngine.equalsIgnoreCase("pg")
                             || dbEngine.equalsIgnoreCase("postgresql")) {
                         HikariConfig config = new HikariConfig();
                         config.setDriverClassName("org.postgresql.Driver");
-                        config.setDriverClassName("org.postgresql.ds.PGSimpleDataSource");
                         if (db.hasKey("url")) {
                             config.setJdbcUrl(db.getString("url"));
                             config.setUsername(db.getString("username"));
