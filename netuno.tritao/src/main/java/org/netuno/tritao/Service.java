@@ -211,7 +211,7 @@ public class Service {
                     return;
                 }
                 org.netuno.tritao.resource.Auth auth = hili.resource().get(org.netuno.tritao.resource.Auth.class);
-                if (!auth.jwtToken().isEmpty() && !auth.jwtTokenCheck()) {
+                if (!service.isAllowed() && !auth.jwtToken().isEmpty() && !auth.jwtTokenCheck()) {
                     proteu.responseHTTPError(Proteu.HTTPStatus.Forbidden403, hili);
                     service.defaultEmptyOutput();
                     return;
