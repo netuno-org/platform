@@ -31,8 +31,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.script.ScriptException;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 
 import org.netuno.psamata.script.GraalRunner;
 import org.netuno.psamata.script.ScriptRunner;
