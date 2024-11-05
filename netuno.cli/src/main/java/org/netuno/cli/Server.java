@@ -17,6 +17,10 @@
 
 package org.netuno.cli;
 
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.session.DefaultSessionCacheFactory;
+import org.eclipse.jetty.session.FileSessionDataStoreFactory;
+import org.eclipse.jetty.session.SessionCache;
 import org.netuno.cli.monitoring.Monitor;
 import org.netuno.cli.setup.GraalVMSetup;
 
@@ -24,32 +28,21 @@ import com.vdurmont.emoji.EmojiParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee10.servlet.DefaultServlet;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+
+import org.eclipse.jetty.util.DateCache;
+import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+
 import org.netuno.cli.utils.ConfigScript;
-
-/*
-import java.net.UnknownHostException;
-
-import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
-import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
-import org.eclipse.jetty.http2.HTTP2Cipher;
-
-import org.eclipse.jetty.server.handler.gzip.GzipHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-*/
-
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.io.StreamGobbler;
 import org.netuno.psamata.Values;
 import picocli.CommandLine;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
@@ -58,10 +51,6 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
-
-import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
-import org.eclipse.jetty.util.DateCache;
-import org.eclipse.jetty.util.component.LifeCycle;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -72,9 +61,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jetty.server.session.DefaultSessionCache;
-import org.eclipse.jetty.server.session.FileSessionDataStore;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.netuno.cli.ws.WSServletContextHandler;
 import org.netuno.psamata.crypto.RandomString;
 import org.netuno.psamata.net.Remote;
@@ -251,7 +237,7 @@ public class Server implements MainArg {
             requestLogWriter.setTimeZone("GMT");
             requestLogWriter.setRetainDays(30);
             requestLogWriter.setAppend(true);
-            server.setRequestLog(new NetCustomRequestLog(requestLogWriter, CustomRequestLog.EXTENDED_NCSA_FORMAT));
+            server.setRequestLog(new NetCustomRequestLog(logger, requestLogWriter, CustomRequestLog.EXTENDED_NCSA_FORMAT));
             
             System.out.println();
             System.out.println();
@@ -300,120 +286,33 @@ public class Server implements MainArg {
             if (Config.getSessionsFolder() != null && !Config.getSessionsFolder().isEmpty()) {
                 File sessionsFolder = new File(Config.getSessionsFolder());
                 sessionsFolder.mkdirs();
-                FileSessionDataStore fileSessionDataStore = new FileSessionDataStore();
-                fileSessionDataStore.setStoreDir(sessionsFolder);
-                // https://www.cs.usfca.edu/~cs212/docs/jetty-documentation-9.4.26.v20200117-html/session-configuration-sessioncache.html
-                DefaultSessionCache defaultSessionCache = new DefaultSessionCache(webapp.getSessionHandler());
-                defaultSessionCache.setSaveOnCreate(true);
-                defaultSessionCache.setRemoveUnloadableSessions(true);
-                defaultSessionCache.setFlushOnResponseCommit(true);
-                defaultSessionCache.setSessionDataStore(fileSessionDataStore);
-                webapp.getSessionHandler().setSessionCache(defaultSessionCache);
+
+                DefaultSessionCacheFactory cacheFactory = new DefaultSessionCacheFactory();
+                cacheFactory.setEvictionPolicy(SessionCache.NEVER_EVICT);
+                cacheFactory.setFlushOnResponseCommit(true);
+                cacheFactory.setInvalidateOnShutdown(false);
+                cacheFactory.setRemoveUnloadableSessions(true);
+                cacheFactory.setSaveOnCreate(true);
+                server.addBean(cacheFactory);
+                FileSessionDataStoreFactory storeFactory = new FileSessionDataStoreFactory();
+                storeFactory.setStoreDir(sessionsFolder);
+                storeFactory.setGracePeriodSec(3600);
+                storeFactory.setSavePeriodSec(0);
+                server.addBean(storeFactory);
             }
-
-            //webapp.setResourceBase(assetsFolder);
-
-            //webapp.setAttribute("org.eclipse.jetty.containerInitializerExclusionPattern",
-            //        "org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer|com.acme.*");
 
             DefaultServlet defaultServlet = new DefaultServlet();
             ServletHolder holder = new ServletHolder(defaultServlet);
             holder.setInitParameter("useFileMappedBuffer", "false");
             holder.setInitParameter("cacheControl", "max-age=0, public");
-            /*
-            ResourceHandler resource_handler = new ResourceHandler();
-            resource_handler.setDirectoriesListed(true);
-            resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-
-            resource_handler.setResourceBase(assetsFolder);
-            resource_handler.setCacheControl("no-store,no-cache,must-revalidate");
-            */
-            /*
-            GzipHandler gzipHandler = new GzipHandler();
-            gzipHandler.setIncludedPaths("/*");
-            gzipHandler.setMinGzipSize(100);
-            gzipHandler.setIncludedMimeTypes(
-                    "text/plain",
-                    "text/html",
-                    "text/css",
-                    "text/javascript",
-                    "application/json");
-            */
             
-            /* WEBSOCKET GOOD */
-            
-            
-            /*EngineIoServer engineIoServer = new EngineIoServer();
-            SocketIoServer socketIoServer = new SocketIoServer(engineIoServer);
-            engineIoServer.on("connection", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println("Connection!");
-                    EngineIoSocket socket = (EngineIoSocket) args[0];
-                    // Do something with socket
-                    socket.emit("connect", "");
-                    //socket.emit("test", "ok");
-                    socket.on("foo", new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            "".toString();
-                        }
-                    });
-                }
-            });
-            SocketIoNamespace namespace = socketIoServer.namespace("/test");
-            namespace.on("connection", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println("Connection!");
-                    SocketIoSocket socket = (SocketIoSocket) args[0];
-                    // Do something with socket
-                    socket.on("foo", new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            "".toString();
-                        }
-                    });
-                }
-            });
-            namespace.on("connect", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.out.println("Connect!");
-                    SocketIoSocket socket = (SocketIoSocket) args[0];
-                    // Do something with socket
-                    socket.on("foo", new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            "".toString();
-                        }
-                    });
-                }
-            });
-            
-            ServletContextHandler websocketIoHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-            websocketIoHandler.setContextPath("/engine.io");
-            WebSocketUpgradeFilter webSocketUpgradeFilter = WebSocketUpgradeFilter.configure(websocketIoHandler);
-            webSocketUpgradeFilter.addMapping("/*", new WebSocketCreator() {
-                @Override
-                public Object createWebSocket(ServletUpgradeRequest servletUpgradeRequest, ServletUpgradeResponse servletUpgradeResponse) {
-                    JettyWebSocketHandler jettyWebSocketHandler = new JettyWebSocketHandler(engineIoServer);
-                    System.out.println("connection: "+ engineIoServer.listeners("connection").size());
-                    System.out.println("connect: "+ engineIoServer.listeners("connect").size());
-                    //engineIoServer.emit("connection", "");
-                    return jettyWebSocketHandler;
-                }
-            });*/
-            
-            List<Handler> handlers = new ArrayList<Handler>();
+            List<Handler> handlers = new ArrayList<>();
 
             handlers.addAll(WSServletContextHandler.loadHandlers(forceApp ? appConfig : null));
             
             handlers.add(webapp);
-            
-            //handlers.add(gzipHandler);
-            
-            HandlerList handlerList = new HandlerList();
+
+            ContextHandlerCollection handlerList = new ContextHandlerCollection();
             handlerList.setHandlers(handlers.toArray(new Handler[0]));
             server.setHandler(handlerList);
             
@@ -423,11 +322,9 @@ public class Server implements MainArg {
             httpConfiguration.setSendXPoweredBy(false);
             httpConfiguration.setSendServerVersion(false);
             
-            HTTP2CServerConnectionFactory h2cServerConnectionFactory = new HTTP2CServerConnectionFactory(httpConfiguration);
             HttpConnectionFactory h1ConnectionFactory = new HttpConnectionFactory(httpConfiguration);
             ServerConnector serverConnector = new ServerConnector(server, new ConnectionFactory[] {
-                    h1ConnectionFactory,
-                    h2cServerConnectionFactory
+                    h1ConnectionFactory
             });
             serverConnector.setPort(port);
             //serverConnector.setDefaultProtocol("h2c");
@@ -757,12 +654,15 @@ class NetCustomRequestLog extends CustomRequestLog {
     private static final ThreadLocal<StringBuilder> buffers =
             ThreadLocal.withInitial(() -> new StringBuilder(256));
 
+    private Logger logger;
+
     private final Writer writer;
 
     private final DateCache dateCache;
 
-    public NetCustomRequestLog(Writer writer, String formatString) {
+    public NetCustomRequestLog(Logger logger, Writer writer, String formatString) {
         super(writer, formatString);
+        this.logger = logger;
         this.writer = writer;
         TimeZone timeZone = TimeZone.getTimeZone("GMT");
         Locale locale = Locale.getDefault();
@@ -771,47 +671,46 @@ class NetCustomRequestLog extends CustomRequestLog {
 
     @Override
     public void log(Request request, Response response) {
-        String requestURI = request.getRequestURI();
+        String requestURI = request.getHttpURI().toString();
         try {
             StringBuilder sb = buffers.get();
             sb.setLength(0);
-            String host = request.getHeader("Host");
+            String host = request.getHeaders().get("Host");
             if (host == null || host.isEmpty()) {
-                host = request.getHttpChannel().getEndPoint()
-                    .getLocalAddress().getHostString();
+                host = Request.getLocalAddr(request);
                 /*host = request.getHttpChannel().getEndPoint()
                     .getRemoteAddress().getAddress()
                     .getHostAddress();*/
             }
-            String referer = request.getHeader("Referer");
+            String referer = request.getHeaders().get("Referer");
             if (referer == null || referer.isEmpty()) {
                 referer = "-";
             }
             sb.append(host)
                     .append(" ")
-                    .append(request.getRemoteAddr())
+                    .append(Request.getRemoteAddr(request))
                     .append(" - ")
                     .append("[")
-                    .append(dateCache.format(request.getTimeStamp()))
+                    .append(dateCache.format(Request.getTimeStamp(request)))
                     .append("] \"")
                     .append(request.getMethod())
                     .append(" ")
                     .append(requestURI)
                     .append(" ")
-                    .append(request.getProtocol())
+                    .append(request.getId())
                     .append("\" ")
                     .append(response.getStatus())
                     .append(" ")
-                    .append(response.getHttpChannel().getBytesWritten())
+                    .append(Response.getContentBytesWritten(response))
                     .append(" \"")
                     .append(referer)
                     .append("\"")
                     .append(" \"")
-                    .append(request.getHeader("User-Agent"))
+                    .append(request.getHeaders().get("User-Agent"))
                     .append("\"");
             writer.write(sb.toString());
         } catch (Exception e) {
-            LOG.warn("Unable to log request.", e);
+            logger.warn("Unable to log request.", e);
         }
     }
 
