@@ -21,20 +21,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.websocket.Decoder;
-import javax.websocket.DeploymentException;
-import javax.websocket.Encoder;
-import javax.websocket.Extension;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.servlet.ServletException;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.Extension;
+import jakarta.websocket.HandshakeResponse;
+import jakarta.websocket.server.HandshakeRequest;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.ee10.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.netuno.cli.Config;
 import org.netuno.psamata.Values;
 
@@ -48,81 +48,75 @@ public class WSServletContextHandler extends ServletContextHandler {
     private static Logger logger = LogManager.getLogger(WSServletContextHandler.class);
     
     public WSServletContextHandler(String app, String defaultHost, Values config, int options) throws ServletException, DeploymentException {
-        super(options);
+        super(config.getString("public"), options);
 
-        String[] virtualHosts = null;
+        List<String> virtualHosts = new ArrayList<>();
         if (config.hasKey("host") && !config.getString("host").isEmpty()) {
-            virtualHosts = new String[] { config.getString("host") };
+            virtualHosts.add(config.getString("host"));
         } else if (!defaultHost.isEmpty()) {
-            virtualHosts = new String[] { defaultHost };
+            virtualHosts.add(defaultHost);
         }
         if (virtualHosts != null) {
             this.setVirtualHosts(virtualHosts);
         }
-        
-        String url = config.getString("public");
-        
-        this.setContextPath(url);
-        
-        ServerContainer webSocketServerContainerInitializer = WebSocketServerContainerInitializer.initialize(this);
-        webSocketServerContainerInitializer.addEndpoint(new ServerEndpointConfig() {
-            @Override
-            public Class<?> getEndpointClass() {
-                return WSEndpoint.class;
-            }
 
-            @Override
-            public String getPath() {
-                return config.getString("path");
-            }
-
-            @Override
-            public List<String> getSubprotocols() {
-                return new ArrayList<>();
-            }
-
-            @Override
-            public List<Extension> getExtensions() {
-                return new ArrayList<>();
-            }
-
-            @Override
-            public ServerEndpointConfig.Configurator getConfigurator() {
-                return new ServerEndpointConfig.Configurator() {
-                    @Override
-                    public void modifyHandshake(ServerEndpointConfig endpointConfig, HandshakeRequest request, HandshakeResponse response) {
-                        endpointConfig.getUserProperties().put("app", app);
-                        endpointConfig.getUserProperties().put("url", url);
-                        endpointConfig.getUserProperties().put("config", config);
-                        List<String> authorization = request.getHeaders().get("Authorization");
-                        if (authorization != null && authorization.size() > 0) {
-                            endpointConfig.getUserProperties().put("authorization", authorization.get(0));
-                        }
-                    }
-                };
-            }
-
-            @Override
-            public List<Class<? extends Encoder>> getEncoders() {
-                return new ArrayList<>();
-            }
-
-            @Override
-            public List<Class<? extends Decoder>> getDecoders() {
-                return new ArrayList<>();
-            }
-
-            @Override
-            public Map<String, Object> getUserProperties() {
-                return new HashMap<>();
-            }
-        });
-
-        WebSocketServerContainerInitializer.configure(this, (servletContext, wsContainer) -> {
+        JakartaWebSocketServletContainerInitializer.configure(this, (servletContext, wsContainer) -> {
             // This lambda will be called at the appropriate place in the
             // ServletContext initialization phase where you can initialize
             // and configure  your websocket container.
             // Configure defaults for container
+            wsContainer.addEndpoint(new ServerEndpointConfig() {
+                @Override
+                public Class<?> getEndpointClass() {
+                    return WSEndpoint.class;
+                }
+
+                @Override
+                public String getPath() {
+                    return config.getString("path");
+                }
+
+                @Override
+                public List<String> getSubprotocols() {
+                    return new ArrayList<>();
+                }
+
+                @Override
+                public List<Extension> getExtensions() {
+                    return new ArrayList<>();
+                }
+
+                @Override
+                public ServerEndpointConfig.Configurator getConfigurator() {
+                    return new ServerEndpointConfig.Configurator() {
+                        @Override
+                        public void modifyHandshake(ServerEndpointConfig endpointConfig, HandshakeRequest request, HandshakeResponse response) {
+                            endpointConfig.getUserProperties().put("app", app);
+                            endpointConfig.getUserProperties().put("url", config.getString("public"));
+                            endpointConfig.getUserProperties().put("config", config);
+                            List<String> authorization = request.getHeaders().get("Authorization");
+                            if (authorization != null && authorization.size() > 0) {
+                                endpointConfig.getUserProperties().put("authorization", authorization.get(0));
+                            }
+                        }
+                    };
+                }
+
+                @Override
+                public List<Class<? extends Encoder>> getEncoders() {
+                    return new ArrayList<>();
+                }
+
+                @Override
+                public List<Class<? extends Decoder>> getDecoders() {
+                    return new ArrayList<>();
+                }
+
+                @Override
+                public Map<String, Object> getUserProperties() {
+                    return new HashMap<>();
+                }
+            });
             wsContainer.setAsyncSendTimeout(config.getLong("sendTimeout", 60000));
             wsContainer.setDefaultMaxSessionIdleTimeout(config.getLong("idleTimeout", 300000));
             wsContainer.setDefaultMaxTextMessageBufferSize(config.getInt("maxText", 1048576));
@@ -133,7 +127,7 @@ public class WSServletContextHandler extends ServletContextHandler {
     
     
     public static List<Handler> loadHandlers(Values defaultAppConfig) {
-        List<Handler> handlers = new ArrayList<Handler>();
+        List<Handler> handlers = new ArrayList<>();
         for (String app : Config.getAppConfig().keys()) {
             if (defaultAppConfig != null && !defaultAppConfig.getString("name").equals(app)) {
                 continue;
