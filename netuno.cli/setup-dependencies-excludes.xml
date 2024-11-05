@@ -14,16 +14,11 @@
             <unpack>true</unpack>
             <scope>runtime</scope>
             <excludes>
-                <exclude>javax.servlet:javax.servlet-api</exclude>
-                <exclude>javax.websocket:javax.websocket-api</exclude>
                 <exclude>org.eclipse.jetty:jetty-server</exclude>
-                <exclude>org.eclipse.jetty:jetty-webapp</exclude>
-                <exclude>org.eclipse.jetty:jetty-plus</exclude>
-                <exclude>org.eclipse.jetty:jetty-alpn-server</exclude>
-                <exclude>org.eclipse.jetty.http2:http2-server</exclude>
-                <exclude>org.eclipse.jetty.websocket:javax-websocket-server-impl</exclude>
-                <exclude>javax.servlet:javax.servlet-api</exclude>
-		        <exclude>com.github.oshi:oshi-core</exclude>
+                <exclude>org.eclipse.jetty.ee10:jetty-ee10-webapp</exclude>
+                <exclude>org.eclipse.jetty.ee10:jetty-ee10-servlet</exclude>
+                <exclude>org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server</exclude>
+                <exclude>com.github.oshi:oshi-core</exclude>
                 <exclude>org.graalvm.polyglot:polyglot</exclude>
                 <exclude>org.graalvm.polyglot:js</exclude>
 		        <exclude>org.graalvm.js:js-scriptengine</exclude>
