@@ -9,34 +9,42 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>.</outputDirectory>
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>true</unpack>
             <scope>runtime</scope>
             <excludes>
-                <exclude>org.eclipse.jetty:jetty-server</exclude>
-                <exclude>org.eclipse.jetty.ee10:jetty-ee10-webapp</exclude>
-                <exclude>org.eclipse.jetty.ee10:jetty-ee10-servlet</exclude>
-                <exclude>org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server</exclude>
-                <exclude>com.github.oshi:oshi-core</exclude>
-                <exclude>org.graalvm.polyglot:polyglot</exclude>
-                <exclude>org.graalvm.polyglot:js</exclude>
-		        <exclude>org.graalvm.js:js-scriptengine</exclude>
-                <exclude>org.quartz-scheduler:quartz</exclude>
-                <exclude>org.quartz-scheduler:quartz-jobs</exclude>
-                <exclude>commons-net:commons-net</exclude>
-                <exclude>com.sun.mail:jakarta.mail</exclude>
-                <exclude>jakarta.mail:jakarta.mail-api</exclude>
-                <exclude>com.jcraft:jzlib</exclude>
-		        <exclude>com.hierynomus:sshj</exclude>
-                <exclude>org.bouncycastle:bcprov-jdk18on</exclude>
-                <exclude>org.bouncycastle:bcpkix-jdk18on</exclude>
+                <exclude>org.eclipse.jetty:*</exclude>
+                <exclude>org.eclipse.jetty.ee10:*</exclude>
+                <exclude>org.eclipse.jetty.ee10.websocket:*</exclude>
+                <exclude>org.eclipse.jetty.websocket:*</exclude>
+                <exclude>jakarta.*:*</exclude>
+                <exclude>org.ow2.asm:*</exclude>
+
+                <exclude>com.github.oshi:*</exclude>
+                <exclude>net.java.dev.jna:*</exclude>
+
+                <exclude>org.graalvm.polyglot:*</exclude>
+		        <exclude>org.graalvm.js:*</exclude>
+
+                <exclude>org.quartz-scheduler:*</exclude>
+
+                <exclude>commons-net:*</exclude>
+
+                <exclude>com.sun.mail:*</exclude>
+
+                <exclude>com.jcraft:*</exclude>
+
+		        <exclude>com.hierynomus:*</exclude>
+                <exclude>org.bouncycastle:*</exclude>
+                <exclude>net.i2p.crypto:*</exclude>
+
             </excludes>
         </dependencySet>
     </dependencySets>
     <fileSets>
         <fileSet>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>.</outputDirectory>
             <directory>${project.build.outputDirectory}</directory>
         </fileSet>
     </fileSets>
