@@ -12,14 +12,8 @@
       "port": "",
       "host": "",
       "name": "demo_en",
-      "username": ""
+      "username": "sa"
     }
-  },
-  "firebase": {
-    "app_name": "",
-    "database_url": "",
-    "key_file": "",
-    "listener_secret": ""
   },
   "commands": [
     {
