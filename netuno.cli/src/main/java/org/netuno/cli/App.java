@@ -806,16 +806,9 @@ public class App implements MainArg {
                                 .set("host", dbHost)
                                 .set("port", dbPort)
                                 .set("name", dbName)
-                                .set("username", dbUsername)
+                                .set("username", dbEngine.equals("h2") ? "sa" : dbUsername)
                                 .set("password", dbPassword)
                 )
-        );
-
-        configJSON.set("firebase", new Values()
-                .set("app_name", "")
-                .set("database_url", "")
-                .set("key_file", "")
-                .set("listener_secret", "")
         );
 
         configJSON.set("cron", new Values()
