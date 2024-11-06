@@ -12,14 +12,8 @@
       "port": "",
       "host": "",
       "name": "_",
-      "username": ""
+      "username": "sa"
     }
-  },
-  "firebase": {
-    "app_name": "",
-    "database_url": "",
-    "key_file": "",
-    "listener_secret": ""
   },
   "cron": {
     "secret": "Cron$ample713",
