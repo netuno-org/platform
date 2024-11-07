@@ -304,12 +304,12 @@ public class WS extends ResourceBase {
     
     public Values getAllSessionsEndpoints() {
         try {
-            Values sessionsEndPoints = (Values)Class.forName("org.netuno.cli.ws.WSEndpoint")
-                .getMethod("getEndpointSessions", String.class)
+            Values appSessionsEndpoints = (Values)Class.forName("org.netuno.cli.ws.WSEndpoint")
+                .getMethod("getSessionsEndpoints", String.class)
                 .invoke(null, app);
-            return sessionsEndPoints == null ? new Values() : sessionsEndPoints;
+            return appSessionsEndpoints == null ? new Values() : appSessionsEndpoints;
         } catch (Exception e) {
-            throw new ResourceException("ws.getAllSessions()", e);
+            throw new ResourceException("ws.getAllSessionsEndpoints()", e);
         }
     }
     
