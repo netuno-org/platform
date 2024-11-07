@@ -44,6 +44,8 @@ import org.netuno.psamata.net.Remote;
 @ServerEndpoint(value = "/ws-events")
 public class WSEndpoint {
     private static Logger logger = LogManager.getLogger(WSEndpoint.class);
+
+    private final static Values allSessionsEndpoints = new Values();
     
     private String app;
     
@@ -52,8 +54,6 @@ public class WSEndpoint {
     private Values config;
     
     private String authorization;
-    
-    private static Values globalEndpointSessions = new Values();
     
     private CountDownLatch closureLatch = new CountDownLatch(1);
     
@@ -76,14 +76,14 @@ public class WSEndpoint {
                 .set("data", new Values())
                 .set("authorization", authorization);
         
-        Values appEndpointSessions = globalEndpointSessions.getValues(app);
+        Values appSessionsEndpoints = allSessionsEndpoints.getValues(app);
         
-        if (appEndpointSessions == null) {
-            appEndpointSessions = new Values();
-            globalEndpointSessions.set(app, appEndpointSessions);
+        if (appSessionsEndpoints == null) {
+            appSessionsEndpoints = new Values();
+            allSessionsEndpoints.set(app, appSessionsEndpoints);
         }
-        
-        appEndpointSessions.add(
+
+        appSessionsEndpoints.add(
                 this.data
         );
         
@@ -262,10 +262,10 @@ public class WSEndpoint {
                                 response.toString());
             }
         }
-        Values endpointSessions = globalEndpointSessions.getValues(app);
-        for (int i = 0; i < endpointSessions.size(); i++) {
-            if (endpointSessions.get(i) == this.data) {
-                endpointSessions.remove(i);
+        Values appSessionsEndpoints = allSessionsEndpoints.getValues(app);
+        for (int i = 0; i < appSessionsEndpoints.size(); i++) {
+            if (appSessionsEndpoints.get(i) == this.data) {
+                appSessionsEndpoints.remove(i);
             }
         }
         closureLatch.countDown();
@@ -290,7 +290,7 @@ public class WSEndpoint {
         return authorization != null && !authorization.isEmpty();
     }
     
-    public static Values getEndpointSessions(String app) {
-        return globalEndpointSessions.getValues(app);
+    public static Values getSessionsEndpoints(String app) {
+        return allSessionsEndpoints.getValues(app);
     }
 }
