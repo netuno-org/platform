@@ -166,6 +166,16 @@ public class OutputStream extends java.io.OutputStream {
     }
 
     /**
+     * Print, write byte.
+     * @param v Byte
+     * @throws IOException Write exception
+     */
+    public final OutputStream print(final byte v) throws IOException {
+        writeBytes(Byte.toString(v));
+        return this;
+    }
+
+    /**
      * Print, write short.
      * @param v Short
      * @throws IOException Write exception
@@ -337,7 +347,17 @@ public class OutputStream extends java.io.OutputStream {
     }
 
     /**
-     * Print, write short.
+     * Print, write byte.
+     * @param v Byte
+     * @throws IOException Write exception
+     */
+    public final OutputStream println(final byte v) throws IOException {
+        writeBytes(Byte.toString(v) + "\n");
+        return this;
+    }
+
+    /**
+     * Print, write Short.
      * @param v Short
      * @throws IOException Write exception
      */
