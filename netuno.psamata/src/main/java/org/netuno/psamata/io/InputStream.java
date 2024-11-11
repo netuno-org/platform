@@ -46,14 +46,7 @@ public class InputStream extends java.io.InputStream {
     public InputStream(final java.io.InputStream in) {
         this.in = in;
     }
-    public final String readAllAndClose() throws IOException {
-        try {
-            return readAll();
-        } finally {
-            close();
-        }
-    }
-    
+
     /**
      * Read LIne.
      * @return Content
@@ -71,6 +64,27 @@ public class InputStream extends java.io.InputStream {
     public final String readAll() throws IOException {
         return new Buffer().readString(in);
     }
+
+    public final String readAllAndClose() throws IOException {
+        try {
+            return readAll();
+        } finally {
+            close();
+        }
+    }
+
+    public final byte[] readAllBytes() throws IOException {
+        return readAllBytes(in);
+    }
+
+    public final byte[] readAllBytesAndClose() throws IOException {
+        try {
+            return readAllBytes(in);
+        } finally {
+            close();
+        }
+    }
+
     /**
      * Read all bytes.
      * @return Content
@@ -156,8 +170,7 @@ public class InputStream extends java.io.InputStream {
      * @return Line
      * @throws java.io.IOException Exception
      */
-    public static String readLine(java.io.InputStream in)
-    throws IOException {
+    public static String readLine(java.io.InputStream in) throws IOException {
         StringBuffer line = new StringBuffer();
         int c = 0;
         synchronized (in) {
@@ -224,9 +237,23 @@ public class InputStream extends java.io.InputStream {
     	new Buffer().copy(this, out);
         return this;
     }
+
+    public InputStream writeTo(java.io.OutputStream out) throws IOException {
+        new Buffer().copy(this, out);
+        return this;
+    }
     
     public InputStream writeToAndClose(OutputStream out) throws IOException {
     	try {
+            writeTo(out);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public InputStream writeToAndClose(java.io.OutputStream out) throws IOException {
+        try {
             writeTo(out);
         } finally {
             close();
@@ -254,11 +281,11 @@ public class InputStream extends java.io.InputStream {
     }
     
     public final String readString() throws IOException {
-	return readString(Charset.defaultCharset());
+	    return readString(Charset.defaultCharset());
     }
     
     public final String readStringAndClose() throws IOException {
-	try {
+	    try {
            return readString();
         } finally {
             close();
@@ -272,7 +299,7 @@ public class InputStream extends java.io.InputStream {
     }
     
     public final String readStringAndClose(Charset charset) throws IOException {
-	try {
+	    try {
            return readString(charset);
         } finally {
             close();
