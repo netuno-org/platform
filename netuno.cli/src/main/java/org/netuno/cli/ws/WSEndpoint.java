@@ -18,6 +18,9 @@
 package org.netuno.cli.ws;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import jakarta.websocket.ClientEndpoint;
@@ -31,6 +34,7 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 import org.netuno.cli.App;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.net.Remote;
@@ -54,6 +58,9 @@ public class WSEndpoint {
     private Values config;
     
     private String authorization;
+
+    private HttpURLConnection binaryStreamConnection = null;
+    private java.io.OutputStream binaryStreamOutput = null;
     
     private CountDownLatch closureLatch = new CountDownLatch(1);
     
@@ -75,7 +82,7 @@ public class WSEndpoint {
                 .set("session", session)
                 .set("data", new Values())
                 .set("authorization", authorization);
-        
+
         Values appSessionsEndpoints = allSessionsEndpoints.getValues(app);
         
         if (appSessionsEndpoints == null) {
@@ -101,6 +108,13 @@ public class WSEndpoint {
                     );
             Remote remote = new Remote();
             remote.getHeader().set("Authorization", authorization);
+            remote.getHeader().set("WS-App", this.app);
+            remote.getHeader().set("WS-Session-Id", session.getId());
+            if (this.config.getValues("config") != null) {
+                remote.getHeader().set("WS-Config", this.config.getValues("config").toJSON());
+            }
+            remote.getHeader().set("WS-QS", new Values(session.getRequestURI().getQuery(), "&", "=").toJSON());
+            remote.getHeader().set("WS-Connect", true);
             Remote.Response response = remote.alwaysBodyData().asJSON().acceptJSON().post(
                 urlService,
                 dataRemote
@@ -115,9 +129,30 @@ public class WSEndpoint {
                                 urlService,
                                 dataRemote.toJSON(),
                                 response.toString());
+            } else {
+                try {
+                    URL _url = new URL(urlService);
+                    binaryStreamConnection = (HttpURLConnection) _url.openConnection();
+                    binaryStreamConnection.setDoOutput(true);
+                    binaryStreamConnection.setRequestProperty("Content-Type", "application/octet-stream");
+                    binaryStreamConnection.setRequestProperty("WS-App", this.app);
+                    binaryStreamConnection.setRequestProperty("WS-Session-Id", session.getId());
+                    if (this.config.getValues("config") != null) {
+                        binaryStreamConnection.setRequestProperty("WS-Config", this.config.getValues("config").toJSON());
+                    }
+                    binaryStreamConnection.setRequestProperty("WS-QS", new Values(session.getRequestURI().getQuery(), "&", "=").toJSON());
+                    binaryStreamConnection.setRequestProperty("WS-Connect", "true");
+                    if (authorization != null && !authorization.isEmpty()) {
+                        binaryStreamConnection.setRequestProperty("Authorization", authorization);
+                    }
+                    binaryStreamConnection.setRequestMethod("GET");
+                    binaryStreamConnection.connect();
+                    binaryStreamOutput = binaryStreamConnection.getOutputStream();
+                } catch (IOException ex) {
+                    logger.warn("Starting connecting to binary stream.", ex);
+                }
             }
         }
-        //System.out.println("Open Sessions: " + session.getOpenSessions().size());
     }
 
     @OnMessage
@@ -125,9 +160,14 @@ public class WSEndpoint {
         message = message.trim();
         Values jsonMessage = new Values();
         if (message.startsWith("{") && message.endsWith("}")) {
-            jsonMessage = Values.fromJSON(message);
-            jsonMessage.set("type", "json");
-        } else {
+            try {
+                jsonMessage = Values.fromJSON(message);
+                jsonMessage.set("type", "json");
+            } catch (JSONException e) {
+                logger.debug("Failed to parse message to JSON: "+ message, e);
+            }
+        }
+        if (jsonMessage.getString("type").isEmpty()) {
             jsonMessage.set("content", message);
             jsonMessage.set("type", "text");
         }
@@ -143,14 +183,16 @@ public class WSEndpoint {
                         .set(
                                 "_ws",
                                 new Values()
-                                        .set("app", this.app)
-                                        .set("session", session.getId())
-                                        .set("config", this.config.getValues("config", new Values()))
-                                        .set("qs", new Values(session.getRequestURI().getQuery(), "&", "="))
                                         .set("message", jsonMessage)
                         );
                 Remote remote = new Remote();
                 remote.getHeader().set("Authorization", authorization);
+                remote.getHeader().set("WS-App", this.app);
+                remote.getHeader().set("WS-Session-Id", session.getId());
+                if (this.config.getValues("config") != null) {
+                    remote.getHeader().set("WS-Config", this.config.getValues("config").toJSON());
+                }
+                remote.getHeader().set("WS-QS", new Values(session.getRequestURI().getQuery(), "&", "=").toJSON());
                 remote.alwaysBodyData().asJSON().acceptJSON();
                 if (jsonMessage.hasKey("header")) {
                     Values header = jsonMessage.getValues("header", new Values());
@@ -230,36 +272,56 @@ public class WSEndpoint {
         }*/
     }
 
+    @OnMessage
+    public void onWebSocketBinary(Session session, ByteBuffer byteBuffer) {
+        if (binaryStreamConnection != null) {
+            try {
+                binaryStreamConnection.getOutputStream().write(byteBuffer.array());
+            } catch (IOException ex) {
+                logger.warn("Error sending binary stream.", ex);
+            }
+        } else {
+            logger.warn("A binary message was received in session "+ session.getId() +" with bytes length "+ byteBuffer.remaining() +", but no stream was connected to deliver it.");
+        }
+    }
+
     @OnClose
     public void onWebSocketClose(CloseReason reason) {
         Session session = this.data.get("session", Session.class);
         String urlService = App.getURL(this.app, this.config.getString("service"));
         if (!urlService.isEmpty() && this.config.getBoolean("enabled", true)) {
-            Values dataRemote = new Values()
-                    .set(
-                            "_ws",
-                            new Values()
-                                    .set("app", this.app)
-                                    .set("session", session.getId())
-                                    .set("config", this.config.getValues("config"))
-                                    .set("qs", new Values(session.getRequestURI().getQuery(), "&", "="))
-                                    .set("close",
-                                            new Values()
-                                                    .set("code", reason.getCloseCode().toString())
-                                                    .set("reason", reason.getReasonPhrase())
-                                    )
-                    );
             Remote remote = new Remote();
             remote.getHeader().set("Authorization", authorization);
+            remote.getHeader().set("WS-App", this.app);
+            remote.getHeader().set("WS-Session-Id", session.getId());
+            if (this.config.getValues("config") != null) {
+                remote.getHeader().set("WS-Config", this.config.getValues("config").toJSON());
+            }
+            remote.getHeader().set("WS-QS", new Values(session.getRequestURI().getQuery(), "&", "=").toJSON());
+            remote.getHeader().set(
+                    "WS-Close",
+                    new Values()
+                            .set("code", reason.getCloseCode().toString())
+                            .set("reason", reason.getReasonPhrase())
+                            .toJSON()
+            );
             Remote.Response response = remote.alwaysBodyData().asJSON().acceptJSON().delete(
-                urlService,
-                dataRemote
+                urlService
             );
             if (!response.isOk()) {
                 logger.error("Web socket service endpoint of the "+ this.app +" app failed when client close with status "+ response.statusCode +" when sending POST to:\n{}\n{}\n",
                                 urlService,
-                                dataRemote.toJSON(),
                                 response.toString());
+            }
+            if (binaryStreamOutput != null) {
+                try {
+                    binaryStreamOutput.close();
+                } catch (IOException ex) {
+                    logger.warn("Error closing binary stream.", ex);
+                }
+            }
+            if (binaryStreamConnection != null) {
+                binaryStreamConnection.disconnect();
             }
         }
         Values appSessionsEndpoints = allSessionsEndpoints.getValues(app);
@@ -278,7 +340,7 @@ public class WSEndpoint {
     }
 
     public void awaitClosure() throws InterruptedException {
-        System.out.println("Awaiting closure from remote");
+        logger.info("Awaiting closure from remote");
         closureLatch.await();
     }
     
