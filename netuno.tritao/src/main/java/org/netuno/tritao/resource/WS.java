@@ -87,6 +87,23 @@ public class WS extends ResourceBase {
     @AppEvent(type=AppEventType.BeforeServiceConfiguration)
     private void beforeServiceConfiguration() {
         Req req = resource(Req.class);
+        Header header = resource(Header.class);
+        if (!header.hasKey("WS-Session-Id")) {
+            return;
+        }
+        this.sessionId = header.getString("WS-Session-Id");
+        if (!header.getString("WS-Config").isEmpty()) {
+            this.config = Values.fromJSON(header.getString("WS-Config"));
+        }
+        if (!header.getString("WS-QS").isEmpty()) {
+            this.qs = Values.fromJSON(header.getString("WS-QS"));
+        }
+        if (!header.getString("WS-Connect").isEmpty()) {
+            this.connect = header.getBoolean("WS-Connect");
+        }
+        if (!header.getString("WS-Close").isEmpty()) {
+            this.close = Values.fromJSON(header.getString("WS-Close"));
+        }
         if (!req.hasKey("_ws")) {
             return;
         }
@@ -94,14 +111,9 @@ public class WS extends ResourceBase {
         if (ws.isEmpty()) {
             return;
         }
-        this.sessionId = ws.getString("session");
-        this.config = ws.getValues("config");
-        this.qs = ws.getValues("qs");
-        this.connect = ws.getBoolean("connect");
         if (ws.getValues("message") != null) {
             this.message = new WSMessage(ws.getValues("message"));
         }
-        this.close = ws.getValues("close");
     }
     
     public String sessionId() {
