@@ -159,8 +159,9 @@ public class Out extends ResourceBase {
                 description = "Closes the sending of HTTP response data.",
                 howToUse = { })
     }, parameters = { }, returns = { })
-    public void close() {
+    public Out close() {
         getProteu().close();
+        return this;
     }
 
     @MethodDoc(translations = {
@@ -331,6 +332,11 @@ public class Out extends ResourceBase {
                 description = "Current data output."
         )
     })
+    public Out println(byte i) throws IOException {
+        getProteu().getOutput().println(i);
+        return this;
+    }
+
     public Out println(int i) throws IOException {
         getProteu().getOutput().println(i);
         return this;
@@ -529,6 +535,11 @@ public class Out extends ResourceBase {
                 description = "Current data output."
         )
     })
+    public Out print(byte i) throws IOException {
+        getProteu().getOutput().print(i);
+        return this;
+    }
+
     public Out print(int i) throws IOException {
         getProteu().getOutput().print(i);
         return this;
