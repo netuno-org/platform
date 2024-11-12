@@ -221,6 +221,10 @@ public class Proteu {
      */
     public Values gzipExtensions = new Values();
     /**
+     * Input bytes from client
+     */
+    public org.netuno.psamata.io.InputStream in;
+    /**
      * Output bytes to client
      */
     public org.netuno.psamata.io.OutputStream out;
@@ -307,14 +311,17 @@ public class Proteu {
                 }
                 requestPost.set(name, value);
             }
-            if (request.getContentType() != null && request.getContentType().toLowerCase().startsWith(ContentType.JSON.contentType)) {
-                String json = InputStream.readAll(request.getInputStream());
-                Values data = Values.fromJSON(json);
-                requestPost.merge(data);
-                data.clear();
-            }
-            if (request.getContentType() != null && request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
-                HTTP.buildPostMultipart(new org.netuno.psamata.io.InputStream(request.getInputStream()), requestHeader, requestPost);
+            if (request.getContentType() != null) {
+                if (request.getContentType().toLowerCase().startsWith(ContentType.JSON.contentType)){
+                    String json = InputStream.readAll(request.getInputStream());
+                    Values data = Values.fromJSON(json);
+                    requestPost.merge(data);
+                    data.clear();
+                } else if (request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
+                    HTTP.buildPostMultipart(new org.netuno.psamata.io.InputStream(request.getInputStream()), requestHeader, requestPost);
+                } else if (request.getContentType().toLowerCase().startsWith("application/octet-stream")) {
+                    this.in = new org.netuno.psamata.io.InputStream(request.getInputStream());
+                }
             }
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
@@ -485,6 +492,14 @@ public class Proteu {
      */
     public Values getConfig() {
         return config;
+    }
+
+    /**
+     * Get Input.
+     * @return Input
+     */
+    public InputStream getInput() {
+        return in;
     }
 
     /**
