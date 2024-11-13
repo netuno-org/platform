@@ -1256,4 +1256,6 @@ public class Query {
     public Values page(Pagination pagination) {
         return queryEngine.page(this.setPagination(pagination)).toValues();
     }
+    public int deleteAll() {return queryEngine.deleteAll(this);}
+    public int deleteFirst() {return queryEngine.deleteFirst(this);}
 }

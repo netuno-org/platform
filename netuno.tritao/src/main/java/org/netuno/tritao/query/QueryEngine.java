@@ -3,6 +3,9 @@ import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.Builder;
+import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.query.join.*;
 import org.netuno.tritao.query.pagination.Page;
@@ -11,7 +14,9 @@ import org.netuno.tritao.query.where.Condition;
 import org.netuno.tritao.query.where.RelationOperator;
 import org.netuno.tritao.query.where.Where;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.util.ResourceException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -251,5 +256,55 @@ public class QueryEngine extends Data {
         int total = this.count(query);
         Page page = new Page(items.size() == 0 ? Collections.EMPTY_LIST : items , total, query.getPagination());
         return page;
+    }
+
+    public int deleteAll(Query query) {
+        String selectIdsCommandSQL = "SELECT " + query.getTableName() + ".id FROM " + query.getTableName() + this.buildQuerySQL(query);
+        List<Values> idsValues = getManager().query(selectIdsCommandSQL);
+        if (idsValues.size() == 0) {
+            throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
+        }
+        Builder builder = Config.getDataBaseBuilder(getProteu());
+        int numberOfAffectedRows = 0;
+        List<String> undeletedRecords = new ArrayList<>();
+        for (Values values : idsValues) {
+            final DataItem dataItem = builder.delete(query.getTableName(), values.getString("id"));
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                numberOfAffectedRows++;
+            } else {
+                undeletedRecords.add(values.getString("id"));
+            }
+        }
+        if (undeletedRecords.size() > 0 && query.isDebug()) {
+            logger.warn("Impossible to delete the following records IDs: [" + String.join(", ", undeletedRecords) + "]");
+        }
+        if (query.isDebug()) {
+            logger.warn("Number of rows affected: " + numberOfAffectedRows);
+        }
+        return numberOfAffectedRows;
+    }
+
+    public int deleteFirst(Query query) {
+        String selectIdsCommandSQL = "SELECT " + query.getTableName() + ".id FROM " + query.getTableName() + this.buildQuerySQL(query);
+        if (query.getOrder() != null) {
+            selectIdsCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+        }
+        selectIdsCommandSQL += "\nLIMIT 1";
+        Builder builder = Config.getDataBaseBuilder(getProteu());
+        List<Values> idsValues = getManager().query(selectIdsCommandSQL);
+        if (idsValues.size() == 0) {
+            throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
+        }
+        final DataItem dataItem = builder.delete(query.getTableName(), idsValues.get(0).getString("id"));
+        if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+            return 1;
+        } else {
+            if (dataItem.getStatus() == DataItem.Status.Relations && query.isDebug()) {
+                logger.warn("Impossible to delete the record with ID: " + idsValues.get(0).getString("id") + ", the same is related to one or more tables");
+            } else if (query.isDebug()) {
+                logger.warn("Impossible to delete the record ID: " + idsValues.get(0).getString("id"));
+            }
+            return 0;
+        }
     }
 }
