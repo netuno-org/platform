@@ -279,6 +279,10 @@ public class InputStream extends java.io.InputStream {
     public final int read() throws IOException {
         return in.read();
     }
+
+    public int read(byte[] bytes, int off, int length) throws IOException {
+        return in.read(bytes, 0, length);
+    }
     
     public final String readString() throws IOException {
 	    return readString(Charset.defaultCharset());
