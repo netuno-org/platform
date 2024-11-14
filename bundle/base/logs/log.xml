@@ -9,7 +9,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="warn">
+        <Root level="error">
             <AppenderRef ref="file"/>
             <AppenderRef ref="STDOUT"/>
         </Root>
