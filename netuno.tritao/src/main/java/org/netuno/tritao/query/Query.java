@@ -1258,4 +1258,8 @@ public class Query {
     }
     public int deleteAll() {return queryEngine.deleteAll(this);}
     public int deleteFirst() {return queryEngine.deleteFirst(this);}
+    public Values deleteCascade(String... forms) {
+        Values deleteLinks = linkEngine.buildDeleteLinks(this.tableName, Arrays.stream(forms).toList());
+        return queryEngine.deleteCascade(deleteLinks, this);
+    }
 }

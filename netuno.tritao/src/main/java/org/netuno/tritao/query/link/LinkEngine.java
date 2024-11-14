@@ -7,8 +7,10 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.query.join.Join;
 import org.netuno.tritao.query.join.Relation;
 import org.netuno.tritao.query.join.RelationType;
+import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,21 @@ public class LinkEngine extends TableBuilderResourceBase {
             join.setWhere(link.getWhere().setTable(link.getRelationLink().getFormLink()));
         }
         return join;
+    }
+
+    public Values buildDeleteLinks(String form, List<String> formsToLink) {
+        if (formsToLink.size() == 0) {
+            throw new ResourceException("No form was provided in deleteCascade method");
+        }
+        Values deleteLinks = new Values();
+        for (String formToLink : formsToLink) {
+            Values linkBetween = getLinkBetween(formToLink, form);
+            if (linkBetween == null) {
+                throw new UnsupportedOperationException("There is no link between the forms " + form + " and " + formToLink);
+            }
+            deleteLinks.set(formToLink, linkBetween.getString(("name")));
+        }
+        return deleteLinks;
     }
 
     public List<Values> getSelectComponents(String formName) {
@@ -59,7 +76,7 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 return relation;
             } else {
-                throw new IllegalArgumentException("There is no relationship between the forms " + form + " and " + subLink.getFormLink());
+                throw new IllegalArgumentException("There is no link between the forms " + form + " and " + subLink.getFormLink());
             }
         }
     }

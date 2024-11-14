@@ -264,11 +264,10 @@ public class QueryEngine extends Data {
         if (idsValues.size() == 0) {
             throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
         }
-        Builder builder = Config.getDataBaseBuilder(getProteu());
         int numberOfAffectedRows = 0;
         List<String> undeletedRecords = new ArrayList<>();
         for (Values values : idsValues) {
-            final DataItem dataItem = builder.delete(query.getTableName(), values.getString("id"));
+            final DataItem dataItem = getBuilder().delete(query.getTableName(), values.getString("id"));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 numberOfAffectedRows++;
             } else {
@@ -290,12 +289,11 @@ public class QueryEngine extends Data {
             selectIdsCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
         selectIdsCommandSQL += "\nLIMIT 1";
-        Builder builder = Config.getDataBaseBuilder(getProteu());
         List<Values> idsValues = getManager().query(selectIdsCommandSQL);
         if (idsValues.size() == 0) {
             throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
         }
-        final DataItem dataItem = builder.delete(query.getTableName(), idsValues.get(0).getString("id"));
+        final DataItem dataItem = getBuilder().delete(query.getTableName(), idsValues.get(0).getString("id"));
         if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
             return 1;
         } else {
@@ -306,5 +304,48 @@ public class QueryEngine extends Data {
             }
             return 0;
         }
+    }
+
+    public Values deleteCascade(Values deleteLinks, Query query) {
+        String selectIdsCommandSQL = "SELECT " + query.getTableName() + ".id FROM " + query.getTableName() + this.buildQuerySQL(query);
+        List<Values> idsValues = getManager().query(selectIdsCommandSQL);
+        Values affectedForms = new Values();
+        Values undeletedRecords = new Values();
+        if (idsValues.size() == 0) {
+            throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
+        }
+        for (Values idValue : idsValues) {
+            for (Map.Entry<String, Object> deleteLink: deleteLinks.entrySet()) {
+                String selectDeleteLinkIdsCommandSQL = "SELECT id FROM " + deleteLink.getKey() + " WHERE " + deleteLink.getValue() + " = " + idValue.get("id");
+                List<Values> deleteLinkIds = getManager().query(selectDeleteLinkIdsCommandSQL);
+                for (Values deleteLinkId: deleteLinkIds) {
+                    DataItem dataItem = getBuilder().delete(deleteLink.getKey(), deleteLinkId.getString("id"));
+                    if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                        affectedForms.set(deleteLink.getKey(), affectedForms.getInt(deleteLink.getKey(), 0) + 1);
+                    } else {
+                        undeletedRecords.set(deleteLink.getKey(), undeletedRecords.getInt(deleteLink.getKey(), 0) + 1);
+                    }
+                }
+            }
+            DataItem dataItem = getBuilder().delete(query.getTableName(), idValue.getString("id"));
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                affectedForms.set(
+                        query.getTableName(),
+                        (affectedForms.getInt(query.getTableName(), 0) + 1)
+                );
+            } else {
+                undeletedRecords.set(
+                        query.getTableName(),
+                        (undeletedRecords.getInt(query.getTableName(), 0) + 1)
+                );
+            }
+        }
+        if (query.isDebug()) {
+            if (undeletedRecords.size() > 0) {
+                logger.warn("Impossible to delete the records in forms: " + undeletedRecords.toJSON());
+            }
+            logger.warn("Rows of the forms affected: " + affectedForms.toJSON() );
+        }
+        return affectedForms;
     }
 }
