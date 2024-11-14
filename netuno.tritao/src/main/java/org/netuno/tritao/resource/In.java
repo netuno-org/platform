@@ -105,6 +105,10 @@ public class In extends ResourceBase {
         return getProteu().getInput().read();
     }
 
+    public int read(byte[] bytes, int off, int length) throws IOException {
+        return getProteu().getInput().read(bytes, off, length);
+    }
+
     public String readString() throws IOException {
         return getProteu().getInput().readString();
     }
