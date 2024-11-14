@@ -192,6 +192,7 @@ public class QueryEngine extends Data {
         if (query.getOrder() != null) {
             selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
+        selectCommandSQL += "\nLIMIT " + query.getLimit();
         if (query.isDebug()) {
             logger.warn("SQL Command executed: \n"+selectCommandSQL);
         }
@@ -258,20 +259,29 @@ public class QueryEngine extends Data {
         return page;
     }
 
-    public int deleteAll(Query query) {
+    public List<Values> getRecordIDs(Query query) {
         String selectIdsCommandSQL = "SELECT " + query.getTableName() + ".id FROM " + query.getTableName() + this.buildQuerySQL(query);
-        List<Values> idsValues = getManager().query(selectIdsCommandSQL);
-        if (idsValues.size() == 0) {
+        if (query.getOrder() != null) {
+            selectIdsCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+        }
+        selectIdsCommandSQL += "\nLIMIT " + query.getLimit();
+        List<Values> recordIDs = getManager().query(selectIdsCommandSQL);
+        if (recordIDs.size() == 0) {
             throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
         }
+        return recordIDs;
+    }
+
+    public int deleteAll(Query query) {
+        List<Values> recordIDs = getRecordIDs(query);
         int numberOfAffectedRows = 0;
         List<String> undeletedRecords = new ArrayList<>();
-        for (Values values : idsValues) {
-            final DataItem dataItem = getBuilder().delete(query.getTableName(), values.getString("id"));
+        for (Values recordID : recordIDs) {
+            final DataItem dataItem = getBuilder().delete(query.getTableName(), recordID.getString("id"));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 numberOfAffectedRows++;
             } else {
-                undeletedRecords.add(values.getString("id"));
+                undeletedRecords.add(recordID.getString("id"));
             }
         }
         if (undeletedRecords.size() > 0 && query.isDebug()) {
@@ -284,15 +294,7 @@ public class QueryEngine extends Data {
     }
 
     public int deleteFirst(Query query) {
-        String selectIdsCommandSQL = "SELECT " + query.getTableName() + ".id FROM " + query.getTableName() + this.buildQuerySQL(query);
-        if (query.getOrder() != null) {
-            selectIdsCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
-        }
-        selectIdsCommandSQL += "\nLIMIT 1";
-        List<Values> idsValues = getManager().query(selectIdsCommandSQL);
-        if (idsValues.size() == 0) {
-            throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
-        }
+        List<Values> idsValues = getRecordIDs(query.setLimit(1));
         final DataItem dataItem = getBuilder().delete(query.getTableName(), idsValues.get(0).getString("id"));
         if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
             return 1;
@@ -307,16 +309,12 @@ public class QueryEngine extends Data {
     }
 
     public Values deleteCascade(Values deleteLinks, Query query) {
-        String selectIdsCommandSQL = "SELECT " + query.getTableName() + ".id FROM " + query.getTableName() + this.buildQuerySQL(query);
-        List<Values> idsValues = getManager().query(selectIdsCommandSQL);
+        List<Values> recordIDs = getRecordIDs(query);
         Values affectedForms = new Values();
         Values undeletedRecords = new Values();
-        if (idsValues.size() == 0) {
-            throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
-        }
-        for (Values idValue : idsValues) {
+        for (Values recordID : recordIDs) {
             for (Map.Entry<String, Object> deleteLink: deleteLinks.entrySet()) {
-                String selectDeleteLinkIdsCommandSQL = "SELECT id FROM " + deleteLink.getKey() + " WHERE " + deleteLink.getValue() + " = " + idValue.get("id");
+                String selectDeleteLinkIdsCommandSQL = "SELECT id FROM " + deleteLink.getKey() + " WHERE " + deleteLink.getValue() + " = " + recordID.get("id");
                 List<Values> deleteLinkIds = getManager().query(selectDeleteLinkIdsCommandSQL);
                 for (Values deleteLinkId: deleteLinkIds) {
                     DataItem dataItem = getBuilder().delete(deleteLink.getKey(), deleteLinkId.getString("id"));
@@ -327,7 +325,7 @@ public class QueryEngine extends Data {
                     }
                 }
             }
-            DataItem dataItem = getBuilder().delete(query.getTableName(), idValue.getString("id"));
+            DataItem dataItem = getBuilder().delete(query.getTableName(), recordID.getString("id"));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 affectedForms.set(
                         query.getTableName(),
@@ -348,4 +346,25 @@ public class QueryEngine extends Data {
         }
         return affectedForms;
     }
+
+    public int updateFirst(Values data, Query query) {
+        if (data == null) {
+            throw new UnsupportedOperationException("No values in update method");
+        }
+        List<Values> recordIDs = this.getRecordIDs(query.setLimit(1));
+        DataItem dataItem = getBuilder().update(query.getTableName(), recordIDs.get(0).getString("id"), data);
+        if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+            return 1;
+        } else {
+            if (query.isDebug()) {
+                logger.warn("Impossible update the record ID: " + recordIDs.get(0).getString("id"));
+            }
+            return 0;
+        }
+    }
+
+    public int updateAll(Values data, Query query) {
+        return 1;
+    }
 }
+

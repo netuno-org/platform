@@ -41,6 +41,7 @@ public class Query {
     private Pagination pagination;
     private boolean debug = false;
     private List<Populate> tablesToPopulate = new ArrayList<>();
+    private int limit = 1000;
     private QueryEngine queryEngine;
     private LinkEngine linkEngine;
 
@@ -712,6 +713,19 @@ public class Query {
         return this;
     }
 
+    public int getLimit() {
+        return limit;
+    }
+
+    public Query setLimit(int limit) {
+        this.limit = limit > 1000 ? 1000 : limit;
+        return this;
+    }
+
+    public Query limit(int limit) {
+        return setLimit(limit);
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
@@ -1261,5 +1275,12 @@ public class Query {
     public Values deleteCascade(String... forms) {
         Values deleteLinks = linkEngine.buildDeleteLinks(this.tableName, Arrays.stream(forms).toList());
         return queryEngine.deleteCascade(deleteLinks, this);
+    }
+    public int updateFirst(Values data) {
+        return queryEngine.updateFirst(data, this);
+    }
+
+    public int updateAll(Values data) {
+        return queryEngine.updateAll(data, this);
     }
 }
