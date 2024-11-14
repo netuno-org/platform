@@ -24,6 +24,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -383,6 +384,114 @@ public class Convert extends ResourceBase {
 
 	public String toBase64(String content) {
 		return Base64.getEncoder().encodeToString(content.getBytes());
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte um array de bytes em text.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts a byte array to text.",
+							howToUse = { })
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "bytes", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									description = "Array de bytes."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Byte array."
+							)
+					}),
+					@ParameterDoc(
+							name = "charset", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									description = "Código de codificação de caracteres."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Character encoding code."
+							)
+					})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna o texto obtido do array de bytes."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns the text obtained from the byte array."
+					)
+			}
+	)
+	public String textFromBytes(byte[] bytes, String charset) throws UnsupportedEncodingException {
+		return new String(bytes, charset);
+	}
+
+	public String textFromBytes(byte[] bytes) {
+		return new String(bytes);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte um text em array de bytes.",
+							howToUse = { }),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts a text to byte array.",
+							howToUse = { })
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "text", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									description = "Conteúdo em texto."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Text content."
+							)
+					}),
+					@ParameterDoc(
+							name = "charset", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									description = "Código de codificação de caracteres."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Character encoding code."
+							)
+					})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna o array de bytes obtido do texto."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns the byte array obtained from text."
+					)
+			}
+	)
+	public byte[] bytesFromText(String text, String charset) throws UnsupportedEncodingException {
+		return text.getBytes(charset);
+	}
+
+	public byte[] bytesFromText(String text) {
+		return text.getBytes();
 	}
 
     @MethodDoc(
