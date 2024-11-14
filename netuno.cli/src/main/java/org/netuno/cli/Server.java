@@ -262,7 +262,6 @@ public class Server implements MainArg {
             // configuring to support annotation scanning in the webapp (through
             // PlusConfiguration) to choosing where the webapp will unpack itself.
             WebAppContext webapp = new WebAppContext(Config.getWebHome(), "/");
-
             List<String> allExtraJars = new ArrayList<>();
             for (String extraLib : Config.getExtraLibs()) {
                 if (!Files.exists(Path.of(extraLib))) {
@@ -317,15 +316,15 @@ public class Server implements MainArg {
             server.setHandler(handlerList);
             
             ServerConnector connector = (ServerConnector)server.getConnectors()[0];
-            
+            connector.setIdleTimeout(0);
             HttpConfiguration httpConfiguration = connector.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration();
             httpConfiguration.setSendXPoweredBy(false);
             httpConfiguration.setSendServerVersion(false);
+            httpConfiguration.setIdleTimeout(0);
             
-            HttpConnectionFactory h1ConnectionFactory = new HttpConnectionFactory(httpConfiguration);
-            ServerConnector serverConnector = new ServerConnector(server, new ConnectionFactory[] {
-                    h1ConnectionFactory
-            });
+            HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
+            ServerConnector serverConnector = new ServerConnector(server, httpConnectionFactory);
+
             serverConnector.setPort(port);
             //serverConnector.setDefaultProtocol("h2c");
             // curl -v --http2 http://localhost:9000
