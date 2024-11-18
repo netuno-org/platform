@@ -3,8 +3,6 @@ import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Config;
-import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.query.join.*;
@@ -308,7 +306,7 @@ public class QueryEngine extends Data {
         }
     }
 
-    public Values deleteCascade(Values deleteLinks, Query query) {
+    public Values cascadeDelete(Values deleteLinks, Query query) {
         List<Values> recordIDs = getRecordIDs(query);
         Values affectedForms = new Values();
         Values undeletedRecords = new Values();
@@ -364,7 +362,112 @@ public class QueryEngine extends Data {
     }
 
     public int updateAll(Values data, Query query) {
-        return 1;
+        if (data == null) {
+            throw new UnsupportedOperationException("No values in update method");
+        }
+        List<Values> recordIDs = this.getRecordIDs(query);
+        int numberOfAffectedForms = 0;
+        List<String> unaffectedRecords = new ArrayList<>();
+        for (Values recordID : recordIDs) {
+            DataItem dataItem = getBuilder().update(query.getTableName(), recordID.getString("id"), data);
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                numberOfAffectedForms++;
+            } else {
+                unaffectedRecords.add(recordID.getString("id"));
+            }
+        }
+        if (query.isDebug()) {
+            if (unaffectedRecords.size() > 0) {
+                logger.warn("Impossible to update the following records IDs: [" + String.join(", ", unaffectedRecords) + "]");
+            }
+            logger.warn("Number of rows affected: " + numberOfAffectedForms);
+        }
+        return numberOfAffectedForms;
+    }
+
+    public String cascadeUpdateSubForms(Values dataValues, Map.Entry<String, Object> updateLink, String recordID) {
+        if (dataValues.get("id") != null) {
+            String getIdQuerySQL =
+                "SELECT "
+                    + updateLink.getKey()+".id"
+                    + " FROM " + updateLink.getKey()
+                    + " WHERE 1 = 1"
+                    + " AND id = " + dataValues.getString("id")
+                    + " AND " + updateLink.getValue() + " = " + recordID;
+            final List<Values> dbID = getManager().query(getIdQuerySQL);
+            String id = dbID.size() > 0 ? dbID.get(0).getString("id") : "0";
+            DataItem dataItem = getBuilder().update(updateLink.getKey(), id, dataValues);
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                return dataValues.getString("id");
+            }
+        } else if (dataValues.get("uid") != null) {
+            String getIdQuerySQL =
+                "SELECT "
+                    + updateLink.getKey()+".id"
+                    + " FROM " + updateLink.getKey()
+                    + " WHERE 1 = 1"
+                    + " AND uid = " + "'" + dataValues.getString("uid")+ "'"
+                    + " AND " + updateLink.getValue() + " = " + recordID;
+            final List<Values> dbUID = getManager().query(getIdQuerySQL);
+            String uid = dbUID.size() > 0 ? dbUID.get(0).getString("id") : "0";
+            DataItem dataItem = getBuilder().update(updateLink.getKey(), uid, dataValues);
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                return uid;
+            }
+        } else {
+            DataItem dataItem = getBuilder().insert(updateLink.getKey(), dataValues.set(updateLink.getValue().toString(), recordID));
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                return dataItem.getId();
+            }
+        }
+        return null;
+    }
+
+    public Values updateCascade(Values data, Values updateLinks, Query query) {
+        Values affectedValues = new Values();
+        String recordID = this.getRecordIDs(query.setLimit(1)).get(0).getString("id");
+        DataItem result = getBuilder().update(query.getTableName(), recordID, data);
+        checkDataItemErrors(result, "update");
+        affectedValues.set(query.getTableName(), (result.getStatusType() == DataItem.StatusType.Ok) ? 1 : 0);
+        for (Map.Entry<String, Object> updateLink : updateLinks.entrySet()) {
+            List<String> updatedRecords = new ArrayList<String>();
+            List<String> linkIDs = getManager().query(
+                    "SELECT " + updateLink.getKey()+".id FROM " + updateLink.getKey() + " WHERE " + updateLink.getValue() + " = " + recordID
+            ).stream().map(values -> values.getString("id")).collect(Collectors.toList());
+            if (data.get(updateLink.getKey()) instanceof Values) {
+               final Values dataValues = data.getValues(updateLink.getKey());
+               if (dataValues.values().stream().allMatch(object -> object instanceof Values)) {
+                    for (int i = 0; i < dataValues.size(); i++) {
+                        final String updatedRecordId = cascadeUpdateSubForms(dataValues.getValues(i), updateLink, recordID);
+                        if (updatedRecordId != null) {
+                            updatedRecords.add(updatedRecordId);
+                        }
+                    }
+               } else {
+                   final String updatedRecordId = cascadeUpdateSubForms(dataValues, updateLink, recordID);
+                   if (updatedRecordId != null) {
+                       updatedRecords.add(updatedRecordId);
+                   }
+               }
+                linkIDs.removeAll(updatedRecords);
+                affectedValues.set(updateLink.getKey(), (affectedValues.getInt(updateLink.getKey(), 0) + updatedRecords.size()));
+                if (updatedRecords.size() > 0) {
+                    for (String linkId : linkIDs) {
+                        if (getBuilder().delete(updateLink.getKey(), linkId).getStatusType() == DataItem.StatusType.Ok) {
+                            affectedValues.set(updateLink.getKey(), (affectedValues.getInt(updateLink.getKey(), 0) + 1));
+                        }
+                    }
+                }
+            }
+        }
+        return affectedValues;
+    }
+
+    public void checkDataItemErrors(DataItem dataItem, String action) {
+        switch (dataItem.getStatus()) {
+            case NotFound -> throw new ResourceException("No records found for form " + dataItem.getTable());
+            case Error -> throw new ResourceException("Impossible to " + action + " record of the form " + dataItem.getTable());
+        }
     }
 }
 

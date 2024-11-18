@@ -41,9 +41,20 @@ public class LinkEngine extends TableBuilderResourceBase {
             if (linkBetween == null) {
                 throw new UnsupportedOperationException("There is no link between the forms " + form + " and " + formToLink);
             }
-            deleteLinks.set(formToLink, linkBetween.getString(("name")));
+            deleteLinks.set(formToLink, linkBetween.getString("name"));
         }
         return deleteLinks;
+    }
+
+    public Values buildUpdateLinks(String form, Values data) {
+        Values updateLinks = new Values();
+        for (Map.Entry<String, Object> entryData : data.entrySet()) {
+            if (entryData.getValue() instanceof Values) {
+                String linkName = (String) getLinkBetweenProp(entryData.getKey(), form, "name");
+                updateLinks.set(entryData.getKey(), linkName);
+            }
+        }
+        return updateLinks;
     }
 
     public List<Values> getSelectComponents(String formName) {
@@ -90,6 +101,14 @@ public class LinkEngine extends TableBuilderResourceBase {
             }
         }
         return null;
+    }
+
+    public Object getLinkBetweenProp(String formToLink, String form, String propName) {
+        Values linkBetween = getLinkBetween(formToLink, form);
+        if (linkBetween == null) {
+            throw new UnsupportedOperationException("There is no link between the forms " + form + " and " + formToLink);
+        }
+        return linkBetween.get(propName);
     }
 
     public String extractFormOfTheLink(String properties) {

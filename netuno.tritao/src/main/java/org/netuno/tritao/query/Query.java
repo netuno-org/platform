@@ -1272,9 +1272,9 @@ public class Query {
     }
     public int deleteAll() {return queryEngine.deleteAll(this);}
     public int deleteFirst() {return queryEngine.deleteFirst(this);}
-    public Values deleteCascade(String... forms) {
+    public Values cascadeDelete(String... forms) {
         Values deleteLinks = linkEngine.buildDeleteLinks(this.tableName, Arrays.stream(forms).toList());
-        return queryEngine.deleteCascade(deleteLinks, this);
+        return queryEngine.cascadeDelete(deleteLinks, this);
     }
     public int updateFirst(Values data) {
         return queryEngine.updateFirst(data, this);
@@ -1282,5 +1282,10 @@ public class Query {
 
     public int updateAll(Values data) {
         return queryEngine.updateAll(data, this);
+    }
+
+    public Values cascadeUpdate(Values data) {
+        Values updateLinks = linkEngine.buildUpdateLinks(this.tableName, data);
+        return queryEngine.updateCascade(data, updateLinks, this);
     }
 }
