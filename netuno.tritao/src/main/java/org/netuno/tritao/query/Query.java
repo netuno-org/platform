@@ -1288,4 +1288,9 @@ public class Query {
         Values updateLinks = linkEngine.buildUpdateLinks(this.tableName, data);
         return queryEngine.updateCascade(data, updateLinks, this);
     }
+
+    public String insert(Values data) {
+        linkEngine.checkForm(this.tableName);
+        return queryEngine.insert(data, this);
+    }
 }

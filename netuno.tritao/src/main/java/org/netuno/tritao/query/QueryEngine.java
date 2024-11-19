@@ -431,10 +431,10 @@ public class QueryEngine extends Data {
         affectedValues.set(query.getTableName(), (result.getStatusType() == DataItem.StatusType.Ok) ? 1 : 0);
         for (Map.Entry<String, Object> updateLink : updateLinks.entrySet()) {
             List<String> updatedRecords = new ArrayList<String>();
-            List<String> linkIDs = getManager().query(
+            List<String> recordsLinkID = getManager().query(
                     "SELECT " + updateLink.getKey()+".id FROM " + updateLink.getKey() + " WHERE " + updateLink.getValue() + " = " + recordID
             ).stream().map(values -> values.getString("id")).collect(Collectors.toList());
-            if (data.get(updateLink.getKey()) instanceof Values) {
+            if (data.get(updateLink.getKey()) instanceof Values && ((Values) data.get(updateLink.getKey())).size() > 0) {
                final Values dataValues = data.getValues(updateLink.getKey());
                if (dataValues.values().stream().allMatch(object -> object instanceof Values)) {
                     for (int i = 0; i < dataValues.size(); i++) {
@@ -449,10 +449,10 @@ public class QueryEngine extends Data {
                        updatedRecords.add(updatedRecordId);
                    }
                }
-                linkIDs.removeAll(updatedRecords);
+                recordsLinkID.removeAll(updatedRecords);
                 affectedValues.set(updateLink.getKey(), (affectedValues.getInt(updateLink.getKey(), 0) + updatedRecords.size()));
                 if (updatedRecords.size() > 0) {
-                    for (String linkId : linkIDs) {
+                    for (String linkId : recordsLinkID) {
                         if (getBuilder().delete(updateLink.getKey(), linkId).getStatusType() == DataItem.StatusType.Ok) {
                             affectedValues.set(updateLink.getKey(), (affectedValues.getInt(updateLink.getKey(), 0) + 1));
                         }
@@ -463,10 +463,25 @@ public class QueryEngine extends Data {
         return affectedValues;
     }
 
+    public String insert(Values data, Query query) {
+        if (data == null || data.size() == 0) {
+            throw new ResourceException("Data values cannot be null or empty");
+        }
+        DataItem dataItem = getBuilder().insert(query.getTableName(), validDataValues(data));
+        checkDataItemErrors(dataItem, "insert");
+        return dataItem.getId();
+    }
+
+    public Values validDataValues(Values data) {
+        data.set("active", data.containsKey("active") ? data.getBoolean("active") : true);
+        return data;
+    }
+
     public void checkDataItemErrors(DataItem dataItem, String action) {
         switch (dataItem.getStatus()) {
             case NotFound -> throw new ResourceException("No records found for form " + dataItem.getTable());
             case Error -> throw new ResourceException("Impossible to " + action + " record of the form " + dataItem.getTable());
+            case Exists -> throw new ResourceException("Already exists a record in " + dataItem.getTable() + " form with data.");
         }
     }
 }

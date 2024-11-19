@@ -31,6 +31,13 @@ public class LinkEngine extends TableBuilderResourceBase {
         return join;
     }
 
+    public void checkForm(String formName) {
+        List<Values> components = getAllComponents(formName);
+        if (components == null) {
+            throw new UnsupportedOperationException("No forms found with the name " + formName);
+        }
+    }
+
     public Values buildDeleteLinks(String form, List<String> formsToLink) {
         if (formsToLink.size() == 0) {
             throw new ResourceException("No form was provided in deleteCascade method");
