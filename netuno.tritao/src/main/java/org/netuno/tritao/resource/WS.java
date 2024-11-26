@@ -20,6 +20,9 @@ package org.netuno.tritao.resource;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.concurrent.Semaphore;
+
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.Session;
 import org.netuno.library.doc.LanguageDoc;
@@ -70,6 +73,10 @@ public class WS extends ResourceBase {
     public String type = null;
     
     public Values close = null;
+
+    public boolean stream = false;
+
+    private String messageBoundary = "";
     
     public WS(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -97,6 +104,12 @@ public class WS extends ResourceBase {
         }
         if (!header.getString("WS-QS").isEmpty()) {
             this.qs = Values.fromJSON(header.getString("WS-QS"));
+        }
+        if (!header.getString("WS-Close").isEmpty()) {
+            this.messageBoundary = header.getString("WS-Message-Boundary");
+        }
+        if (!header.getString("WS-Stream").isEmpty()) {
+            this.stream = header.getBoolean("WS-Stream");
         }
         if (!header.getString("WS-Connect").isEmpty()) {
             this.connect = header.getBoolean("WS-Connect");
@@ -143,6 +156,10 @@ public class WS extends ResourceBase {
     public boolean isConnect() {
         return connect;
     }
+
+    public boolean isStream() {
+        return stream;
+    }
     
     public WSMessage message() {
         return getMessage();
@@ -150,6 +167,36 @@ public class WS extends ResourceBase {
     
     public WSMessage getMessage() {
         return message;
+    }
+
+    public boolean isBinaryStreamed() {
+        return getSessionEndpoint().getBoolean("streamedBinary");
+    }
+
+    public boolean isTextStreamed() {
+        return getSessionEndpoint().getBoolean("streamedText");
+    }
+
+    public byte[] binaryStreamed() throws IOException {
+        In in = resource(In.class);
+        byte[] bytes = new byte[getSessionEndpoint().getInt("streamBytesLength")];
+        in.read(bytes, 0, bytes.length);
+        return bytes;
+    }
+
+    public String textStreamed() throws IOException {
+        return new String(binaryStreamed());
+    }
+
+    public String textStreamed(String charset) throws IOException {
+        return new String(binaryStreamed(), charset);
+    }
+
+    public boolean awaitStream() {
+        try {
+            ((Semaphore)getSessionEndpoint().get("streamSemaphore")).acquire();
+        } catch (InterruptedException e) { }
+        return true;
     }
     
     public boolean close() {
@@ -522,11 +569,11 @@ public class WS extends ResourceBase {
         return result.size() == 1;
     }
     
-    public boolean rawSend(String content) {
-        return rawSend(sessionId, content);
+    public boolean sendText(String content) {
+        return sendText(sessionId, content);
     }
     
-    public boolean rawSend(String sessionId, String content) {
+    public boolean sendText(String sessionId, String content) {
         Values result = allSessionsEndpoints().filter(item -> {
             synchronized (item) {
                 Values sessionEndpoint = (Values)item;
@@ -537,9 +584,37 @@ public class WS extends ResourceBase {
                     } catch (Throwable e) {
                         if (e instanceof java.nio.channels.ClosedChannelException
                                 || e.getClass().getSimpleName().equals("WebSocketException")) {
-                            throw new ResourceException("Sending a raw message to closed session "+ session.getId() +":\n"+ content);
+                            throw new ResourceException("Sending a text message to closed session "+ session.getId() +":\n"+ content);
                         } else {
-                            throw new ResourceException("Sending a raw message to session "+ session.getId() +" failed:\n"+ content, e);
+                            throw new ResourceException("Sending a text message to session "+ session.getId() +" failed:\n"+ content, e);
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        });
+        return result.size() == 1;
+    }
+
+    public boolean sendBinary(byte[] content) {
+        return sendBinary(sessionId, content);
+    }
+
+    public boolean sendBinary(String sessionId, byte[] content) {
+        Values result = allSessionsEndpoints().filter(item -> {
+            synchronized (item) {
+                Values sessionEndpoint = (Values)item;
+                Session session = sessionEndpoint.get("session", Session.class);
+                if (session != null && sessionId.equals(session.getId())) {
+                    try {
+                        session.getAsyncRemote().sendBinary(ByteBuffer.wrap(content));
+                    } catch (Throwable e) {
+                        if (e instanceof java.nio.channels.ClosedChannelException
+                                || e.getClass().getSimpleName().equals("WebSocketException")) {
+                            throw new ResourceException("Sending a binary message to closed session "+ session.getId() +":\n"+ content);
+                        } else {
+                            throw new ResourceException("Sending a binary message to session "+ session.getId() +" failed:\n"+ content, e);
                         }
                     }
                     return true;
@@ -707,7 +782,7 @@ public class WS extends ResourceBase {
         });
     }
     
-    public void rawBroadcast(String endpointName, String path, String message) throws IOException {
+    public void broadcastText(String endpointName, String path, String message) throws IOException {
         allSessionsEndpoints().forEach(item -> {
             synchronized (item) {
                 Values sessionEndpoint = (Values)item;
@@ -720,9 +795,9 @@ public class WS extends ResourceBase {
                         } catch (Throwable e) {
                             if (e instanceof java.nio.channels.ClosedChannelException
                                     || e.getClass().getSimpleName().equals("WebSocketException")) {
-                                logger.warn("App "+ app +" raw broadcast to closed session "+ session.getId() +":\n"+ message);
+                                logger.warn("App "+ app +" text broadcast to closed session "+ session.getId() +":\n"+ message);
                             } else {
-                                logger.warn("App "+ app +" raw broadcast to session "+ session.getId() +" failed:\n"+ message, e);
+                                logger.warn("App "+ app +" text broadcast to session "+ session.getId() +" failed:\n"+ message, e);
                             }
                         }
                     }
@@ -731,8 +806,36 @@ public class WS extends ResourceBase {
         });
     }
     
-    public void rawBroadcast(String endpointName, String message) throws IOException {
-        rawBroadcast(endpointName, "", message);
+    public void broadcastText(String endpointName, String message) throws IOException {
+        broadcastText(endpointName, "", message);
+    }
+
+    public void broadcastBinary(String endpointName, String path, byte[] content) throws IOException {
+        allSessionsEndpoints().forEach(item -> {
+            synchronized (item) {
+                Values sessionEndpoint = (Values)item;
+                if (endpointName.equals(sessionEndpoint.getValues("config").getString("name"))
+                        && (path.isEmpty() || sessionEndpoint.getString("path").startsWith(path))) {
+                    Session session = sessionEndpoint.get("session", Session.class);
+                    if (session != null) {
+                        try {
+                            session.getBasicRemote().sendBinary(ByteBuffer.wrap(content));
+                        } catch (Throwable e) {
+                            if (e instanceof java.nio.channels.ClosedChannelException
+                                    || e.getClass().getSimpleName().equals("WebSocketException")) {
+                                logger.warn("App "+ app +" binary broadcast to closed session "+ session.getId() +":\n"+ message);
+                            } else {
+                                logger.warn("App "+ app +" binary broadcast to session "+ session.getId() +" failed:\n"+ message, e);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public void broadcastBinary(String endpointName, byte[] content) throws IOException {
+        broadcastBinary(endpointName, "", content);
     }
     
     public class WSMessage {
