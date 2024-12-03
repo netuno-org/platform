@@ -12,7 +12,18 @@ import react from '@vitejs/plugin-react-swc'
 
 export default defineConfig({
   plugins: [
-    react()
+    react(),
+    {
+      closeBundle: async() => {
+        // Hack Ant.Design v5 Performance Issues
+        // Using Tables causes very slow interactions on the entire page because of an infinite loop,
+        // that executes the scrollTo function repeatedly stressing the browser.
+        const bundlePath = `${outputBasePath}/${outputFilePath}`
+        let data = await fs.readFile(bundlePath, 'utf-8');
+        data = data.replace('function scrollTo(', 'function $_scrollTo_antd_bug_$(');
+        await fs.writeFile(bundlePath, data, 'utf-8');
+      }
+    }
   ],
   build: {
     rollupOptions: {
