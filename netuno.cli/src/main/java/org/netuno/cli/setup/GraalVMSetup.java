@@ -44,7 +44,7 @@ public class GraalVMSetup {
 
     public static void checkAndSetup() {
         String javaVersion = System.getProperty("java.vendor.version");
-        String graalVMMainVersion = Constants.GRAALVM_VERSION.substring(0, Constants.GRAALVM_VERSION.indexOf("."));
+        String graalVMMainVersion = Constants.GRAALVM_VERSION;
         if (!javaVersion.startsWith("GraalVM CE "+ graalVMMainVersion +"+")) {
             checkAndSetup(Constants.GRAALVM_VERSION);
         }
