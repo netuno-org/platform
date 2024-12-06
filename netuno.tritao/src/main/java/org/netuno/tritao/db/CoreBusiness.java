@@ -44,6 +44,7 @@ import org.netuno.tritao.db.manager.Table;
 import org.netuno.tritao.resource.Firebase;
 import org.netuno.tritao.util.Link;
 import org.netuno.tritao.util.Rule;
+import org.netuno.tritao.util.Translation;
 
 /**
  * Database Core Business Operations
@@ -2875,7 +2876,7 @@ public class CoreBusiness extends Base {
                         .concat(where).concat(" and "+ getBuilder().escape("id") +" <> ").concat(DB.sqlInjectionInt(dataItem.getId())));
                 if (rsCheckPrimary.size() > 0) {
                     dataItem.setStatus(DataItem.Status.Exists);
-                    dataItem.setField(rowTritaoDesignXY.getString("displayname"));
+                    dataItem.setField(Translation.formFieldLabel(getProteu(), getHili(), table, rowTritaoDesignXY));
                 }
             }
         }
