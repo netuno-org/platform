@@ -27,12 +27,12 @@
 <div class="buttons">
   <div class="row">
     <div class="col-xs-6">
-      <button id="managementQueryButtonRun" type="button" class="btn btn-primary"><i class="fa fa-bolt"></i> _{lang=netuno.form.button.execute}</button>
-      <button id="managementQueryButtonHistory" type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalHistory"><i class="fa fa-history"></i> _{lang=netuno.dev.query.button.history}</button>
+      <button id="managementQueryButtonRun" type="button" class="btn btn-primary"><i class="fa fa-bolt"></i> _{&lang=netuno.form.button.execute}</button>
+      <button id="managementQueryButtonHistory" type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalHistory"><i class="fa fa-history"></i> _{&lang=netuno.dev.query.button.history}</button>
     </div>
     <div class="col-xs-6" style="text-align: right;">
-      <button type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalSave"><i class="fa fa-bookmark"></i> _{lang=netuno.dev.query.button.save}</button>
-      <button id="managementQueryButtonStored" type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalStored"><i class="fa fa-book"></i> _{lang=netuno.dev.query.button.stored}</button>
+      <button type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalSave"><i class="fa fa-bookmark"></i> _{&lang=netuno.dev.query.button.save}</button>
+      <button id="managementQueryButtonStored" type="button" class="btn" data-toggle="modal" data-target="#managementQueryModalStored"><i class="fa fa-book"></i> _{&lang=netuno.dev.query.button.stored}</button>
     </div>
   </div>
 </div>
@@ -42,17 +42,17 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">_{lang=netuno.dev.query.modal.history.title}</h4>
+        <h4 class="modal-title">_{&lang=netuno.dev.query.modal.history.title}</h4>
       </div>
       <div class="modal-body" data-empty="_{&lang=netuno.dev.query.modal.history.empty}">
       </div>
       <div class="modal-footer">
         <div class="row">
           <div class="col-xs-6" style="text-align: left;">
-            <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{lang=netuno.form.button.previous}</button>
+            <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{&lang=netuno.form.button.previous}</button>
           </div>
           <div class="col-xs-6">
-            <button type="button" data-type="next" class="btn btn-default">_{lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
+            <button type="button" data-type="next" class="btn btn-default">_{&lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">_{lang=netuno.dev.query.modal.save.title}</h4>
+        <h4 class="modal-title">_{&lang=netuno.dev.query.modal.save.title}</h4>
       </div>
       <div class="modal-body">
         <form id="managementQueryModalSaveForm" name="managementQueryModalSaveForm" method="post" action="Query_{netuno-config=extension}" data-success="The query was been saved.">
@@ -90,17 +90,17 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">_{lang=netuno.dev.query.modal.stored.title}</h4>
+        <h4 class="modal-title">_{&lang=netuno.dev.query.modal.stored.title}</h4>
       </div>
       <div class="modal-body" data-empty="_{&lang=netuno.dev.query.modal.stored.empty}">
       </div>
       <div class="modal-footer">
         <div class="row">
           <div class="col-xs-6" style="text-align: left;">
-            <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{lang=netuno.form.button.previous}</button>
+            <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{&lang=netuno.form.button.previous}</button>
           </div>
           <div class="col-xs-6">
-            <button type="button" data-type="next" class="btn btn-default">_{lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
+            <button type="button" data-type="next" class="btn btn-default">_{&lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
           </div>
         </div>
       </div>
