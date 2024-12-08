@@ -45,7 +45,10 @@ public class GraalVMSetup {
     public static void checkAndSetup() {
         String javaVersion = System.getProperty("java.vendor.version");
         String graalVMMainVersion = Constants.GRAALVM_VERSION;
-        if (!javaVersion.startsWith("GraalVM CE "+ graalVMMainVersion +"+")) {
+        if (graalVMMainVersion.endsWith(".0.0")) {
+            graalVMMainVersion = graalVMMainVersion.substring(0, graalVMMainVersion.indexOf("."));
+        }
+        if (javaVersion == null || !javaVersion.startsWith("GraalVM CE "+ graalVMMainVersion +"+")) {
             checkAndSetup(Constants.GRAALVM_VERSION);
         }
     }
@@ -140,7 +143,7 @@ public class GraalVMSetup {
             String graalVMURL = graalVMURLPrefix + "windows-x64_bin.zip";
             String graalVMFileName = "graalvm.zip";
             if (SystemUtils.IS_OS_MAC) {
-                if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x64")) {
+                if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x64") || SystemUtils.OS_ARCH.equals("x86_64")) {
                     graalVMURL = graalVMURLPrefix + "macos-x64_bin.tar.gz";
                 } else if (SystemUtils.OS_ARCH.equals("aarch64")) {
                     graalVMURL = graalVMURLPrefix + "macos-aarch64_bin.tar.gz";
