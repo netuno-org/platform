@@ -212,7 +212,7 @@ public class SandboxManager implements AutoCloseable {
                                         sandboxes.put(extension, sandbox);
                                         return sandbox;
                                     } catch (Exception e) {
-                                        throw new Error("Failed to create the "+ sandboxesClasses.get(extension).getSimpleName() +".", e);
+                                        throw new ProteuError("Failed to create the "+ sandboxesClasses.get(extension).getSimpleName() +".", e).setLogFatal(true);
                                     }
                                 });
                 });
