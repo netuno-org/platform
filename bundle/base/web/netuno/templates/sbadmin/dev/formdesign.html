@@ -331,8 +331,16 @@
 <script>
   (function (netuno, $) {
     $('#fieldFormDesign__{data=table.name}_displayName').on('keyup', function () {
-        var that = $(this);
-        $('#fieldFormDesign__{data=table.name}_name').val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
+      var that = $(this);
+      var fieldName = $('#fieldFormDesign__{data=table.name}_name');
+      fieldName.val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
+      var fieldNameVal = fieldName.val();
+      if ($("#fieldFormDesign__{data=table.name}_type").val() == 'select') {
+        var endsWithId = fieldNameVal.indexOf("_id") == fieldNameVal.length - 3;
+        if (!endsWithId) {
+          fieldName.val(fieldNameVal + "_id");
+        }
+      }
     });
     $("#fieldFormDesign__{data=table.name}_uid").on("change", function () {
       netuno.loadDevFormField('_{data=table.name}', $(this).val());

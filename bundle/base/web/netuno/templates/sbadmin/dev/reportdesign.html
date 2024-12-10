@@ -256,7 +256,15 @@
   (function (netuno, $) {
     $('#fieldReportDesign__{data=table.name}_displayName').on('keyup', function () {
       var that = $(this);
-      $('#fieldReportDesign__{data=table.name}_name').val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
+      var fieldName = $('#fieldReportDesign__{data=table.name}_name');
+      fieldName.val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
+      var fieldNameVal = fieldName.val();
+      if ($("#fieldReportDesign__{data=table.name}_type").val() == 'select') {
+        var endsWithId = fieldNameVal.indexOf("_id") == fieldNameVal.length - 3;
+        if (!endsWithId) {
+          fieldName.val(fieldNameVal + "_id");
+        }
+      }
     });
     $("#fieldReportDesign__{data=table.name}_uid").on("change", function () {
       netuno.loadDevReportField('_{data=table.name}', $(this).val());
