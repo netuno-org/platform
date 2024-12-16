@@ -284,7 +284,7 @@ public class XML extends ResourceBase {
             @ParameterTranslationDoc(
                 language=LanguageDoc.PT,
                 name = "tipo",
-                description = "Identificador do tipo de nó da estrutura do XML através do nome, suporta:<br>"+
+                description = "Identificador do tipo de nó da estrutura do XML através do nome, suporta:<br/>"+
                                     "<ul>"+
                                     "<li>element</li>"+
                                     "<li>attribute</li>"+
