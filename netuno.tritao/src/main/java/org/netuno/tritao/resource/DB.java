@@ -132,7 +132,7 @@ public class DB extends ResourceBase {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
                 description = "Inicia um novo recurso de DB para o nome de conexão que é passada.\n"
-                + "Os detalhes da conexão deverão estar definidas no documento configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../tutorials/multiple-databases).",
+                + "Os detalhes da conexão deverão estar definidas no documento configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../academy/server/database/multiple-databases).",
                 howToUse = {
                     @SourceCodeDoc(
                             type = SourceCodeTypeDoc.JavaScript,
@@ -148,7 +148,7 @@ public class DB extends ResourceBase {
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
                 description = "Starts a new DB resource for the connection name that is passed.\n"
-                + "The connection details must be defined in the application's environment configuration document, more information in the [Multiple Databases](../../tutorials/multiple-databases) tutorial.",
+                + "The connection details must be defined in the application's environment configuration document, more information in the [Multiple Databases](../../academy/server/database/multiple-databases) tutorial.",
                 howToUse = {
                     @SourceCodeDoc(
                             type = SourceCodeTypeDoc.JavaScript,
@@ -200,7 +200,7 @@ public class DB extends ResourceBase {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
                 description = "Obtém o nome da configuração de conexão à base de dados que está a ser utilizada.\n"
-                + "Os detalhes da conexão deve estar definida no documento configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../tutorials/multiple-databases).",
+                + "Os detalhes da conexão deve estar definida no documento configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../academy/server/database/multiple-databases).",
                 howToUse = {
                     @SourceCodeDoc(
                             type = SourceCodeTypeDoc.JavaScript,
@@ -215,7 +215,7 @@ public class DB extends ResourceBase {
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
                 description = "Gets the name of the database connection configuration being used.\n"
-                + "The connection details must be defined in the application environment configuration document, more information in the [Multiple Databases](../../tutorials/multiple-databases) tutorial.",
+                + "The connection details must be defined in the application environment configuration document, more information in the [Multiple Databases](../../academy/server/database/multiple-databases) tutorial.",
                 howToUse = {
                     @SourceCodeDoc(
                             type = SourceCodeTypeDoc.JavaScript,
@@ -250,7 +250,7 @@ public class DB extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Obtém a configuração de conexão à base de dados que está a ser utilizada.\n"
-                            + "Os detalhes da conexão está definida no documento de configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../tutorials/multiple-databases).",
+                            + "Os detalhes da conexão está definida no documento de configuração de ambiente da aplicação, mais informações no tutorial sobre [Multiplas bases de dados](../../academy/server/database/multiple-databases).",
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
@@ -265,7 +265,7 @@ public class DB extends ResourceBase {
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Gets the connection configuration to the database being used.\n"
-                            + "The connection details are defined in the application environment configuration document, more information in the [Multiple Databases](../../tutorials/multiple-databases) tutorial.",
+                            + "The connection details are defined in the application environment configuration document, more information in the [Multiple Databases](../../academy/server/database/tutorials/multiple-databases) tutorial.",
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
