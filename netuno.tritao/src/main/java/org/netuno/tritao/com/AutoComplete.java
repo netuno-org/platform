@@ -58,7 +58,7 @@ public class AutoComplete extends ComponentBase {
     public Component render() {
         try {
         	new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
-        	getProteu().getOutput().println(getDesignData().getString("displayname") + "<br>");
+        	getProteu().getOutput().println(getDesignData().getString("displayname") + "<br/>");
         	getProteu().getOutput().print("<input type=\"" + getDesignData().getString("type") + "\" name=\"" + getDesignData().getString("name") + "\" value=\"" + (value == null ? "" : value) + "\"");
         	getProteu().getOutput().print("/>");
             new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
