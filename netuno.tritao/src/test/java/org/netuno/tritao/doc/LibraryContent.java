@@ -361,12 +361,12 @@ public class LibraryContent {
                 if (methodDoc == null || methodDoc.dependency().isEmpty()) {
                     content.append("#### ");
                     if (isResource) {
-                        content.append("<span style=\"font-weight: normal\">");
+                        content.append("<span style={{fontWeight: 'normal'}}>");
                         content.append("_" + name);
                         content.append("</span>");
                         content.append(".");
                     }
-                    content.append("<span style=\"color: #008000\">");
+                    content.append("<span style={{color: '#008000'}}>");
                     content.append(method.getName());
                     content.append("</span>");
                 } else {
@@ -375,7 +375,7 @@ public class LibraryContent {
                         content.append("`_" + name + "." + methodDoc.dependency() + "()`");
                         content.append(".");
                     }
-                    content.append("<span style=\"color: #008000\">");
+                    content.append("<span style={{color: '#008000'}}>");
                     content.append(method.getName());
                     content.append("</span>");
                 }
@@ -431,11 +431,11 @@ public class LibraryContent {
                                     .set("parameterTranslationDoc", parameterTranslationDoc)
                                     .set("parameterName", parameterName)
                     );
-                    content.append("<span style=\"color: #FF8000\">");
+                    content.append("<span style={{color: '#FF8000'}}>");
                     content.append(parameterName);
                     content.append("</span>");
                     content.append(": ");
-                    content.append("<span style=\"font-weight: normal; font-style: italic;\">");
+                    content.append("<span style={{fontWeight: 'normal', fontStyle: 'italic'}}>");
                     content.append(type(parameter.getType()));
                     content.append("</span>");
                     firstParameter = false;
@@ -445,7 +445,7 @@ public class LibraryContent {
                 }
                 content.append(")");
                 content.append(" : ");
-                content.append("<span style=\"font-weight: normal; font-style: italic;\">");
+                content.append("<span style={{fontWeight: 'normal', fontStyle: 'italic'}}>");
                 content.append(type(method.getReturnType()));
                 content.append("</span>");
                 if (methodTranslationDoc != null) {
@@ -594,7 +594,7 @@ public class LibraryContent {
                             content += " &#124; ";
                         }
                         Resource resource = (Resource)_class.getAnnotation(Resource.class);
-                        content += "[" + _class.getSimpleName() + "](../../resources/" + resource.name() + ")";
+                        content += "[" + _class.getSimpleName() + "](../resources/" + resource.name() + ")";
                         if (objectTypeArray) {
                             content += "[]";
                         }
@@ -603,7 +603,7 @@ public class LibraryContent {
                         if (!content.isEmpty()) {
                             content += " &#124; ";
                         }
-                        content += "[" + _class.getSimpleName() + "](../../objects/" + _class.getSimpleName() + ")";
+                        content += "[" + _class.getSimpleName() + "](../objects/" + _class.getSimpleName() + ")";
                         if (objectTypeArray) {
                             content += "[]";
                         }
