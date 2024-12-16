@@ -260,7 +260,7 @@ public class PDF extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Obtém definição de tamanho de página, códigos de páginas suportados:<br>"+
+                    description = "Obtém definição de tamanho de página, códigos de páginas suportados:<br/>"+
                         "<ul>"+
                         "<li>A0</li>"+
                         "<li>A1</li>"+
@@ -295,7 +295,7 @@ public class PDF extends ResourceBase {
                     }),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Gets page size definition, pages codes supported:<br>"+
+                    description = "Gets page size definition, pages codes supported:<br/>"+
                         "<ul>"+
                         "<li>A0</li>"+
                         "<li>A1</li>"+
