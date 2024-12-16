@@ -321,7 +321,7 @@ public class Exec extends ResourceBaseValues {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
                                     code = "// Para a execução:\n"
-                                            + "_out.println('Vai parar...<br>');\n"
+                                            + "_out.println('Vai parar...<br/>');\n"
                                             + "_exec.stop();\n"
                                             + "_out.println('Não chega nesta linha.');"
                             ) }),
@@ -332,7 +332,7 @@ public class Exec extends ResourceBaseValues {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
                                     code = "// For the execution:\n"
-                                            + "_out.println('Will stop...<br>');\n"
+                                            + "_out.println('Will stop...<br/>');\n"
                                             + "_exec.stop();\n"
                                             + "_out.println('Not run this line.');"
                             ) })
