@@ -1941,7 +1941,7 @@ public class XLS extends ResourceBase {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "tipo",
-                            description = "Nome do tipo de alinhamento horizontal, suporta:<br>"+
+                            description = "Nome do tipo de alinhamento horizontal, suporta:<br/>"+
                                     "<ul>"+
                                     "<li>general</li>"+
                                     "<li>left</li>"+
@@ -1955,7 +1955,7 @@ public class XLS extends ResourceBase {
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
-                            description = "Horizontal alignment type name, supports:<br>"+
+                            description = "Horizontal alignment type name, supports:<br/>"+
                                     "<ul>"+
                                     "<li>general</li>"+
                                     "<li>left</li>"+
@@ -1996,7 +1996,7 @@ public class XLS extends ResourceBase {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "tipo",
-                            description = "Nome do tipo de alinhamento vertical, suporta:<br>"+
+                            description = "Nome do tipo de alinhamento vertical, suporta:<br/>"+
                                     "<ul>"+
                                     "<li>top</li>"+
                                     "<li>center</li>"+
@@ -2007,7 +2007,7 @@ public class XLS extends ResourceBase {
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
-                            description = "Vertical alignment type name, supports:<br>"+
+                            description = "Vertical alignment type name, supports:<br/>"+
                                     "<ul>"+
                                     "<li>top</li>"+
                                     "<li>center</li>"+
@@ -2045,7 +2045,7 @@ public class XLS extends ResourceBase {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "tipo",
-                            description = "Tipo do padrão de preenchimento, suporta:<br>"+
+                            description = "Tipo do padrão de preenchimento, suporta:<br/>"+
                                     "<ul>"+
                                     "<li>no-fill</li>"+
                                     "<li>solid-foreground</li>"+
@@ -2071,7 +2071,7 @@ public class XLS extends ResourceBase {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
                             name = "type",
-                            description = "Fill pattern type, supports:<br>"+
+                            description = "Fill pattern type, supports:<br/>"+
                                     "<ul>"+
                                     "<li>no-fill</li>"+
                                     "<li>solid-foreground</li>"+
@@ -2123,7 +2123,7 @@ public class XLS extends ResourceBase {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "tipo",
-                            description = "Nome do tipo de estilo de bordas, suporta:<br>"+
+                            description = "Nome do tipo de estilo de bordas, suporta:<br/>"+
                                     "<ul>"+
                                     "<li>none</li>"+
                                     "<li>thin</li>"+
@@ -2140,7 +2140,7 @@ public class XLS extends ResourceBase {
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
-                            description = "Name of the border style type, supports:<br>"+
+                            description = "Name of the border style type, supports:<br/>"+
                                     "<ul>"+
                                     "<li>none</li>"+
                                     "<li>thin</li>"+
@@ -2184,7 +2184,7 @@ public class XLS extends ResourceBase {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "tipo",
-                            description = "Nome do tipo de âncora, suporta:<br>"+
+                            description = "Nome do tipo de âncora, suporta:<br/>"+
                                     "<ul>"+
                                     "<li>move-and-resize</li>"+
                                     "<li>dont-move-do-resize</li>"+
@@ -2194,7 +2194,7 @@ public class XLS extends ResourceBase {
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
-                            description = "Anchor type name, supports:<br>"+
+                            description = "Anchor type name, supports:<br/>"+
                                     "<ul>"+
                                     "<li>move-and-resize</li>"+
                                     "<li>dont-move-do-resize</li>"+
@@ -2446,7 +2446,7 @@ public class XLS extends ResourceBase {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             name = "nome",
-                            description = "Nome da cor, suporta:<br>"+
+                            description = "Nome da cor, suporta:<br/>"+
                                     "<ul>"+
                                     "<li>black</li>"+
                                     "<li>brown</li>"+
@@ -2500,7 +2500,7 @@ public class XLS extends ResourceBase {
                     ),
                     @ParameterTranslationDoc(
                             language=LanguageDoc.EN,
-                            description = "Color name, supports:<br>"+
+                            description = "Color name, supports:<br/>"+
                                     "<ul>"+
                                     "<li>black</li>"+
                                     "<li>brown</li>"+
