@@ -1270,12 +1270,16 @@ public class Query {
     public Values page(Pagination pagination) {
         return queryEngine.page(this.setPagination(pagination)).toValues();
     }
+
     public int deleteAll() {return queryEngine.deleteAll(this);}
+
     public int deleteFirst() {return queryEngine.deleteFirst(this);}
+
     public Values cascadeDelete(String... forms) {
         Values deleteLinks = linkEngine.buildDeleteLinks(this.tableName, Arrays.stream(forms).toList());
         return queryEngine.cascadeDelete(deleteLinks, this);
     }
+
     public int updateFirst(Values data) {
         return queryEngine.updateFirst(data, this);
     }
@@ -1287,6 +1291,11 @@ public class Query {
     public Values cascadeUpdate(Values data) {
         Values updateLinks = linkEngine.buildUpdateLinks(this.tableName, data);
         return queryEngine.updateCascade(data, updateLinks, this);
+    }
+
+    public Values cascadeInsert(Values data) {
+        Values insertLinks = linkEngine.buildInsertLinks(this.tableName, data);
+        return queryEngine.cascadeInsert(insertLinks, data, this);
     }
 
     public String insert(Values data) {

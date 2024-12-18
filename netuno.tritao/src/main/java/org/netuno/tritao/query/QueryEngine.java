@@ -214,11 +214,11 @@ public class QueryEngine extends Data {
             logger.warn("SQL Command executed: \n"+selectCommandSQL);
         }
         List<Values> items = getManager().query(selectCommandSQL);
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             return new Values();
         }
-        items = query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
-        return items.get(0);
+        items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
+        return items.getFirst();
     }
 
     public int count(Query query) {
@@ -234,7 +234,7 @@ public class QueryEngine extends Data {
             selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
 
-        return (int) getManager().query(selectCommandSQL).get(0).getLong("total");
+        return (int) getManager().query(selectCommandSQL).getFirst().getLong("total");
     }
 
     public Page page(Query query) {
@@ -251,10 +251,9 @@ public class QueryEngine extends Data {
             logger.warn("SQL Command executed: \n"+selectCommandSQL);
         }
         List<Values> items = getManager().query(selectCommandSQL);
-        items = query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
+        items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
         int total = this.count(query);
-        Page page = new Page(items.size() == 0 ? Collections.EMPTY_LIST : items , total, query.getPagination());
-        return page;
+        return new Page(items.isEmpty() ? Collections.EMPTY_LIST : items , total, query.getPagination());
     }
 
     public List<Values> getRecordIDs(Query query) {
@@ -264,7 +263,7 @@ public class QueryEngine extends Data {
         }
         selectIdsCommandSQL += "\nLIMIT " + query.getLimit();
         List<Values> recordIDs = getManager().query(selectIdsCommandSQL);
-        if (recordIDs.size() == 0) {
+        if (recordIDs.isEmpty()) {
             throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
         }
         return recordIDs;
@@ -282,8 +281,8 @@ public class QueryEngine extends Data {
                 undeletedRecords.add(recordID.getString("id"));
             }
         }
-        if (undeletedRecords.size() > 0 && query.isDebug()) {
-            logger.warn("Impossible to delete the following records IDs: [" + String.join(", ", undeletedRecords) + "]");
+        if (!undeletedRecords.isEmpty() && query.isDebug()) {
+            logger.warn("Impossible to delete the following records IDs: [{}]", String.join(", ", undeletedRecords));
         }
         if (query.isDebug()) {
             logger.warn("Number of rows affected: " + numberOfAffectedRows);
@@ -293,14 +292,14 @@ public class QueryEngine extends Data {
 
     public int deleteFirst(Query query) {
         List<Values> idsValues = getRecordIDs(query.setLimit(1));
-        final DataItem dataItem = getBuilder().delete(query.getTableName(), idsValues.get(0).getString("id"));
+        final DataItem dataItem = getBuilder().delete(query.getTableName(), idsValues.getFirst().getString("id"));
         if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
             return 1;
         } else {
             if (dataItem.getStatus() == DataItem.Status.Relations && query.isDebug()) {
-                logger.warn("Impossible to delete the record with ID: " + idsValues.get(0).getString("id") + ", the same is related to one or more tables");
+                logger.warn("Impossible to delete the record with ID: {}, the same is related to one or more tables", idsValues.getFirst().getString("id"));
             } else if (query.isDebug()) {
-                logger.warn("Impossible to delete the record ID: " + idsValues.get(0).getString("id"));
+                logger.warn("Impossible to delete the record ID: {}", idsValues.getFirst().getString("id"));
             }
             return 0;
         }
@@ -337,10 +336,10 @@ public class QueryEngine extends Data {
             }
         }
         if (query.isDebug()) {
-            if (undeletedRecords.size() > 0) {
-                logger.warn("Impossible to delete the records in forms: " + undeletedRecords.toJSON());
+            if (!undeletedRecords.isEmpty()) {
+                logger.warn("Impossible to delete the records in forms: {}", undeletedRecords.toJSON());
             }
-            logger.warn("Rows of the forms affected: " + affectedForms.toJSON() );
+            logger.warn("Rows of the forms affected: {}", affectedForms.toJSON());
         }
         return affectedForms;
     }
@@ -350,12 +349,12 @@ public class QueryEngine extends Data {
             throw new UnsupportedOperationException("No values in update method");
         }
         List<Values> recordIDs = this.getRecordIDs(query.setLimit(1));
-        DataItem dataItem = getBuilder().update(query.getTableName(), recordIDs.get(0).getString("id"), data);
+        DataItem dataItem = getBuilder().update(query.getTableName(), recordIDs.getFirst().getString("id"), data);
         if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
             return 1;
         } else {
             if (query.isDebug()) {
-                logger.warn("Impossible update the record ID: " + recordIDs.get(0).getString("id"));
+                logger.warn("Impossible update the record ID: {}", recordIDs.getFirst().getString("id"));
             }
             return 0;
         }
@@ -377,8 +376,8 @@ public class QueryEngine extends Data {
             }
         }
         if (query.isDebug()) {
-            if (unaffectedRecords.size() > 0) {
-                logger.warn("Impossible to update the following records IDs: [" + String.join(", ", unaffectedRecords) + "]");
+            if (!unaffectedRecords.isEmpty()) {
+                logger.warn("Impossible to update the following records IDs: [{}]", String.join(", ", unaffectedRecords));
             }
             logger.warn("Number of rows affected: " + numberOfAffectedForms);
         }
@@ -395,7 +394,7 @@ public class QueryEngine extends Data {
                     + " AND id = " + dataValues.getString("id")
                     + " AND " + updateLink.getValue() + " = " + recordID;
             final List<Values> dbID = getManager().query(getIdQuerySQL);
-            String id = dbID.size() > 0 ? dbID.get(0).getString("id") : "0";
+            String id = !dbID.isEmpty() ? dbID.getFirst().getString("id") : "0";
             DataItem dataItem = getBuilder().update(updateLink.getKey(), id, dataValues);
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 return dataValues.getString("id");
@@ -409,7 +408,7 @@ public class QueryEngine extends Data {
                     + " AND uid = " + "'" + dataValues.getString("uid")+ "'"
                     + " AND " + updateLink.getValue() + " = " + recordID;
             final List<Values> dbUID = getManager().query(getIdQuerySQL);
-            String uid = dbUID.size() > 0 ? dbUID.get(0).getString("id") : "0";
+            String uid = !dbUID.isEmpty() ? dbUID.getFirst().getString("id") : "0";
             DataItem dataItem = getBuilder().update(updateLink.getKey(), uid, dataValues);
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 return uid;
@@ -425,7 +424,7 @@ public class QueryEngine extends Data {
 
     public Values updateCascade(Values data, Values updateLinks, Query query) {
         Values affectedValues = new Values();
-        String recordID = this.getRecordIDs(query.setLimit(1)).get(0).getString("id");
+        String recordID = this.getRecordIDs(query.setLimit(1)).getFirst().getString("id");
         DataItem result = getBuilder().update(query.getTableName(), recordID, data);
         checkDataItemErrors(result, "update");
         affectedValues.set(query.getTableName(), (result.getStatusType() == DataItem.StatusType.Ok) ? 1 : 0);
@@ -434,7 +433,7 @@ public class QueryEngine extends Data {
             List<String> recordsLinkID = getManager().query(
                     "SELECT " + updateLink.getKey()+".id FROM " + updateLink.getKey() + " WHERE " + updateLink.getValue() + " = " + recordID
             ).stream().map(values -> values.getString("id")).collect(Collectors.toList());
-            if (data.get(updateLink.getKey()) instanceof Values && ((Values) data.get(updateLink.getKey())).size() > 0) {
+            if (data.get(updateLink.getKey()) instanceof Values && !((Values) data.get(updateLink.getKey())).isEmpty()) {
                final Values dataValues = data.getValues(updateLink.getKey());
                if (dataValues.values().stream().allMatch(object -> object instanceof Values)) {
                     for (int i = 0; i < dataValues.size(); i++) {
@@ -451,7 +450,7 @@ public class QueryEngine extends Data {
                }
                 recordsLinkID.removeAll(updatedRecords);
                 affectedValues.set(updateLink.getKey(), (affectedValues.getInt(updateLink.getKey(), 0) + updatedRecords.size()));
-                if (updatedRecords.size() > 0) {
+                if (!updatedRecords.isEmpty()) {
                     for (String linkId : recordsLinkID) {
                         if (getBuilder().delete(updateLink.getKey(), linkId).getStatusType() == DataItem.StatusType.Ok) {
                             affectedValues.set(updateLink.getKey(), (affectedValues.getInt(updateLink.getKey(), 0) + 1));
@@ -464,7 +463,7 @@ public class QueryEngine extends Data {
     }
 
     public String insert(Values data, Query query) {
-        if (data == null || data.size() == 0) {
+        if (data == null || data.isEmpty()) {
             throw new ResourceException("Data values cannot be null or empty");
         }
         DataItem dataItem = getBuilder().insert(query.getTableName(), validDataValues(data));
@@ -472,8 +471,38 @@ public class QueryEngine extends Data {
         return dataItem.getId();
     }
 
+    public Values cascadeInsert(Values insertLinks, Values data, Query query) {
+        var newRecords = new Values();
+        DataItem formMainDataItem = getBuilder().insert(query.getTableName(), validDataValues(data));
+        checkDataItemErrors(formMainDataItem, "insert");
+        final String formMainDataId = formMainDataItem.getId();
+        newRecords.set(query.getTableName(), formMainDataId);
+        for (Map.Entry<String, Object> insertLink : insertLinks.entrySet()) {
+            Values dataLink = data.getValues(insertLink.getKey());
+            if (dataLink.values().stream().allMatch(object -> object instanceof Values)) {
+                var newLinkRecords = new Values();
+                for (int i = 0; i < dataLink.size() ; i++) {
+                    Values dataLinkValues = dataLink.getValues(i);
+                    dataLinkValues.set(insertLink.getValue().toString(), formMainDataId);
+                    DataItem linkDataItem = getBuilder().insert(insertLink.getKey(), validDataValues(dataLinkValues));
+                    if (linkDataItem.getStatusType() == DataItem.StatusType.Ok) {
+                        newLinkRecords.add(linkDataItem.getId());
+                    }
+                }
+                newRecords.set(insertLink.getKey(), newLinkRecords);
+            } else {
+                dataLink.set(insertLink.getValue().toString(), formMainDataId);
+                DataItem dataItemLink = getBuilder().insert(insertLink.getKey(), dataLink);
+                if (dataItemLink.getStatusType() == DataItem.StatusType.Ok) {
+                    newRecords.set(insertLink.getKey(), dataItemLink.getId());
+                }
+            }
+        }
+        return newRecords;
+    }
+
     public Values validDataValues(Values data) {
-        data.set("active", data.containsKey("active") ? data.getBoolean("active") : true);
+        data.set("active", !data.containsKey("active") || data.getBoolean("active"));
         return data;
     }
 

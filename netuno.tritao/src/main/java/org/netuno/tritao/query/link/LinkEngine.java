@@ -38,8 +38,10 @@ public class LinkEngine extends TableBuilderResourceBase {
         }
     }
 
+
+
     public Values buildDeleteLinks(String form, List<String> formsToLink) {
-        if (formsToLink.size() == 0) {
+        if (formsToLink.isEmpty()) {
             throw new ResourceException("No form was provided in deleteCascade method");
         }
         Values deleteLinks = new Values();
@@ -57,6 +59,23 @@ public class LinkEngine extends TableBuilderResourceBase {
         Values updateLinks = new Values();
         for (Map.Entry<String, Object> entryData : data.entrySet()) {
             if (entryData.getValue() instanceof Values) {
+                if (data.getValues(entryData.getKey()) == null || data.getValues(entryData.getKey()).isEmpty()) {
+                    throw new IllegalArgumentException("Data of the form " + entryData.getKey() + " null or empty.");
+                }
+                String linkName = (String) getLinkBetweenProp(entryData.getKey(), form, "name");
+                updateLinks.set(entryData.getKey(), linkName);
+            }
+        }
+        return updateLinks;
+    }
+
+    public Values buildInsertLinks(String form, Values data) {
+        Values updateLinks = new Values();
+        for (Map.Entry<String, Object> entryData : data.entrySet()) {
+            if (entryData.getValue() instanceof Values) {
+                if (data.getValues(entryData.getKey()) == null || data.getValues(entryData.getKey()).isEmpty()) {
+                    throw new IllegalArgumentException("Data of the form " + entryData.getKey() + " null or empty.");
+                }
                 String linkName = (String) getLinkBetweenProp(entryData.getKey(), form, "name");
                 updateLinks.set(entryData.getKey(), linkName);
             }
