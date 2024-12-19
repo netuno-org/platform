@@ -25,7 +25,7 @@
       <div class="form-group">
         <h2> _{&lang=netuno.dev.form.label.edit_existing} </h2>
         <p>
-          <select class="form-control" id="managementForm_uid" name="uid" onchange="netuno.submitDev('management_form', 'managementForm', false);">
+          <select class="form-control" id="managementForm_uid" name="uid" onchange="netuno.submitDev('management_form', 'managementForm', false);" style="width: 100%;">
             <option value="">_{&lang=netuno.dev.form.label.creating_new}</option>
             _{data=form.items}
           </select>
@@ -49,27 +49,35 @@
       </div>
       #end
       <div class="row">
-        <div class="col-sm-8">
+        <div class="col-md-8">
           <div class="form-group">
             <label for="managementForm_displayName">* _{&lang=netuno.dev.form.label.displayname}</label>
             <input class="form-control" type="text" id="managementForm_displayName" name="displayname" value="_{&data=displayname.value}" size="50" validation="required">
           </div>
-          <div class="form-group">
-            <label for="managementForm_name">* _{&lang=netuno.dev.form.label.name}</label>
-            <input class="form-control" type="text" id="managementForm_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
+          <div class="row">
+            <div class="col-xs-8">
+              <div class="form-group">
+                <label for="managementForm_name">* _{&lang=netuno.dev.form.label.name}</label>
+                <input class="form-control" type="text" id="managementForm_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <label>&nbsp;</label>
+              _{include=_|dev/includes/autocomplete}
+            </div>
           </div>
           <div class="form-group">
             <label for="managementForm_parent">_{&lang=netuno.dev.form.label.parent}</label>
-            <select class="form-control" name="parent_uid" id="managementForm_parent">
+            <select class="form-control" name="parent_uid" id="managementForm_parent" style="width: 100%;">
               <option value=""></option>
               _{data=parent.items}
             </select>
           </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-md-4">
           <div class="row">
-            <div class="col-xs-6 col-sm-12">
-              <br>
+            <div class="col-xs-6 col-md-12">
+              <label class="hidden-xs hidden-sm">&nbsp;</label>
               <div class="form-group">
                 <label for="managementForm_controlShowId">
                   <input type="checkbox" id="managementForm_controlShowId" name="show_id" value="true"_{data=showid.checked}/>
@@ -77,7 +85,7 @@
                 </label>
               </div>
             </div>
-            <div class="col-xs-6 col-sm-12">
+            <div class="col-xs-6 col-md-12">
               <div class="form-group">
                 <label for="managementForm_controlActive">
                   <input type="checkbox" id="managementForm_controlActive" name="control_active" value="true"_{data=controlactive.checked}/>
@@ -87,7 +95,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-xs-6 col-sm-12">
+            <div class="col-xs-6 col-md-12">
               <div class="form-group">
                 <label for="managementForm_controlUser">
                   <input type="checkbox" id="managementForm_controlUser" name="control_user" value="true"_{data=controluser.checked}/>
@@ -95,7 +103,7 @@
                 </label>
               </div>
             </div>
-            <div class="col-xs-6 col-sm-12">
+            <div class="col-xs-6 col-md-12">
               <div class="form-group">
                 <label for="managementForm_controlUser">
                   <input type="checkbox" id="managementForm_controlGroup" name="control_group" value="true"_{data=controlgroup.checked}/>
@@ -118,7 +126,7 @@
         <div class="col-sm-4">
           <div class="form-group">
             <label for="managementForm_user">* _{&lang=netuno.dev.form.label.user}</label>
-            <select class="form-control" name="user_uid" id="managementForm_user">
+            <select class="form-control" name="user_uid" id="managementForm_user" style="width: 100%;">
               <option value="0" _{data=user.all.selected}>_{&lang=netuno.dev.form.label.user.all}</option>
               _{data=user.options}
             </select>
@@ -127,7 +135,7 @@
         <div class="col-sm-4">
           <div class="form-group">
             <label for="managementForm_group">* _{&lang=netuno.dev.form.label.group}</label>
-            <select class="form-control" name="group_uid" id="managementForm_group">
+            <select class="form-control" name="group_uid" id="managementForm_group" style="width: 100%;">
               <option value="0" _{data=group.all.selected}>_{&lang=netuno.dev.form.label.group.all}</option>
               _{data=group.options}
             </select>
@@ -293,10 +301,7 @@
 
 <script>
   (function (netuno, $) {
-    $('#managementForm_displayName').on('keyup', function () {
-        var that = $(this);
-        $('#managementForm_name').val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
-    });
+    netuno.nameAutocompleteDev.load('managementForm', '_{util=requestuuid}');
     $('#managementForm_buttonNew,#managementForm_buttonClear').on("click", function () {
       $('#managementForm_execute').val('new');
       $('#managementForm_uid').val('');
