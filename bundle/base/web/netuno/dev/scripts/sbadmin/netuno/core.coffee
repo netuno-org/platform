@@ -256,6 +256,50 @@ netuno.addPageLoad ()->
   netuno.loadDevLinks($("body"))
   netuno.loadCodeEditor($("body"))
 
+netuno.nameAutocompleteDev = {
+  checkboxesIds: []
+  changing: false
+  load: (fieldsPrefix, requestUUID)->
+    checkboxId = "dev_name_autocomplete_#{requestUUID}"
+    checkbox = $("\##{checkboxId}")
+    netuno.nameAutocompleteDev.clearCheckboxesIds()
+    netuno.nameAutocompleteDev.checkboxesIds.push(checkboxId)
+    checkbox.prop("checked", localStorage.getItem("dev:name:autocomplete") isnt "false")
+    $("\##{fieldsPrefix}_displayName").on("keyup", ()->
+      if localStorage.getItem("dev:name:autocomplete") is "false"
+        return
+      that = $(this)
+      fieldName = $("\##{fieldsPrefix}_name")
+      fieldName.val(S(that.val()).latinise().camelize().dasherize().slugify().replaceAll("-", "_").chompLeft("_").s)
+      fieldNameVal = fieldName.val()
+      if $("\##{fieldsPrefix}_type").length > 0 and $("\##{fieldsPrefix}_type").val() == "select"
+        endsWithId = fieldNameVal.indexOf("_id") == fieldNameVal.length - 3;
+        if !endsWithId
+          fieldName.val(fieldNameVal + "_id")
+    )
+  clearCheckboxesIds: ()->
+    netuno.nameAutocompleteDev.checkboxesIds.forEach((checkboxId, i)->
+      checkbox = $("\##{checkboxId}")
+      if checkbox.length is 0
+        netuno.nameAutocompleteDev.checkboxesIds.splice(i, 1)
+    )
+  onChange: (element)->
+    if netuno.nameAutocompleteDev.changing
+      return
+    netuno.nameAutocompleteDev.changing = true
+    element = $(element)
+    checked = element.is(":checked")
+    localStorage.setItem("dev:name:autocomplete", "#{checked}")
+    netuno.nameAutocompleteDev.checkboxesIds.forEach((checkboxId, i)->
+      if checkboxId == element.prop("id")
+        return
+      checkbox = $("\##{checkboxId}")
+      if checkbox.length > 0
+        checkbox.prop("checked", checked)
+        checkbox.trigger("change")
+    )
+    netuno.nameAutocompleteDev.changing = false
+}
 
 netuno.componentConfig = {
   load: (netunoType, netunoUid)->
