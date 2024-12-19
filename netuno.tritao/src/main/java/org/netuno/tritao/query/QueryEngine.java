@@ -3,6 +3,7 @@ import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.query.join.*;
 import org.netuno.tritao.query.pagination.Page;
@@ -11,7 +12,9 @@ import org.netuno.tritao.query.where.Condition;
 import org.netuno.tritao.query.where.RelationOperator;
 import org.netuno.tritao.query.where.Where;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.util.ResourceException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -187,6 +190,7 @@ public class QueryEngine extends Data {
         if (query.getOrder() != null) {
             selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
+        selectCommandSQL += "\nLIMIT " + query.getLimit();
         if (query.isDebug()) {
             logger.warn("SQL Command executed: \n"+selectCommandSQL);
         }
@@ -210,11 +214,11 @@ public class QueryEngine extends Data {
             logger.warn("SQL Command executed: \n"+selectCommandSQL);
         }
         List<Values> items = getManager().query(selectCommandSQL);
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             return new Values();
         }
-        items = query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
-        return items.get(0);
+        items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
+        return items.getFirst();
     }
 
     public int count(Query query) {
@@ -230,7 +234,7 @@ public class QueryEngine extends Data {
             selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
 
-        return (int) getManager().query(selectCommandSQL).get(0).getLong("total");
+        return (int) getManager().query(selectCommandSQL).getFirst().getLong("total");
     }
 
     public Page page(Query query) {
@@ -247,9 +251,267 @@ public class QueryEngine extends Data {
             logger.warn("SQL Command executed: \n"+selectCommandSQL);
         }
         List<Values> items = getManager().query(selectCommandSQL);
-        items = query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
+        items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
         int total = this.count(query);
-        Page page = new Page(items.size() == 0 ? Collections.EMPTY_LIST : items , total, query.getPagination());
-        return page;
+        return new Page(items.isEmpty() ? Collections.EMPTY_LIST : items , total, query.getPagination());
+    }
+
+    public List<Values> getRecordIDs(Query query) {
+        String selectIdsCommandSQL = "SELECT " + query.getTableName() + ".id FROM " + query.getTableName() + this.buildQuerySQL(query);
+        if (query.getOrder() != null) {
+            selectIdsCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+        }
+        selectIdsCommandSQL += "\nLIMIT " + query.getLimit();
+        List<Values> recordIDs = getManager().query(selectIdsCommandSQL);
+        if (recordIDs.isEmpty()) {
+            throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
+        }
+        return recordIDs;
+    }
+
+    public int deleteAll(Query query) {
+        List<Values> recordIDs = getRecordIDs(query);
+        int numberOfAffectedRows = 0;
+        List<String> undeletedRecords = new ArrayList<>();
+        for (Values recordID : recordIDs) {
+            final DataItem dataItem = getBuilder().delete(query.getTableName(), recordID.getString("id"));
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                numberOfAffectedRows++;
+            } else {
+                undeletedRecords.add(recordID.getString("id"));
+            }
+        }
+        if (!undeletedRecords.isEmpty() && query.isDebug()) {
+            logger.warn("Impossible to delete the following records IDs: [{}]", String.join(", ", undeletedRecords));
+        }
+        if (query.isDebug()) {
+            logger.warn("Number of rows affected: " + numberOfAffectedRows);
+        }
+        return numberOfAffectedRows;
+    }
+
+    public int deleteFirst(Query query) {
+        List<Values> idsValues = getRecordIDs(query.setLimit(1));
+        final DataItem dataItem = getBuilder().delete(query.getTableName(), idsValues.getFirst().getString("id"));
+        if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+            return 1;
+        } else {
+            if (dataItem.getStatus() == DataItem.Status.Relations && query.isDebug()) {
+                logger.warn("Impossible to delete the record with ID: {}, the same is related to one or more tables", idsValues.getFirst().getString("id"));
+            } else if (query.isDebug()) {
+                logger.warn("Impossible to delete the record ID: {}", idsValues.getFirst().getString("id"));
+            }
+            return 0;
+        }
+    }
+
+    public Values cascadeDelete(Values deleteLinks, Query query) {
+        List<Values> recordIDs = getRecordIDs(query);
+        Values affectedForms = new Values();
+        Values undeletedRecords = new Values();
+        for (Values recordID : recordIDs) {
+            for (Map.Entry<String, Object> deleteLink: deleteLinks.entrySet()) {
+                String selectDeleteLinkIdsCommandSQL = "SELECT id FROM " + deleteLink.getKey() + " WHERE " + deleteLink.getValue() + " = " + recordID.get("id");
+                List<Values> deleteLinkIds = getManager().query(selectDeleteLinkIdsCommandSQL);
+                for (Values deleteLinkId: deleteLinkIds) {
+                    DataItem dataItem = getBuilder().delete(deleteLink.getKey(), deleteLinkId.getString("id"));
+                    if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                        affectedForms.set(deleteLink.getKey(), affectedForms.getInt(deleteLink.getKey(), 0) + 1);
+                    } else {
+                        undeletedRecords.set(deleteLink.getKey(), undeletedRecords.getInt(deleteLink.getKey(), 0) + 1);
+                    }
+                }
+            }
+            DataItem dataItem = getBuilder().delete(query.getTableName(), recordID.getString("id"));
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                affectedForms.set(
+                        query.getTableName(),
+                        (affectedForms.getInt(query.getTableName(), 0) + 1)
+                );
+            } else {
+                undeletedRecords.set(
+                        query.getTableName(),
+                        (undeletedRecords.getInt(query.getTableName(), 0) + 1)
+                );
+            }
+        }
+        if (query.isDebug()) {
+            if (!undeletedRecords.isEmpty()) {
+                logger.warn("Impossible to delete the records in forms: {}", undeletedRecords.toJSON());
+            }
+            logger.warn("Rows of the forms affected: {}", affectedForms.toJSON());
+        }
+        return affectedForms;
+    }
+
+    public int updateFirst(Values data, Query query) {
+        if (data == null) {
+            throw new UnsupportedOperationException("No values in update method");
+        }
+        List<Values> recordIDs = this.getRecordIDs(query.setLimit(1));
+        DataItem dataItem = getBuilder().update(query.getTableName(), recordIDs.getFirst().getString("id"), data);
+        if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+            return 1;
+        } else {
+            if (query.isDebug()) {
+                logger.warn("Impossible update the record ID: {}", recordIDs.getFirst().getString("id"));
+            }
+            return 0;
+        }
+    }
+
+    public int updateAll(Values data, Query query) {
+        if (data == null) {
+            throw new UnsupportedOperationException("No values in update method");
+        }
+        List<Values> recordIDs = this.getRecordIDs(query);
+        int numberOfAffectedForms = 0;
+        List<String> unaffectedRecords = new ArrayList<>();
+        for (Values recordID : recordIDs) {
+            DataItem dataItem = getBuilder().update(query.getTableName(), recordID.getString("id"), data);
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                numberOfAffectedForms++;
+            } else {
+                unaffectedRecords.add(recordID.getString("id"));
+            }
+        }
+        if (query.isDebug()) {
+            if (!unaffectedRecords.isEmpty()) {
+                logger.warn("Impossible to update the following records IDs: [{}]", String.join(", ", unaffectedRecords));
+            }
+            logger.warn("Number of rows affected: " + numberOfAffectedForms);
+        }
+        return numberOfAffectedForms;
+    }
+
+    public String cascadeUpdateSubForms(Values dataValues, Map.Entry<String, Object> updateLink, String recordID) {
+        if (dataValues.get("id") != null) {
+            String getIdQuerySQL =
+                "SELECT "
+                    + updateLink.getKey()+".id"
+                    + " FROM " + updateLink.getKey()
+                    + " WHERE 1 = 1"
+                    + " AND id = " + dataValues.getString("id")
+                    + " AND " + updateLink.getValue() + " = " + recordID;
+            final List<Values> dbID = getManager().query(getIdQuerySQL);
+            String id = !dbID.isEmpty() ? dbID.getFirst().getString("id") : "0";
+            DataItem dataItem = getBuilder().update(updateLink.getKey(), id, dataValues);
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                return dataValues.getString("id");
+            }
+        } else if (dataValues.get("uid") != null) {
+            String getIdQuerySQL =
+                "SELECT "
+                    + updateLink.getKey()+".id"
+                    + " FROM " + updateLink.getKey()
+                    + " WHERE 1 = 1"
+                    + " AND uid = " + "'" + dataValues.getString("uid")+ "'"
+                    + " AND " + updateLink.getValue() + " = " + recordID;
+            final List<Values> dbUID = getManager().query(getIdQuerySQL);
+            String uid = !dbUID.isEmpty() ? dbUID.getFirst().getString("id") : "0";
+            DataItem dataItem = getBuilder().update(updateLink.getKey(), uid, dataValues);
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                return uid;
+            }
+        } else {
+            DataItem dataItem = getBuilder().insert(updateLink.getKey(), dataValues.set(updateLink.getValue().toString(), recordID));
+            if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
+                return dataItem.getId();
+            }
+        }
+        return null;
+    }
+
+    public Values updateCascade(Values data, Values updateLinks, Query query) {
+        Values affectedValues = new Values();
+        String recordID = this.getRecordIDs(query.setLimit(1)).getFirst().getString("id");
+        DataItem result = getBuilder().update(query.getTableName(), recordID, data);
+        checkDataItemErrors(result, "update");
+        affectedValues.set(query.getTableName(), (result.getStatusType() == DataItem.StatusType.Ok) ? 1 : 0);
+        for (Map.Entry<String, Object> updateLink : updateLinks.entrySet()) {
+            List<String> updatedRecords = new ArrayList<String>();
+            List<String> recordsLinkID = getManager().query(
+                    "SELECT " + updateLink.getKey()+".id FROM " + updateLink.getKey() + " WHERE " + updateLink.getValue() + " = " + recordID
+            ).stream().map(values -> values.getString("id")).collect(Collectors.toList());
+            if (data.get(updateLink.getKey()) instanceof Values && !((Values) data.get(updateLink.getKey())).isEmpty()) {
+               final Values dataValues = data.getValues(updateLink.getKey());
+               if (dataValues.values().stream().allMatch(object -> object instanceof Values)) {
+                    for (int i = 0; i < dataValues.size(); i++) {
+                        final String updatedRecordId = cascadeUpdateSubForms(dataValues.getValues(i), updateLink, recordID);
+                        if (updatedRecordId != null) {
+                            updatedRecords.add(updatedRecordId);
+                        }
+                    }
+               } else {
+                   final String updatedRecordId = cascadeUpdateSubForms(dataValues, updateLink, recordID);
+                   if (updatedRecordId != null) {
+                       updatedRecords.add(updatedRecordId);
+                   }
+               }
+                recordsLinkID.removeAll(updatedRecords);
+                affectedValues.set(updateLink.getKey(), (affectedValues.getInt(updateLink.getKey(), 0) + updatedRecords.size()));
+                if (!updatedRecords.isEmpty()) {
+                    for (String linkId : recordsLinkID) {
+                        if (getBuilder().delete(updateLink.getKey(), linkId).getStatusType() == DataItem.StatusType.Ok) {
+                            affectedValues.set(updateLink.getKey(), (affectedValues.getInt(updateLink.getKey(), 0) + 1));
+                        }
+                    }
+                }
+            }
+        }
+        return affectedValues;
+    }
+
+    public String insert(Values data, Query query) {
+        if (data == null || data.isEmpty()) {
+            throw new ResourceException("Data values cannot be null or empty");
+        }
+        DataItem dataItem = getBuilder().insert(query.getTableName(), validDataValues(data));
+        checkDataItemErrors(dataItem, "insert");
+        return dataItem.getId();
+    }
+
+    public Values cascadeInsert(Values insertLinks, Values data, Query query) {
+        var newRecords = new Values();
+        DataItem formMainDataItem = getBuilder().insert(query.getTableName(), validDataValues(data));
+        checkDataItemErrors(formMainDataItem, "insert");
+        final String formMainDataId = formMainDataItem.getId();
+        newRecords.set(query.getTableName(), formMainDataId);
+        for (Map.Entry<String, Object> insertLink : insertLinks.entrySet()) {
+            Values dataLink = data.getValues(insertLink.getKey());
+            if (dataLink.values().stream().allMatch(object -> object instanceof Values)) {
+                var newLinkRecords = new Values();
+                for (int i = 0; i < dataLink.size() ; i++) {
+                    Values dataLinkValues = dataLink.getValues(i);
+                    dataLinkValues.set(insertLink.getValue().toString(), formMainDataId);
+                    DataItem linkDataItem = getBuilder().insert(insertLink.getKey(), validDataValues(dataLinkValues));
+                    if (linkDataItem.getStatusType() == DataItem.StatusType.Ok) {
+                        newLinkRecords.add(linkDataItem.getId());
+                    }
+                }
+                newRecords.set(insertLink.getKey(), newLinkRecords);
+            } else {
+                dataLink.set(insertLink.getValue().toString(), formMainDataId);
+                DataItem dataItemLink = getBuilder().insert(insertLink.getKey(), dataLink);
+                if (dataItemLink.getStatusType() == DataItem.StatusType.Ok) {
+                    newRecords.set(insertLink.getKey(), dataItemLink.getId());
+                }
+            }
+        }
+        return newRecords;
+    }
+
+    public Values validDataValues(Values data) {
+        data.set("active", !data.containsKey("active") || data.getBoolean("active"));
+        return data;
+    }
+
+    public void checkDataItemErrors(DataItem dataItem, String action) {
+        switch (dataItem.getStatus()) {
+            case NotFound -> throw new ResourceException("No records found for form " + dataItem.getTable());
+            case Error -> throw new ResourceException("Impossible to " + action + " record of the form " + dataItem.getTable());
+            case Exists -> throw new ResourceException("Already exists a record in " + dataItem.getTable() + " form with data.");
+        }
     }
 }
+
