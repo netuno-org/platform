@@ -25,7 +25,7 @@
       <div class="form-group">
         <h2>_{&lang=netuno.dev.report.label.edit_existing}</h2>
         <p>
-          <select class="form-control" id="managementReport_uid" name="uid" onchange="netuno.submitDev('management_report', 'managementReport', false);">
+          <select class="form-control" id="managementReport_uid" name="uid" onchange="netuno.submitDev('management_report', 'managementReport', false);" style="width: 100%;">
             <option value="">_{&lang=netuno.dev.report.label.creating_new}</option>
             _{data=report.items}
           </select>
@@ -49,19 +49,28 @@
         </div>
         #end
       <div class="row">
-        <div class="col-sm-8">
+        <div class="col-md-8">
           <div class="form-group">
             <label for="managementReport_displayName">* _{&lang=netuno.dev.report.label.displayname}</label>
             <input class="form-control" type="text" id="managementReport_displayName" name="displayname" value="_{&data=displayname.value}" size="50" validation="required">
           </div>
-          <div class="form-group">
-            <label for="managementReport_name">* _{&lang=netuno.dev.report.label.name}</label>
-            <input class="form-control" type="text" id="managementReport_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
+          <div class="row">
+            <div class="col-xs-8">
+              <div class="form-group">
+                <label for="managementReport_name">* _{&lang=netuno.dev.report.label.name}</label>
+                <input class="form-control" type="text" id="managementReport_name" name="name" value="_{data=name.value}" size="50" validation="required sqlname">
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <label>&nbsp;</label>
+              _{include=_|dev/includes/autocomplete}
+            </div>
           </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-md-4">
           <div class="row">
-            <div class="col-xs-6 col-sm-12">
+            <div class="col-xs-6 col-md-12">
+              <label class="hidden-xs hidden-sm">&nbsp;</label>
               <div class="form-group">
                 <label for="managementReport_controlUser">
                   <input type="checkbox" id="managementReport_controlUser" name="control_user" value="on"_{data=controluser.checked}/>
@@ -69,7 +78,7 @@
                 </label>
               </div>
             </div>
-            <div class="col-xs-6 col-sm-12">
+            <div class="col-xs-6 col-md-12">
               <div class="form-group">
                 <label for="managementReport_controlGroup">
                   <input type="checkbox" id="managementReport_controlGroup" name="control_group" value="on"_{data=controlgroup.checked}/>
@@ -79,7 +88,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-xs-6 col-sm-12">
+            <div class="col-xs-6 col-md-12">
               <div class="form-group">
                 <label for="managementReport_controlActive">
                   <input type="checkbox" id="managementReport_controlActive" name="control_active" value="on"_{data=controlactive.checked}/>
@@ -94,7 +103,7 @@
           <div class="col-lg-8">
               <div class="form-group">
                   <label for="managementReport_parent">_{&lang=netuno.dev.report.label.parent}</label>
-                  <select class="form-control" name="parent_id" id="managementReport_parent">
+                  <select class="form-control" name="parent_id" id="managementReport_parent" style="width: 100%;">
                       <option value="0"></option>
                       _{data=parent.items}
                   </select>
@@ -109,7 +118,7 @@
                   <div class="col-sm-4">
                       <div class="form-group">
                           <label for="managementReport_user">* _{&lang=netuno.dev.report.label.user}</label>
-                          <select class="form-control" name="user_uid" id="managementReport_user">
+                          <select class="form-control" name="user_uid" id="managementReport_user" style="width: 100%;">
                               <option value="0"_{data=user.all.selected}>_{&lang=netuno.dev.report.label.user.all}</option>
                               <option value="-1"_{data=user.administrator.selected}>_{&lang=netuno.dev.report.label.user.administrator}</option>
                               <option value="-2"_{data=user.developer.selected}>_{&lang=netuno.dev.report.label.user.developer}</option>
@@ -120,7 +129,7 @@
                   <div class="col-sm-4">
                       <div class="form-group">
                           <label for="managementReport_group">* _{&lang=netuno.dev.report.label.group}</label>
-                          <select class="form-control" name="group_uid" id="managementReport_group">
+                          <select class="form-control" name="group_uid" id="managementReport_group" style="width: 100%;">
                               <option value="0"_{data=group.all.selected}>_{&lang=netuno.dev.report.label.group.all}</option>
                               <option value="-1"_{data=group.administrator.selected}>_{&lang=netuno.dev.report.label.group.administrator}</option>
                               <option value="-2"_{data=group.developer.selected}>_{&lang=netuno.dev.report.label.group.developer}</option>
@@ -183,10 +192,7 @@
 
 <script>
   (function (netuno, $) {
-    $('#managementReport_displayName').on('keyup', function () {
-      var that = $(this);
-      $('#managementReport_name').val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
-    });
+    netuno.nameAutocompleteDev.load('managementReport', '_{util=requestuuid}');
     $('#managementReport_buttonNew,#managementReport_buttonClear').on("click", function () {
       $('#managementReport_execute').val('new');
       $('#managementReport_uid').val('');
