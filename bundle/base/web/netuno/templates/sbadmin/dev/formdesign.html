@@ -27,7 +27,7 @@
           <div class="form-group">
             <h2>_{&lang=netuno.dev.formdesign.label.edit_existing}</h2>
             <p>
-              <select class="form-control" id="fieldFormDesign__{data=table.name}_uid" name="uid">
+              <select class="form-control" id="fieldFormDesign__{data=table.name}_uid" name="uid" style="width: 100%;">
                 <option value="">_{&lang=netuno.dev.formdesign.label.creating_new}</option>
                 _{data=field.items}
               </select>
@@ -59,18 +59,26 @@
           </div>
         </div>
         #end
-        <div class="col-md-6">
+        <div class="col-lg-6">
           <div class="form-group">
             <label for="fieldFormDesign__{data=table.name}_displayName">* _{&lang=netuno.dev.formdesign.label.displayname}</label>
             <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_displayName" name="displayname" value="_{&data=displayname.value}" size="40" validation="required">
           </div>
-          <div class="form-group">
-            <label for="fieldFormDesign__{data=table.name}_name">* _{&lang=netuno.dev.formdesign.label.name}</label>
-            <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_name" name="name" value="_{&data=name.value}"
-              size="40" validation="required sqlname">
+          <div class="row">
+            <div class="col-xs-8">
+              <div class="form-group">
+                <label for="fieldFormDesign__{data=table.name}_name">* _{&lang=netuno.dev.formdesign.label.name}</label>
+                <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_name" name="name" value="_{&data=name.value}"
+                  size="40" validation="required sqlname">
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <label>&nbsp;</label>
+              _{include=_|dev/includes/autocomplete}
+            </div>
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-6">
           <div class="row">
             <div class="col-xs-6">
               <div class="form-group">
@@ -125,7 +133,7 @@
         <div class="col-md-6">
           <div class="form-group">
             <label for="fieldFormDesign__{data=table.name}_type">_{&lang=netuno.dev.formdesign.label.type}</label>
-            <select required class="form-control" id="fieldFormDesign__{data=table.name}_type" name="type">
+            <select required class="form-control" id="fieldFormDesign__{data=table.name}_type" name="type" style="width: 100%;">
               <option value=""></option>
               _{data=type.items}
             </select>
@@ -135,14 +143,14 @@
           <div class="row">
             <div class="col-xs-6">
               <div class="form-group">
-                <label for="fieldFormDesign__{data=table.name}_x">_{&lang=netuno.dev.formdesign.label.x}</label>
-                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_x" name="x" value="_{data=x.value}" size="2" maxlength="2" validation="required number">
+                <label for="fieldFormDesign__{data=table.name}_y">_{&lang=netuno.dev.formdesign.label.y}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_y" name="y" value="_{data=y.value}" size="2" maxlength="2" validation="required number">
               </div>
             </div>
             <div class="col-xs-6">
               <div class="form-group">
-                <label for="fieldFormDesign__{data=table.name}_y">_{&lang=netuno.dev.formdesign.label.y}</label>
-                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_y" name="y" value="_{data=y.value}" size="2" maxlength="2" validation="required number">
+                <label for="fieldFormDesign__{data=table.name}_x">_{&lang=netuno.dev.formdesign.label.x}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_x" name="x" value="_{data=x.value}" size="2" maxlength="2" validation="required number">
               </div>
             </div>
           </div>
@@ -221,15 +229,15 @@
             </div>
             <div class="col-md-3 col-xs-6">
               <div class="form-group">
-                <label for="fieldFormDesign__{data=table.name}_colSpan">_{&lang=netuno.dev.formdesign.label.colspan}</label>
-                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_colSpan" name="colspan" value="_{data=colspan.value}"
-                  size="2" maxlength="3" validation="number">
+                <label for="fieldFormDesign__{data=table.name}_rowSpan">_{&lang=netuno.dev.formdesign.label.rowspan}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_rowSpan" name="rowspan" value="_{data=rowspan.value}"
+                       size="2" maxlength="3" validation="number">
               </div>
             </div>
             <div class="col-md-3 col-xs-6">
               <div class="form-group">
-                <label for="fieldFormDesign__{data=table.name}_rowSpan">_{&lang=netuno.dev.formdesign.label.rowspan}</label>
-                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_rowSpan" name="rowspan" value="_{data=rowspan.value}"
+                <label for="fieldFormDesign__{data=table.name}_colSpan">_{&lang=netuno.dev.formdesign.label.colspan}</label>
+                <input type="text" class="form-control" id="fieldFormDesign__{data=table.name}_colSpan" name="colspan" value="_{data=colspan.value}"
                   size="2" maxlength="3" validation="number">
               </div>
             </div>
@@ -238,7 +246,7 @@
             <div class="col-md-3 col-xs-6">
               <div class="form-group">
                 <label for="fieldFormDesign__{data=table.name}_userView">_{&lang=netuno.dev.formdesign.label.user.view}</label>
-                <select class="form-control" name="view_user_uid" id="fieldFormDesign__{data=table.name}_userView">
+                <select class="form-control" name="view_user_uid" id="fieldFormDesign__{data=table.name}_userView" style="width: 100%;">
                   <option value="0" _{data=view.user.all.selected}>_{&lang=netuno.dev.formdesign.label.user.all}</option>
                   _{data=view.user.options}
                 </select>
@@ -247,7 +255,7 @@
             <div class="col-md-3 col-xs-6">
               <div class="form-group">
                 <label for="fieldFormDesign__{data=table.name}_groupView">_{&lang=netuno.dev.formdesign.label.group.view}</label>
-                <select class="form-control" name="view_group_uid" id="fieldFormDesign__{data=table.name}_groupView">
+                <select class="form-control" name="view_group_uid" id="fieldFormDesign__{data=table.name}_groupView" style="width: 100%;">
                   <option value="0" _{data=view.group.all.selected}>_{&lang=netuno.dev.formdesign.label.group.all}</option>
                   _{data=view.group.options}
                 </select>
@@ -256,7 +264,7 @@
             <div class="col-md-3 col-xs-6">
               <div class="form-group">
                 <label for="fieldFormDesign__{data=table.name}_userEdit">_{&lang=netuno.dev.formdesign.label.user.edit}</label>
-                <select class="form-control" name="edit_user_uid" id="fieldFormDesign__{data=table.name}_userEdit">
+                <select class="form-control" name="edit_user_uid" id="fieldFormDesign__{data=table.name}_userEdit" style="width: 100%;">
                   <option value="0" _{data=edit.user.all.selected}>_{&lang=netuno.dev.formdesign.label.user.all}</option>
                   _{data=edit.user.options}
                 </select>
@@ -265,7 +273,7 @@
             <div class="col-md-3 col-xs-6">
               <div class="form-group">
                 <label for="fieldFormDesign__{data=table.name}_groupEdit">_{&lang=netuno.dev.formdesign.label.group.edit}</label>
-                <select class="form-control" name="edit_group_uid" id="fieldFormDesign__{data=table.name}_groupEdit">
+                <select class="form-control" name="edit_group_uid" id="fieldFormDesign__{data=table.name}_groupEdit" style="width: 100%;">
                   <option value="0" _{data=edit.group.all.selected}>_{&lang=netuno.dev.formdesign.label.group.all}</option>
                   _{data=edit.group.options}
                 </select>
@@ -330,18 +338,7 @@
 
 <script>
   (function (netuno, $) {
-    $('#fieldFormDesign__{data=table.name}_displayName').on('keyup', function () {
-      var that = $(this);
-      var fieldName = $('#fieldFormDesign__{data=table.name}_name');
-      fieldName.val(S(that.val()).latinise().camelize().dasherize().replaceAll('-', '_').chompLeft('_').s)
-      var fieldNameVal = fieldName.val();
-      if ($("#fieldFormDesign__{data=table.name}_type").val() == 'select') {
-        var endsWithId = fieldNameVal.indexOf("_id") == fieldNameVal.length - 3;
-        if (!endsWithId) {
-          fieldName.val(fieldNameVal + "_id");
-        }
-      }
-    });
+    netuno.nameAutocompleteDev.load('fieldFormDesign__{data=table.name}', '_{util=requestuuid}');
     $("#fieldFormDesign__{data=table.name}_uid").on("change", function () {
       netuno.loadDevFormField('_{data=table.name}', $(this).val());
     });
