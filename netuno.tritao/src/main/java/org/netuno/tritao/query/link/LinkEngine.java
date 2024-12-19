@@ -7,8 +7,10 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.query.join.Join;
 import org.netuno.tritao.query.join.Relation;
 import org.netuno.tritao.query.join.RelationType;
+import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,58 @@ public class LinkEngine extends TableBuilderResourceBase {
             join.setWhere(link.getWhere().setTable(link.getRelationLink().getFormLink()));
         }
         return join;
+    }
+
+    public void checkForm(String formName) {
+        List<Values> components = getAllComponents(formName);
+        if (components == null) {
+            throw new UnsupportedOperationException("No forms found with the name " + formName);
+        }
+    }
+
+
+
+    public Values buildDeleteLinks(String form, List<String> formsToLink) {
+        if (formsToLink.isEmpty()) {
+            throw new ResourceException("No form was provided in deleteCascade method");
+        }
+        Values deleteLinks = new Values();
+        for (String formToLink : formsToLink) {
+            Values linkBetween = getLinkBetween(formToLink, form);
+            if (linkBetween == null) {
+                throw new UnsupportedOperationException("There is no link between the forms " + form + " and " + formToLink);
+            }
+            deleteLinks.set(formToLink, linkBetween.getString("name"));
+        }
+        return deleteLinks;
+    }
+
+    public Values buildUpdateLinks(String form, Values data) {
+        Values updateLinks = new Values();
+        for (Map.Entry<String, Object> entryData : data.entrySet()) {
+            if (entryData.getValue() instanceof Values) {
+                if (data.getValues(entryData.getKey()) == null || data.getValues(entryData.getKey()).isEmpty()) {
+                    throw new IllegalArgumentException("Data of the form " + entryData.getKey() + " null or empty.");
+                }
+                String linkName = (String) getLinkBetweenProp(entryData.getKey(), form, "name");
+                updateLinks.set(entryData.getKey(), linkName);
+            }
+        }
+        return updateLinks;
+    }
+
+    public Values buildInsertLinks(String form, Values data) {
+        Values updateLinks = new Values();
+        for (Map.Entry<String, Object> entryData : data.entrySet()) {
+            if (entryData.getValue() instanceof Values) {
+                if (data.getValues(entryData.getKey()) == null || data.getValues(entryData.getKey()).isEmpty()) {
+                    throw new IllegalArgumentException("Data of the form " + entryData.getKey() + " null or empty.");
+                }
+                String linkName = (String) getLinkBetweenProp(entryData.getKey(), form, "name");
+                updateLinks.set(entryData.getKey(), linkName);
+            }
+        }
+        return updateLinks;
     }
 
     public List<Values> getSelectComponents(String formName) {
@@ -59,7 +113,7 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 return relation;
             } else {
-                throw new IllegalArgumentException("There is no relationship between the forms " + form + " and " + subLink.getFormLink());
+                throw new IllegalArgumentException("There is no link between the forms " + form + " and " + subLink.getFormLink());
             }
         }
     }
@@ -73,6 +127,14 @@ public class LinkEngine extends TableBuilderResourceBase {
             }
         }
         return null;
+    }
+
+    public Object getLinkBetweenProp(String formToLink, String form, String propName) {
+        Values linkBetween = getLinkBetween(formToLink, form);
+        if (linkBetween == null) {
+            throw new UnsupportedOperationException("There is no link between the forms " + form + " and " + formToLink);
+        }
+        return linkBetween.get(propName);
     }
 
     public String extractFormOfTheLink(String properties) {
