@@ -2454,6 +2454,53 @@ public class Remote extends org.netuno.psamata.net.Remote {
             translations = {
                     @MethodTranslationDoc(
                             language = LanguageDoc.PT,
+                            description = "Obtém o endereço IP de um anfitrião.",
+                            howToUse = {}),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Get the IP address of a host.",
+                            howToUse = {})
+            },
+            parameters = {
+                    @ParameterDoc(name = "host", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "servidor",
+                                    description = "Nome do anfitrião."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Host name."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Endereço IP do anfitrião."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Host IP address."
+                    )
+            }
+    )
+    public String hostAddress(String host) {
+        try {
+            InetAddress target = InetAddress.getByName(host);
+            return target.getHostAddress();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+    public String getHostAddress(String host) {
+        return hostAddress(host);
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
                             description = "Verifica se o nome de servidor ou IP está disponível.",
                             howToUse = {}),
                     @MethodTranslationDoc(
@@ -2472,6 +2519,17 @@ public class Remote extends org.netuno.psamata.net.Remote {
                                     language = LanguageDoc.EN,
                                     description = "Server name or IP."
                             )
+                    }),
+                    @ParameterDoc(name = "timeout", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "tempoLimite",
+                                    description = "Tempo limite para realizar o ping em milissegundos."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Timeout to perform ping in milliseconds."
+                            )
                     })
             },
             returns = {
@@ -2485,16 +2543,19 @@ public class Remote extends org.netuno.psamata.net.Remote {
                     )
             }
     )
-    public boolean ping(String host) {
+    public boolean ping(String host, int timeout) {
         try {
             InetAddress target = InetAddress.getByName(host);
-            if (target.isReachable(5000)) {
+            if (target.isReachable(timeout)) {
                 return true;
             }
             return false;
         } catch (Exception e) {
             return false;
         }
+    }
+    public boolean ping(String host) {
+        return ping(host, 1000);
     }
 
     @MethodDoc(
