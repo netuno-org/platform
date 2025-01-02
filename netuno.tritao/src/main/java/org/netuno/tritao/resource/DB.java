@@ -33,6 +33,7 @@ import org.netuno.tritao.db.form.link.RelationshipLink;
 import org.netuno.tritao.db.form.pagination.Pagination;
 import org.netuno.tritao.db.form.where.ConditionalOperatorType;
 import org.netuno.tritao.db.form.where.RelationalOperator;
+import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DataItem;
@@ -4499,21 +4500,25 @@ public class DB extends ResourceBase {
         return new Operation(formName, operationEngine, linkEngine);
     }
 
-    public org.netuno.tritao.db.form.where.Where where(String column, Object value) {
-        return new org.netuno.tritao.db.form.where.Where(column, value);
+    public Operation form(String formName, org.netuno.tritao.db.form.where.Where where) {
+        return new Operation(formName, where, operationEngine, linkEngine);
     }
 
-    public org.netuno.tritao.db.form.where.Where where(String column, RelationalOperator relationOperator) {
-        return new org.netuno.tritao.db.form.where.Where(column, relationOperator);
-    }
-
-    public org.netuno.tritao.db.form.where.Where where(ConditionalOperatorType operator, String column, Object value) {
-        return new org.netuno.tritao.db.form.where.Where(operator, column, value);
-    }
-
-    public org.netuno.tritao.db.form.where.Where where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
-        return new org.netuno.tritao.db.form.where.Where(operator, column, relationOperator);
-    }
+//    public org.netuno.tritao.db.form.where.Where where(String column, Object value) {
+//        return new org.netuno.tritao.db.form.where.Where(column, value);
+//    }
+//
+//    public org.netuno.tritao.db.form.where.Where where(String column, RelationalOperator relationOperator) {
+//        return new org.netuno.tritao.db.form.where.Where(column, relationOperator);
+//    }
+//
+//    public org.netuno.tritao.db.form.where.Where where(ConditionalOperatorType operator, String column, Object value) {
+//        return new org.netuno.tritao.db.form.where.Where(operator, column, value);
+//    }
+//
+//    public org.netuno.tritao.db.form.where.Where where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
+//        return new org.netuno.tritao.db.form.where.Where(operator, column, relationOperator);
+//    }
 
     public Relationship manyToOne(String tableName, String column) {
         return new Relationship(tableName, column, RelationshipType.ManyToOne);
@@ -4555,6 +4560,10 @@ public class DB extends ResourceBase {
         link.getRelationLink().setFormLink(formLink);
         link.setWhere(where);
         return link;
+    }
+
+    public org.netuno.tritao.db.form.where.Where where(String column) {
+        return new org.netuno.tritao.db.form.where.Where(column);
     }
 
 

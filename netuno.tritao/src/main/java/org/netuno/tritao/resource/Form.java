@@ -137,69 +137,69 @@ public class Form extends TableBuilderResourceBase {
         return new Operation(tableName, where, queryEngine, linkEngine);
     }
 
-       @MethodDoc(
-        translations = {
-            @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Retorna um novo objeto Where pronto para ser configurado.",
-                howToUse = {}
-            ),
-            @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Returns a new Where object ready to be configured.",
-                howToUse = {}
-            )
-        },
-           parameters = {
-            @ParameterDoc(name = "column", translations = {
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Nome da coluna.",
-                    name = "coluna"
-                ),
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Column name."
-                )
-            }),
-            @ParameterDoc(name = "value", translations = {
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Valor da condição.",
-                    name = "valor"
-                ),
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Conditional values."
-                )
-            })
-        },
-        returns = {
-            @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Novo objeto Where."
-            ),
-            @ReturnTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "A new Where object"
-            )
-        }
-    )
-    public Where where(String column, Object value) {
-        return new Where(column, value);
-    }
-
-    public Where where(String column, RelationalOperator relationOperator) {
-        return new Where(column, relationOperator);
-    }
-
-    public Where where(ConditionalOperatorType operator, String column, Object value) {
-        return new Where(operator, column, value);
-    }
-
-    public Where where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
-        return new Where(operator, column, relationOperator);
-    }
+//       @MethodDoc(
+//        translations = {
+//            @MethodTranslationDoc(
+//                language = LanguageDoc.PT,
+//                description = "Retorna um novo objeto Where pronto para ser configurado.",
+//                howToUse = {}
+//            ),
+//            @MethodTranslationDoc(
+//                language = LanguageDoc.EN,
+//                description = "Returns a new Where object ready to be configured.",
+//                howToUse = {}
+//            )
+//        },
+//           parameters = {
+//            @ParameterDoc(name = "column", translations = {
+//                @ParameterTranslationDoc(
+//                    language = LanguageDoc.PT,
+//                    description = "Nome da coluna.",
+//                    name = "coluna"
+//                ),
+//                @ParameterTranslationDoc(
+//                    language = LanguageDoc.EN,
+//                    description = "Column name."
+//                )
+//            }),
+//            @ParameterDoc(name = "value", translations = {
+//                @ParameterTranslationDoc(
+//                    language = LanguageDoc.PT,
+//                    description = "Valor da condição.",
+//                    name = "valor"
+//                ),
+//                @ParameterTranslationDoc(
+//                    language = LanguageDoc.EN,
+//                    description = "Conditional values."
+//                )
+//            })
+//        },
+//        returns = {
+//            @ReturnTranslationDoc(
+//                language = LanguageDoc.PT,
+//                description = "Novo objeto Where."
+//            ),
+//            @ReturnTranslationDoc(
+//                language = LanguageDoc.EN,
+//                description = "A new Where object"
+//            )
+//        }
+//    )
+//    public Where where(String column, Object value) {
+//        return new Where(column, value);
+//    }
+//
+//    public Where where(String column, RelationalOperator relationOperator) {
+//        return new Where(column, relationOperator);
+//    }
+//
+//    public Where where(ConditionalOperatorType operator, String column, Object value) {
+//        return new Where(operator, column, value);
+//    }
+//
+//    public Where where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
+//        return new Where(operator, column, relationOperator);
+//    }
 
        @MethodDoc(
         translations = {

@@ -29,26 +29,29 @@ public class OperationEngine extends Data {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(OperationEngine.class);
 
     public String buildQuerySQL(Operation query) {
-        String joinSQL = "";
-        String whereSQL = "";
+        StringBuilder joinSQL = new StringBuilder();
+        StringBuilder whereSQL = new StringBuilder();
         if (query.getWhere() != null) {
-            whereSQL += "\n\t" + query.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(query.getWhere());
+//            whereSQL += "\n\t" + query.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(query.getWhere());
+            whereSQL.append("\n").append(this.buildWhereSQL(query.getWhere()));
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
             final Join join = entryJoin.getValue();
-            joinSQL += "\t"+this.buildJoinSQL(join);
+            joinSQL.append("\t").append(this.buildJoinSQL(join));
             if (join.getWhere() != null) {
-                whereSQL += "\n\t" + join.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(join.getWhere());
+//                whereSQL += "\n\t" + join.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(join.getWhere());
+                whereSQL.append("\n").append(this.buildWhereSQL(join.getWhere()));
             }
             for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
                 final Join subJoin = entrySubJoin.getValue();
                 if (subJoin.getWhere() != null) {
-                    whereSQL += "\n\t" + subJoin.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(subJoin.getWhere());
+//                    whereSQL += "\n\t" + subJoin.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(subJoin.getWhere());
+                    whereSQL.append("\n").append(this.buildWhereSQL(subJoin.getWhere()));
                 }
             }
         }
-        whereSQL = "\nWHERE 1 = 1" + whereSQL;
-        final String SQL = joinSQL + whereSQL;
+        whereSQL.insert(0, "\nWHERE 1 = 1");
+        final String SQL = joinSQL.toString() + whereSQL;
         return SQL;
     }
 
@@ -78,15 +81,12 @@ public class OperationEngine extends Data {
     }
 
     public String buildWhereSQL(Where where) {
-        String whereSQL = "";
+        StringBuilder whereSQL = new StringBuilder();
         final String table = where.getTable();
-        final ConditionalOperator firstCondition = where.getFirstCondition();
-        whereSQL += this.buildRelationOperatorSQL(firstCondition.getRelationOperator(), table, firstCondition.getColumn());
-        for (Map.Entry<String, ConditionalOperator> conditionEntry : where.getConditions().entrySet()) {
-            ConditionalOperator condition = conditionEntry.getValue();
-            whereSQL += buildCondition(condition, table);
+        for (ConditionalOperator conditionalOperator : where.getConditions()) {
+            whereSQL.append(buildCondition(conditionalOperator, table));
         }
-        return whereSQL;
+        return whereSQL.toString();
     }
 
     public String objectToValue(Object object) {
@@ -108,7 +108,7 @@ public class OperationEngine extends Data {
                     " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
             case In -> {
                 List values = relationOperator.getInValues().list().stream().map(
-                        value -> this.objectToValue(value)).collect(Collectors.toList());
+                        this::objectToValue).collect(Collectors.toList());
                 yield  " " + table+"."+column + " IN " + "("+String.join(",", values)+")";
             }
             case GreaterThan -> " " + table+"."+column + " > " + this.objectToValue(relationOperator.getValue());
@@ -118,8 +118,7 @@ public class OperationEngine extends Data {
             case Different -> " " + table+"."+column + " <> " + this.objectToValue(relationOperator.getValue());
             case InRaw -> {
                 String columnName = " " + table+"."+column;
-                String expression = relationOperator.getValue().toString().replaceAll("\\?", columnName);
-                yield expression;
+                yield relationOperator.getValue().toString().replaceAll("\\?", columnName);
             }
         };
     }
@@ -127,7 +126,7 @@ public class OperationEngine extends Data {
     private String buildCondition(ConditionalOperator condition, String table) {
         String conditionSQL = "";
         if (condition.hasSubCondition()) {
-            conditionSQL += " " + condition.getOperator() + " " + "(";
+            conditionSQL += " " + condition.getOperator() + "(";
             conditionSQL += this.buildWhereSQL(condition.getSubCondition().setTable(table));
             conditionSQL += ")";
         } else {
@@ -141,12 +140,12 @@ public class OperationEngine extends Data {
         List <String> fields = query.getFields().stream().map(field ->
                 field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn()
         ).collect(Collectors.toList());
-        if (fields.size() > 0) {
+        if (!fields.isEmpty()) {
             select = "SELECT \n\t" + String.join(", \n\t", fields) + " \nFROM ";
         }
         if (query.isDistinct()) {
             select = "SELECT DISTINCT\n" + query.getFormName()+".*" + " \nFROM ";
-            if (fields.size() > 0) {
+            if (!fields.isEmpty()) {
                 select = "SELECT DISTINCT\n\t" + String.join(", \n\t", fields) + " \nFROM ";
             }
         }

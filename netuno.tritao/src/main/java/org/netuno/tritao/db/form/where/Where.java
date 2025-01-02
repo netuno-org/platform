@@ -1,8 +1,6 @@
 package org.netuno.tritao.db.form.where;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 
 import org.netuno.library.doc.LanguageDoc;
@@ -24,26 +22,31 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class Where {
     private String table;
-    private ConditionalOperator firstCondition;
-    private Map <String, ConditionalOperator> conditions = new HashMap<>();
+    //private ConditionalOperator firstCondition;
+    private List<ConditionalOperator> conditions = new ArrayList<ConditionalOperator>();
 
-    public Where(String column, Object value) {
-        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
-        this.firstCondition = new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator);
+    public Where(String column) {
+        RelationalOperator relationalOperator = new RelationalOperator(RelationalOperatorType.Equals, "");
+        this.conditions.add(new ConditionalOperator(column, ConditionalOperatorType.AND, relationalOperator));
     }
 
-    public Where(String column, RelationalOperator relationOperator) {
-        this.firstCondition = new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator);
-    }
-
-    public Where(ConditionalOperatorType operator, String column, Object value) {
-        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
-        this.firstCondition = new ConditionalOperator(column, operator, relationOperator);
-    }
-
-    public Where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
-        this.firstCondition = new ConditionalOperator(column, operator, relationOperator);
-    }
+//    public Where(String column, Object value) {
+//        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
+//        this.firstCondition = new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator);
+//    }
+//
+//    public Where(String column, RelationalOperator relationOperator) {
+//        this.firstCondition = new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator);
+//    }
+//
+//    public Where(ConditionalOperatorType operator, String column, Object value) {
+//        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
+//        this.firstCondition = new ConditionalOperator(column, operator, relationOperator);
+//    }
+//
+//    public Where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
+//        this.firstCondition = new ConditionalOperator(column, operator, relationOperator);
+//    }
 
     @MethodDoc(
         translations = {
@@ -116,76 +119,76 @@ public class Where {
         return this;
     }
 
-    @MethodDoc(
-        translations = {
-            @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Retorna a condição base do objeto.",
-                howToUse = {}
-            ),
-            @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Returns the base condition of the object.",
-                howToUse = {}
-            )
-        },
-        parameters = {},
-        returns = {
-            @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Condição base do objeto."
-            ),
-            @ReturnTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "The base condition of the object."
-            )
-        }
-    )
-    public ConditionalOperator getFirstCondition() {
-        return firstCondition;
-    }
+//    @MethodDoc(
+//        translations = {
+//            @MethodTranslationDoc(
+//                language = LanguageDoc.PT,
+//                description = "Retorna a condição base do objeto.",
+//                howToUse = {}
+//            ),
+//            @MethodTranslationDoc(
+//                language = LanguageDoc.EN,
+//                description = "Returns the base condition of the object.",
+//                howToUse = {}
+//            )
+//        },
+//        parameters = {},
+//        returns = {
+//            @ReturnTranslationDoc(
+//                language = LanguageDoc.PT,
+//                description = "Condição base do objeto."
+//            ),
+//            @ReturnTranslationDoc(
+//                language = LanguageDoc.EN,
+//                description = "The base condition of the object."
+//            )
+//        }
+//    )
+//    public ConditionalOperator getFirstCondition() {
+//        return firstCondition;
+//    }
 
-    @MethodDoc(
-        translations = {
-            @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Define a condição base do objeto.",
-                howToUse = {}
-            ),
-            @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Defines the base condition of the object.",
-                howToUse = {}
-            )
-        },
-        parameters = {
-            @ParameterDoc(name = "firstCondition", translations = {
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Condição base do objeto.",
-                    name = "firstCondition"
-                ),
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "The base condition of the object."
-                )
-            })
-        },
-        returns = {
-            @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Objeto Where atual."
-            ),
-            @ReturnTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Current Where object."
-            )
-        }
-    )
-    public Where setFirstCondition(ConditionalOperator firstCondition) {
-        this.firstCondition = firstCondition;
-        return this;
-    }
+//    @MethodDoc(
+//        translations = {
+//            @MethodTranslationDoc(
+//                language = LanguageDoc.PT,
+//                description = "Define a condição base do objeto.",
+//                howToUse = {}
+//            ),
+//            @MethodTranslationDoc(
+//                language = LanguageDoc.EN,
+//                description = "Defines the base condition of the object.",
+//                howToUse = {}
+//            )
+//        },
+//        parameters = {
+//            @ParameterDoc(name = "firstCondition", translations = {
+//                @ParameterTranslationDoc(
+//                    language = LanguageDoc.PT,
+//                    description = "Condição base do objeto.",
+//                    name = "firstCondition"
+//                ),
+//                @ParameterTranslationDoc(
+//                    language = LanguageDoc.EN,
+//                    description = "The base condition of the object."
+//                )
+//            })
+//        },
+//        returns = {
+//            @ReturnTranslationDoc(
+//                language = LanguageDoc.PT,
+//                description = "Objeto Where atual."
+//            ),
+//            @ReturnTranslationDoc(
+//                language = LanguageDoc.EN,
+//                description = "Current Where object."
+//            )
+//        }
+//    )
+//    public Where setFirstCondition(ConditionalOperator firstCondition) {
+//        this.firstCondition = firstCondition;
+//        return this;
+//    }
 
     @MethodDoc(
         translations = {
@@ -212,7 +215,7 @@ public class Where {
             )
         }
     )
-    public Map<String, ConditionalOperator> getConditions() {
+    public List<ConditionalOperator> getConditions() {
         return conditions;
     }
 
@@ -253,7 +256,7 @@ public class Where {
             )
         }
     )
-    public Where setConditions(Map<String, ConditionalOperator> conditions) {
+    public Where setConditions(List<ConditionalOperator> conditions) {
         this.conditions = conditions;
         return this;
     }
@@ -308,7 +311,7 @@ public class Where {
     )
     public Where and(String column, Object value) {
         RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
-        conditions.put(column, new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator));
+        conditions.add( new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator));
         return this;
     }
 
@@ -362,7 +365,7 @@ public class Where {
     )
     public Where or(String column, Object value) {
         RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
-        conditions.put(column, new ConditionalOperator(column, ConditionalOperatorType.OR, relationOperator));
+        conditions.add(new ConditionalOperator(column, ConditionalOperatorType.OR, relationOperator));
         return this;
     }
 
@@ -404,7 +407,7 @@ public class Where {
         }
     )
     public Where and(Where where) {
-        conditions.put(new Random().toString(), new ConditionalOperator(where, ConditionalOperatorType.AND));
+        conditions.add(new ConditionalOperator(where, ConditionalOperatorType.AND));
         return this;
     }
 
@@ -446,7 +449,7 @@ public class Where {
         }
     )
     public Where or(Where where) {
-        conditions.put(new Random().toString(), new ConditionalOperator(where, ConditionalOperatorType.OR));
+        conditions.add(new ConditionalOperator(where, ConditionalOperatorType.OR));
         return this;
     }
 
@@ -499,7 +502,7 @@ public class Where {
         }
     )
     public Where and(String column, RelationalOperator relationOperator) {
-        conditions.put(column, new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator));
+        conditions.add(new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator));
         return this;
     }
 
@@ -553,7 +556,32 @@ public class Where {
         }
     )
     public Where or(String column, RelationalOperator relationOperator) {
-        conditions.put(column, new ConditionalOperator(column, ConditionalOperatorType.OR, relationOperator));
+        conditions.add(new ConditionalOperator(column, ConditionalOperatorType.OR, relationOperator));
         return this;
     }
+
+    public Where or(String column) {
+        RelationalOperator relationalOperator = new RelationalOperator(null, "");
+        conditions.add(new ConditionalOperator(column, ConditionalOperatorType.OR, relationalOperator));
+        return this;
+    }
+
+    public Where equal(Object value) {
+        RelationalOperator currentRelationalOperator = this.conditions.getLast().getRelationOperator();
+        if (currentRelationalOperator.getOperatorType() == null || currentRelationalOperator.getOperatorType() == RelationalOperatorType.Equals) {
+            this.conditions.getLast().getRelationOperator().setOperatorType(RelationalOperatorType.Equals);
+        }
+        this.conditions.getLast().getRelationOperator().setValue(value);
+        return this;
+    }
+
+    public Where startsWith(Object value) {
+        RelationalOperator currentRelationalOperator = this.conditions.getLast().getRelationOperator();
+        if (currentRelationalOperator.getOperatorType() == null) {
+            this.conditions.getLast().getRelationOperator().setOperatorType(RelationalOperatorType.StartsWith);
+        }
+        this.conditions.getLast().getRelationOperator().setValue(value);
+        return this;
+    }
+
 }
