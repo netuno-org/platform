@@ -1,6 +1,6 @@
-package org.netuno.tritao.query.where;
+package org.netuno.tritao.db.form.where;
 
-public enum RelationOperatorType {
+public enum RelationalOperatorType {
     Equals,
     StartsWith,
     EndsWith,

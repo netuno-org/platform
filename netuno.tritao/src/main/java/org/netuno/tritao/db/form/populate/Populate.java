@@ -1,6 +1,6 @@
-package org.netuno.tritao.query.populate;
+package org.netuno.tritao.db.form.populate;
 
-import org.netuno.tritao.query.Field;
+import org.netuno.tritao.db.form.Field;
 
 import java.util.ArrayList;
 import java.util.List;

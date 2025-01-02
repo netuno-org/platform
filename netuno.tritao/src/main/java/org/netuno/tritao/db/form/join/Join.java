@@ -1,6 +1,6 @@
-package org.netuno.tritao.query.link;
+package org.netuno.tritao.db.form.join;
 
-import org.netuno.tritao.query.where.Where;
+import org.netuno.tritao.db.form.where.Where;
 
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
@@ -14,40 +14,28 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "Link",
-            introduction = "Definição da configuração do objeto Link para realcionamento entre formularios.",
+            title = "Join",
+            introduction = "Definição da configuração do objeto Join para consultas simplificadas.",
             howToUse = {}
     )
 })
-public class Link {
-    private String form;
-    private RelationLink relationLink;
+public class Join {
+    private String table;
+    private JoinType joinType = JoinType.INNER_JOIN;
+    private Relationship relation;
     private Where where;
 
-    public Link(String form, RelationLink relationLink) {
-        this.form = form;
-        this.relationLink = relationLink;
-    }
-
-    public Link(RelationLink relationLink) {
-        this.relationLink = relationLink;
-    }
-
-    public Link(RelationLink relationLink, Where where) {
-        this.relationLink = relationLink;
-        this.where = where;
-    }
-
+    
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o nome do formulario principal da consulta.",
+                description = "Retorna o nome da tabela principal do relacionamento.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the name of the query's main form.",
+                description = "Returns the name of the relationship's main table.",
                 howToUse = {}
             )
         },
@@ -55,71 +43,70 @@ public class Link {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Nome do formulario."
+                description = "Nome da tabela principal do relacionamento."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The name of the form."
+                description = "The name of the relationship's main table."
             )
         }
     )
-    public String getForm() {
-        return form;
+    public String getTable() {
+        return table;
     }
 
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define o nome do formulario principal da consulta.",
+                description = "Define o nome da tabela principal do relacionamento.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Defines the name of the query's main form.",
+                description = "Defines the name of the relationship's main table.",
                 howToUse = {}
             )
         },
         parameters = {
-            @ParameterDoc(name = "form", translations = {
+            @ParameterDoc(name = "tableName", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Nome do formulario.",
-                    name = "formulario"
+                    description = "Nome da tabela principal.",
+                    name = "nomeTabela"
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "The name of the form"
+                    description = "The name of the query's main table."
                 )
             })
         },
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto Link atual."
+                description = "Objeto Join atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current Link object."
+                description = "Current Join object."
             )
         }
     )
-    public Link setForm(String form) {
-        this.form = form;
+    public Join setTable(String table) {
+        this.table = table;
         return this;
     }
 
-
-    @MethodDoc(
+       @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna a configuração do relacionamento.",
+                description = "Retorna o tipo da junção do relacionamento.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the relationship configuration.",
+                description = "Returns the type of the joint or the relationship.",
                 howToUse = {}
             )
         },
@@ -127,57 +114,57 @@ public class Link {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Configuração do relacionamento."
+                description = "Tipo da junção."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Relationship configuration."
+                description = "The type of the joint"
             )
         }
     )
-    public RelationLink getRelationLink() {
-        return relationLink;
+    public JoinType getJoinType() {
+        return joinType;
     }
 
-    @MethodDoc(
+      @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define a configuração do relacionamento.",
+                description = "Define o tipo da junção do relacionamento.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Defines the relationship configuration.",
+                description = "Defines the type of the joint or the relationship.",
                 howToUse = {}
             )
         },
         parameters = {
-            @ParameterDoc(name = "relationLink", translations = {
+            @ParameterDoc(name = "joinType", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "configuração do relacionamento.",
-                    name = "relationLink"
+                    description = "Tipo da junção.",
+                    name = "juncaoTipo"
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "The relationship configuration."
+                    description = "The type of the joint."
                 )
             })
         },
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto Link atual."
+                description = "Objeto Join atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current Link object."
+                description = "Current Join object."
             )
         }
     )
-    public Link setRelationLink(RelationLink relationLink) {
-        this.relationLink = relationLink;
+    public Join setJoinType(JoinType joinType) {
+        this.joinType = joinType;
         return this;
     }
 
@@ -185,12 +172,12 @@ public class Link {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna a configuração dos filtros para o formulario principal do objeto Link.",
+                description = "Retorna o objeto com a configuração do relacionamento.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the filter configuration for the Link object's main form.",
+                description = "Returns the object with the relationship configuration.",
                 howToUse = {}
             )
         },
@@ -198,11 +185,82 @@ public class Link {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Configuração dos filtros."
+                description = "Objeto com a configuração do relacionamento."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The filters configuration"
+                description = "The object with the relationship configuration."
+            )
+        }
+    )
+    public Relationship getRelation() {
+        return relation;
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define o objeto com a configuração do relacionamento.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines the object with the relationship configuration.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "ralation", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto com a configuração do relacionamento.",
+                    name = "relacao"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The object with the relationship configuration."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Join atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Join object."
+            )
+        }
+    )
+    public Join setRelation(Relationship relation) {
+        this.relation = relation;
+        return this;
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna o objeto Where com a configuração das condições para a tabela a relacionar.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns the Where object with the configuration of conditions for the table to be related.",
+                howToUse = {}
+            )
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Where com a configuração das condições"
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The Where object with the configuration of conditions"
             )
         }
     )
@@ -214,12 +272,12 @@ public class Link {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define a configuração dos filtros para o formulario principal do objeto Link.",
+                description = "Define o objeto Where com a configuração das condições para a tabela a relacionar.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Defines the filter configuration for the Link object's main form.",
+                description = "Defines the Where object with the configuration of conditions for the table to be related.",
                 howToUse = {}
             )
         },
@@ -227,72 +285,28 @@ public class Link {
             @ParameterDoc(name = "where", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "configuração dos filtros.",
-                    name = "where"
+                    description = "Objeto Where com a configuração das condições",
+                    name = "condicao"
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "The filters configuration."
+                    description = "The Where object with the configuration of conditions"
                 )
             })
         },
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto Link atual."
+                description = "Objeto Join atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current Link object."
+                description = "Current Join object."
             )
         }
     )
-    public Link setWhere(Where where) {
+    public Join setWhere(Where where) {
         this.where = where;
-        return this;
-    }
-
-    @MethodDoc(
-        translations = {
-            @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Define um segundo nivel de relacionamento no objeto Link atual.",
-                howToUse = {}
-            ),
-            @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Defines a second relationship level on the current Link object.",
-                howToUse = {}
-            )
-        },
-        parameters = {
-            @ParameterDoc(name = "formLink", translations = {
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Nome do formulario a relacionar.",
-                    name = "formLink"
-                ),
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Name of the form to be listed."
-                )
-            })
-        },
-        returns = {
-            @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Objeto Link atual."
-            ),
-            @ReturnTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Current Link object."
-            )
-        }
-    )
-    public Link link(String formLink) {
-        Link link = new Link(new RelationLink(formLink));
-        link.setForm(this.form);
-        this.relationLink.getSubLinks().put(formLink, link);
         return this;
     }
 }

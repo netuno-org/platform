@@ -1,16 +1,17 @@
-package org.netuno.tritao.query;
+package org.netuno.tritao.db.form;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.db.DataItem;
+import org.netuno.tritao.db.form.join.Join;
+import org.netuno.tritao.db.form.join.Relationship;
 import org.netuno.tritao.db.manager.Data;
-import org.netuno.tritao.query.join.*;
-import org.netuno.tritao.query.pagination.Page;
-import org.netuno.tritao.query.populate.Populate;
-import org.netuno.tritao.query.where.Condition;
-import org.netuno.tritao.query.where.RelationOperator;
-import org.netuno.tritao.query.where.Where;
+import org.netuno.tritao.db.form.pagination.Page;
+import org.netuno.tritao.db.form.populate.Populate;
+import org.netuno.tritao.db.form.where.ConditionalOperator;
+import org.netuno.tritao.db.form.where.RelationalOperator;
+import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
@@ -20,14 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class QueryEngine extends Data {
+public class OperationEngine extends Data {
 
-    public QueryEngine(Proteu proteu, Hili hili) {
+    public OperationEngine(Proteu proteu, Hili hili) {
         super(proteu, hili);
     }
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(QueryEngine.class);
+    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(OperationEngine.class);
 
-    public String buildQuerySQL(Query query) {
+    public String buildQuerySQL(Operation query) {
         String joinSQL = "";
         String whereSQL = "";
         if (query.getWhere() != null) {
@@ -57,12 +58,12 @@ public class QueryEngine extends Data {
             case LEFT_JOIN -> "LEFT JOIN";
             case RIGHT_JOIN -> "RIGHT JOIN";
         };
-        final Relation relation = join.getRelation();
+        final Relationship relation = join.getRelation();
         joinSQL += this.buildRelation(relation, join.getTable());
         return "\n\t" + joinSQL;
     }
 
-    public String buildRelation(Relation relation, String table) {
+    public String buildRelation(Relationship relation, String table) {
         String relationSQL = "";
         relationSQL = relation.getTableName() + " ON ";
         switch (relation.getType()) {
@@ -79,10 +80,10 @@ public class QueryEngine extends Data {
     public String buildWhereSQL(Where where) {
         String whereSQL = "";
         final String table = where.getTable();
-        final Condition firstCondition = where.getFirstCondition();
+        final ConditionalOperator firstCondition = where.getFirstCondition();
         whereSQL += this.buildRelationOperatorSQL(firstCondition.getRelationOperator(), table, firstCondition.getColumn());
-        for (Map.Entry<String, Condition> conditionEntry : where.getConditions().entrySet()) {
-            Condition condition = conditionEntry.getValue();
+        for (Map.Entry<String, ConditionalOperator> conditionEntry : where.getConditions().entrySet()) {
+            ConditionalOperator condition = conditionEntry.getValue();
             whereSQL += buildCondition(condition, table);
         }
         return whereSQL;
@@ -95,7 +96,7 @@ public class QueryEngine extends Data {
         };
     }
 
-    public String buildRelationOperatorSQL(RelationOperator relationOperator, String table, String column) {
+    public String buildRelationOperatorSQL(RelationalOperator relationOperator, String table, String column) {
 //        getHili().resource().get(org.netuno.tritao.resource.DB.class).isPostgreSQL();
         return switch (relationOperator.getOperatorType()) {
             case Equals -> " " + table+"."+column + " = " + this.objectToValue(relationOperator.getValue());
@@ -123,7 +124,7 @@ public class QueryEngine extends Data {
         };
     }
 
-    private String buildCondition(Condition condition, String table) {
+    private String buildCondition(ConditionalOperator condition, String table) {
         String conditionSQL = "";
         if (condition.hasSubCondition()) {
             conditionSQL += " " + condition.getOperator() + " " + "(";
@@ -135,8 +136,8 @@ public class QueryEngine extends Data {
         return conditionSQL;
     }
 
-    public String buildSelectSQL(Query query) {
-        String select = "SELECT \n\t" + query.getTableName()+".*" + " \nFROM ";
+    public String buildSelectSQL(Operation query) {
+        String select = "SELECT \n\t" + query.getFormName()+".*" + " \nFROM ";
         List <String> fields = query.getFields().stream().map(field ->
                 field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn()
         ).collect(Collectors.toList());
@@ -144,7 +145,7 @@ public class QueryEngine extends Data {
             select = "SELECT \n\t" + String.join(", \n\t", fields) + " \nFROM ";
         }
         if (query.isDistinct()) {
-            select = "SELECT DISTINCT\n" + query.getTableName()+".*" + " \nFROM ";
+            select = "SELECT DISTINCT\n" + query.getFormName()+".*" + " \nFROM ";
             if (fields.size() > 0) {
                 select = "SELECT DISTINCT\n\t" + String.join(", \n\t", fields) + " \nFROM ";
             }
@@ -152,7 +153,7 @@ public class QueryEngine extends Data {
         return select;
     }
 
-    public List<Values> populateResults(List<Values> results, Query query) {
+    public List<Values> populateResults(List<Values> results, Operation query) {
         String querySQLPart = this.buildQuerySQL(query);
         for (int i = 0; i < results.size();i++) {
             for (Populate populate : query.getTablesToPopulate()) {
@@ -161,7 +162,7 @@ public class QueryEngine extends Data {
                         .collect(Collectors.toList());
                 String selectSQLPart = "SELECT DISTINCT "
                         + (fieldList.size() > 0 ? String.join(", ", fieldList) : populate.getTable() + ".*")
-                        + " FROM " + query.getTableName();
+                        + " FROM " + query.getFormName();
                 String commandSQL = selectSQLPart + " " + querySQLPart;
                 commandSQL += " AND "
                         + populate.getFilter().getColumn() + " = "
@@ -181,9 +182,9 @@ public class QueryEngine extends Data {
         return results;
     }
 
-    public List<Values> all(Query query) {
+    public List<Values> all(Operation query) {
         String select = this.buildSelectSQL(query);
-        String selectCommandSQL = select + query.getTableName()+ this.buildQuerySQL(query);
+        String selectCommandSQL = select + query.getFormName()+ this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
@@ -200,9 +201,9 @@ public class QueryEngine extends Data {
         }
         return query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
     }
-    public Values first(Query query) {
+    public Values first(Operation query) {
         String select = this.buildSelectSQL(query);
-        String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
@@ -221,12 +222,12 @@ public class QueryEngine extends Data {
         return items.getFirst();
     }
 
-    public int count(Query query) {
-        String select = "SELECT COUNT("+query.getTableName()+".id"+") AS total \nFROM ";
+    public int count(Operation query) {
+        String select = "SELECT COUNT("+query.getFormName()+".id"+") AS total \nFROM ";
         if (query.isDistinct()) {
-            select = "SELECT COUNT(DISTINCT "+query.getTableName()+".id"+") AS total \nFROM ";
+            select = "SELECT COUNT(DISTINCT "+query.getFormName()+".id"+") AS total \nFROM ";
         }
-        String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
@@ -237,9 +238,9 @@ public class QueryEngine extends Data {
         return (int) getManager().query(selectCommandSQL).getFirst().getLong("total");
     }
 
-    public Page page(Query query) {
+    public Page page(Operation query) {
         String select = this.buildSelectSQL(query);
-        String selectCommandSQL = select + query.getTableName() + this.buildQuerySQL(query);
+        String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
@@ -256,8 +257,8 @@ public class QueryEngine extends Data {
         return new Page(items.isEmpty() ? Collections.EMPTY_LIST : items , total, query.getPagination());
     }
 
-    public List<Values> getRecordIDs(Query query) {
-        String selectIdsCommandSQL = "SELECT " + query.getTableName() + ".id FROM " + query.getTableName() + this.buildQuerySQL(query);
+    public List<Values> getRecordIDs(Operation query) {
+        String selectIdsCommandSQL = "SELECT " + query.getFormName() + ".id FROM " + query.getFormName() + this.buildQuerySQL(query);
         if (query.getOrder() != null) {
             selectIdsCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
@@ -269,12 +270,12 @@ public class QueryEngine extends Data {
         return recordIDs;
     }
 
-    public int deleteAll(Query query) {
+    public int deleteAll(Operation query) {
         List<Values> recordIDs = getRecordIDs(query);
         int numberOfAffectedRows = 0;
         List<String> undeletedRecords = new ArrayList<>();
         for (Values recordID : recordIDs) {
-            final DataItem dataItem = getBuilder().delete(query.getTableName(), recordID.getString("id"));
+            final DataItem dataItem = getBuilder().delete(query.getFormName(), recordID.getString("id"));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 numberOfAffectedRows++;
             } else {
@@ -290,9 +291,9 @@ public class QueryEngine extends Data {
         return numberOfAffectedRows;
     }
 
-    public int deleteFirst(Query query) {
+    public int deleteFirst(Operation query) {
         List<Values> idsValues = getRecordIDs(query.setLimit(1));
-        final DataItem dataItem = getBuilder().delete(query.getTableName(), idsValues.getFirst().getString("id"));
+        final DataItem dataItem = getBuilder().delete(query.getFormName(), idsValues.getFirst().getString("id"));
         if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
             return 1;
         } else {
@@ -305,7 +306,7 @@ public class QueryEngine extends Data {
         }
     }
 
-    public Values cascadeDelete(Values deleteLinks, Query query) {
+    public Values cascadeDelete(Values deleteLinks, Operation query) {
         List<Values> recordIDs = getRecordIDs(query);
         Values affectedForms = new Values();
         Values undeletedRecords = new Values();
@@ -322,16 +323,16 @@ public class QueryEngine extends Data {
                     }
                 }
             }
-            DataItem dataItem = getBuilder().delete(query.getTableName(), recordID.getString("id"));
+            DataItem dataItem = getBuilder().delete(query.getFormName(), recordID.getString("id"));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 affectedForms.set(
-                        query.getTableName(),
-                        (affectedForms.getInt(query.getTableName(), 0) + 1)
+                        query.getFormName(),
+                        (affectedForms.getInt(query.getFormName(), 0) + 1)
                 );
             } else {
                 undeletedRecords.set(
-                        query.getTableName(),
-                        (undeletedRecords.getInt(query.getTableName(), 0) + 1)
+                        query.getFormName(),
+                        (undeletedRecords.getInt(query.getFormName(), 0) + 1)
                 );
             }
         }
@@ -344,12 +345,12 @@ public class QueryEngine extends Data {
         return affectedForms;
     }
 
-    public int updateFirst(Values data, Query query) {
+    public int updateFirst(Values data, Operation query) {
         if (data == null) {
             throw new UnsupportedOperationException("No values in update method");
         }
         List<Values> recordIDs = this.getRecordIDs(query.setLimit(1));
-        DataItem dataItem = getBuilder().update(query.getTableName(), recordIDs.getFirst().getString("id"), data);
+        DataItem dataItem = getBuilder().update(query.getFormName(), recordIDs.getFirst().getString("id"), data);
         if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
             return 1;
         } else {
@@ -360,7 +361,7 @@ public class QueryEngine extends Data {
         }
     }
 
-    public int updateAll(Values data, Query query) {
+    public int updateAll(Values data, Operation query) {
         if (data == null) {
             throw new UnsupportedOperationException("No values in update method");
         }
@@ -368,7 +369,7 @@ public class QueryEngine extends Data {
         int numberOfAffectedForms = 0;
         List<String> unaffectedRecords = new ArrayList<>();
         for (Values recordID : recordIDs) {
-            DataItem dataItem = getBuilder().update(query.getTableName(), recordID.getString("id"), data);
+            DataItem dataItem = getBuilder().update(query.getFormName(), recordID.getString("id"), data);
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 numberOfAffectedForms++;
             } else {
@@ -422,12 +423,12 @@ public class QueryEngine extends Data {
         return null;
     }
 
-    public Values updateCascade(Values data, Values updateLinks, Query query) {
+    public Values updateCascade(Values data, Values updateLinks, Operation query) {
         Values affectedValues = new Values();
         String recordID = this.getRecordIDs(query.setLimit(1)).getFirst().getString("id");
-        DataItem result = getBuilder().update(query.getTableName(), recordID, data);
+        DataItem result = getBuilder().update(query.getFormName(), recordID, data);
         checkDataItemErrors(result, "update");
-        affectedValues.set(query.getTableName(), (result.getStatusType() == DataItem.StatusType.Ok) ? 1 : 0);
+        affectedValues.set(query.getFormName(), (result.getStatusType() == DataItem.StatusType.Ok) ? 1 : 0);
         for (Map.Entry<String, Object> updateLink : updateLinks.entrySet()) {
             List<String> updatedRecords = new ArrayList<String>();
             List<String> recordsLinkID = getManager().query(
@@ -462,21 +463,21 @@ public class QueryEngine extends Data {
         return affectedValues;
     }
 
-    public String insert(Values data, Query query) {
+    public String insert(Values data, Operation query) {
         if (data == null || data.isEmpty()) {
             throw new ResourceException("Data values cannot be null or empty");
         }
-        DataItem dataItem = getBuilder().insert(query.getTableName(), validDataValues(data));
+        DataItem dataItem = getBuilder().insert(query.getFormName(), validDataValues(data));
         checkDataItemErrors(dataItem, "insert");
         return dataItem.getId();
     }
 
-    public Values cascadeInsert(Values insertLinks, Values data, Query query) {
+    public Values cascadeInsert(Values insertLinks, Values data, Operation query) {
         var newRecords = new Values();
-        DataItem formMainDataItem = getBuilder().insert(query.getTableName(), validDataValues(data));
+        DataItem formMainDataItem = getBuilder().insert(query.getFormName(), validDataValues(data));
         checkDataItemErrors(formMainDataItem, "insert");
         final String formMainDataId = formMainDataItem.getId();
-        newRecords.set(query.getTableName(), formMainDataId);
+        newRecords.set(query.getFormName(), formMainDataId);
         for (Map.Entry<String, Object> insertLink : insertLinks.entrySet()) {
             Values dataLink = data.getValues(insertLink.getKey());
             if (dataLink.values().stream().allMatch(object -> object instanceof Values)) {

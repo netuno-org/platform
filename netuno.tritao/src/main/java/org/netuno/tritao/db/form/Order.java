@@ -1,4 +1,4 @@
-package org.netuno.tritao.query;
+package org.netuno.tritao.db.form;
 
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;

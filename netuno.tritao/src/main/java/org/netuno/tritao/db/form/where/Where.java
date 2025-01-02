@@ -1,4 +1,4 @@
-package org.netuno.tritao.query.where;
+package org.netuno.tritao.db.form.where;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,25 +24,25 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class Where {
     private String table;
-    private Condition firstCondition;
-    private Map <String, Condition> conditions = new HashMap<>();
+    private ConditionalOperator firstCondition;
+    private Map <String, ConditionalOperator> conditions = new HashMap<>();
 
     public Where(String column, Object value) {
-        RelationOperator relationOperator = new RelationOperator(RelationOperatorType.Equals, value);
-        this.firstCondition = new Condition(column, ConditionOperator.AND, relationOperator);
+        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
+        this.firstCondition = new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator);
     }
 
-    public Where(String column, RelationOperator relationOperator) {
-        this.firstCondition = new Condition(column, ConditionOperator.AND, relationOperator);
+    public Where(String column, RelationalOperator relationOperator) {
+        this.firstCondition = new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator);
     }
 
-    public Where(ConditionOperator operator, String column, Object value) {
-        RelationOperator relationOperator = new RelationOperator(RelationOperatorType.Equals, value);
-        this.firstCondition = new Condition(column, operator, relationOperator);
+    public Where(ConditionalOperatorType operator, String column, Object value) {
+        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
+        this.firstCondition = new ConditionalOperator(column, operator, relationOperator);
     }
 
-    public Where(ConditionOperator operator, String column, RelationOperator relationOperator) {
-        this.firstCondition = new Condition(column, operator, relationOperator);
+    public Where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
+        this.firstCondition = new ConditionalOperator(column, operator, relationOperator);
     }
 
     @MethodDoc(
@@ -141,7 +141,7 @@ public class Where {
             )
         }
     )
-    public Condition getFirstCondition() {
+    public ConditionalOperator getFirstCondition() {
         return firstCondition;
     }
 
@@ -182,7 +182,7 @@ public class Where {
             )
         }
     )
-    public Where setFirstCondition(Condition firstCondition) {
+    public Where setFirstCondition(ConditionalOperator firstCondition) {
         this.firstCondition = firstCondition;
         return this;
     }
@@ -212,7 +212,7 @@ public class Where {
             )
         }
     )
-    public Map<String, Condition> getConditions() {
+    public Map<String, ConditionalOperator> getConditions() {
         return conditions;
     }
 
@@ -253,7 +253,7 @@ public class Where {
             )
         }
     )
-    public Where setConditions(Map<String, Condition> conditions) {
+    public Where setConditions(Map<String, ConditionalOperator> conditions) {
         this.conditions = conditions;
         return this;
     }
@@ -307,8 +307,8 @@ public class Where {
         }
     )
     public Where and(String column, Object value) {
-        RelationOperator relationOperator = new RelationOperator(RelationOperatorType.Equals, value);
-        conditions.put(column, new Condition(column, ConditionOperator.AND, relationOperator));
+        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
+        conditions.put(column, new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator));
         return this;
     }
 
@@ -361,8 +361,8 @@ public class Where {
         }
     )
     public Where or(String column, Object value) {
-        RelationOperator relationOperator = new RelationOperator(RelationOperatorType.Equals, value);
-        conditions.put(column, new Condition(column, ConditionOperator.OR, relationOperator));
+        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
+        conditions.put(column, new ConditionalOperator(column, ConditionalOperatorType.OR, relationOperator));
         return this;
     }
 
@@ -404,7 +404,7 @@ public class Where {
         }
     )
     public Where and(Where where) {
-        conditions.put(new Random().toString(), new Condition(where, ConditionOperator.AND));
+        conditions.put(new Random().toString(), new ConditionalOperator(where, ConditionalOperatorType.AND));
         return this;
     }
 
@@ -446,7 +446,7 @@ public class Where {
         }
     )
     public Where or(Where where) {
-        conditions.put(new Random().toString(), new Condition(where, ConditionOperator.OR));
+        conditions.put(new Random().toString(), new ConditionalOperator(where, ConditionalOperatorType.OR));
         return this;
     }
 
@@ -498,8 +498,8 @@ public class Where {
             )
         }
     )
-    public Where and(String column, RelationOperator relationOperator) {
-        conditions.put(column, new Condition(column, ConditionOperator.AND, relationOperator));
+    public Where and(String column, RelationalOperator relationOperator) {
+        conditions.put(column, new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator));
         return this;
     }
 
@@ -552,8 +552,8 @@ public class Where {
             )
         }
     )
-    public Where or(String column, RelationOperator relationOperator) {
-        conditions.put(column, new Condition(column, ConditionOperator.OR, relationOperator));
+    public Where or(String column, RelationalOperator relationOperator) {
+        conditions.put(column, new ConditionalOperator(column, ConditionalOperatorType.OR, relationOperator));
         return this;
     }
 }

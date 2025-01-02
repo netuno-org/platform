@@ -30,17 +30,19 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.query.*;
-import org.netuno.tritao.query.join.Relation;
-import org.netuno.tritao.query.link.Link;
-import org.netuno.tritao.query.link.LinkEngine;
-import org.netuno.tritao.query.link.RelationLink;
-import org.netuno.tritao.query.pagination.Pagination;
-import org.netuno.tritao.query.where.RelationOperator;
-import org.netuno.tritao.query.where.RelationOperatorType;
-import org.netuno.tritao.query.join.RelationType;
-import org.netuno.tritao.query.where.ConditionOperator;
-import org.netuno.tritao.query.where.Where;
+import org.netuno.tritao.db.form.Field;
+import org.netuno.tritao.db.form.Operation;
+import org.netuno.tritao.db.form.OperationEngine;
+import org.netuno.tritao.db.form.join.Relationship;
+import org.netuno.tritao.db.form.link.Link;
+import org.netuno.tritao.db.form.link.LinkEngine;
+import org.netuno.tritao.db.form.link.RelationshipLink;
+import org.netuno.tritao.db.form.pagination.Pagination;
+import org.netuno.tritao.db.form.where.RelationalOperator;
+import org.netuno.tritao.db.form.where.RelationalOperatorType;
+import org.netuno.tritao.db.form.join.RelationshipType;
+import org.netuno.tritao.db.form.where.ConditionalOperatorType;
+import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.CoreData;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
@@ -67,7 +69,7 @@ import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 })
 public class Form extends TableBuilderResourceBase {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Form.class);
-    private QueryEngine queryEngine = new QueryEngine(getProteu(), getHili());
+    private OperationEngine queryEngine = new OperationEngine(getProteu(), getHili());
     private LinkEngine linkEngine = new LinkEngine(getProteu(), getHili());
 
     public Form(Proteu proteu, Hili hili) {
@@ -127,12 +129,12 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public Query query(String tableName) {
-        return new Query(tableName, queryEngine, linkEngine);
+    public Operation query(String tableName) {
+        return new Operation(tableName, queryEngine, linkEngine);
     }
     
-    public Query query(String tableName, Where where) {
-        return new Query(tableName, where, queryEngine, linkEngine);
+    public Operation query(String tableName, Where where) {
+        return new Operation(tableName, where, queryEngine, linkEngine);
     }
 
        @MethodDoc(
@@ -187,15 +189,15 @@ public class Form extends TableBuilderResourceBase {
         return new Where(column, value);
     }
 
-    public Where where(String column, RelationOperator relationOperator) {
+    public Where where(String column, RelationalOperator relationOperator) {
         return new Where(column, relationOperator);
     }
 
-    public Where where(ConditionOperator operator, String column, Object value) {
+    public Where where(ConditionalOperatorType operator, String column, Object value) {
         return new Where(operator, column, value);
     }
 
-    public Where where(ConditionOperator operator, String column, RelationOperator relationOperator) {
+    public Where where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
         return new Where(operator, column, relationOperator);
     }
 
@@ -247,8 +249,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public Relation manyToOne(String tableName, String column) {
-        return new Relation(tableName, column, RelationType.ManyToOne);
+    public Relationship manyToOne(String tableName, String column) {
+        return new Relationship(tableName, column, RelationshipType.ManyToOne);
     }
 
     @MethodDoc(
@@ -299,16 +301,16 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public Relation oneToMany(String tableName, String column) {
-        return new Relation(tableName, column, RelationType.OneToMany);
+    public Relationship oneToMany(String tableName, String column) {
+        return new Relationship(tableName, column, RelationshipType.OneToMany);
     }
 
-    public Relation manyToOne(String tableName, String column, Where where) {
-        return new Relation(tableName, column, where, RelationType.ManyToOne);
+    public Relationship manyToOne(String tableName, String column, Where where) {
+        return new Relationship(tableName, column, where, RelationshipType.ManyToOne);
     }
 
-    public Relation oneToMany(String tableName, String column, Where where) {
-        return new Relation(tableName, column, where, RelationType.OneToMany);
+    public Relationship oneToMany(String tableName, String column, Where where) {
+        return new Relationship(tableName, column, where, RelationshipType.OneToMany);
     }
 
     @MethodDoc(
@@ -348,8 +350,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator startsWith(Object value) {
-        return new RelationOperator(RelationOperatorType.StartsWith, value);
+    public RelationalOperator startsWith(Object value) {
+        return new RelationalOperator(RelationalOperatorType.StartsWith, value);
     }
 
     @MethodDoc(
@@ -389,8 +391,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator endsWith(Object value) {
-        return new RelationOperator(RelationOperatorType.EndsWith, value);
+    public RelationalOperator endsWith(Object value) {
+        return new RelationalOperator(RelationalOperatorType.EndsWith, value);
     }
 
     @MethodDoc(
@@ -430,8 +432,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator contains(Object value) {
-        return new RelationOperator(RelationOperatorType.Contains, value);
+    public RelationalOperator contains(Object value) {
+        return new RelationalOperator(RelationalOperatorType.Contains, value);
     }
 
     @MethodDoc(
@@ -471,8 +473,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator lessThan(Object value) {
-        return new RelationOperator(RelationOperatorType.LessThan, value);
+    public RelationalOperator lessThan(Object value) {
+        return new RelationalOperator(RelationalOperatorType.LessThan, value);
     }
 
     @MethodDoc(
@@ -512,8 +514,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator greaterThan(Object value) {
-        return new RelationOperator(RelationOperatorType.GreaterThan, value);
+    public RelationalOperator greaterThan(Object value) {
+        return new RelationalOperator(RelationalOperatorType.GreaterThan, value);
     }
 
     @MethodDoc(
@@ -553,8 +555,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator lessOrEqualsThan(Object value) {
-        return new RelationOperator(RelationOperatorType.LessOrEqualsThan, value);
+    public RelationalOperator lessOrEqualsThan(Object value) {
+        return new RelationalOperator(RelationalOperatorType.LessOrEqualsThan, value);
     }
 
     @MethodDoc(
@@ -594,8 +596,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator greaterOrEqualsThan(Object value) {
-        return new RelationOperator(RelationOperatorType.GreaterOrEqualsThan, value);
+    public RelationalOperator greaterOrEqualsThan(Object value) {
+        return new RelationalOperator(RelationalOperatorType.GreaterOrEqualsThan, value);
     }
 
     @MethodDoc(
@@ -623,8 +625,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public ConditionOperator AND() {
-        return ConditionOperator.AND;
+    public ConditionalOperatorType AND() {
+        return ConditionalOperatorType.AND;
     }
 
     @MethodDoc(
@@ -652,8 +654,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public ConditionOperator OR() {
-        return ConditionOperator.OR;
+    public ConditionalOperatorType OR() {
+        return ConditionalOperatorType.OR;
     }
 
     @MethodDoc(
@@ -693,8 +695,8 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator different(Object value) {
-        return new RelationOperator(RelationOperatorType.Different, value);
+    public RelationalOperator different(Object value) {
+        return new RelationalOperator(RelationalOperatorType.Different, value);
     }
 
     @MethodDoc(
@@ -734,12 +736,12 @@ public class Form extends TableBuilderResourceBase {
             )
         }
     )
-    public RelationOperator in(Values values) {
-        return new RelationOperator(RelationOperatorType.In, values);
+    public RelationalOperator in(Values values) {
+        return new RelationalOperator(RelationalOperatorType.In, values);
     }
 
-    public RelationOperator inRaw(Object value) {
-        return new RelationOperator(RelationOperatorType.InRaw, value);
+    public RelationalOperator inRaw(Object value) {
+        return new RelationalOperator(RelationalOperatorType.InRaw, value);
     }
 
     @MethodDoc(
@@ -832,11 +834,11 @@ public class Form extends TableBuilderResourceBase {
         }
     )
     public Link link(String formLink) {
-        return new Link(new RelationLink(formLink));
+        return new Link(new RelationshipLink(formLink));
     }
 
     public Link link(String formLink, Where where) {
-        return new Link(new RelationLink(formLink), where);
+        return new Link(new RelationshipLink(formLink), where);
     }
 
     public Link link(String formLink, Where where, Link link) {

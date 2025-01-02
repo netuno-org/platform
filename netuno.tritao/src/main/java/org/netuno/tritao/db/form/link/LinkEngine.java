@@ -1,17 +1,15 @@
-package org.netuno.tritao.query.link;
+package org.netuno.tritao.db.form.link;
 
 import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.query.join.Join;
-import org.netuno.tritao.query.join.Relation;
-import org.netuno.tritao.query.join.RelationType;
+import org.netuno.tritao.db.form.join.Join;
+import org.netuno.tritao.db.form.join.Relationship;
+import org.netuno.tritao.db.form.join.RelationshipType;
 import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -92,11 +90,11 @@ public class LinkEngine extends TableBuilderResourceBase {
                 values -> values.get("type").toString().equalsIgnoreCase("select")).collect(Collectors.toList());
     }
 
-    public Relation buildRelation(String form, RelationLink subLink) {
+    public Relationship buildRelation(String form, RelationshipLink subLink) {
         Values linkBetween = getLinkBetween(form, subLink.getFormLink());
         if (linkBetween != null) { //ManyToOne Relation
             String column = linkBetween.getString("name");
-            Relation relation = new Relation(subLink.getFormLink(), column, RelationType.ManyToOne);
+            Relationship relation = new Relationship(subLink.getFormLink(), column, RelationshipType.ManyToOne);
             for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                 Link link = linkEntry.getValue();
                 relation.getSubRelations().put(subLink.getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
@@ -106,7 +104,7 @@ public class LinkEngine extends TableBuilderResourceBase {
             linkBetween = getLinkBetween(subLink.getFormLink(), form);
             if (linkBetween != null) {
                 String column = linkBetween.getString("name");
-                Relation relation = new Relation(subLink.getFormLink(), column, RelationType.OneToMany);
+                Relationship relation = new Relationship(subLink.getFormLink(), column, RelationshipType.OneToMany);
                 for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                     Link link = linkEntry.getValue();
                     relation.getSubRelations().put(subLink.getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));

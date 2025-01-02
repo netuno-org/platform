@@ -1,4 +1,4 @@
-package org.netuno.tritao.query.join;
+package org.netuno.tritao.db.form.join;
 
 public enum JoinType {
     INNER_JOIN,

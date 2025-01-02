@@ -1,6 +1,6 @@
-package org.netuno.tritao.query.join;
+package org.netuno.tritao.db.form.join;
 
-import org.netuno.tritao.query.where.Where;
+import org.netuno.tritao.db.form.where.Where;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,16 +23,16 @@ import org.netuno.library.doc.ReturnTranslationDoc;
             howToUse = {}
     )
 })
-public class Relation {
+public class Relationship {
     private String tableName;
     private String column;
-    private RelationType type = RelationType.ManyToOne;
+    private RelationshipType type = RelationshipType.ManyToOne;
     private Map<String, Join> subRelations = new HashMap<>();
     private Where where;
 
-    public Relation() {}
+    public Relationship() {}
 
-    public Relation(String tableName, String column, Where where,  RelationType type) {
+    public Relationship(String tableName, String column, Where where, RelationshipType type) {
         this.tableName = tableName;
         this.column = column;
         this.where = where;
@@ -40,7 +40,7 @@ public class Relation {
         this.type = type;
     }
 
-    public Relation(String tableName, String column, RelationType type) {
+    public Relationship(String tableName, String column, RelationshipType type) {
         this.tableName = tableName;
         this.column = column;
         this.type = type;
@@ -112,7 +112,7 @@ public class Relation {
             )
         }
     )
-    public Relation setTableName(String tableName) {
+    public Relationship setTableName(String tableName) {
         this.tableName = tableName;
         return this;
     }
@@ -183,7 +183,7 @@ public class Relation {
             )
         }
     )
-    public Relation setColumn(String column) {
+    public Relationship setColumn(String column) {
         this.column = column;
         return this;
     }
@@ -213,7 +213,7 @@ public class Relation {
             )
         }
     )
-    public RelationType getType() {
+    public RelationshipType getType() {
         return type;
     }
 
@@ -254,7 +254,7 @@ public class Relation {
             )
         }
     )
-    public Relation setType(RelationType type) {
+    public Relationship setType(RelationshipType type) {
         this.type = type;
         return this;
     }
@@ -325,7 +325,7 @@ public class Relation {
             )
         }
     )
-    public Relation setSubRelations(Map<String, Join> subRelations) {
+    public Relationship setSubRelations(Map<String, Join> subRelations) {
         this.subRelations = subRelations;
         return this;
     }
@@ -397,7 +397,7 @@ public class Relation {
             )
         }
     )
-    public Relation setWhere(Where where) {
+    public Relationship setWhere(Where where) {
         this.where = where;
         return this;
     }
@@ -440,7 +440,7 @@ public class Relation {
             )
         }
     )
-    public Relation join(Relation relation) {
+    public Relationship join(Relationship relation) {
         Join join  = new Join();
         join.setTable(this.getTableName());
         join.setRelation(relation);
@@ -488,7 +488,7 @@ public class Relation {
             )
         }
     )
-    public Relation leftJoin(Relation relation) {
+    public Relationship leftJoin(Relationship relation) {
         Join join  = new Join();
         join.setJoinType(JoinType.LEFT_JOIN);
         join.setTable(this.getTableName());
@@ -537,7 +537,7 @@ public class Relation {
             )
         }
     )
-    public Relation rightJoin(Relation relation) {
+    public Relationship rightJoin(Relationship relation) {
         Join join  = new Join();
         join.setJoinType(JoinType.RIGHT_JOIN);
         join.setTable(this.getTableName());

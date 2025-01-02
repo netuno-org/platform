@@ -1,4 +1,4 @@
-package org.netuno.tritao.query.where;
+package org.netuno.tritao.db.form.where;
 
 import org.netuno.psamata.Values;
 
@@ -19,16 +19,16 @@ import org.netuno.library.doc.ReturnTranslationDoc;
             howToUse = {}
     )
 })
-public class RelationOperator {
-    private RelationOperatorType operatorType;
+public class RelationalOperator {
+    private RelationalOperatorType operatorType;
     private Object value;
     private Values inValues;
-    public RelationOperator(RelationOperatorType operatorType, Object value) {
+    public RelationalOperator(RelationalOperatorType operatorType, Object value) {
         this.operatorType = operatorType;
         this.value = value;
     }
 
-    public RelationOperator(RelationOperatorType operatorType, Values inValues) {
+    public RelationalOperator(RelationalOperatorType operatorType, Values inValues) {
         this.operatorType = operatorType;
         this.inValues = inValues;
     }
@@ -58,7 +58,7 @@ public class RelationOperator {
             )
         }
     )
-    public RelationOperatorType getOperatorType() {
+    public RelationalOperatorType getOperatorType() {
         return operatorType;
     }
 
@@ -99,7 +99,7 @@ public class RelationOperator {
             )
         }
     )
-    public RelationOperator setOperatorType(RelationOperatorType operatorType) {
+    public RelationalOperator setOperatorType(RelationalOperatorType operatorType) {
         this.operatorType = operatorType;
         return this;
     }
@@ -171,7 +171,7 @@ public class RelationOperator {
             )
         }
     )
-    public RelationOperator setValue(Object value) {
+    public RelationalOperator setValue(Object value) {
         this.value = value;
         return this;
     }
@@ -242,7 +242,7 @@ public class RelationOperator {
             )
         }
     )
-    public RelationOperator setInValues(Values inValues) {
+    public RelationalOperator setInValues(Values inValues) {
         this.inValues = inValues;
         return this;
     }
