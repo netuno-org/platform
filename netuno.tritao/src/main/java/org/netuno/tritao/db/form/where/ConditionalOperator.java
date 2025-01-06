@@ -12,7 +12,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "Condition",
+            title = "Conditional",
             introduction = "Definição da configuração do objeto Condition para construção de condições com o objeto Where",
             howToUse = {}
     )
@@ -28,6 +28,11 @@ public class ConditionalOperator {
         this.column = column;
         this.relationOperator = relationOperator;
         this.operator = operator;
+    }
+
+    public ConditionalOperator(String column, RelationalOperator relationOperator) {
+        this.column = column;
+        this.relationOperator = relationOperator;
     }
 
     public ConditionalOperator(Where where, ConditionalOperatorType operator) {

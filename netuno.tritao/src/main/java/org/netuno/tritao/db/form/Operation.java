@@ -24,8 +24,8 @@ import java.util.*;
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
-                title = "Query",
-                introduction = "Definição da configuração do objeto Query para consultas simplificadas.",
+                title = "Operation",
+                introduction = "Definição da configuração do objeto Operation para operações em base de dados.",
                 howToUse = {}
         )
 })
@@ -41,8 +41,8 @@ public class Operation {
     private boolean debug = false;
     private List<Populate> tablesToPopulate = new ArrayList<>();
     private int limit = 1000;
-    private OperationEngine operationalEngine;
-    private LinkEngine linkEngine;
+    private final OperationEngine operationalEngine;
+    private final LinkEngine linkEngine;
 
     public Operation(String formName, OperationEngine operationalEngine, LinkEngine linkEngine) {
         this.formName = formName;

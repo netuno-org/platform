@@ -11,5 +11,6 @@ public enum RelationalOperatorType {
     GreaterOrEqualsThan,
     LessOrEqualsThan,
     Different,
-    InRaw
+    InRaw,
+    NotIn
 }

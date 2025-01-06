@@ -1,5 +1,6 @@
 package org.netuno.tritao.db.form;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
@@ -15,10 +16,7 @@ import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class OperationEngine extends Data {
@@ -26,33 +24,38 @@ public class OperationEngine extends Data {
     public OperationEngine(Proteu proteu, Hili hili) {
         super(proteu, hili);
     }
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(OperationEngine.class);
+    private static final Logger logger = LogManager.getLogger(OperationEngine.class);
 
     public String buildQuerySQL(Operation query) {
         StringBuilder joinSQL = new StringBuilder();
         StringBuilder whereSQL = new StringBuilder();
         if (query.getWhere() != null) {
-//            whereSQL += "\n\t" + query.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(query.getWhere());
-            whereSQL.append("\n").append(this.buildWhereSQL(query.getWhere()));
+            final ConditionalOperator firstConditional = query.getWhere().getConditions().getFirst();
+            whereSQL.append("\n").append("\t")
+                    .append(firstConditional.getOperator() != null ? "" : " AND")
+                    .append(this.buildWhereSQL(query.getWhere()));
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
             final Join join = entryJoin.getValue();
-            joinSQL.append("\t").append(this.buildJoinSQL(join));
+            joinSQL.append("\t").append("\t").append(this.buildJoinSQL(join));
             if (join.getWhere() != null) {
-//                whereSQL += "\n\t" + join.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(join.getWhere());
-                whereSQL.append("\n").append(this.buildWhereSQL(join.getWhere()));
+                final ConditionalOperator firstConditional = join.getWhere().getConditions().getFirst();
+                whereSQL.append("\n").append("\t")
+                        .append(firstConditional.getOperator() != null ? "" : " AND")
+                        .append(this.buildWhereSQL(join.getWhere()));
             }
             for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
                 final Join subJoin = entrySubJoin.getValue();
                 if (subJoin.getWhere() != null) {
-//                    whereSQL += "\n\t" + subJoin.getWhere().getFirstCondition().getOperator().toString() + this.buildWhereSQL(subJoin.getWhere());
-                    whereSQL.append("\n").append(this.buildWhereSQL(subJoin.getWhere()));
+                    final ConditionalOperator firstConditional = subJoin.getWhere().getConditions().getFirst();
+                    whereSQL.append("\n").append("\t")
+                            .append(firstConditional.getOperator() != null ? "" : " AND")
+                            .append(this.buildWhereSQL(subJoin.getWhere()));
                 }
             }
         }
         whereSQL.insert(0, "\nWHERE 1 = 1");
-        final String SQL = joinSQL.toString() + whereSQL;
-        return SQL;
+        return joinSQL.toString() + whereSQL;
     }
 
     public String buildJoinSQL(Join join) {
@@ -89,6 +92,19 @@ public class OperationEngine extends Data {
         return whereSQL.toString();
     }
 
+    private String buildCondition(ConditionalOperator condition, String table) {
+        String conditionSQL = "";
+        if (condition.hasSubCondition()) {
+            conditionSQL += " " + condition.getOperator() + " (";
+            conditionSQL += this.buildWhereSQL(condition.getSubCondition().setTable(table));
+            conditionSQL += ")";
+        } else {
+            conditionSQL += " " + (condition.getOperator() != null ? condition.getOperator() : "")
+                    +  this.buildRelationOperatorSQL(condition.getRelationOperator(), table, condition.getColumn());
+        }
+        return conditionSQL;
+    }
+
     public String objectToValue(Object object) {
         return switch (object) {
             case String s -> "'" + DB.sqlInjection(s) + "'";
@@ -107,8 +123,14 @@ public class OperationEngine extends Data {
             case Contains ->
                     " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
             case In -> {
-                List values = relationOperator.getInValues().list().stream().map(
-                        this::objectToValue).collect(Collectors.toList());
+                List<String> values = null;
+                if (relationOperator.getValue() instanceof Values) {
+                    values = ((Values) relationOperator.getValue()).list().stream().map(
+                            this::objectToValue).collect(Collectors.toList());
+                } else if (relationOperator.getValue() instanceof List) {
+                    values = ((List<Object>)relationOperator.getValue()).stream().map(
+                            this::objectToValue).collect(Collectors.toList());
+                }
                 yield  " " + table+"."+column + " IN " + "("+String.join(",", values)+")";
             }
             case GreaterThan -> " " + table+"."+column + " > " + this.objectToValue(relationOperator.getValue());
@@ -120,19 +142,18 @@ public class OperationEngine extends Data {
                 String columnName = " " + table+"."+column;
                 yield relationOperator.getValue().toString().replaceAll("\\?", columnName);
             }
+            case NotIn -> {
+                List<String> values = null;
+                if (relationOperator.getValue() instanceof Values) {
+                    values = ((Values) relationOperator.getValue()).list().stream().map(
+                            this::objectToValue).collect(Collectors.toList());
+                } else if (relationOperator.getValue() instanceof List) {
+                    values = ((List<Object>)relationOperator.getValue()).stream().map(
+                            this::objectToValue).collect(Collectors.toList());
+                }
+                yield  " " + table+"."+column + " NOT IN " + "("+String.join(",", values)+")";
+            }
         };
-    }
-
-    private String buildCondition(ConditionalOperator condition, String table) {
-        String conditionSQL = "";
-        if (condition.hasSubCondition()) {
-            conditionSQL += " " + condition.getOperator() + "(";
-            conditionSQL += this.buildWhereSQL(condition.getSubCondition().setTable(table));
-            conditionSQL += ")";
-        } else {
-            conditionSQL += " " + condition.getOperator() + " " + this.buildRelationOperatorSQL(condition.getRelationOperator(), table, condition.getColumn());
-        }
-        return conditionSQL;
     }
 
     public String buildSelectSQL(Operation query) {
@@ -200,6 +221,7 @@ public class OperationEngine extends Data {
         }
         return query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
     }
+
     public Values first(Operation query) {
         String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);

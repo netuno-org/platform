@@ -14,8 +14,8 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "RelationOperator",
-            introduction = "Definição da configuração da relação do objeto Condition.",
+            title = "RelationalOperator",
+            introduction = "Definição da configuração da relação do objeto Conditional.",
             howToUse = {}
     )
 })
@@ -23,6 +23,7 @@ public class RelationalOperator {
     private RelationalOperatorType operatorType;
     private Object value;
     private Values inValues;
+
     public RelationalOperator(RelationalOperatorType operatorType, Object value) {
         this.operatorType = operatorType;
         this.value = value;
