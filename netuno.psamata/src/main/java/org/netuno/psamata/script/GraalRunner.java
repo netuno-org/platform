@@ -84,6 +84,7 @@ public class GraalRunner implements AutoCloseable {
         this.permittedLanguages = permittedLanguages;
         //engine = Engine.create();
         contextBuilder = Context.newBuilder(permittedLanguages)
+                .allowNativeAccess(true)
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLookup(className -> true)
                 .allowExperimentalOptions(true)
