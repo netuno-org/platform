@@ -352,12 +352,6 @@
         </dependency-->
 
         <dependency>
-            <groupId>org.python</groupId>
-            <artifactId>jython-standalone</artifactId>
-            <version>${jython.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.jruby</groupId>
             <artifactId>jruby</artifactId>
             <version>${jruby.version}</version>
