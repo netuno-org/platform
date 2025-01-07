@@ -3,6 +3,7 @@ package org.netuno.tritao.db.form.link;
 import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.db.form.Field;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.form.join.Join;
 import org.netuno.tritao.db.form.join.Relationship;
@@ -139,7 +140,29 @@ public class LinkEngine extends TableBuilderResourceBase {
         JSONObject jsonObject = new JSONObject(properties);
         JSONObject link = (JSONObject) jsonObject.get("LINK");
         String value = link.getString("value");
-        String form = value.split(":")[0].toString();
-        return form;
+        return value.split(":")[0];
+    }
+
+    public Values fieldToValues(List<Field> fields) {
+        var values = new Values();
+        for (Field field : fields) {
+            final Object value = field.getValue();
+            switch (value) {
+                case String stringValue -> {
+                    values.set(field.getColumn(), stringValue);
+                }
+                case Number numberValue -> {
+                    values.set(field.getColumn(), numberValue);
+                }
+                case Boolean booleanValue-> {
+                    values.set(field.getColumn(), booleanValue);
+                }
+                case Values valuesValue -> {
+                    values.set(field.getColumn(), valuesValue);
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + value);
+            }
+        }
+        return values;
     }
 }

@@ -4566,5 +4566,7 @@ public class DB extends ResourceBase {
         return new org.netuno.tritao.db.form.where.Where(column);
     }
 
-
+    public org.netuno.tritao.db.form.where.Where where() {
+        return new org.netuno.tritao.db.form.where.Where();
+    }
 }

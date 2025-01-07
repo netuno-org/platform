@@ -200,6 +200,11 @@ public class Operation {
         return this;
     }
 
+    public Operation set(String column, Object value) {
+        this.fields.add(new Field(column, value));
+        return this;
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
@@ -1288,10 +1293,6 @@ public class Operation {
         return operationalEngine.updateFirst(data, this);
     }
 
-    public int updateAll(Values data) {
-        return operationalEngine.updateAll(data, this);
-    }
-
     public Values cascadeUpdate(Values data) {
         Values updateLinks = linkEngine.buildUpdateLinks(this.formName, data);
         return operationalEngine.updateCascade(data, updateLinks, this);
@@ -1302,8 +1303,29 @@ public class Operation {
         return operationalEngine.cascadeInsert(insertLinks, data, this);
     }
 
-    public String insert(Values data) {
+    public Operation where(Where where) {
+        where.setTable(this.formName);
+        this.where = where;
+        return this;
+    }
+
+    public Values insert() {
+        final var data = linkEngine.fieldToValues(this.fields);
+        if (data.values().stream().anyMatch(object -> object instanceof Values)) {
+            Values insertLinks = linkEngine.buildInsertLinks(this.formName, data);
+            return operationalEngine.cascadeInsert(insertLinks, data, this);
+        }
         linkEngine.checkForm(this.formName);
-        return operationalEngine.insert(data, this);
+        return operationalEngine.insert(linkEngine.fieldToValues(this.fields), this);
+    }
+
+    public Values update() {
+        final var data = linkEngine.fieldToValues(this.fields);
+        if (data.values().stream().anyMatch(object -> object instanceof Values)) {
+            Values updateLinks = linkEngine.buildUpdateLinks(this.formName, data);
+            return operationalEngine.updateCascade(data, updateLinks, this);
+        }
+        linkEngine.checkForm(this.formName);
+        return operationalEngine.updateAll(data, this);
     }
 }

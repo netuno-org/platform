@@ -20,10 +20,16 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 public class Field {
     private String column;
     private String alias;
+    private Object value;
 
     public Field(String column, String alias) {
         this.column = column;
         this.alias = alias;
+    }
+
+    public Field(String column, Object value) {
+        this.column = column;
+        this.value = value;
     }
 
     public Field(String column) {
@@ -169,6 +175,15 @@ public class Field {
     )
     public Field setAlias(String alias) {
         this.alias = alias;
+        return this;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public Field setValue(Object value) {
+        this.value = value;
         return this;
     }
 }

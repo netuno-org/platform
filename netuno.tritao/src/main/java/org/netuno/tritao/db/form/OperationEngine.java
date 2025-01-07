@@ -382,7 +382,7 @@ public class OperationEngine extends Data {
         }
     }
 
-    public int updateAll(Values data, Operation query) {
+    public Values updateAll(Values data, Operation query) {
         if (data == null) {
             throw new UnsupportedOperationException("No values in update method");
         }
@@ -403,7 +403,7 @@ public class OperationEngine extends Data {
             }
             logger.warn("Number of rows affected: " + numberOfAffectedForms);
         }
-        return numberOfAffectedForms;
+        return new Values().set("numberOfAffectedForms", numberOfAffectedForms);
     }
 
     public String cascadeUpdateSubForms(Values dataValues, Map.Entry<String, Object> updateLink, String recordID) {
@@ -417,7 +417,7 @@ public class OperationEngine extends Data {
                     + " AND " + updateLink.getValue() + " = " + recordID;
             final List<Values> dbID = getManager().query(getIdQuerySQL);
             String id = !dbID.isEmpty() ? dbID.getFirst().getString("id") : "0";
-            DataItem dataItem = getBuilder().update(updateLink.getKey(), id, dataValues);
+            DataItem dataItem = getBuilder().update(updateLink.getKey(), id, validDataValues(dataValues));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 return dataValues.getString("id");
             }
@@ -431,12 +431,12 @@ public class OperationEngine extends Data {
                     + " AND " + updateLink.getValue() + " = " + recordID;
             final List<Values> dbUID = getManager().query(getIdQuerySQL);
             String uid = !dbUID.isEmpty() ? dbUID.getFirst().getString("id") : "0";
-            DataItem dataItem = getBuilder().update(updateLink.getKey(), uid, dataValues);
+            DataItem dataItem = getBuilder().update(updateLink.getKey(), uid, validDataValues(dataValues));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 return uid;
             }
         } else {
-            DataItem dataItem = getBuilder().insert(updateLink.getKey(), dataValues.set(updateLink.getValue().toString(), recordID));
+            DataItem dataItem = getBuilder().insert(updateLink.getKey(), validDataValues(dataValues.set(updateLink.getValue().toString(), recordID)));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 return dataItem.getId();
             }
@@ -447,13 +447,13 @@ public class OperationEngine extends Data {
     public Values updateCascade(Values data, Values updateLinks, Operation query) {
         Values affectedValues = new Values();
         String recordID = this.getRecordIDs(query.setLimit(1)).getFirst().getString("id");
-        DataItem result = getBuilder().update(query.getFormName(), recordID, data);
+        DataItem result = getBuilder().update(query.getFormName(), recordID, validDataValues(data));
         checkDataItemErrors(result, "update");
         affectedValues.set(query.getFormName(), (result.getStatusType() == DataItem.StatusType.Ok) ? 1 : 0);
         for (Map.Entry<String, Object> updateLink : updateLinks.entrySet()) {
             List<String> updatedRecords = new ArrayList<String>();
             List<String> recordsLinkID = getManager().query(
-                    "SELECT " + updateLink.getKey()+".id FROM " + updateLink.getKey() + " WHERE " + updateLink.getValue() + " = " + recordID
+                "SELECT " + updateLink.getKey()+".id FROM " + updateLink.getKey() + " WHERE " + updateLink.getValue() + " = " + recordID
             ).stream().map(values -> values.getString("id")).collect(Collectors.toList());
             if (data.get(updateLink.getKey()) instanceof Values && !((Values) data.get(updateLink.getKey())).isEmpty()) {
                final Values dataValues = data.getValues(updateLink.getKey());
@@ -484,13 +484,13 @@ public class OperationEngine extends Data {
         return affectedValues;
     }
 
-    public String insert(Values data, Operation query) {
+    public Values insert(Values data, Operation query) {
         if (data == null || data.isEmpty()) {
             throw new ResourceException("Data values cannot be null or empty");
         }
         DataItem dataItem = getBuilder().insert(query.getFormName(), validDataValues(data));
         checkDataItemErrors(dataItem, "insert");
-        return dataItem.getId();
+        return new Values().set("id", dataItem.getId());
     }
 
     public Values cascadeInsert(Values insertLinks, Values data, Operation query) {
@@ -514,7 +514,7 @@ public class OperationEngine extends Data {
                 newRecords.set(insertLink.getKey(), newLinkRecords);
             } else {
                 dataLink.set(insertLink.getValue().toString(), formMainDataId);
-                DataItem dataItemLink = getBuilder().insert(insertLink.getKey(), dataLink);
+                DataItem dataItemLink = getBuilder().insert(insertLink.getKey(), validDataValues(dataLink));
                 if (dataItemLink.getStatusType() == DataItem.StatusType.Ok) {
                     newRecords.set(insertLink.getKey(), dataItemLink.getId());
                 }
