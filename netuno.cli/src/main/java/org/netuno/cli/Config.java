@@ -123,9 +123,9 @@ public final class Config {
      */
     public static int maxMemory = 10 * (1024 * 1024);
 
-    public static List<String> extraLibs = new ArrayList<>(Arrays.asList("lib"));
+    public static List<String> extraLibs = Arrays.asList("lib");
 
-    public static List<String> permittedLanguages = new ArrayList<>(Arrays.asList("js"));
+    public static List<String> permittedLanguages = Arrays.asList("js", "regex", "python");
 
     /**
      * Download Default Cache
