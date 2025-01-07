@@ -56,7 +56,7 @@ public class Config {
     private static List<Class> definitionsClasses = new ArrayList<>();
     private static List<Class> resourcesClasses = new ArrayList<>();
 
-    private static String[] permittedLanguages = new String[] { "js" };
+    private static String[] permittedLanguages = new String[] { "js", "regex", "python", "ruby" };
 
     private static String manageSecret = null;
     private static int maxCPUTime = 60000;
