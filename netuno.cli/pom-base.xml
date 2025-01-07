@@ -157,9 +157,10 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.graalvm.js</groupId>
-            <artifactId>js-scriptengine</artifactId>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>python</artifactId>
             <version>${graalvm.version}</version>
+            <type>pom</type>
         </dependency>
 
         <!-- QUARTZ -->

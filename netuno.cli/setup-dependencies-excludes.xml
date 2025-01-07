@@ -26,6 +26,7 @@
 
                 <exclude>org.graalvm.polyglot:*</exclude>
 		        <exclude>org.graalvm.js:*</exclude>
+                <exclude>org.graalvm.python:*</exclude>
 
                 <exclude>org.quartz-scheduler:*</exclude>
 
