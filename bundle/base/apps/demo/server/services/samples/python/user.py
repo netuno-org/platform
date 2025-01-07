@@ -7,7 +7,7 @@
 #  PT: Apresenta a informação do utilizador logado.
 #
 
-data = _val.init()
+data = _val.map()
 
 data.set('title', 'This is your user data...')
 data.set('id', _user.id)

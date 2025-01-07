@@ -13,7 +13,7 @@ client = _remote.init()
 
 response = client.asJSON().post(
     "http://httpbin.org/post",
-    _val.init()
+    _val.map()
         .set("name", "morpheus")
         .set("job", "leader")
 )

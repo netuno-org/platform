@@ -7,7 +7,7 @@
 #  PT: Apresenta a informação do grupo do utilizador logado.
 #
 
-data = _val.init()
+data = _val.map()
 
 data.set('title', 'This is your group...')
 data.set('id', _group.id)

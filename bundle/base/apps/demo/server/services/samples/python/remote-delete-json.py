@@ -13,7 +13,7 @@ client = _remote.init()
 
 response = client.asJSON().delete(
     "http://httpbin.org/delete",
-    _val.init()
+    _val.map()
         .set("name", "morpheus")
         .set("job", "leader")
 )

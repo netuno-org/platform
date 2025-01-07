@@ -59,89 +59,71 @@ excel.insertPicture(
 excel.mergedRegion(1, 3, 1, 3)
 
 dataTitle = [
-    {
-        'value': 'Name',
-        'style': styleHeader
-    },
-    {
-        'value': 'Age',
-        'style': styleHeader
-    },
-    {
-        'value': 'Weight',
-        'style': styleHeader
-    }
+    _val.map()
+        .set('value', 'Name')
+        .set('style', styleHeader),
+    _val.map()
+        .set('value', 'Age')
+        .set('style', styleHeader),
+    _val.map()
+        .set('value', 'Weight')
+        .set('style', styleHeader)
 ]
 
 data = [
     [
-        {
-            'value': 'Briana',
-            'style': styleData
-        },
-        {
-            'value': 24,
-            'style': styleData
-        },
-        {
-            'value': 73.2,
-            'style': styleData
-        }
+        _val.map()
+            .set('value', 'Briana')
+            .set('style', styleData),
+        _val.map()
+            .set('value', 24)
+            .set('style', styleData),
+        _val.map()
+            .set('value', 73.2)
+            .set('style', styleData)
     ], [
-        {
-            'value': 'Kelly',
-            'style': styleData
-        },
-        {
-            'value': 27,
-            'style': styleData
-        },
-        {
-            'value': 79.5,
-            'style': styleData
-        }
+        _val.map()
+            .set('value', 'Kelly')
+            .set('style', styleData),
+        _val.map()
+            .set('value', 27)
+            .set('style', styleData),
+        _val.map()
+            .set('value', 79.5)
+            .set('style', styleData)
     ], [
-        {
-            'value': 'Peter',
-            'style': styleData
-        },
-        {
-            'value': 28,
-            'style': styleData
-        },
-        {
-            'value': 84.9,
-            'style': styleData
-        }
+        _val.map()
+            .set('value', 'Peter')
+            .set('style', styleData),
+        _val.map()
+            .set('value', 28)
+            .set('style', styleData),
+        _val.map()
+            .set('value', 84.9)
+            .set('style', styleData)
     ],[
-        {
-            'value': 'Simon',
-            'style': styleData
-        },
-        {
-            'value': 21,
-            'style': styleData
-        },
-        {
-            'value': 68.3,
-            'style': styleData
-        }
+        _val.map()
+            .set('value', 'Simon')
+            .set('style', styleData),
+        _val.map()
+            .set('value', 21)
+            .set('style', styleData),
+        _val.map()
+            .set('value', 68.3)
+            .set('style', styleData)
     ]
 ]
 
 dataResult = [
-    {
-        'value': 'Result',
-        'style': styleTotal
-    },
-    {
-        'formula': 'ROUND(SUM(C8:C11)/COUNT(C8:C11), 2)',
-        'style': styleTotal
-    },
-    {
-        'formula': 'ROUND(SUM(D8:D11)/COUNT(D8:D11), 2)',
-        'style': styleTotal
-    }
+    _val.map()
+        .set('value', 'Result')
+        .set('style', styleTotal),
+    _val.map()
+        .set('formula', 'ROUND(SUM(C8:C11)/COUNT(C8:C11), 2)')
+        .set('style', styleTotal),
+    _val.map()
+        .set('formula', 'ROUND(SUM(D8:D11)/COUNT(D8:D11), 2)')
+        .set('style', styleTotal)
 ]
 
 endPosition = excel.addDataTable(6, 1, dataTitle)

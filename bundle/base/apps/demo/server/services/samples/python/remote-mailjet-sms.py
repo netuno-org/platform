@@ -11,7 +11,7 @@ sendSMS = _remote.init()
 
 sendSMS.setAuthorization("Bearer YOUR_TOKEN")
 
-sms = _val.init()
+sms = _val.map()
     .set("From", "Netuno.org")
     .set("To", "YOUR_INTERNATIONAL_PHONE_NUMBER")
     .set("Text", "Hello from Netuno!")

@@ -10,7 +10,7 @@
 #
 
 
-data = _val.init()
+data = _val.map()
 data.set("title", "Netuno")
 data.set("link", "<a href=\"https://www.netuno.org\">https://www.netuno.org</a>")
 
