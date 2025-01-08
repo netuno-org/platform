@@ -189,17 +189,6 @@ public class Form extends TableBuilderResourceBase {
 //        return new Where(column, value);
 //    }
 //
-//    public Where where(String column, RelationalOperator relationOperator) {
-//        return new Where(column, relationOperator);
-//    }
-//
-//    public Where where(ConditionalOperatorType operator, String column, Object value) {
-//        return new Where(operator, column, value);
-//    }
-//
-//    public Where where(ConditionalOperatorType operator, String column, RelationalOperator relationOperator) {
-//        return new Where(operator, column, relationOperator);
-//    }
 
        @MethodDoc(
         translations = {
@@ -740,10 +729,6 @@ public class Form extends TableBuilderResourceBase {
         return new RelationalOperator(RelationalOperatorType.In, values);
     }
 
-    public RelationalOperator inRaw(Object value) {
-        return new RelationalOperator(RelationalOperatorType.InRaw, value);
-    }
-
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
@@ -835,101 +820,5 @@ public class Form extends TableBuilderResourceBase {
     )
     public Link link(String formLink) {
         return new Link(new RelationshipLink(formLink));
-    }
-
-    public Link link(String formLink, Where where) {
-        return new Link(new RelationshipLink(formLink), where);
-    }
-
-    public Link link(String formLink, Where where, Link link) {
-        link.getRelationLink().setFormLink(formLink);
-        link.setWhere(where);
-        return link;
-    }
-    
-    public Field field(String column, String elias) {
-        return new Field(column, elias);
-    }
-
-        @MethodDoc(
-        translations = {
-            @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Retorna um campo baseado na coluna informada.",
-                howToUse = {}
-            ),
-            @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Returns a field based on the given column.",
-                howToUse = {}
-            )
-        },
-        parameters = {
-            @ParameterDoc(name = "column", translations = {
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Nome da coluna.",
-                    name = "coluna"
-                ),
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Column name."
-                )
-            }),
-        },
-        returns = {
-            @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Objeto Field."
-            ),
-            @ReturnTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "Objeto Field."
-            )
-        }
-    )
-    public Field field(String column) {
-        return new Field(column);
-    }
-
-            @MethodDoc(
-        translations = {
-            @MethodTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Lista com os campos baseado em colunas para serem retornados na consulta.",
-                howToUse = {}
-            ),
-            @MethodTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "List of column-based fields to be returned in the query.",
-                howToUse = {}
-            )
-        },
-        parameters = {
-            @ParameterDoc(name = "fields", translations = {
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Lista de campos",
-                    name = "campos"
-                ),
-                @ParameterTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "List of fields."
-                )
-            }),
-        },
-        returns = {
-            @ReturnTranslationDoc(
-                language = LanguageDoc.PT,
-                description = "Lista de campos."
-            ),
-            @ReturnTranslationDoc(
-                language = LanguageDoc.EN,
-                description = "List of fields."
-            )
-        }
-    )
-    public List<Field> fields(Field... fields) {
-        return List.of(fields);
     }
 }

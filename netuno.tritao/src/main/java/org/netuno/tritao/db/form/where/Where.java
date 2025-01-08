@@ -174,114 +174,6 @@ public class Where {
         return this;
     }
 
-//    @MethodDoc(
-//        translations = {
-//            @MethodTranslationDoc(
-//                language = LanguageDoc.PT,
-//                description = "Define uma condição com o operador condicional AND no objeto Where.",
-//                howToUse = {}
-//            ),
-//            @MethodTranslationDoc(
-//                language = LanguageDoc.EN,
-//                description = "Defines a condition with the conditional AND operator on the Where object.",
-//                howToUse = {}
-//            )
-//        },
-//        parameters = {
-//            @ParameterDoc(name = "column", translations = {
-//                @ParameterTranslationDoc(
-//                    language = LanguageDoc.PT,
-//                    description = "Coluna a qual será aplicado a condição.",
-//                    name = "coluna"
-//                ),
-//                @ParameterTranslationDoc(
-//                    language = LanguageDoc.EN,
-//                    description = "Column to which the condition will be applied."
-//                )
-//            }),
-//            @ParameterDoc(name = "value", translations = {
-//                @ParameterTranslationDoc(
-//                    language = LanguageDoc.PT,
-//                    description = "Valor da condição.",
-//                    name = "coluna"
-//                ),
-//                @ParameterTranslationDoc(
-//                    language = LanguageDoc.EN,
-//                    description = "Condition value."
-//                )
-//            })
-//        },
-//        returns = {
-//            @ReturnTranslationDoc(
-//                language = LanguageDoc.PT,
-//                description = "Objeto Where atual."
-//            ),
-//            @ReturnTranslationDoc(
-//                language = LanguageDoc.EN,
-//                description = "Current Where object."
-//            )
-//        }
-//    )
-//    public Where and(String column, Object value) {
-//        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
-//        conditions.add( new ConditionalOperator(column, ConditionalOperatorType.AND, relationOperator));
-//        return this;
-//    }
-
-//    @MethodDoc(
-//        translations = {
-//            @MethodTranslationDoc(
-//                language = LanguageDoc.PT,
-//                description = "Define uma condição com o operador condicional OR no objeto Where.",
-//                howToUse = {}
-//            ),
-//            @MethodTranslationDoc(
-//                language = LanguageDoc.EN,
-//                description = "Defines a condition with the conditional OR operator on the Where object.",
-//                howToUse = {}
-//            )
-//        },
-//        parameters = {
-//            @ParameterDoc(name = "column", translations = {
-//                @ParameterTranslationDoc(
-//                    language = LanguageDoc.PT,
-//                    description = "Coluna a qual será aplicado a condição.",
-//                    name = "coluna"
-//                ),
-//                @ParameterTranslationDoc(
-//                    language = LanguageDoc.EN,
-//                    description = "Column to which the condition will be applied."
-//                )
-//            }),
-//            @ParameterDoc(name = "value", translations = {
-//                @ParameterTranslationDoc(
-//                    language = LanguageDoc.PT,
-//                    description = "Valor da condição.",
-//                    name = "valor"
-//                ),
-//                @ParameterTranslationDoc(
-//                    language = LanguageDoc.EN,
-//                    description = "Condition value."
-//                )
-//            })
-//        },
-//        returns = {
-//            @ReturnTranslationDoc(
-//                language = LanguageDoc.PT,
-//                description = "Objeto Where atual."
-//            ),
-//            @ReturnTranslationDoc(
-//                language = LanguageDoc.EN,
-//                description = "Current Where object."
-//            )
-//        }
-//    )
-//    public Where or(String column, Object value) {
-//        RelationalOperator relationOperator = new RelationalOperator(RelationalOperatorType.Equals, value);
-//        conditions.add(new ConditionalOperator(column, ConditionalOperatorType.OR, relationOperator));
-//        return this;
-//    }
-
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
@@ -483,6 +375,7 @@ public class Where {
         this.conditions.getLast().getRelationOperator().setValue(value);
         return this;
     }
+
 
     public Where equal(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.Equals);

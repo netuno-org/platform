@@ -181,7 +181,7 @@ public class OperationEngine extends Data {
                         field -> field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn())
                         .collect(Collectors.toList());
                 String selectSQLPart = "SELECT DISTINCT "
-                        + (fieldList.size() > 0 ? String.join(", ", fieldList) : populate.getTable() + ".*")
+                        + (!fieldList.isEmpty() ? String.join(", ", fieldList) : populate.getTable() + ".*")
                         + " FROM " + query.getFormName();
                 String commandSQL = selectSQLPart + " " + querySQLPart;
                 commandSQL += " AND "
@@ -192,7 +192,7 @@ public class OperationEngine extends Data {
                                         : populate.getFilter().getColumn().split("\\.")[1]
                 )).toString() + "'";
                 List<Values> items = getManager().query(commandSQL);
-                if (items.size() == 0) {
+                if (items.isEmpty()) {
                     results.get(i).set(populate.getTable(), Collections.EMPTY_LIST);
                     continue;
                 }
@@ -213,13 +213,13 @@ public class OperationEngine extends Data {
         }
         selectCommandSQL += "\nLIMIT " + query.getLimit();
         if (query.isDebug()) {
-            logger.warn("SQL Command executed: \n"+selectCommandSQL);
+            logger.warn("SQL Command executed:\n {}", selectCommandSQL);
         }
         List<Values> items = getManager().query(selectCommandSQL);
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        return query.getTablesToPopulate().size() > 0 ? populateResults(items, query) : items;
+        return !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
     }
 
     public Values first(Operation query) {
@@ -233,11 +233,11 @@ public class OperationEngine extends Data {
         }
         selectCommandSQL += "\nLIMIT 1";
         if (query.isDebug()) {
-            logger.warn("SQL Command executed: \n"+selectCommandSQL);
+            logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
         List<Values> items = getManager().query(selectCommandSQL);
         if (items.isEmpty()) {
-            return new Values();
+            return null;
         }
         items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
         return items.getFirst();
@@ -270,7 +270,7 @@ public class OperationEngine extends Data {
         }
         selectCommandSQL += "\nLIMIT "+query.getPagination().getPageSize() +" OFFSET " + query.getPagination().getOffset();
         if (query.isDebug()) {
-            logger.warn("SQL Command executed: \n"+selectCommandSQL);
+            logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
         List<Values> items = getManager().query(selectCommandSQL);
         items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
@@ -310,21 +310,6 @@ public class OperationEngine extends Data {
             logger.warn("Number of rows affected: " + numberOfAffectedRows);
         }
         return new Values().set("numberOfAffectedRows", numberOfAffectedRows);
-    }
-
-    public int deleteFirst(Operation query) {
-        List<Values> idsValues = getRecordIDs(query.setLimit(1));
-        final DataItem dataItem = getBuilder().delete(query.getFormName(), idsValues.getFirst().getString("id"));
-        if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
-            return 1;
-        } else {
-            if (dataItem.getStatus() == DataItem.Status.Relations && query.isDebug()) {
-                logger.warn("Impossible to delete the record with ID: {}, the same is related to one or more tables", idsValues.getFirst().getString("id"));
-            } else if (query.isDebug()) {
-                logger.warn("Impossible to delete the record ID: {}", idsValues.getFirst().getString("id"));
-            }
-            return 0;
-        }
     }
 
     public Values cascadeDelete(Values deleteLinks, Operation query) {
