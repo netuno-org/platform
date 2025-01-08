@@ -1280,29 +1280,6 @@ public class Operation {
         return operationalEngine.page(this.setPagination(pagination)).toValues();
     }
 
-    public int deleteAll() {return operationalEngine.deleteAll(this);}
-
-    public int deleteFirst() {return operationalEngine.deleteFirst(this);}
-
-    public Values cascadeDelete(String... forms) {
-        Values deleteLinks = linkEngine.buildDeleteLinks(this.formName, Arrays.stream(forms).toList());
-        return operationalEngine.cascadeDelete(deleteLinks, this);
-    }
-
-    public int updateFirst(Values data) {
-        return operationalEngine.updateFirst(data, this);
-    }
-
-    public Values cascadeUpdate(Values data) {
-        Values updateLinks = linkEngine.buildUpdateLinks(this.formName, data);
-        return operationalEngine.updateCascade(data, updateLinks, this);
-    }
-
-    public Values cascadeInsert(Values data) {
-        Values insertLinks = linkEngine.buildInsertLinks(this.formName, data);
-        return operationalEngine.cascadeInsert(insertLinks, data, this);
-    }
-
     public Operation where(Where where) {
         where.setTable(this.formName);
         this.where = where;
@@ -1327,5 +1304,14 @@ public class Operation {
         }
         linkEngine.checkForm(this.formName);
         return operationalEngine.updateAll(data, this);
+    }
+
+    public Values delete() {
+        return operationalEngine.deleteAll(this);
+    }
+
+    public Values delete(String... forms) {
+        Values deleteLinks = linkEngine.buildDeleteLinks(this.formName, Arrays.stream(forms).toList());
+        return operationalEngine.cascadeDelete(deleteLinks, this);
     }
 }

@@ -291,7 +291,7 @@ public class OperationEngine extends Data {
         return recordIDs;
     }
 
-    public int deleteAll(Operation query) {
+    public Values deleteAll(Operation query) {
         List<Values> recordIDs = getRecordIDs(query);
         int numberOfAffectedRows = 0;
         List<String> undeletedRecords = new ArrayList<>();
@@ -309,7 +309,7 @@ public class OperationEngine extends Data {
         if (query.isDebug()) {
             logger.warn("Number of rows affected: " + numberOfAffectedRows);
         }
-        return numberOfAffectedRows;
+        return new Values().set("numberOfAffectedRows", numberOfAffectedRows);
     }
 
     public int deleteFirst(Operation query) {
