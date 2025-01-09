@@ -1,4 +1,5 @@
 /*
+ *
  * Licensed to the Netuno.org under one or more
  * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -41,6 +42,11 @@ public class GraalSandbox implements Scriptable {
         options.put("js.v8-compat", "true");
         options.put("js.commonjs-require", "true");
         options.put("js.commonjs-require-cwd", Config.getPathAppBaseServer(manager.getProteu()));
+        options.put("python.CoreHome", Config.getPathAppBaseServer(manager.getProteu()));
+        options.put("python.SysPrefix", "lib/python/sys");
+        options.put("python.StdLibHome", "lib/python/std");
+        options.put("python.CAPI", "lib/python/capi");
+        //options.put("python.WithoutJNI", "true");
 
         graalRunner = new GraalRunner(options, Config.getPermittedLanguages());
     }
