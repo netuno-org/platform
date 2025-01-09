@@ -41,6 +41,16 @@ cd netuno.cli/protect && ./run.sh && cd ../..
 
 mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-base.jar
 
+cd netuno.cli/protect/out/proguard
+
+mkdir -p META-INF/services
+echo "com.oracle.truffle.js.lang.JavaScriptLanguageProvider" > META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
+echo "com.oracle.graal.python.PythonLanguageProvider" >> META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
+echo "com.oracle.truffle.regex.RegexLanguageProvider" >> META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
+jar uf netuno-base.jar META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
+rm -rf META-INF
+cd ../../../../
+
 cp netuno.cli/pom-setup.xml netuno.cli/pom.xml
 
 cd netuno.cli && mvn clean && mvn package && cd ..
