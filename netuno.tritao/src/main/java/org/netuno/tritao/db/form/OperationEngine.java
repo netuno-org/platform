@@ -19,6 +19,11 @@ import org.netuno.tritao.resource.util.ResourceException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Operation Engine - Engine of SQL queries and all db form operations.
+ * Responsible for building db commands from the Operation object
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 public class OperationEngine extends Data {
 
     public OperationEngine(Proteu proteu, Hili hili) {

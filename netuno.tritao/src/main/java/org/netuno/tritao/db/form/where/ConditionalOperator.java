@@ -9,10 +9,14 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Conditional Operator - Auxiliary object to Where object
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "Conditional",
+            title = "ConditionalOperator",
             introduction = "Definição da configuração do objeto Condition para construção de condições com o objeto Where",
             howToUse = {}
     )

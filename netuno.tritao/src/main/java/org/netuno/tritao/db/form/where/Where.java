@@ -3,21 +3,18 @@ package org.netuno.tritao.db.form.where;
 import java.util.*;
 
 
-import org.netuno.library.doc.LanguageDoc;
-import org.netuno.library.doc.LibraryDoc;
-import org.netuno.library.doc.LibraryTranslationDoc;
-import org.netuno.library.doc.MethodDoc;
-import org.netuno.library.doc.MethodTranslationDoc;
-import org.netuno.library.doc.ParameterDoc;
-import org.netuno.library.doc.ParameterTranslationDoc;
-import org.netuno.library.doc.ReturnTranslationDoc;
+import org.netuno.library.doc.*;
 import org.netuno.psamata.Values;
 
+/**
+ * Where - Object to use in db form operations
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
             title = "Where",
-            introduction = "Definição da configuração do objeto Where para construção de condições nas consultas com o o objeto Query.",
+            introduction = "Definição da configuração do objeto Where para construção de condições nas consultas com o recurso _db.form()",
             howToUse = {}
     )
 })
@@ -367,6 +364,7 @@ public class Where {
         return this;
     }
 
+    @IgnoreDoc
     private Where addConditionalOperator(Object value, RelationalOperatorType operatorType) {
         RelationalOperator currentRelationalOperator = this.conditions.getLast().getRelationOperator();
         if (currentRelationalOperator.getOperatorType() == null) {
@@ -376,23 +374,207 @@ public class Where {
         return this;
     }
 
-
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exact to the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equal(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.Equals);
     }
-
+    
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que inicia com o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that starts with the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where startsWith(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.StartsWith);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que termina com o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that ends with the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where endsWith(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.EndsWith);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que inclua o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that includes the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where contains(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.Contains);
     }
-
+    
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja igual a algum dos padrões informados.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is equal to any of the given patterns.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "values", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volores da condição.",
+                    name = "valores"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional values."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where in(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.In);
     }
@@ -401,6 +583,43 @@ public class Where {
         return this.addConditionalOperator(Arrays.stream(value).toList(), RelationalOperatorType.In);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja diferente de algum dos padrões informados.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is different any of the given patterns.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "values", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volores da condição.",
+                    name = "valores"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional values."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notIn(Object ...value) {
         return this.addConditionalOperator(Arrays.stream(value).toList(), RelationalOperatorType.NotIn);
     }
@@ -408,25 +627,212 @@ public class Where {
     public Where notIn(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotIn);
     }
-
+    
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja menor que o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters out any occurrence that is less than the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where lessThan(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.LessThan);
     }
 
+     @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja maior que o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters out any occurrence that is greater than the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where greaterThan(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.GreaterThan);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja maior ou igual que o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters out any occurrence that is greater or equals than the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where greaterOrEqualsThan(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.GreaterOrEqualsThan);
     }
-
+    
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja menor ou igual que o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters out any occurrence that is less or equals than the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where lessOrEqualsThan(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.LessOrEqualsThan);
     }
+    
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que diferente do padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that differs from the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where different(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.Different);
     }
+
     public Where inRaw(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.InRaw);
     }

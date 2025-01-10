@@ -12,10 +12,14 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Relationship Link - Auxiliary object to Link object
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "RelationLink",
+            title = "RelationshipLink",
             introduction = "Definição da configuração do objeto RelationLink para configurar realcionamentos entre formularios.",
             howToUse = {}
     )

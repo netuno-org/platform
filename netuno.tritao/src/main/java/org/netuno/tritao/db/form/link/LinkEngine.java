@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Link Engine - Responsible from build all links between the forms
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 public class LinkEngine extends TableBuilderResourceBase {
     public LinkEngine(Proteu proteu, Hili hili) {
         super(proteu, hili);

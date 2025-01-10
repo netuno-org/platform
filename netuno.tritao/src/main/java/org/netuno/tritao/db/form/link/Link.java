@@ -11,6 +11,10 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Link - Main object to link different forms via form resource
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,

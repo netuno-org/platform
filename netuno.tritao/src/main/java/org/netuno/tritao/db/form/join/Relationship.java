@@ -15,10 +15,14 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Relationship - Auxiliary object of Join object
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "Relation",
+            title = "Relationship",
             introduction = "Definição da configuração do objeto Relation para configurar relacionamentos entre tabelas com Join.",
             howToUse = {}
     )

@@ -5,6 +5,10 @@ import org.netuno.psamata.Values;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Page - Base object to manage pagination results
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 public class Page {
     private List<Values> items = new ArrayList<>();
     private int totalElements;
@@ -19,7 +23,7 @@ public class Page {
         this.totalElements = totalElements;
         this.pageNumber = pagination.getPage();
         this.pageSize = pagination.getPageSize();
-        this.totalPages = (int) Math.ceil(Double.valueOf(this.totalElements) / Double.valueOf(this.pageSize));
+        this.totalPages = (int) Math.ceil((double) this.totalElements / (double) this.pageSize);
         this.hasNext = (pageNumber - 1) + 1 < totalPages;
         this.hasPrevious = (pageNumber <= totalPages) && (pageNumber > 1);
     }

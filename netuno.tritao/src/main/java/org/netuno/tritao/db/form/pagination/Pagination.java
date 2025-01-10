@@ -1,5 +1,9 @@
 package org.netuno.tritao.db.form.pagination;
 
+/**
+ * Pagination - Object to config preferences of the page
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 public class Pagination {
     private int page = 1;
     private int pageSize = 10;
@@ -8,7 +12,6 @@ public class Pagination {
     public Pagination(int page, int pageSize) {
         this.page = page;
         this.pageSize = pageSize;
-        this.offset = (page - 1) * pageSize;
     }
 
     public int getPage() {
@@ -30,6 +33,7 @@ public class Pagination {
     }
 
     public int getOffset() {
+        this.offset = (page - 1) * pageSize;
         return offset;
     }
 

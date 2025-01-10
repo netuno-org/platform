@@ -21,6 +21,10 @@ import org.netuno.tritao.db.form.where.Where;
 
 import java.util.*;
 
+/**
+ * Operation - Object main for the all db form operations
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
