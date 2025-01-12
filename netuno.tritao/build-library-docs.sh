@@ -6,6 +6,11 @@ cd ..
 
 cd netuno.tritao
 
+trash-put docs/EN/library/*
+trash-put docs/EN/ts.d/*
+trash-put docs/PT/library/*
+trash-put docs/PT/ts.d/*
+
 mvn -Dtest=BuildLibraryTest test
 
 trash-put ../../doc/docs/library/objects/*.md

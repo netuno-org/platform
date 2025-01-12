@@ -29,6 +29,7 @@ import org.netuno.tritao.resource.Resource;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,13 +48,16 @@ public class BuildLibraryTest {
         Values menuObjects = new Values();
         for (LanguageDoc lang : LanguageDoc.values()) {
             Path pathResources = Paths.get("docs", lang.name(), "library", "resources");
-            if (!Files.exists(pathResources)) {
-                Files.createDirectories(pathResources);
-            }
             Path pathObjects = Paths.get("docs", lang.name(), "library", "objects");
-            if (!Files.exists(pathObjects)) {
-                Files.createDirectories(pathObjects);
+            Path pathTSdBase = Paths.get("docs", lang.name(), "ts.d");
+            Path pathTSdResources = pathTSdBase.resolve("resources");
+            Path pathTSdObjects = pathTSdBase.resolve("objects");
+            for (Path path : List.of(pathResources, pathObjects, pathTSdBase, pathTSdResources, pathTSdObjects)) {
+                if (!Files.exists(path)) {
+                    Files.createDirectories(path);
+                }
             }
+            Files.createFile(pathTSdBase.resolve("main.d.ts"));
             ScanResult scanResult = new ClassGraph()
                     .disableRuntimeInvisibleAnnotations()
                     .acceptPackages(
@@ -90,11 +94,13 @@ public class BuildLibraryTest {
                         menuObjects.add(pathMenu);
                     }
                     LibraryContent docContent = new LibraryContent(lang, name, _class, false, objects, resources);
-                    String content = docContent.generate();
-                    if (content == null || content.isEmpty()) {
+                    var contents = docContent.generate();
+                    if (contents.getMarkdown().isEmpty()) {
                         continue;
                     }
-                    OutputStream.writeToFile(content, pathObjects.resolve(name + ".md"), false);
+                    OutputStream.writeToFile(contents.getMarkdown().toString(), pathObjects.resolve(name + ".md"), false);
+                    OutputStream.writeToFile(contents.getTypeScriptDeclarations().toString(), pathTSdObjects.resolve(name + ".d.ts"), false);
+                    Files.write(pathTSdBase.resolve("main.d.ts"), ("import * from './objects/"+ name +"';\n").getBytes(), StandardOpenOption.APPEND);
                 }
             }
 
@@ -113,11 +119,13 @@ public class BuildLibraryTest {
                         menuResources.add(pathMenu);
                     }
                     LibraryContent docContent = new LibraryContent(lang, resource.name(), _class, true, objects, resources);
-                    String content = docContent.generate();
-                    if (content == null || content.isEmpty()) {
+                    var contents = docContent.generate();
+                    if (contents.getMarkdown().isEmpty()) {
                         continue;
                     }
-                    OutputStream.writeToFile(content, pathResources.resolve(resource.name() + ".md"), false);
+                    OutputStream.writeToFile(contents.getMarkdown().toString(), pathResources.resolve(resource.name() + ".md"), false);
+                    OutputStream.writeToFile(contents.getTypeScriptDeclarations().toString(), pathTSdResources.resolve(resource.name() + ".d.ts"), false);
+                    Files.write(pathTSdBase.resolve("main.d.ts"), ("import * from './resources/"+ resource.name() +"';\n").getBytes(), StandardOpenOption.APPEND);
                 }
             }
         }

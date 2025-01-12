@@ -49,6 +49,23 @@ import org.netuno.tritao.resource.Resource;
 import org.netuno.tritao.resource.Storage;
 
 public class LibraryContent {
+    private enum Type {
+        Markdown,
+        TypeScript;
+    }
+    public static class GeneratedContents {
+        private StringBuilder markdown = new StringBuilder();
+        private StringBuilder typeScriptDeclarations = new StringBuilder();
+        private GeneratedContents() {
+
+        }
+        public StringBuilder getMarkdown() {
+            return markdown;
+        }
+        public StringBuilder getTypeScriptDeclarations() {
+            return typeScriptDeclarations;
+        }
+    }
 
     private String name = null;
     private Class _class = null;
@@ -72,7 +89,7 @@ public class LibraryContent {
         this.resources = resources;
     }
 
-    public String generate() throws Exception {
+    public GeneratedContents generate() throws Exception {
         LibraryDoc libraryDoc = null;
         try {
             libraryDoc = (LibraryDoc) _class.getAnnotation(LibraryDoc.class);
@@ -84,7 +101,7 @@ public class LibraryContent {
             return null;
         }
         System.out.println(_class.getSuperclass().toString());
-        StringBuilder content = new StringBuilder();
+        GeneratedContents contents = new GeneratedContents();
         LibraryTranslationDoc translationDoc = null;
         int sameLanguageTranslationsCounter = 0;
         for (LibraryTranslationDoc _translationDoc : libraryDoc.translations()) {
@@ -100,19 +117,20 @@ public class LibraryContent {
                 fail(name + " | Class > More than 1 translations to language " + lang.name());
             }
         }
-        content.append("---\n"
+        contents.getMarkdown().append("---\n"
                 + "id: " + name + "\n"
                 + "title: " + translationDoc.title() + "\n"
                 + "sidebar_label: " + translationDoc.title() + "\n"
                 + "---\n");
-        content.append("\n");
-        content.append(translationDoc.introduction());
-        content.append("\n");
+        contents.getMarkdown().append("\n");
+        contents.getMarkdown().append(translationDoc.introduction());
+        contents.getMarkdown().append("\n");
         if (translationDoc.howToUse().length > 0) {
-            content.append("\n");
-            content.append(sourceCodes(translationDoc.howToUse()));
+            contents.getMarkdown().append("\n");
+            contents.getMarkdown().append(sourceCodes(translationDoc.howToUse()));
         }
-        content.append("\n");
+        contents.getMarkdown().append("\n");
+        contents.getTypeScriptDeclarations().append("interface "+ _class.getSimpleName() +" {\n");
         for (Field field : _class.getFields()) {
             //System.out.println("_"+ resource.name() +"."+ field.getName());
             FieldDoc fieldDoc = null;
@@ -196,11 +214,12 @@ public class LibraryContent {
                 }
             }
             System.out.println("=="+ getMethodSignature(_method));
-            content.append("---\n");
-            content.append("\n");
+            contents.getMarkdown().append("---\n");
+            contents.getMarkdown().append("\n");
             methodsProcessed.add(_method.getName());
-            content.append("## " + _method.getName() + "\n");
-            content.append("\n");
+            contents.getMarkdown().append("## " + _method.getName() + "\n");
+            contents.getMarkdown().append("\n");
+            contents.getTypeScriptDeclarations().append("\t").append(_method.getName()).append(": {\n");
             methods: for (Method method : methods) {
                 if (!method.getName().equals(_method.getName())) {
                     continue;
@@ -222,7 +241,7 @@ public class LibraryContent {
                             && m.getParameterCount() >= method.getParameterCount()
                             && m.getAnnotation(MethodDoc.class) != null
                             && ((m.getReturnType() == null && method.getReturnType() == null)
-                                    || (m.getReturnType() != null && method.getReturnType() != null 
+                                    || (m.getReturnType() != null && method.getReturnType() != null
                                             && m.getReturnType().equals(method.getReturnType())))
                     ).collect(Collectors.toList());
                     List<Method> methodsDocumentedFound = new ArrayList<>();
@@ -355,38 +374,40 @@ public class LibraryContent {
                         }
                     }
                 }
-                content.append("---\n");
-                content.append("\n");
+                contents.getMarkdown().append("---\n");
+                contents.getMarkdown().append("\n");
 
                 if (methodDoc == null || methodDoc.dependency().isEmpty()) {
-                    content.append("#### ");
+                    contents.getMarkdown().append("#### ");
                     if (isResource) {
-                        content.append("<span style={{fontWeight: 'normal'}}>");
-                        content.append("_" + name);
-                        content.append("</span>");
-                        content.append(".");
+                        contents.getMarkdown().append("<span style={{fontWeight: 'normal'}}>");
+                        contents.getMarkdown().append("_").append(name);
+                        contents.getMarkdown().append("</span>");
+                        contents.getMarkdown().append(".");
                     }
-                    content.append("<span style={{color: '#008000'}}>");
-                    content.append(method.getName());
-                    content.append("</span>");
+                    contents.getMarkdown().append("<span style={{color: '#008000'}}>");
+                    contents.getMarkdown().append(method.getName());
+                    contents.getMarkdown().append("</span>");
                 } else {
-                    content.append("#### ");
+                    contents.getMarkdown().append("#### ");
                     if (isResource) {
-                        content.append("`_" + name + "." + methodDoc.dependency() + "()`");
-                        content.append(".");
+                        contents.getMarkdown().append("`_" + name + "." + methodDoc.dependency() + "()`");
+                        contents.getMarkdown().append(".");
                     }
-                    content.append("<span style={{color: '#008000'}}>");
-                    content.append(method.getName());
-                    content.append("</span>");
+                    contents.getMarkdown().append("<span style={{color: '#008000'}}>");
+                    contents.getMarkdown().append(method.getName());
+                    contents.getMarkdown().append("</span>");
                 }
-                content.append("(");
+                contents.getMarkdown().append("(");
+                contents.getTypeScriptDeclarations().append("\t\t").append("(");
                 boolean firstParameter = true;
                 Values parameters = new Values();
                 String parametersWithoutDoc = "";
                 for (int parameterCounter = 0; parameterCounter < method.getParameterCount(); parameterCounter++) {
                     Parameter parameter = methodParameters[parameterCounter];
                     if (!firstParameter) {
-                        content.append(", ");
+                        contents.getMarkdown().append(", ");
+                        contents.getTypeScriptDeclarations().append(", ");
                     }
                     ParameterDoc parameterDoc = null;
                     if (methodDoc != null) {
@@ -421,7 +442,7 @@ public class LibraryContent {
 
                         parametersWithoutDoc += parameter.getName() + ":"+ parameter.getType().getName();
                     }
-                    
+
                     if (parameterTranslationDoc != null) {
                         parameterName = parameterTranslationDoc.name().isEmpty() ? parameterDoc.name() : parameterTranslationDoc.name();
                     }
@@ -431,127 +452,171 @@ public class LibraryContent {
                                     .set("parameterTranslationDoc", parameterTranslationDoc)
                                     .set("parameterName", parameterName)
                     );
-                    content.append("<span style={{color: '#FF8000'}}>");
-                    content.append(parameterName);
-                    content.append("</span>");
-                    content.append(": ");
-                    content.append("<span style={{fontWeight: 'normal', fontStyle: 'italic'}}>");
-                    content.append(type(parameter.getType()));
-                    content.append("</span>");
+                    contents.getMarkdown().append("<span style={{color: '#FF8000'}}>");
+                    contents.getMarkdown().append(parameterName);
+                    contents.getMarkdown().append("</span>");
+                    contents.getMarkdown().append(": ");
+                    contents.getMarkdown().append("<span style={{fontWeight: 'normal', fontStyle: 'italic'}}>");
+                    contents.getMarkdown().append(type(parameter.getType(), Type.Markdown));
+                    contents.getMarkdown().append("</span>");
+                    contents.getTypeScriptDeclarations().append(parameterName);
+                    contents.getTypeScriptDeclarations().append(": ");
+                    contents.getTypeScriptDeclarations().append(type(parameter.getType(), Type.TypeScript));
                     firstParameter = false;
                 }
                 if (!parametersWithoutDoc.isEmpty()) {
                     System.out.println("# " + name + "." + method.getName() + "(" + parametersWithoutDoc + ")");
                 }
-                content.append(")");
-                content.append(" : ");
-                content.append("<span style={{fontWeight: 'normal', fontStyle: 'italic'}}>");
-                content.append(type(method.getReturnType()));
-                content.append("</span>");
+                contents.getMarkdown().append(")");
+                contents.getMarkdown().append(" : ");
+                contents.getMarkdown().append("<span style={{fontWeight: 'normal', fontStyle: 'italic'}}>");
+                contents.getMarkdown().append(type(method.getReturnType(), Type.Markdown, true));
+                contents.getMarkdown().append("</span>");
+                contents.getTypeScriptDeclarations().append("): ");
+                contents.getTypeScriptDeclarations().append(type(method.getReturnType(), Type.TypeScript, true));
+                contents.getTypeScriptDeclarations().append(";\n");
                 if (methodTranslationDoc != null) {
-                    content.append("\n");
+                    contents.getMarkdown().append("\n");
                     if (lang == LanguageDoc.EN) {
-                        content.append("##### Description\n");
+                        contents.getMarkdown().append("##### Description\n");
                     } else {
-                        content.append("##### Descrição\n");
+                        contents.getMarkdown().append("##### Descrição\n");
                     }
-                    content.append("\n");
-                    content.append(methodTranslationDoc.description());
-                    content.append("\n");
+                    contents.getMarkdown().append("\n");
+                    contents.getMarkdown().append(methodTranslationDoc.description());
+                    contents.getMarkdown().append("\n");
                     if (methodTranslationDoc.howToUse().length > 0) {
-                        content.append("\n");
+                        contents.getMarkdown().append("\n");
                         if (lang == LanguageDoc.EN) {
-                            content.append("##### How To Use\n");
+                            contents.getMarkdown().append("##### How To Use\n");
                         } else {
-                            content.append("##### Como Usar\n");
+                            contents.getMarkdown().append("##### Como Usar\n");
                         }
-                        content.append("\n");
-                        content.append(sourceCodes(methodTranslationDoc.howToUse()));
+                        contents.getMarkdown().append("\n");
+                        contents.getMarkdown().append(sourceCodes(methodTranslationDoc.howToUse()));
                     }
                 }
-                content.append("\n");
+                contents.getMarkdown().append("\n");
                 if (method.getParameters().length > 0) {
                     if (lang == LanguageDoc.EN) {
-                        content.append("##### Attributes\n");
+                        contents.getMarkdown().append("##### Attributes\n");
                     } else {
-                        content.append("##### Atributos\n");
+                        contents.getMarkdown().append("##### Atributos\n");
                     }
-                    content.append("\n");
+                    contents.getMarkdown().append("\n");
                     if (lang == LanguageDoc.EN) {
-                        content.append("| NAME | TYPE | DESCRIPTION |\n");
+                        contents.getMarkdown().append("| NAME | TYPE | DESCRIPTION |\n");
                     } else {
-                        content.append("| NOME | TIPO | DESCRIÇÃO |\n");
+                        contents.getMarkdown().append("| NOME | TIPO | DESCRIÇÃO |\n");
                     }
-                    content.append("|---|---|---|\n");
+                    contents.getMarkdown().append("|---|---|---|\n");
                     for (Values _parameter : parameters.list(Values.class)) {
                         Parameter parameter = (Parameter) _parameter.get("parameter");
                         String parameterName = _parameter.getString("parameterName", parameter.getName());
                         ParameterTranslationDoc parameterTranslationDoc = (ParameterTranslationDoc) _parameter.get("parameterTranslationDoc");
                         if (parameterTranslationDoc == null) {
-                            content.append("| **" + parameterName + "** | _" + type(parameter.getType()) + "_ |   |\n");
+                            contents.getMarkdown().append("| **" + parameterName + "** | _" + type(parameter.getType(), Type.Markdown) + "_ |   |\n");
                         } else {
                             String[] lines = parameterTranslationDoc.description().split("\n");
                             boolean firstLine = true;
                             for (String line : lines) {
                                 if (firstLine) {
-                                    content.append("| **" + parameterName + "** | _" + type(parameter.getType()) + "_ | " + line + " |\n");
+                                    contents.getMarkdown().append("| **" + parameterName + "** | _" + type(parameter.getType(), Type.Markdown) + "_ | " + line + " |\n");
                                 } else {
-                                    content.append("|   |   | " + line + " |\n");
+                                    contents.getMarkdown().append("|   |   | " + line + " |\n");
                                 }
                                 firstLine = false;
                             }
                         }
                     }
-                    content.append("\n");
+                    contents.getMarkdown().append("\n");
                 }
                 if (lang == LanguageDoc.EN) {
-                    content.append("##### Return\n");
+                    contents.getMarkdown().append("##### Return\n");
                 } else {
-                    content.append("##### Retorno\n");
+                    contents.getMarkdown().append("##### Retorno\n");
                 }
-                content.append("\n");
-                content.append("( _" + (type(method.getReturnType())) + "_ )\n");
+                contents.getMarkdown().append("\n");
+                contents.getMarkdown().append("( _" + (type(method.getReturnType(), Type.Markdown, true)) + "_ )\n");
                 if (returnTranslationDoc != null) {
-                    content.append("\n");
-                    content.append(returnTranslationDoc.description());
+                    contents.getMarkdown().append("\n");
+                    contents.getMarkdown().append(returnTranslationDoc.description());
                 }
-                content.append("\n");
-                content.append("\n");
+                contents.getMarkdown().append("\n");
+                contents.getMarkdown().append("\n");
             }
+            contents.getTypeScriptDeclarations().append("\t}\n");
         }
-        content.append("---\n");
-        content.append("\n");
+        contents.getMarkdown().append("---\n");
+        contents.getMarkdown().append("\n");
+        contents.getTypeScriptDeclarations().append("}\n");
+        if (isResource) {
+            contents.getTypeScriptDeclarations().append("declare const _"+ name +": "+ _class.getSimpleName() +";\n");
+        }
         System.out.println();
         System.out.println();
-        return content.toString();
+        return contents;
     }
 
-    private String type(Class<?> cls) {
+    private String type(Class<?> cls, Type type) {
+        return type(cls, type, false);
+    }
+
+    private String type(Class<?> cls, Type type, boolean isReturn) {
         String content = "";
         if (cls == null) {
             content = "void";
         } else {
             String clsName = cls.getName();
             boolean objectTypeArray = false;
-            if (clsName.equals("java.lang.String")) {
+            if (clsName.equals("java.lang.String")
+                    || clsName.equals("java.lang.Character") || clsName.equals("C")) {
                 return "string";
+            } else if (clsName.equals("java.lang.Byte") || clsName.equals("B")
+                    || clsName.equals("java.lang.Short") || clsName.equals("S")
+                    || clsName.equals("java.lang.Integer") || clsName.equals("I")
+                    || clsName.equals("java.lang.Long") || clsName.equals("Long")
+                    || clsName.equals("java.lang.Float") || clsName.equals("Float")
+                    || clsName.equals("java.lang.Double") || clsName.equals("Double")) {
+                return "number";
             } else {
                 if (clsName.equals("[B")) {
-                    content = "byte[]";
+                    content = switch (type) {
+                        case Markdown -> "byte[]";
+                        case TypeScript -> "number[]";
+                    };
                 } else if (clsName.equals("[S")) {
-                    content = "short[]";
+                    content = switch (type) {
+                        case Markdown -> "short[]";
+                        case TypeScript -> "number[]";
+                    };
                 } else if (clsName.equals("[I")) {
-                    content = "int[]";
+                    content = switch (type) {
+                        case Markdown -> "int[]";
+                        case TypeScript -> "number[]";
+                    };
                 } else if (clsName.equals("[J")) {
-                    content = "long[]";
+                    content = switch (type) {
+                        case Markdown -> "long[]";
+                        case TypeScript -> "number[]";
+                    };
                 } else if (clsName.equals("[F")) {
-                    content = "float[]";
+                    content = switch (type) {
+                        case Markdown -> "float[]";
+                        case TypeScript -> "number[]";
+                    };
                 } else if (clsName.equals("[D")) {
-                    content = "double[]";
+                    content = switch (type) {
+                        case Markdown -> "double[]";
+                        case TypeScript -> "number[]";
+                    };
                 } else if (clsName.equals("[Z")) {
                     content = "boolean[]";
                 } else if (clsName.equals("[C")) {
-                    content = "char[]";
+                    content = switch (type) {
+                        case Markdown -> "char[]";
+                        case TypeScript -> "string[]";
+                    };
                 } else if (clsName.startsWith("[L")) {
                     clsName = clsName.substring(2);
                     objectTypeArray = true;
@@ -566,51 +631,85 @@ public class LibraryContent {
                 if (content.isEmpty()) {
                     List<Class> resourcesTypes = new ArrayList<>();
                     List<Class> objectsTypes = new ArrayList<>();
-                    if (cls.isInterface()) {
-                        for (Class c : resources) {
-                            if (cls.isAssignableFrom(c)) {
-                                resourcesTypes.add(c);
+                    boolean appendBaseClass = false;
+                    if (isReturn == false && resourcesTypes.isEmpty() && objectsTypes.isEmpty()) {
+                        if (cls.isInterface()) {
+                            if (!cls.getName().equals(Map.class.getName())
+                                    && !cls.getName().equals(Iterable.class.getName())) {
+                                for (Class c : resources) {
+                                    if (cls.isAssignableFrom(c)) {
+                                        resourcesTypes.add(c);
+                                    }
+                                }
                             }
-                        }
-                        for (Class c : objects) {
-                            if (cls.isAssignableFrom(c)) {
-                                objectsTypes.add(c);
+                            for (Class c : objects) {
+                                if (cls.isAssignableFrom(c)) {
+                                    objectsTypes.add(c);
+                                }
                             }
-                        }
-                    } else {
-                        for (Class _class : resources) {
-                            if (_class.getName().equals(clsName)) {
-                                resourcesTypes.add(_class);
+                            appendBaseClass = true;
+                        } else {
+                            for (Class _class : resources) {
+                                if (_class.getName().equals(clsName)) {
+                                    resourcesTypes.add(_class);
+                                }
                             }
-                        }
-                        for (Class _class : objects) {
-                            if (_class.getName().equals(clsName)) {
-                                objectsTypes.add(_class);
+                            for (Class _class : objects) {
+                                if (_class.getName().equals(clsName)) {
+                                    objectsTypes.add(_class);
+                                }
                             }
                         }
                     }
                     for (Class _class : resourcesTypes) {
                         if (!content.isEmpty()) {
-                            content += " &#124; ";
+                            content += switch (type) {
+                                case Markdown -> " &#124; ";
+                                case TypeScript -> " | ";
+                            };
                         }
                         Resource resource = (Resource)_class.getAnnotation(Resource.class);
-                        content += "[" + _class.getSimpleName() + "](../resources/" + resource.name() + ")";
-                        if (objectTypeArray) {
-                            content += "[]";
+                        if (type == Type.Markdown) {
+                            content += "[" + _class.getSimpleName() + "](../resources/" + resource.name() + ")";
+                            if (objectTypeArray) {
+                                content += "[]";
+                            }
+                        } else if (type == Type.TypeScript) {
+                            content += _class.getSimpleName();
+                            if (objectTypeArray) {
+                                content += "[]";
+                            }
                         }
                     }
                     for (Class _class : objectsTypes) {
                         if (!content.isEmpty()) {
-                            content += " &#124; ";
+                            content += switch (type) {
+                                case Markdown -> " &#124; ";
+                                case TypeScript -> " | ";
+                            };
                         }
-                        content += "[" + _class.getSimpleName() + "](../objects/" + _class.getSimpleName() + ")";
-                        if (objectTypeArray) {
-                            content += "[]";
+                        if (type == Type.Markdown) {
+                            content += "[" + _class.getSimpleName() + "](../objects/" + _class.getSimpleName() + ")";
+                            if (objectTypeArray) {
+                                content += "[]";
+                            }
+                        } else if (type == Type.TypeScript) {
+                            content += _class.getSimpleName();
+                            if (objectTypeArray) {
+                                content += "[]";
+                            }
                         }
+                    }
+                    if (appendBaseClass && !content.isEmpty()) {
+                        content += " | "+ cls.getName();
                     }
                 }
                 if (content.isEmpty()) {
-                    content = cls.getName();
+                    content = switch (type) {
+                        case Markdown -> cls.getName();
+                        case TypeScript -> cls.getName();
+                        //case TypeScript -> cls.getName().contains(".") ? "any | "+ cls.getName() : cls.getName();
+                    };
                     if (objectTypeArray) {
                         content += "[]";
                     }
@@ -631,7 +730,7 @@ public class LibraryContent {
         }
         return content;
     }
-    
+
     private String getMethodSignature(Method method) {
         String signature = ""; //method.getReturnType() != null ? method.getReturnType().getName() : "";
         //signature += "@";
@@ -646,9 +745,9 @@ public class LibraryContent {
         signature += "("+ parameters +")";
         return signature;
     }
-    
+
     private String lowerCamelCase(String first, String second) {
-        return first.toLowerCase() 
+        return first.toLowerCase()
                 + second.toLowerCase().substring(0, 1).toUpperCase()
                 + second.toLowerCase().substring(1);
     }
