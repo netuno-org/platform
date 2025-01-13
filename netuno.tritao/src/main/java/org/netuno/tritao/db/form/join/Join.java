@@ -1,6 +1,6 @@
-package org.netuno.tritao.query.join;
+package org.netuno.tritao.db.form.join;
 
-import org.netuno.tritao.query.where.Where;
+import org.netuno.tritao.db.form.where.Where;
 
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
@@ -11,6 +11,10 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Join - Main object to construct database columns join operations manually
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
@@ -22,7 +26,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 public class Join {
     private String table;
     private JoinType joinType = JoinType.INNER_JOIN;
-    private Relation relation;
+    private Relationship relation;
     private Where where;
 
     
@@ -193,7 +197,7 @@ public class Join {
             )
         }
     )
-    public Relation getRelation() {
+    public Relationship getRelation() {
         return relation;
     }
 
@@ -234,7 +238,7 @@ public class Join {
             )
         }
     )
-    public Join setRelation(Relation relation) {
+    public Join setRelation(Relationship relation) {
         this.relation = relation;
         return this;
     }

@@ -1,6 +1,6 @@
-package org.netuno.tritao.query.link;
+package org.netuno.tritao.db.form.link;
 
-import org.netuno.tritao.query.where.Where;
+import org.netuno.tritao.db.form.where.Where;
 
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
@@ -11,6 +11,10 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Link - Main object to link different forms via form resource
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
@@ -21,19 +25,19 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class Link {
     private String form;
-    private RelationLink relationLink;
+    private RelationshipLink relationLink;
     private Where where;
 
-    public Link(String form, RelationLink relationLink) {
+    public Link(String form, RelationshipLink relationLink) {
         this.form = form;
         this.relationLink = relationLink;
     }
 
-    public Link(RelationLink relationLink) {
+    public Link(RelationshipLink relationLink) {
         this.relationLink = relationLink;
     }
 
-    public Link(RelationLink relationLink, Where where) {
+    public Link(RelationshipLink relationLink, Where where) {
         this.relationLink = relationLink;
         this.where = where;
     }
@@ -135,7 +139,7 @@ public class Link {
             )
         }
     )
-    public RelationLink getRelationLink() {
+    public RelationshipLink getRelationLink() {
         return relationLink;
     }
 
@@ -176,7 +180,7 @@ public class Link {
             )
         }
     )
-    public Link setRelationLink(RelationLink relationLink) {
+    public Link setRelationLink(RelationshipLink relationLink) {
         this.relationLink = relationLink;
         return this;
     }
@@ -290,7 +294,7 @@ public class Link {
         }
     )
     public Link link(String formLink) {
-        Link link = new Link(new RelationLink(formLink));
+        Link link = new Link(new RelationshipLink(formLink));
         link.setForm(this.form);
         this.relationLink.getSubLinks().put(formLink, link);
         return this;

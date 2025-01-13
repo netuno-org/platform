@@ -1,4 +1,4 @@
-package org.netuno.tritao.query.where;
+package org.netuno.tritao.db.form.where;
 
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
@@ -9,28 +9,37 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Conditional Operator - Auxiliary object to Where object
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "Condition",
+            title = "ConditionalOperator",
             introduction = "Definição da configuração do objeto Condition para construção de condições com o objeto Where",
             howToUse = {}
     )
 })
-public class Condition {
+public class ConditionalOperator {
 
     private String column;
-    private ConditionOperator operator;
-    private RelationOperator relationOperator;
+    private ConditionalOperatorType operator;
+    private RelationalOperator relationOperator;
     private Where subCondition;
 
-    public Condition(String column, ConditionOperator operator, RelationOperator relationOperator) {
+    public ConditionalOperator(String column, ConditionalOperatorType operator, RelationalOperator relationOperator) {
         this.column = column;
         this.relationOperator = relationOperator;
         this.operator = operator;
     }
 
-    public Condition(Where where, ConditionOperator operator) {
+    public ConditionalOperator(String column, RelationalOperator relationOperator) {
+        this.column = column;
+        this.relationOperator = relationOperator;
+    }
+
+    public ConditionalOperator(Where where, ConditionalOperatorType operator) {
         this.operator = operator;
         this.subCondition = where;
     }
@@ -101,7 +110,7 @@ public class Condition {
             )
         }
     )
-    public Condition setColumn(String column) {
+    public ConditionalOperator setColumn(String column) {
         this.column = column;
         return this;
     }
@@ -131,7 +140,7 @@ public class Condition {
             )
         }
     )
-    public ConditionOperator getOperator() {
+    public ConditionalOperatorType getOperator() {
         return operator;
     }
 
@@ -172,7 +181,7 @@ public class Condition {
             )
         }
     )
-    public Condition setOperator(ConditionOperator operator) {
+    public ConditionalOperator setOperator(ConditionalOperatorType operator) {
         this.operator = operator;
         return this;
     }
@@ -202,7 +211,7 @@ public class Condition {
             )
         }
     )
-    public RelationOperator getRelationOperator() {
+    public RelationalOperator getRelationOperator() {
         return relationOperator;
     }
 
@@ -243,7 +252,7 @@ public class Condition {
             )
         }
     )
-    public Condition setRelationOperator(RelationOperator relationOperator) {
+    public ConditionalOperator setRelationOperator(RelationalOperator relationOperator) {
         this.relationOperator = relationOperator;
         return this;
     }
@@ -314,7 +323,7 @@ public class Condition {
             )
         }
     )
-    public Condition setSubCondition(Where subCondition) {
+    public ConditionalOperator setSubCondition(Where subCondition) {
         this.subCondition = subCondition;
         return this;
     }

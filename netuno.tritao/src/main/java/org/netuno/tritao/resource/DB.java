@@ -20,10 +20,20 @@ package org.netuno.tritao.resource;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu.ProteuError;
 import org.netuno.psamata.PsamataException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.form.Operation;
+import org.netuno.tritao.db.form.OperationEngine;
+import org.netuno.tritao.db.form.join.Relationship;
+import org.netuno.tritao.db.form.join.RelationshipType;
+import org.netuno.tritao.db.form.link.Link;
+import org.netuno.tritao.db.form.link.LinkEngine;
+import org.netuno.tritao.db.form.link.RelationshipLink;
+import org.netuno.tritao.db.form.pagination.Pagination;
+import org.netuno.tritao.db.form.where.ConditionalOperatorType;
+import org.netuno.tritao.db.form.where.RelationalOperator;
+import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DataItem;
@@ -45,6 +55,7 @@ import java.util.UUID;
 /**
  * Database - Resource
  * @author Eduardo Fonseca Velasques - @eduveks
+ * @author Jailton de Araujo Santos - @jailtonaraujo
  */
 @Resource(name = "db")
 @LibraryDoc(translations = {
@@ -108,6 +119,8 @@ public class DB extends ResourceBase {
 
     private String key = "default";
     private org.netuno.psamata.DB dbOps = null;
+    private OperationEngine operationEngine = new OperationEngine(getProteu(), getHili());
+    private LinkEngine linkEngine = new LinkEngine(getProteu(), getHili());
 
     public DB(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -4482,5 +4495,309 @@ public class DB extends ResourceBase {
         public Order(Query query) {
             
         }
+    }
+    
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna um novo objeto Operation pronto para ser configurado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns a new Operation object ready to be configured.",
+                howToUse = {}
+            )
+        },
+         parameters = {
+            @ParameterDoc(name = "tableName", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome da tabela.",
+                    name = "tabelaNome"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Table name."
+                )
+            })},
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Novo objeto Operation."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "A new Operation object"
+            )
+        }
+    )
+    public Operation form(String formName) {
+        return new Operation(formName, operationEngine, linkEngine);
+    }
+
+    public Operation form(String formName, org.netuno.tritao.db.form.where.Where where) {
+        return new Operation(formName, where, operationEngine, linkEngine);
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna uma nova relação do tipo Many To One.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns a new Many To One relationship.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "tableName", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome da tabela.",
+                    name = "tabelaNome"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Table name."
+                )
+            }),
+            @ParameterDoc(name = "column", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome da coluna.",
+                    name = "colunaNome"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Column name."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Relação do tipo Many To One."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Many To One relationship."
+            )
+        }
+    )
+    public Relationship manyToOne(String tableName, String column) {
+        return new Relationship(tableName, column, RelationshipType.ManyToOne);
+    }
+
+    public Relationship manyToOne(String tableName, String column, org.netuno.tritao.db.form.where.Where where) {
+        return new Relationship(tableName, column, where, RelationshipType.ManyToOne);
+    }
+    
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna uma nova relação do tipo One To Many.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns a new One To Many relationship.",
+                howToUse = {}
+            )
+        },
+         parameters = {
+            @ParameterDoc(name = "tableName", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome da tabela.",
+                    name = "tabelaNome"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Table name."
+                )
+            }),
+            @ParameterDoc(name = "column", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome da coluna.",
+                    name = "colunaNome"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Column name."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Relação do tipo One To Many."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "One To Many relationship."
+            )
+        }
+    )
+    public Relationship oneToMany(String tableName, String column) {
+        return new Relationship(tableName, column, RelationshipType.OneToMany);
+    }
+
+    public Relationship oneToMany(String tableName, String column, org.netuno.tritao.db.form.where.Where where) {
+        return new Relationship(tableName, column, where, RelationshipType.OneToMany);
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna o objeto para configuração de paginação ao usar o metodo page() do Query.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns the object for pagination configuration when using Query's page() method.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "page", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Número da página.",
+                    name = "pagina"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Page number."
+                )
+            }),
+            @ParameterDoc(name = "pageSize", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Número de elementos por página.",
+                    name = "pageSize"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Number of elements per page."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Pagination."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Objeto Pagination."
+            )
+        }
+    )
+    public Pagination pagination(int page, int pageSize) {
+        return new Pagination(page, pageSize);
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna uma relação com um formulário.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns a relationship with a form.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "formLink", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome do formulário a ser relacionado.",
+                    name = "formLink"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Name of the form to be related."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Link."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Objeto Link."
+            )
+        }
+    )
+    public Link link(String formLink) {
+        return new Link(new RelationshipLink(formLink));
+    }
+
+    public Link link(String formLink, org.netuno.tritao.db.form.where.Where where) {
+        return new Link(new RelationshipLink(formLink), where);
+    }
+
+    public Link link(String formLink, org.netuno.tritao.db.form.where.Where where, Link link) {
+        link.getRelationLink().setFormLink(formLink);
+        link.setWhere(where);
+        return link;
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna um novo objeto Where pronto para ser configurado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns a new Where object ready to be configured.",
+                howToUse = {}
+            )
+        },
+           parameters = {
+            @ParameterDoc(name = "column", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome da coluna.",
+                    name = "coluna"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Column name."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Novo objeto Where."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "A new Where object"
+            )
+        }
+    )
+    public org.netuno.tritao.db.form.where.Where where(String column) {
+        return new org.netuno.tritao.db.form.where.Where(column);
+    }
+
+    public org.netuno.tritao.db.form.where.Where where() {
+        return new org.netuno.tritao.db.form.where.Where();
     }
 }

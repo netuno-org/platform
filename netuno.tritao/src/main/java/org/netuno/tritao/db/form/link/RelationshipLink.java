@@ -1,4 +1,4 @@
-package org.netuno.tritao.query.link;
+package org.netuno.tritao.db.form.link;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,23 +12,27 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Relationship Link - Auxiliary object to Link object
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "RelationLink",
+            title = "RelationshipLink",
             introduction = "Definição da configuração do objeto RelationLink para configurar realcionamentos entre formularios.",
             howToUse = {}
     )
 })
-public class RelationLink {
+public class RelationshipLink {
     private String formLink;
     private Map<String, Link> subLinks = new HashMap<>();
 
-    public RelationLink(String formLink) {
+    public RelationshipLink(String formLink) {
         this.formLink = formLink;
     }
 
-    public RelationLink(String formLink, Link subLink) {
+    public RelationshipLink(String formLink, Link subLink) {
         this.formLink = formLink;
         subLink.setForm(this.formLink);
         this.subLinks.put(subLink.getRelationLink().getFormLink(), subLink);
@@ -100,7 +104,7 @@ public class RelationLink {
             )
         }
     )
-    public RelationLink setFormLink(String formLink) {
+    public RelationshipLink setFormLink(String formLink) {
         this.formLink = formLink;
         return this;
     }
@@ -172,7 +176,7 @@ public class RelationLink {
             )
         }
     )
-    public RelationLink setSubLinks(Map<String, Link> subLinks) {
+    public RelationshipLink setSubLinks(Map<String, Link> subLinks) {
         this.subLinks = subLinks;
         return this;
     }

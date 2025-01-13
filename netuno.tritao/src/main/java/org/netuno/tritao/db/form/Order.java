@@ -1,4 +1,4 @@
-package org.netuno.tritao.query;
+package org.netuno.tritao.db.form;
 
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
@@ -9,37 +9,37 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+/**
+ * Order - Object to config ordination preferences of the results
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
-            title = "Field",
-            introduction = "Definição do objeto Field para declarar a coluna retornada em uma consulta com Query.",
+            title = "Order",
+            introduction = "Definição do objeto Order para ordenação de resultados usando o Query.",
             howToUse = {}
     )
 })
-public class Field {
+public class Order {
     private String column;
-    private String alias;
+    private String order;
 
-    public Field(String column, String alias) {
+    public Order(String column, String order) {
         this.column = column;
-        this.alias = alias;
-    }
-
-    public Field(String column) {
-        this.column = column;
+        this.order = order;
     }
 
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o nome da coluna que será retornada na consulta.",
+                description = "Retorna a coluna que será usada na ordenação.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the name of the column that will be returned in the query.",
+                description = "Returns the column that will be used in sorting.",
                 howToUse = {}
             )
         },
@@ -59,16 +59,16 @@ public class Field {
         return column;
     }
 
-    @MethodDoc(
+      @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define o nome da coluna que será retornada na consulta.",
+                description = "Define a coluna que será usada na ordenação.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Defines the name of the column that will be returned in the query.",
+                description = "Defines the column that will be used in sorting.",
                 howToUse = {}
             )
         },
@@ -81,22 +81,22 @@ public class Field {
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "The name of the column"
+                    description = "The name of the column."
                 )
             })
         },
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto Field atual."
+                description = "Objeto Order atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current Field object."
+                description = "Current Order object."
             )
         }
     )
-    public Field setColumn(String column) {
+    public Order setColumn(String column) {
         this.column = column;
         return this;
     }
@@ -105,12 +105,12 @@ public class Field {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna o apelido da coluna que será retornada na consulta.",
+                description = "Retorna a direção da ordenação.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the alias of the column that will be returned in the query.",
+                description = "Returns the sorting direction.",
                 howToUse = {}
             )
         },
@@ -118,57 +118,57 @@ public class Field {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Apelido da coluna."
+                description = "Direção da ordenação."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The alias of the column."
+                description = "The sorting direction."
             )
         }
     )
-    public String getAlias() {
-        return alias;
+    public String getOrder() {
+        return order;
     }
 
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define o apelido da coluna que será retornada na consulta.",
+                description = "Define a direção da ordenação.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Defines the alias of the column that will be returned in the query.",
+                description = "Defines the sorting direction.",
                 howToUse = {}
             )
         },
         parameters = {
-            @ParameterDoc(name = "column", translations = {
+            @ParameterDoc(name = "order", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Apelido da coluna.",
-                    name = "coluna"
+                    description = "Direção da ordenação.",
+                    name = "ordenacao"
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "The alias of the column"
+                    description = "The sorting direction."
                 )
             })
         },
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto Field atual."
+                description = "Objeto Order atual."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Current Field object."
+                description = "Current Order object."
             )
         }
     )
-    public Field setAlias(String alias) {
-        this.alias = alias;
+    public Order setOrder(String order) {
+        this.order = order;
         return this;
     }
 }

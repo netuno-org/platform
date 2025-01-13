@@ -1,4 +1,4 @@
-package org.netuno.tritao.query;
+package org.netuno.tritao.db.form;
 
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
@@ -9,29 +9,32 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.query.join.Join;
-import org.netuno.tritao.query.join.JoinType;
-import org.netuno.tritao.query.join.Relation;
-import org.netuno.tritao.query.link.Link;
-import org.netuno.tritao.query.link.LinkEngine;
-import org.netuno.tritao.query.link.RelationLink;
-import org.netuno.tritao.query.pagination.Page;
-import org.netuno.tritao.query.pagination.Pagination;
-import org.netuno.tritao.query.populate.Populate;
-import org.netuno.tritao.query.where.Where;
+import org.netuno.tritao.db.form.join.Join;
+import org.netuno.tritao.db.form.join.JoinType;
+import org.netuno.tritao.db.form.join.Relationship;
+import org.netuno.tritao.db.form.link.Link;
+import org.netuno.tritao.db.form.link.LinkEngine;
+import org.netuno.tritao.db.form.link.RelationshipLink;
+import org.netuno.tritao.db.form.pagination.Pagination;
+import org.netuno.tritao.db.form.populate.Populate;
+import org.netuno.tritao.db.form.where.Where;
 
 import java.util.*;
 
+/**
+ * Operation - Object main for the all db form operations
+ * @author Jailton de Araujo Santos - @jailtonaraujo
+ */
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
-                title = "Query",
-                introduction = "Definição da configuração do objeto Query para consultas simplificadas.",
+                title = "Operation",
+                introduction = "Definição da configuração do objeto Operation para operações em base de dados.",
                 howToUse = {}
         )
 })
-public class Query {
-    private String tableName;
+public class Operation {
+    private String formName;
     private List<Field> fields = new ArrayList<>();
     private Where where;
     private Map<String, Join> join = new HashMap<>();
@@ -42,20 +45,20 @@ public class Query {
     private boolean debug = false;
     private List<Populate> tablesToPopulate = new ArrayList<>();
     private int limit = 1000;
-    private QueryEngine queryEngine;
-    private LinkEngine linkEngine;
+    private final OperationEngine operationalEngine;
+    private final LinkEngine linkEngine;
 
-    public Query(String tableName, QueryEngine queryEngine, LinkEngine linkEngine) {
-        this.tableName = tableName;
-        this.queryEngine = queryEngine;
+    public Operation(String formName, OperationEngine operationalEngine, LinkEngine linkEngine) {
+        this.formName = formName;
+        this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
     }
 
-    public Query(String tableName, Where where, QueryEngine queryEngine, LinkEngine linkEngine) {
-        this.tableName = tableName;
-        where.setTable(tableName);
+    public Operation(String formName, Where where, OperationEngine operationalEngine, LinkEngine linkEngine) {
+        this.formName = formName;
+        where.setTable(formName);
         this.where = where;
-        this.queryEngine = queryEngine;
+        this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
     }
 
@@ -84,8 +87,8 @@ public class Query {
             )
         }
     )
-    public String getTableName() {
-        return tableName;
+    public String getFormName() {
+        return formName;
     }
 
     @MethodDoc(
@@ -125,8 +128,8 @@ public class Query {
             )
         }
     )
-    public Query setTableName(String tableName) {
-        this.tableName = tableName;
+    public Operation setFormName(String formName) {
+        this.formName = formName;
         return this;
     }
 
@@ -196,8 +199,13 @@ public class Query {
             )
         }
     )
-    public Query setFields(List<Field> fields) {
+    public Operation setFields(List<Field> fields) {
         this.fields = fields;
+        return this;
+    }
+
+    public Operation set(String column, Object value) {
+        this.fields.add(new Field(column, value));
         return this;
     }
 
@@ -267,7 +275,7 @@ public class Query {
             )
         }
     )
-    public Query setWhere(Where where) {
+    public Operation setWhere(Where where) {
         this.where = where;
         return this;
     }
@@ -338,7 +346,7 @@ public class Query {
             )
         }
     )
-    public Query setJoin(Map<String, Join> join) {
+    public Operation setJoin(Map<String, Join> join) {
         this.join = join;
         return this;
     }
@@ -409,7 +417,7 @@ public class Query {
             )
         }
     )
-    public Query setOrder(Order order) {
+    public Operation setOrder(Order order) {
         this.order = order;
         return this;
     }
@@ -480,7 +488,7 @@ public class Query {
             )
         }
     )
-    public Query setGroup(Group group) {
+    public Operation setGroup(Group group) {
         this.group = group;
         return this;
     }
@@ -551,7 +559,7 @@ public class Query {
             )
         }
     )
-    public Query setDistinct(boolean distinct) {
+    public Operation setDistinct(boolean distinct) {
         this.distinct = distinct;
         return this;
     }
@@ -622,7 +630,7 @@ public class Query {
             )
         }
     )
-    public Query setPagination(Pagination pagination) {
+    public Operation setPagination(Pagination pagination) {
         this.pagination = pagination;
         return this;
     }
@@ -694,12 +702,12 @@ public class Query {
             )
         }
     )
-    public Query setDebug(boolean debug) {
+    public Operation setDebug(boolean debug) {
         this.debug = debug;
         return this;
     }
 
-    public Query debug(boolean enabled) {
+    public Operation debug(boolean enabled) {
         this.debug = enabled;
         return this;
     }
@@ -708,7 +716,7 @@ public class Query {
         return tablesToPopulate;
     }
 
-    public Query setTablesToPopulate(List<Populate> tablesToPopulate) {
+    public Operation setTablesToPopulate(List<Populate> tablesToPopulate) {
         this.tablesToPopulate = tablesToPopulate;
         return this;
     }
@@ -717,12 +725,12 @@ public class Query {
         return limit;
     }
 
-    public Query setLimit(int limit) {
+    public Operation setLimit(int limit) {
         this.limit = limit > 1000 ? 1000 : limit;
         return this;
     }
 
-    public Query limit(int limit) {
+    public Operation limit(int limit) {
         return setLimit(limit);
     }
 
@@ -763,9 +771,9 @@ public class Query {
             )
         }
     )
-    public Query join(Relation relation) {
+    public Operation join(Relationship relation) {
         Join newJoin = new Join();
-        newJoin.setTable(this.tableName);
+        newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
             newJoin.setWhere(relation.getWhere());
@@ -811,10 +819,10 @@ public class Query {
             )
         }
     )
-    public Query leftJoin(Relation relation) {
+    public Operation leftJoin(Relationship relation) {
         Join newJoin = new Join();
         newJoin.setJoinType(JoinType.LEFT_JOIN);
-        newJoin.setTable(this.tableName);
+        newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
             newJoin.setWhere(relation.getWhere());
@@ -860,10 +868,10 @@ public class Query {
             )
         }
     )
-    public Query rightJoin(Relation relation) {
+    public Operation rightJoin(Relationship relation) {
         Join newJoin = new Join();
         newJoin.setJoinType(JoinType.RIGHT_JOIN);
-        newJoin.setTable(this.tableName);
+        newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
             newJoin.setWhere(relation.getWhere());
@@ -909,8 +917,8 @@ public class Query {
             )
         }
     )
-    public Query link(String formLink) {
-        Link link = new Link(this.tableName, new RelationLink(formLink));
+    public Operation link(String formLink) {
+        Link link = new Link(this.formName, new RelationshipLink(formLink));
         this.join.put(formLink, linkEngine.buildJoin(link));
         return this;
     }
@@ -963,8 +971,8 @@ public class Query {
             )
         }
     )
-    public Query link(String formLink, Where where) {
-        Link link = new Link(this.tableName, new RelationLink(formLink));
+    public Operation link(String formLink, Where where) {
+        Link link = new Link(this.formName, new RelationshipLink(formLink));
         Join join = linkEngine.buildJoin(link);
         join.setWhere(where.setTable(formLink));
         this.join.put(formLink, join);
@@ -1019,9 +1027,9 @@ public class Query {
             )
         }
     )
-    public Query link(String formLink, Link relationLink) {
+    public Operation link(String formLink, Link relationLink) {
         relationLink.setForm(formLink);
-        Link link = new Link(this.tableName, new RelationLink(formLink, relationLink));
+        Link link = new Link(this.formName, new RelationshipLink(formLink, relationLink));
         this.join.put(formLink, linkEngine.buildJoin(link));
         return this;
     }
@@ -1085,17 +1093,22 @@ public class Query {
             )
         }
     )
-    public Query link(String formLink, Where where, Link relationLink) {
+    public Operation link(String formLink, Where where, Link relationLink) {
         relationLink.setForm(formLink);
-        Link link = new Link(this.tableName, new RelationLink(formLink, relationLink));
+        Link link = new Link(this.formName, new RelationshipLink(formLink, relationLink));
         Join join = linkEngine.buildJoin(link);
         join.setWhere(where.setTable(formLink));
         this.join.put(formLink, join);
         return this;
     }
 
-    public Query fields(Field... fields) {
-        this.setFields(List.of(fields));
+    public Operation get(String column) {
+        this.fields.add(new Field(column));
+        return this;
+    }
+
+    public Operation get(String column, String alias) {
+        this.fields.add(new Field(column, alias));
         return this;
     }
 
@@ -1147,27 +1160,27 @@ public class Query {
             )
         }
     )
-    public Query order(String column, String order) {
+    public Operation order(String column, String order) {
         this.order = new Order(column, order);
         return this;
     }
 
-    public Query group(String column) {
+    public Operation group(String column) {
         this.group = new Group(column);
         return this;
     }
 
-    public Query distinct(boolean distinct) {
+    public Operation distinct(boolean distinct) {
         this.distinct = distinct;
         return this;
     }
 
-    public Query populate(String table, Field filter) {
+    public Operation populate(String table, Field filter) {
         this.tablesToPopulate.add(new Populate(table, filter));
         return this;
     }
 
-    public Query populate(String table, Field filter, List<Field> fields) {
+    public Operation populate(String table, Field filter, List<Field> fields) {
         this.tablesToPopulate.add(new Populate(table, filter, fields));
         return this;
     }
@@ -1198,7 +1211,7 @@ public class Query {
         }
     )
     public List<Values> all() {
-        return queryEngine.all(this);
+        return operationalEngine.all(this);
     }
 
     @MethodDoc(
@@ -1227,7 +1240,7 @@ public class Query {
         }
     )
     public Values first() {
-        return queryEngine.first(this);
+        return operationalEngine.first(this);
     }
 
     @MethodDoc(
@@ -1268,38 +1281,41 @@ public class Query {
         }
     )
     public Values page(Pagination pagination) {
-        return queryEngine.page(this.setPagination(pagination)).toValues();
+        return operationalEngine.page(this.setPagination(pagination)).toValues();
     }
 
-    public int deleteAll() {return queryEngine.deleteAll(this);}
-
-    public int deleteFirst() {return queryEngine.deleteFirst(this);}
-
-    public Values cascadeDelete(String... forms) {
-        Values deleteLinks = linkEngine.buildDeleteLinks(this.tableName, Arrays.stream(forms).toList());
-        return queryEngine.cascadeDelete(deleteLinks, this);
+    public Operation where(Where where) {
+        where.setTable(this.formName);
+        this.where = where;
+        return this;
     }
 
-    public int updateFirst(Values data) {
-        return queryEngine.updateFirst(data, this);
+    public Values insert() {
+        final var data = linkEngine.fieldToValues(this.fields);
+        if (data.values().stream().anyMatch(object -> object instanceof Values)) {
+            Values insertLinks = linkEngine.buildInsertLinks(this.formName, data);
+            return operationalEngine.cascadeInsert(insertLinks, data, this);
+        }
+        linkEngine.checkForm(this.formName);
+        return operationalEngine.insert(linkEngine.fieldToValues(this.fields), this);
     }
 
-    public int updateAll(Values data) {
-        return queryEngine.updateAll(data, this);
+    public Values update() {
+        final var data = linkEngine.fieldToValues(this.fields);
+        if (data.values().stream().anyMatch(object -> object instanceof Values)) {
+            Values updateLinks = linkEngine.buildUpdateLinks(this.formName, data);
+            return operationalEngine.updateCascade(data, updateLinks, this);
+        }
+        linkEngine.checkForm(this.formName);
+        return operationalEngine.updateAll(data, this);
     }
 
-    public Values cascadeUpdate(Values data) {
-        Values updateLinks = linkEngine.buildUpdateLinks(this.tableName, data);
-        return queryEngine.updateCascade(data, updateLinks, this);
+    public Values delete() {
+        return operationalEngine.deleteAll(this);
     }
 
-    public Values cascadeInsert(Values data) {
-        Values insertLinks = linkEngine.buildInsertLinks(this.tableName, data);
-        return queryEngine.cascadeInsert(insertLinks, data, this);
-    }
-
-    public String insert(Values data) {
-        linkEngine.checkForm(this.tableName);
-        return queryEngine.insert(data, this);
+    public Values delete(String... forms) {
+        Values deleteLinks = linkEngine.buildDeleteLinks(this.formName, Arrays.stream(forms).toList());
+        return operationalEngine.cascadeDelete(deleteLinks, this);
     }
 }
