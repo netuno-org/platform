@@ -26,12 +26,15 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.resource.Resource;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 public class BuildLibraryTest {
     
@@ -78,6 +81,7 @@ public class BuildLibraryTest {
                     resources.add(_class);
                 }
             }
+            Values typeScriptNamespaces = new Values();
             for (String _resourcesClass : docClasses) {
                 Class _class = Class.forName(_resourcesClass);
                 Resource resource = (Resource) _class.getAnnotation(Resource.class);
@@ -98,9 +102,10 @@ public class BuildLibraryTest {
                     if (contents.getMarkdown().isEmpty()) {
                         continue;
                     }
+                    loadTypeScriptNamespaces(typeScriptNamespaces, contents);
                     OutputStream.writeToFile(contents.getMarkdown().toString(), pathObjects.resolve(name + ".md"), false);
-                    OutputStream.writeToFile(contents.getTypeScriptDeclarations().toString(), pathTSdObjects.resolve(name + ".d.ts"), false);
-                    Files.write(pathTSdBase.resolve("main.d.ts"), ("import * from './objects/"+ name +"';\n").getBytes(), StandardOpenOption.APPEND);
+                    Path typeScriptFile = pathTSdObjects.resolve(name + ".d.ts");
+                    OutputStream.writeToFile(generateTypeScriptContent(contents, ".", "../resources"), typeScriptFile, false);
                 }
             }
 
@@ -123,11 +128,32 @@ public class BuildLibraryTest {
                     if (contents.getMarkdown().isEmpty()) {
                         continue;
                     }
+                    loadTypeScriptNamespaces(typeScriptNamespaces, contents);
                     OutputStream.writeToFile(contents.getMarkdown().toString(), pathResources.resolve(resource.name() + ".md"), false);
-                    OutputStream.writeToFile(contents.getTypeScriptDeclarations().toString(), pathTSdResources.resolve(resource.name() + ".d.ts"), false);
-                    Files.write(pathTSdBase.resolve("main.d.ts"), ("import * from './resources/"+ resource.name() +"';\n").getBytes(), StandardOpenOption.APPEND);
+                    Path typeScriptFile = pathTSdResources.resolve(resource.name() + ".d.ts");
+                    OutputStream.writeToFile(generateTypeScriptContent(contents, "../objects", "."), typeScriptFile, false);
+                    Files.write(pathTSdBase.resolve("main.d.ts"), ("export { default as _"+ resource.name()  +" } from './resources/"+ resource.name() +"';\n").getBytes(), StandardOpenOption.APPEND);
                 }
             }
+            String typeScriptTypesFileContent = "";
+            typeScriptTypesFileContent += "declare global {\n";
+            typeScriptTypesFileContent += "\texport type byte = number;\n";
+            typeScriptTypesFileContent += "\texport type short = number;\n";
+            typeScriptTypesFileContent += "\texport type int = number;\n";
+            typeScriptTypesFileContent += "\texport type long = number;\n";
+            typeScriptTypesFileContent += "\texport type float = number;\n";
+            typeScriptTypesFileContent += "\texport type double = number;\n";
+            typeScriptTypesFileContent += "\texport type char = string;\n";
+            typeScriptTypesFileContent += "}\n";
+            for (String key : typeScriptNamespaces.keys()) {
+                typeScriptTypesFileContent += "export declare namespace "+ key +" {\n";
+                Values names = typeScriptNamespaces.getValues(key);
+                for (String name : names.list(String.class)) {
+                    typeScriptTypesFileContent += "\texport type "+ name +" = any;\n";
+                }
+                typeScriptTypesFileContent += "}\n";
+            }
+            Files.write(pathTSdBase.resolve("types.d.ts"), typeScriptTypesFileContent.getBytes(), StandardOpenOption.CREATE);
         }
 
         System.out.println("MENU RESOURCES:");
@@ -142,6 +168,44 @@ public class BuildLibraryTest {
         System.out.println();
         menuObjects.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
         System.out.println(menuObjects.toJSON(4));
+
+    }
+
+    private void loadTypeScriptNamespaces(Values typeScriptNamespaces, LibraryContent.GeneratedContents contents) {
+        for (String key : contents.getTypeScriptNamespaces().keys()) {
+            if (typeScriptNamespaces.hasKey(key)) {
+                Values names = typeScriptNamespaces.getValues(key);
+                Values contentsNames = contents.getTypeScriptNamespaces().getValues(key);
+                for (String typeName : contentsNames.list(String.class)) {
+                    if (!names.contains(typeName)) {
+                        names.add(typeName);
+                    }
+                }
+            } else {
+                typeScriptNamespaces.set(key, contents.getTypeScriptNamespaces().get(key));
+            }
+        }
+    }
+
+    private String generateTypeScriptContent(LibraryContent.GeneratedContents contents, String pathObjects, String pathResources) {
+        String namespaces = contents.getTypeScriptNamespaces().keys().stream()
+                .map((p) -> p.substring(0, p.indexOf(".")))
+                .distinct()
+                .reduce("",(a, p) -> (a.isEmpty() ? "": a +", ") + p);
+        String imports = "import {"+ namespaces +"} from '../types';\n";
+        imports += contents.getTypeScriptImportObjects().list(String.class).stream().reduce(
+                "",
+                (a, c)-> a + "import "+ c +" from '"+ pathObjects+"/"+ c +"';\n"
+        );
+        imports += contents.getTypeScriptImportResources().list(String.class).stream().reduce(
+                "",
+                (a, c)-> {
+                    String resourceName = c.substring(0, c.indexOf(":"));
+                    return a + "import _" + resourceName + " from '" + pathResources + "/" + resourceName + "';\n";
+                }
+        );
+        imports += "\n";
+        return imports + contents.getTypeScriptDeclarations().toString();
     }
 
 }
