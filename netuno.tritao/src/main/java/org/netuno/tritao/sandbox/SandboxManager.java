@@ -54,7 +54,9 @@ import java.util.regex.Pattern;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class SandboxManager implements AutoCloseable {
-    private static Logger logger = LogManager.getLogger(SandboxManager.class);
+    private static final Logger logger = LogManager.getLogger(SandboxManager.class);
+
+    private static final Pattern REGEX_IMPORT_CORE = Pattern.compile("^\\s*\\/\\/\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE);
 
     private static Map<String, ImmutablePair<Long, String>> cachedSourceCodes = new ConcurrentHashMap<>();
 
@@ -266,14 +268,14 @@ public class SandboxManager implements AutoCloseable {
                 if (!sourceCode.isEmpty()) {
                     String scriptExtension = FilenameUtils.getExtension(scriptPath.toLowerCase());
                     scriptSourceCode = Optional.of(new ScriptSourceCode(
+                            fileScript,
                             scriptExtension,
                             path,
                             file,
                             sourceCode,
                             fromOnError
                     ));
-                    Matcher m = Pattern.compile("^\\s*\\/\\/\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE)
-                            .matcher(sourceCode);
+                    Matcher m = REGEX_IMPORT_CORE.matcher(sourceCode);
                     while (m.find()) {
                         String importScriptFolder = m.group(1);
                         String importScriptPath = m.group(2);
@@ -368,7 +370,7 @@ public class SandboxManager implements AutoCloseable {
             final var finalFile = file;
             onError(
                 scriptSourceCode.orElseGet(
-                    () -> new ScriptSourceCode(null, finalPath, finalFile, null, true)
+                    () -> new ScriptSourceCode(null, null, finalPath, finalFile, null, true)
                 ), 
                 message, 
                 errorScriptLine.orElseGet(() -> -1),
