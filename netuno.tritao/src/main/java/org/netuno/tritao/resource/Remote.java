@@ -368,6 +368,45 @@ public class Remote extends org.netuno.psamata.net.Remote {
     }
 
     @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define a parametrização de dados da query string, ou seja, os parâmetros com dados passados no endereço da conexão remota.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Defines the parameterization of the query string data, that is, the parameters with data passed in the address of the remote connection.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "data", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "dados",
+                                    description = "Mapa de parâmetros com dados para serem passados na URL."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Parameter map with data to be passed in the URL."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "A instância atual do Remote."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The current Remote instance."
+                    )
+            }
+    )
+    public Remote setQueryString(Values data) {
+        this.data = data;
+        return this;
+    }
+
+    @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
                 description = "Define a parametrização dos dados que serão enviados como conteúdo da conexão remota, via POST ou PUT.",
@@ -736,6 +775,45 @@ public class Remote extends org.netuno.psamata.net.Remote {
     }
 
     @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define o prefixo do endereço da conexão remota.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the prefix of the address of the remote connection.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "url", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "endereco",
+                                    description = "Prefixo do endereço que será submetido."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Address prefix to be submitted."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "A instância atual do Remote."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The current Remote instance."
+                    )
+            }
+    )
+    public Remote setURLPrefix(String url) {
+        super.setURLPrefix(url);
+        return this;
+    }
+
+    @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
                 description = "Define que os dados do conteúdo recebido pela conexão remota estão no formato binário, como download de ficheiros, imagens, zip, etc...",
@@ -915,6 +993,45 @@ public class Remote extends org.netuno.psamata.net.Remote {
     )
     public Remote setSOAPNS(String soapNS) {
         super.setSOAPNS(soapNS);
+        return this;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define os dados que serão submetidos como formulário na conexão remota.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Defines the data to be submitted as form to the remote connection.",
+                    howToUse = {})
+    },
+            parameters = {
+                    @ParameterDoc(name = "formData", translations = {
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.PT,
+                                    name = "dadosFormulario",
+                                    description = "Dados de formulário que será submetido."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language = LanguageDoc.EN,
+                                    description = "Data form to be submitted."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "A instância atual do Remote."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The current Remote instance."
+                    )
+            }
+    )
+    public Remote setFormData(Values formData) {
+        super.setFormData(formData);
         return this;
     }
 
