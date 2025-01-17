@@ -210,6 +210,44 @@ public class GraalRunner implements AutoCloseable {
         context.leave();
     }
 
+    public Object eval(String language, java.io.File path, String sourceCode) {
+        try {
+            Source.Builder sourceBuilder = Source.newBuilder(language, sourceCode, path.getAbsolutePath());
+            if (path.getName().endsWith("cjs") || path.getName().endsWith("mjs")) {
+                sourceBuilder.mimeType("application/javascript+module");
+            }
+            Source source = sourceBuilder.build();
+            Value result = context.eval(source);
+            return result;
+        } catch (java.io.IOException e) {
+            throw new Error(e);
+        } catch (org.graalvm.polyglot.PolyglotException e) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("Context execution was cancelled.")) {
+                return null;
+            }
+            throw e;
+        }
+    }
+
+    public Object eval(String language, java.io.File file) {
+        try {
+            Source.Builder sourceBuilder = Source.newBuilder(language, file);
+            if (file.getName().endsWith("cjs") || file.getName().endsWith("mjs")) {
+                sourceBuilder.mimeType("application/javascript+module");
+            }
+            Source source = sourceBuilder.build();
+            Value result = context.eval(source);
+            return result;
+        } catch (java.io.IOException e) {
+            throw new Error(e);
+        } catch (org.graalvm.polyglot.PolyglotException e) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("Context execution was cancelled.")) {
+                return null;
+            }
+            throw e;
+        }
+    }
+
     public Object eval(String language, String code) {
         try {
             //context.enter();
