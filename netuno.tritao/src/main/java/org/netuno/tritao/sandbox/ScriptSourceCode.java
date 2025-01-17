@@ -27,8 +27,13 @@ package org.netuno.tritao.sandbox;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public record ScriptSourceCode(
+        java.io.File scriptFile,
         String extension,
         String path,
         String fileName,
         String content,
-        boolean error) { }
+        boolean error) {
+    public String fullPath() {
+        return path + "/" + fileName + "." + extension;
+    }
+}
