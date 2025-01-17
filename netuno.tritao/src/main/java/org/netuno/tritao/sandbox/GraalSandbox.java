@@ -24,13 +24,17 @@ import org.netuno.tritao.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Graal Sandbox
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@ScriptSandbox(extensions = {"js", "py"})
+@ScriptSandbox(extensions = {"js", "cjs", "mjs", "py"})
 public class GraalSandbox implements Scriptable {
+    private static final Pattern REGEX_PATTER_IMPORT_SERVER_TYPES = Pattern.compile("^.*((import|const)\\s+([_a-z0-9,\\{\\}\\s]+)\\s*((=\\s*require)|from).*@netuno/server-types.*)$", Pattern.MULTILINE);
+
     private SandboxManager manager;
 
     private GraalRunner graalRunner = null;
@@ -52,11 +56,12 @@ public class GraalSandbox implements Scriptable {
     }
 
     private String getGraalLanguage(String extension) {
-        if (!extension.equals("js") && !extension.equals("py")) {
+        if (!extension.equals("js") && !extension.equals("cjs") && !extension.equals("mjs") && !extension.equals("py")) {
             throw new UnsupportedOperationException("The extension "+ extension +" is not supported.");
         }
         return switch (extension) {
             case "py" -> "python";
+            case "cjs", "mjs" -> "js";
             default -> extension;
         };
     }
@@ -70,7 +75,16 @@ public class GraalSandbox implements Scriptable {
     public void run(ScriptSourceCode script, Values bindings) throws Exception {
         String lang = getGraalLanguage(script.extension());
         bindings.forEach((k, v) -> graalRunner.set(lang, k.toString(), v));
-        graalRunner.eval(lang, script.content());
+        String source = script.content();
+        if (lang.equals("js")) {
+            Matcher matcher = REGEX_PATTER_IMPORT_SERVER_TYPES.matcher(source);
+            source = matcher.replaceAll("// $1");
+        }
+        if (script.scriptFile() == null) {
+            graalRunner.eval(lang, script.content());
+        } else {
+            graalRunner.eval(lang, script.scriptFile(), source);
+        }
     }
 
     @Override
