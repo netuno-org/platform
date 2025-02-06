@@ -35,7 +35,8 @@ import java.util.*;
 })
 public class Operation {
     private String formName;
-    private List<Field> fields = new ArrayList<>();
+    private List<Field> fieldsToGet = new ArrayList<>();
+    private List<Field> fieldsToSet = new ArrayList<>();
     private Where where;
     private Map<String, Join> join = new HashMap<>();
     private Order order;
@@ -158,8 +159,8 @@ public class Operation {
             )
         }
     )
-    public List<Field> getFields() {
-        return fields;
+    public List<Field> getFieldsToGet() {
+        return fieldsToGet;
     }
 
     @MethodDoc(
@@ -199,13 +200,23 @@ public class Operation {
             )
         }
     )
-    public Operation setFields(List<Field> fields) {
-        this.fields = fields;
+
+    public Operation setFieldsToGet(List<Field> fieldsToGet) {
+        this.fieldsToGet = fieldsToGet;
+        return this;
+    }
+
+    public List<Field> getFieldsToSet() {
+        return fieldsToSet;
+    }
+
+    public Operation setFieldsToSet(List<Field> fieldsToSet) {
+        this.fieldsToSet = fieldsToSet;
         return this;
     }
 
     public Operation set(String column, Object value) {
-        this.fields.add(new Field(column, value));
+        this.fieldsToSet.add(new Field(column, value));
         return this;
     }
 
@@ -1103,12 +1114,12 @@ public class Operation {
     }
 
     public Operation get(String column) {
-        this.fields.add(new Field(column));
+        this.fieldsToGet.add(new Field(column));
         return this;
     }
 
     public Operation get(String column, String alias) {
-        this.fields.add(new Field(column, alias));
+        this.fieldsToGet.add(new Field(column, alias));
         return this;
     }
 
@@ -1291,17 +1302,17 @@ public class Operation {
     }
 
     public Values insert() {
-        final var data = linkEngine.fieldToValues(this.fields);
+        final var data = linkEngine.fieldToValues(this.fieldsToSet);
         if (data.values().stream().anyMatch(object -> object instanceof Values)) {
             Values insertLinks = linkEngine.buildInsertLinks(this.formName, data);
             return operationalEngine.cascadeInsert(insertLinks, data, this);
         }
         linkEngine.checkForm(this.formName);
-        return operationalEngine.insert(linkEngine.fieldToValues(this.fields), this);
+        return operationalEngine.insert(linkEngine.fieldToValues(this.fieldsToSet), this);
     }
 
     public Values update() {
-        final var data = linkEngine.fieldToValues(this.fields);
+        final var data = linkEngine.fieldToValues(this.fieldsToSet);
         if (data.values().stream().anyMatch(object -> object instanceof Values)) {
             Values updateLinks = linkEngine.buildUpdateLinks(this.formName, data);
             return operationalEngine.updateCascade(data, updateLinks, this);

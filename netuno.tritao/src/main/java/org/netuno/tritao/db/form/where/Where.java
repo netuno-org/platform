@@ -414,7 +414,56 @@ public class Where {
     public Where equal(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.Equals);
     }
-    
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exact to the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Volor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Conditional value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
+    public Where equals(String value) {
+        return this.equal(value);
+    }
+
+    public Where equals(Number value) {
+        return this.equal(value);
+    }
+
+    public Where equals(Boolean value) {
+        return this.equal(value);
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(

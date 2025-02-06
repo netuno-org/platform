@@ -163,7 +163,7 @@ public class OperationEngine extends Data {
 
     public String buildSelectSQL(Operation query) {
         String select = "SELECT \n\t" + query.getFormName()+".*" + " \nFROM ";
-        List <String> fields = query.getFields().stream().map(field ->
+        List <String> fields = query.getFieldsToGet().stream().map(field ->
                 field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn()
         ).collect(Collectors.toList());
         if (!fields.isEmpty()) {
