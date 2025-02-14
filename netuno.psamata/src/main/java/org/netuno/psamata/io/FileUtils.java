@@ -123,11 +123,10 @@ public class FileUtils {
                 if (recursive == FileRecursionLevel.ALL) {
                     for (java.io.File subFile : f.listFiles()) {
                         if (subFile.isFile()) {
-                            if (extension.isEmpty()) {
-                                subFile.delete();
-                            } else if (!FilenameUtils.getExtension(subFile.getName()).equalsIgnoreCase(extension)) {
+                            if (!extension.isEmpty() && !FilenameUtils.getExtension(subFile.getName()).equalsIgnoreCase(extension)) {
                                 continue;
                             }
+                            delete(subFile, recursive, folders, extension);
                         } else if (subFile.isDirectory()) {
                             delete(subFile, recursive, folders, extension);
                         }
