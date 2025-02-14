@@ -36,6 +36,9 @@ import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.properties.AreaBreakType;
 
+import com.itextpdf.layout.properties.HorizontalAlignment;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.VerticalAlignment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.PDFText2HTML;
@@ -340,19 +343,17 @@ public class PDF extends ResourceBase {
                     description = "Page type code."
             )
         })
-    }, returns = {})
-    public @ReturnDoc(
-            translations = {
-                @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Definição da página."
-                ),
-                @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Page definition."
-                )
-            }
-    ) PageSize pageSize(String page) {
+    }, returns = {
+        @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Definição da página."
+        ),
+        @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Page definition."
+        )
+    })
+    public PageSize pageSize(String page) {
         try {
             return (PageSize)PageSize.class.getDeclaredField(page.toUpperCase()).get(PageSize.class);
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -418,6 +419,7 @@ public class PDF extends ResourceBase {
     public Document newDocument() {
         return newDocument(PageSize.A4);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -479,6 +481,7 @@ public class PDF extends ResourceBase {
         document = new Document(pdfDocument, pageSize);
         return document;
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -618,6 +621,7 @@ public class PDF extends ResourceBase {
         AreaBreak areaBreak = new AreaBreak();
         return areaBreak;
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -653,6 +657,7 @@ public class PDF extends ResourceBase {
         AreaBreak areaBreak = new AreaBreak(pageSize);
         return areaBreak;
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -693,6 +698,7 @@ public class PDF extends ResourceBase {
             return null;
         }
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -724,6 +730,7 @@ public class PDF extends ResourceBase {
     public PdfCanvas canvas(PdfPage page) {
         return new PdfCanvas(page);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -941,6 +948,7 @@ public class PDF extends ResourceBase {
     public Cell cell(int rowspan, int colspan) {
         return new Cell(rowspan, colspan);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1064,7 +1072,6 @@ public class PDF extends ResourceBase {
                     description = "Returns a border width of the type inserted,coloured black and the width inserted."
             )
     })
-
     public Border border(String border, double width) {
         return border(border, (float)width);
     }
@@ -1574,6 +1581,7 @@ public class PDF extends ResourceBase {
     public Border border(String border, float width, float opacity) {
         return border(border, ColorConstants.BLACK, width, opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1627,10 +1635,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, int width) {
         return border(border, color, (float)width);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1684,10 +1692,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, double width) {
         return border(border, color, (float)width);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1741,10 +1749,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, float width) {
         return border(border, color, width, 1);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1798,10 +1806,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, int width, int opacity) {
         return border(border, color, (float)width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1855,10 +1863,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, int width, double opacity) {
         return border(border, color, (float)width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1912,10 +1920,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, int width, float opacity) {
         return border(border, color, (float)width, opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1969,10 +1977,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, double width, double opacity) {
         return border(border, color, (float)width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2026,10 +2034,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, double width, int opacity) {
         return border(border, color, (float)width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2086,6 +2094,7 @@ public class PDF extends ResourceBase {
     public Border border(String border, Color color, double width, float opacity) {
         return border(border, color, (float)width, opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2153,6 +2162,7 @@ public class PDF extends ResourceBase {
     public Border border(String border, Color color, float width, int opacity) {
         return border(border, color, width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2206,10 +2216,10 @@ public class PDF extends ResourceBase {
                     description = "Returns a border type, width and color inserted."
             )
     })
-
     public Border border(String border, Color color, float width, double opacity) {
         return border(border, color, width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2299,6 +2309,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border) {
         return border3D(border, ColorConstants.BLACK, 1, 1);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2333,6 +2344,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, int width) {
         return border3D(border, (float)width);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2380,6 +2392,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, double width) {
         return border3D(border, (float)width);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2427,6 +2440,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, float width) {
         return border3D(border, ColorConstants.BLACK, width, 1);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2485,6 +2499,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, int width, int opacity) {
         return border3D(border, (float)width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2543,6 +2558,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, int width, double opacity) {
         return border3D(border, (float)width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2599,6 +2615,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, int width, float opacity) {
         return border3D(border, (float)width, opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2655,6 +2672,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, double width, double opacity) {
         return border3D(border, (float)width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2711,6 +2729,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, double width, int opacity) {
         return border3D(border, (float)width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2769,6 +2788,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, double width, float opacity) {
         return border3D(border, (float)width, opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2827,6 +2847,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, float width, int opacity) {
         return border3D(border, width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2885,6 +2906,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, float width, double opacity) {
         return border3D(border, width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -2943,6 +2965,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, float width, float opacity) {
         return border3D(border, ColorConstants.BLACK, width, opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -3466,6 +3489,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, Color color, double width, float opacity) {
         return border3D(border, color, (float)width, opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -3590,6 +3614,7 @@ public class PDF extends ResourceBase {
     public Border3D border3D(String border, Color color, float width, double opacity) {
         return border3D(border, color, width, (float)opacity);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -3676,6 +3701,7 @@ public class PDF extends ResourceBase {
             return null;
         }
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -3732,6 +3758,7 @@ public class PDF extends ResourceBase {
     public ILineDrawer line(String type, Color color, int width) {
         return line(type, color, (float)width);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -3855,6 +3882,7 @@ public class PDF extends ResourceBase {
         line.setLineWidth(width);
         return line;
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -3966,6 +3994,7 @@ public class PDF extends ResourceBase {
         );
         return image;
     }
+
     public Image image(File file) throws MalformedURLException {
         Image image = new Image(
                 ImageDataFactory.create(
@@ -4020,6 +4049,7 @@ public class PDF extends ResourceBase {
             return null;
         }
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -4058,6 +4088,7 @@ public class PDF extends ResourceBase {
         );
         return font;
     }
+
     public PdfFont font(File file) throws IOException {
         PdfFont font = PdfFontFactory.createFont(file.getFullPath());
         return font;
@@ -4106,7 +4137,6 @@ public class PDF extends ResourceBase {
                     description = "Returns the created font."
             )
     })
-
     public PdfFont font(Storage storage, String encoding) throws IOException {
         PdfFont font = PdfFontFactory.createFont(
                 FileSystemPath.absoluteFromStorage(getProteu(), storage),
@@ -4114,6 +4144,7 @@ public class PDF extends ResourceBase {
         );
         return font;
     }
+
     public PdfFont font(File file, String encoding) throws IOException {
         PdfFont font = PdfFontFactory.createFont(file.getFullPath(), encoding);
         return font;
@@ -4170,6 +4201,7 @@ public class PDF extends ResourceBase {
         );
         return font;
     }
+
     public PdfFont font(File file, boolean embedded) throws IOException {
         PdfFont font = PdfFontFactory.createFont(
                 file.getFullPath(), 
@@ -4178,6 +4210,7 @@ public class PDF extends ResourceBase {
         );
         return font;
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -4229,6 +4262,7 @@ public class PDF extends ResourceBase {
         );
         return font;
     }
+
     public PdfFont font(File file, String encoding, boolean embedded) throws IOException {
         PdfFont font = PdfFontFactory.createFont(
                 file.getFullPath(),
@@ -4236,6 +4270,160 @@ public class PDF extends ResourceBase {
                 embedded ? EmbeddingStrategy.FORCE_EMBEDDED : EmbeddingStrategy.PREFER_EMBEDDED
         );
         return font;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria o tipo de alinhamento de texto.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates the text alignment type.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "type", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "tipo",
+                            description = "Nome do tipo de alinhamento, suporta:"+
+                                    "<ul>"+
+                                    "<li>left</li>"+
+                                    "<li>center</li>"+
+                                    "<li>right</li>"+
+                                    "<li>justified</li>"+
+                                    "<li>justified-all</li>"+
+                                    "</ul>"
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Alignment type name, supports:"+
+                                    "<ul>"+
+                                    "<li>left</li>"+
+                                    "<li>center</li>"+
+                                    "<li>right</li>"+
+                                    "<li>justified</li>"+
+                                    "<li>justified-all</li>"+
+                                    "</ul>"
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o tipo de alinhamento para texto."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the alignment type for text."
+            )
+    })
+    public TextAlignment textAlignment(String key) {
+        try {
+            key = key.toUpperCase().replace('-', '_');
+            return (TextAlignment)TextAlignment.class.getDeclaredField(key).get(TextAlignment.class);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria o tipo de alinhamento horizontal.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates the horizontal alignment type.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "type", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "tipo",
+                            description = "Nome do tipo de alinhamento, suporta:"+
+                                    "<ul>"+
+                                    "<li>left</li>"+
+                                    "<li>center</li>"+
+                                    "<li>right</li>"+
+                                    "</ul>"
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Alignment type name, supports:"+
+                                    "<ul>"+
+                                    "<li>left</li>"+
+                                    "<li>center</li>"+
+                                    "<li>right</li>"+
+                                    "</ul>"
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o tipo de alinhamento horizontal."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the horizontal alignment type."
+            )
+    })
+    public HorizontalAlignment horizontalAlignment(String key) {
+        try {
+            key = key.toUpperCase();
+            return (HorizontalAlignment)HorizontalAlignment.class.getDeclaredField(key).get(HorizontalAlignment.class);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria o tipo de alinhamento vertical.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates the vertical alignment type.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "type", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "tipo",
+                            description = "Nome do tipo de alinhamento, suporta:"+
+                                    "<ul>"+
+                                    "<li>top</li>"+
+                                    "<li>middle</li>"+
+                                    "<li>bottom</li>"+
+                                    "</ul>"
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Alignment type name, supports:"+
+                                    "<ul>"+
+                                    "<li>top</li>"+
+                                    "<li>middle</li>"+
+                                    "<li>bottom</li>"+
+                                    "</ul>"
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna o tipo de alinhamento vertical."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns the vertical alignment type."
+            )
+    })
+    public VerticalAlignment verticalAlignment(String key) {
+        try {
+            key = key.toUpperCase();
+            return (VerticalAlignment)VerticalAlignment.class.getDeclaredField(key).get(VerticalAlignment.class);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
+        }
     }
 
     public String toHTML(Storage storage) throws IOException {
@@ -4290,6 +4478,7 @@ public class PDF extends ResourceBase {
     public String toHTML(InputStream in) throws IOException {
         return toHTML((java.io.InputStream)in);
     }
+
     public String toHTML(java.io.InputStream in) throws IOException {
         PDDocument pddDocument = PDDocument.load(in);
         PDFText2HTML stripper = new PDFText2HTML();
@@ -4422,6 +4611,7 @@ public class PDF extends ResourceBase {
     })public Values extract(InputStream in) throws Exception {
         return extract((java.io.InputStream)in);
     }
+
     public Values extract(java.io.InputStream in) throws Exception {
         StringWriter any = new StringWriter();
         BodyContentHandler handler = new BodyContentHandler(any);
