@@ -837,7 +837,21 @@ public class WS extends ResourceBase {
     public void broadcastBinary(String endpointName, byte[] content) throws IOException {
         broadcastBinary(endpointName, "", content);
     }
-    
+
+    @LibraryDoc(translations = {
+            @LibraryTranslationDoc(
+                    language = LanguageDoc.PT,
+                    title = "WSMessage",
+                    introduction = "Objeto que contém os detalhes das mensagens obtidas através dos clientes nas conexões via WebSocket.",
+                    howToUse = {}
+            ),
+            @LibraryTranslationDoc(
+                    language = LanguageDoc.EN,
+                    title = "WSMessage",
+                    introduction = "Object containing the details of messages obtained through clients in WebSocket connections.",
+                    howToUse = {}
+            )
+    })
     public class WSMessage {
         public String service = null;
         
