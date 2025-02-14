@@ -50,6 +50,10 @@ public class BuildLibraryTest {
         Values menuResources = new Values();
         Values menuObjects = new Values();
         for (LanguageDoc lang : LanguageDoc.values()) {
+            var langFolder = new org.netuno.psamata.io.File("docs/"+ lang.name());
+            if (langFolder.exists()) {
+                langFolder.deleteAll();
+            }
             Path pathResources = Paths.get("docs", lang.name(), "library", "resources");
             Path pathObjects = Paths.get("docs", lang.name(), "library", "objects");
             Path pathTSdBase = Paths.get("docs", lang.name(), "ts.d");
