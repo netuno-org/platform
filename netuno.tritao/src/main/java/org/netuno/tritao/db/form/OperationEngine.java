@@ -34,7 +34,7 @@ public class OperationEngine extends Data {
     public String buildQuerySQL(Operation query) {
         StringBuilder joinSQL = new StringBuilder();
         StringBuilder whereSQL = new StringBuilder();
-        if (query.getWhere() != null) {
+        if (query.getWhere() != null && !query.getWhere().getConditions().isEmpty()) {
             final ConditionalOperator firstConditional = query.getWhere().getConditions().getFirst();
             whereSQL.append("\n").append("\t")
                     .append(firstConditional.getOperator() != null ? "" : " AND")
@@ -43,7 +43,7 @@ public class OperationEngine extends Data {
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
             final Join join = entryJoin.getValue();
             joinSQL.append("\t").append("\t").append(this.buildJoinSQL(join));
-            if (join.getWhere() != null) {
+            if (join.getWhere() != null && !join.getWhere().getConditions().isEmpty()) {
                 final ConditionalOperator firstConditional = join.getWhere().getConditions().getFirst();
                 whereSQL.append("\n").append("\t")
                         .append(firstConditional.getOperator() != null ? "" : " AND")
@@ -51,7 +51,7 @@ public class OperationEngine extends Data {
             }
             for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
                 final Join subJoin = entrySubJoin.getValue();
-                if (subJoin.getWhere() != null) {
+                if (subJoin.getWhere() != null && !subJoin.getWhere().getConditions().isEmpty()) {
                     final ConditionalOperator firstConditional = subJoin.getWhere().getConditions().getFirst();
                     whereSQL.append("\n").append("\t")
                             .append(firstConditional.getOperator() != null ? "" : " AND")
