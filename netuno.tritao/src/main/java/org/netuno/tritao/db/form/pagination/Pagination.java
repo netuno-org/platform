@@ -18,7 +18,16 @@ public class Pagination {
         return page;
     }
 
+    public int page() {
+        return page;
+    }
+
     public Pagination setPage(int page) {
+        this.page = page;
+        return this;
+    }
+
+    public Pagination page(int page) {
         this.page = page;
         return this;
     }
@@ -27,7 +36,16 @@ public class Pagination {
         return pageSize;
     }
 
+    public int size() {
+        return pageSize;
+    }
+
     public Pagination setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+        return this;
+    }
+
+    public Pagination size(int pageSize) {
         this.pageSize = pageSize;
         return this;
     }
@@ -37,8 +55,21 @@ public class Pagination {
         return offset;
     }
 
+    public int offset() {
+        this.offset = (page - 1) * pageSize;
+        return offset;
+    }
+
     public Pagination setOffset(int offset) {
         this.offset = offset;
         return this;
     }
+
+    public Pagination offset(int offset) {
+        this.offset = offset;
+        return this;
+    }
+
+
+
 }
