@@ -24,8 +24,8 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.font.PdfFontFactory.EmbeddingStrategy;
 import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfPage;
-import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.canvas.draw.DashedLine;
 import com.itextpdf.kernel.pdf.canvas.draw.DottedLine;
@@ -34,11 +34,15 @@ import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.layout.LayoutArea;
+import com.itextpdf.layout.layout.LayoutContext;
+import com.itextpdf.layout.layout.LayoutResult;
 import com.itextpdf.layout.properties.AreaBreakType;
 
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import com.itextpdf.layout.renderer.IRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.PDFText2HTML;
@@ -54,8 +58,6 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.IO;
 import org.netuno.psamata.io.InputStream;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
@@ -3892,12 +3894,159 @@ public class PDF extends ResourceBase {
                     language = LanguageDoc.EN,
                     description = "Creates a paragraph.",
                     howToUse = {})
-    }, parameters = {},
-            returns = {
+    }, parameters = {
+            @ParameterDoc(name = "text", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "texto",
+                            description = "Texto que será apresentado no parágrafo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Text that will be presented in the paragraph."
+                    )
             })
+    },
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O novo objeto de parágrafo com o texto."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new paragraph object with the text."
+            )
+    })
     public Paragraph paragraph(String text) {
         Paragraph paragraph = new Paragraph(text);
         return paragraph;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Calcula a área de um parágrafo, permite obter a altura e a largura que o texto do parágrafo ocupará no PDF.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Calculates the area of a paragraph, allows you to obtain the height and width that the paragraph text will occupy in the PDF.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "paragraph", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "paragrafo",
+                            description = "O objeto de parágrafo que será calculado a área."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The paragraph object whose area will be calculated."
+                    )
+            })
+    },
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retângulo com a largura e altura que a dimensão do texto do parágrafo ocupa no PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new paragraph object with the text."
+            )
+    })
+    public Rectangle paragraphArea(Paragraph paragraph) {
+        float max = Math.max(getPdfDocument().getFirstPage().getPageSize().getWidth(), getPdfDocument().getFirstPage().getPageSize().getHeight()) * 5;
+        IRenderer paragraphRenderer = paragraph.createRendererSubTree();
+        LayoutResult result = paragraphRenderer.setParent(document.getRenderer()).
+                layout(new LayoutContext(new LayoutArea(1, new Rectangle(max, max))));
+        return result.getOccupiedArea().getBBox();
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "String é uma sequência de caracteres, ou seja é um texto, este método obtém um objeto de string nativo para PDF.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "String is a sequence of characters, that is, it is a text, this method obtains a native string object for PDF.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "text", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "texto",
+                            description = "A string que será utilizada na nova string nativa de PDF."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The string that will be used in the new PDF native string."
+                    )
+            }),
+            @ParameterDoc(name = "encoding", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "codificacao",
+                            description = "Nome do tipo de codificação para o texto."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Name of the encoding type for the text."
+                    )
+            })
+    },
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A nova string nativa para PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new native string for PDF."
+            )
+    })
+    public PdfString string(String text, String encoding) {
+        return new PdfString(text, encoding);
+    }
+
+    public PdfString string(String text) {
+        return new PdfString(text);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "String é uma sequência de caracteres, ou seja é um texto, este método obtém um objeto de string nativo para PDF a partir de um array de bytes.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "String is a sequence of characters, that is, it is a text, this method obtains a native string object for PDF from an array of bytes.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "text", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "texto",
+                            description = "Os bytes de texto que vão ser utilizados na nova string nativa de PDF."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The text bytes that will be used in the new native PDF string."
+                    )
+            })
+    },
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A nova string nativa para PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new native string for PDF."
+            )
+    })
+    public PdfString string(byte[] text) {
+        return new PdfString(text);
     }
 
     @MethodDoc(translations = {
