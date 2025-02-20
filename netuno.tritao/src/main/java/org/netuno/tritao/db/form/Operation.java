@@ -1181,6 +1181,11 @@ public class Operation {
         return this;
     }
 
+    public Operation group(String ...columns) {
+        this.group = new Group(String.join(", ", Arrays.stream(columns).toList()));
+        return this;
+    }
+
     public Operation distinct(boolean distinct) {
         this.distinct = distinct;
         return this;
