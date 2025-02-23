@@ -690,6 +690,7 @@ public class App implements MainArg {
 
         Path.copyApp(appPath, Path.PUBLIC_IMAGES, "logo.png");
         Path.copyApp(appPath, Path.PUBLIC_IMAGES, "logo-main.png");
+        Path.copyApp(appPath, Path.PUBLIC_IMAGES, "icon.png");
 
         Path.copyApp(appPath, Path.PUBLIC_SCRIPTS, "ui.js");
         Path.copyApp(appPath, Path.PUBLIC_SCRIPTS, "ui.js.map");
