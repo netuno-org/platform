@@ -251,9 +251,7 @@ public class TemplateBuilder {
                 output = getOutputApp(proteu, hili, value.substring(value.indexOf('|') + 1), data);
             }
         } else if (key.equalsIgnoreCase("netuno-config")) {
-            if (value.equalsIgnoreCase("version")) {
-                output = Config.VERSION;
-            } else if (value.equalsIgnoreCase("version-year")) {
+            if (value.equalsIgnoreCase("version-year")) {
                 output = Config.VERSION_YEAR;
             } else if (value.equalsIgnoreCase("build-number")) {
                 output = Config.BUILD_NUMBER;
