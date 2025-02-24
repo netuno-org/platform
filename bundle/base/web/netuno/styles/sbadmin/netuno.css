@@ -96,8 +96,14 @@ body {
     min-height: calc(100vh - 70px) !important;
 }
 
-.netuno-copy {
+.netuno-about {
     margin-top: 50px;
+    color: #666666;
+    text-align: center;
+    font-size: 12px;
+}
+.netuno-copy {
+    margin-top: 5px;
     color: #666666;
     text-align: center;
     font-size: 12px;
