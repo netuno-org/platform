@@ -41,10 +41,10 @@ public class Update {
                             .toString()
             );
             String stableVersion = data.getString("version");
-            if (stableVersion.indexOf(":") > 0) {
-                stableVersion = stableVersion.substring(stableVersion.indexOf(":") + 1);
-            }
             int compareVersion = Build.getNumber().compareTo(stableVersion);
+            if (stableVersion.length() > 8) {
+                compareVersion = 1;
+            }
             if (compareVersion < 0) {
                 if (data.getString("type").equals("critical")) {
                     System.out.println(OS.consoleOutput("@|red    Critical upgrade required! |@"));
