@@ -129,7 +129,7 @@ public class ProteuEvents implements Events {
             }
             
             System.out.println();
-            System.out.println("    TRITAO IN ORBIT // v" + Config.VERSION +":"+ Config.BUILD_NUMBER);
+            System.out.println("    TRITAO "+ Config.BUILD_NUMBER +" IN ORBIT");
             System.out.println();
             System.out.println();
         }
