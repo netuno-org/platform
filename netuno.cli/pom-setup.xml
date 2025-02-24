@@ -264,7 +264,7 @@
                                 <mainClass>org.netuno.cli.setup.Main</mainClass>
                             </manifest>
                             <manifestEntries>
-                                <Build-Number>setup-${buildNumber}</Build-Number>
+                                <Build-Number>${buildNumber}-setup</Build-Number>
                             </manifestEntries>
                         </archive>
                     </configuration>
