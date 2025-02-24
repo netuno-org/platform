@@ -40,7 +40,11 @@ public class Update {
                             .get("https://github.com/netuno-org/platform/releases/download/stable/netuno.json")
                             .toString()
             );
-            int compareVersion = Build.getNumber().compareTo(data.getString("version"));
+            String stableVersion = data.getString("version");
+            if (stableVersion.indexOf(":") > 0) {
+                stableVersion = stableVersion.substring(stableVersion.indexOf(":") + 1);
+            }
+            int compareVersion = Build.getNumber().compareTo(stableVersion);
             if (compareVersion < 0) {
                 if (data.getString("type").equals("critical")) {
                     System.out.println(OS.consoleOutput("@|red    Critical upgrade required! |@"));
