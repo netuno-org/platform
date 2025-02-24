@@ -31,13 +31,13 @@ import org.apache.logging.log4j.Logger;
  */
 public class Build {
     private static Logger logger = LogManager.getLogger(Build.class);
-    
+
     public static String getNumber() {
         Class<?> clazz = Build.class;
         String className = clazz.getSimpleName() + ".class";
         String classPath = clazz.getResource(className).toString();
         if (!classPath.startsWith("jar")) {
-            return "99999999.9999";
+            return "9999.99";
         }
         try {
             Manifest manifest = new Manifest(new URL(
