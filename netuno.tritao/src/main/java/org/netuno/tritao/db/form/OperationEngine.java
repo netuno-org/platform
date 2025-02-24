@@ -260,8 +260,9 @@ public class OperationEngine extends Data {
         if (query.getOrder() != null) {
             selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
+        var dbTotal = getManager().query(selectCommandSQL);
 
-        return (int) getManager().query(selectCommandSQL).getFirst().getLong("total");
+        return !dbTotal.isEmpty() ? dbTotal.getFirst().getInt("total") : 0;
     }
 
     public Page page(Operation query) {

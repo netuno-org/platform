@@ -23,7 +23,10 @@ public class Page {
         this.totalElements = totalElements;
         this.pageNumber = pagination.getPage();
         this.pageSize = pagination.getPageSize();
-        this.totalPages = (int) Math.ceil((double) this.totalElements / (double) this.pageSize);
+        this.totalPages =
+                (totalElements < 1 || pagination.getPageSize() < 1)
+                        ? 0
+                        : (int) Math.ceil((double) this.totalElements / (double) this.pageSize);
         this.hasNext = (pageNumber - 1) + 1 < totalPages;
         this.hasPrevious = (pageNumber <= totalPages) && (pageNumber > 1);
     }
