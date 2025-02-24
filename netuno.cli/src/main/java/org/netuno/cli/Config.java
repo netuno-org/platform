@@ -44,7 +44,6 @@ import java.util.List;
 public final class Config {
     private static Logger logger = LogManager.getLogger(Config.class);
 
-    public static final String VERSION = "7";
     public static final String VERSION_YEAR = Year.now().toString();
 
     public static final String OS = System.getProperty("os.name").toLowerCase();
