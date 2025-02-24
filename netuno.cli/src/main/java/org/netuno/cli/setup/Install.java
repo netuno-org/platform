@@ -174,9 +174,7 @@ public class Install implements MainArg {
                 String bundleFileName = "netuno";
                 File bundleFile = new File(path, bundleFileName + ".zip");
 
-                String versionType = Config.VERSION;
                 if (!version.isEmpty() && version.indexOf(":") > 0) {
-                    versionType = version.substring(0, version.indexOf(":"));
                     version = version.substring(version.indexOf(":") + 1);
                 }
 
@@ -188,7 +186,7 @@ public class Install implements MainArg {
                             Values data = Values.fromJSON(new Remote().get(url).toString());
                             version = data.getString("version");
                         }
-                        String versionURL = version.equalsIgnoreCase("testing") || version.equalsIgnoreCase("latest") ? "testing" : "v" + versionType + "-" + version.replace(".", "_");
+                        String versionURL = version.equalsIgnoreCase("testing") || version.equalsIgnoreCase("latest") ? "testing" : version.replace(".", "_");
                         url = "https://github.com/netuno-org/platform/releases/download/" + (version.equalsIgnoreCase("testing") ? "testing" : versionURL) + "/" + bundleFileName + (version.equalsIgnoreCase("testing") ? "" : "-" + versionURL) + ".zip";
                         final String downloadURL = url;
                         System.out.println();
