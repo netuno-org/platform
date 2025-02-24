@@ -121,16 +121,10 @@ public class Enterprise extends HttpServlet {
      */
     @Override
     public void init() {
-        try {
-            Class<?> cls = Class.forName("org.netuno.cli.utils.Build");
-            Config.BUILD_NUMBER = (String)cls.getMethod("getNumber").invoke(null);
-        } catch (ClassNotFoundException e) {
-        } catch (Exception e) {
-            logger.fatal("Error loading build number.", e);
-        }
+        Config.BUILD_NUMBER = org.netuno.cli.utils.Build.getNumber();
         
         System.out.println();
-        System.out.println("    PROTEU IN ORBIT // v"+ Config.VERSION +":"+ Config.BUILD_NUMBER);
+        System.out.println("    PROTEU "+ Config.BUILD_NUMBER + " IN ORBIT");
         System.out.println();
 
         try {
