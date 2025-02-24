@@ -64,8 +64,8 @@ public class Hili implements AutoCloseable {
 
     public Hili(Proteu proteu) {
         this.proteu = proteu;
-        proteu.getConfig().set("netuno_version", Config.VERSION);
-        proteu.getConfig().set("_version", Config.VERSION);
+        proteu.getConfig().set("netuno_build_number", Config.BUILD_NUMBER);
+        proteu.getConfig().set("_build_number", Config.BUILD_NUMBER);
         proteu.getConfig().set("netuno_version_year", Config.VERSION_YEAR);
         proteu.getConfig().set("_version_year", Config.VERSION_YEAR);
 
