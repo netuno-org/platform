@@ -290,7 +290,11 @@ public class Install implements MainArg {
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
                     while (entries.hasMoreElements()) {
                         ZipEntry entry = entries.nextElement();
-                        String name = entry.getName().substring(bundleFileName.length());
+                        String name = entry.getName();
+                        if (!entry.getName().startsWith(bundleFileName)) {
+                            continue;
+                        }
+                        name = name.substring(bundleFileName.length());
                         if (name.isEmpty()) {
                             continue;
                         }
