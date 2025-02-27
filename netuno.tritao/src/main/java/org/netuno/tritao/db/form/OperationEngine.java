@@ -7,6 +7,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.form.join.Join;
 import org.netuno.tritao.db.form.join.Relationship;
+import org.netuno.tritao.db.form.pagination.Pagination;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.db.form.pagination.Page;
 import org.netuno.tritao.db.form.populate.Populate;
@@ -249,19 +250,21 @@ public class OperationEngine extends Data {
     }
 
     public int count(Operation query) {
+        final var pagination = query.getPagination();
         String select = "SELECT COUNT("+query.getFormName()+".id"+") AS total \nFROM ";
-        if (query.isDistinct()) {
-            select = "SELECT COUNT(DISTINCT "+query.getFormName()+".id"+") AS total \nFROM ";
+        if (pagination.getDistinct() != null && !pagination.getDistinct().isBlank()) {
+            select = "SELECT COUNT(DISTINCT " + DB.sqlInjection(pagination.getDistinct()) + ") AS total \nFROM ";
         }
         String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
-        if (query.getGroup() != null) {
+        if (pagination.isUseGroup() && query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
-        if (query.getOrder() != null) {
-            selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+        if (query.isDebug()) {
+            logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
+        var dbTotal = getManager().query(selectCommandSQL);
 
-        return (int) getManager().query(selectCommandSQL).getFirst().getLong("total");
+        return !dbTotal.isEmpty() ? dbTotal.getFirst().getInt("total") : 0;
     }
 
     public Page page(Operation query) {

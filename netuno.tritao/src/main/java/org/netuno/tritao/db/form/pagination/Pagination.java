@@ -8,6 +8,8 @@ public class Pagination {
     private int page = 1;
     private int pageSize = 10;
     private int offset = 0;
+    private String distinct = null;
+    private boolean useGroup = false;
 
     public Pagination(int page, int pageSize) {
         this.page = page;
@@ -70,6 +72,37 @@ public class Pagination {
         return this;
     }
 
+    public String getDistinct() {
+        return distinct;
+    }
 
+    public String distinct() {
+        return getDistinct();
+    }
 
+    public Pagination setDistinct(String distinct) {
+        this.distinct = distinct;
+        return this;
+    }
+
+    public Pagination distinct(String distinct) {
+        return setDistinct(distinct);
+    }
+
+    public boolean isUseGroup() {
+        return useGroup;
+    }
+
+    public boolean useGroup() {
+        return isUseGroup();
+    }
+
+    public Pagination setUseGroup(boolean useGroup) {
+        this.useGroup = useGroup;
+        return this;
+    }
+
+    public Pagination useGroup(boolean useGroup) {
+        return setUseGroup(useGroup);
+    }
 }
