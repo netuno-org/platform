@@ -81,8 +81,8 @@ fs.copySync(config.netuno.web.bundle, config.output.bundle +'/web/WEB-INF/lib/ne
 
 const jarsFolders = [
     config.netuno.web.lib.tritao,
-    config.netuno.web.lib.proteu,
-    config.netuno.web.lib.psamata
+    config.netuno.web.lib.proteu
+    //config.netuno.web.lib.psamata
 ];
 
 let jarsFiles = []
