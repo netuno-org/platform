@@ -67,7 +67,7 @@ cd netuno.tritao/protect && ./run.sh && cd ../..
 
 cd bundle && node index.js && cd ..
 
-cd bundle/out && zip -r netuno.zip netuno/ && cd ../..
+cd bundle/out && zip -q -r netuno.zip netuno/ && cd ../..
 
 mkdir -p bundle/dist
 
