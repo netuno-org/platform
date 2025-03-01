@@ -26,22 +26,15 @@ import org.netuno.psamata.Values;
 public class ServerClone {
     public static Values clone(String fromAppName, String toAppName, String secret, String passwordDev, String passwordAdmin) {
         try {
-            return Values.fromJSON(Class.forName("org.netuno.cli.Clone")
-                .getMethod(
-                        "clone",
-                        String.class,
-                        String.class,
-                        String.class,
-                        String.class,
-                        String.class)
-                .invoke(
-                        null,
+            return Values.fromJSON(
+                    org.netuno.cli.Clone.clone(
                         fromAppName,
                         toAppName,
                         secret,
                         passwordDev,
                         passwordAdmin
-                ).toString());
+                    )
+            );
         } catch (Exception e) {
             throw new ServerError(e);
         }

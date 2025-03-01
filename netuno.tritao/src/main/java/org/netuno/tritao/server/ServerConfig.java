@@ -24,9 +24,7 @@ package org.netuno.tritao.server;
 public class ServerConfig {
     public static String getName() {
         try {
-            return Class.forName("org.netuno.cli.Config")
-                    .getMethod("getName")
-                    .invoke(null).toString();
+            return org.netuno.cli.Config.getName();
         } catch (Exception e) {
             throw new ServerError(e);
         }
@@ -34,9 +32,7 @@ public class ServerConfig {
     
     public static String getHost() {
         try {
-            return Class.forName("org.netuno.cli.Config")
-                    .getMethod("getHost")
-                    .invoke(null).toString();
+            return org.netuno.cli.Config.getHost();
         } catch (Exception e) {
             throw new ServerError(e);
         }
@@ -44,9 +40,7 @@ public class ServerConfig {
     
     public static int getPort() {
         try {
-            return (Integer)Class.forName("org.netuno.cli.Config")
-                    .getMethod("getPort")
-                    .invoke(null);
+            return org.netuno.cli.Config.getPort();
         } catch (Exception e) {
             throw new ServerError(e);
         }
