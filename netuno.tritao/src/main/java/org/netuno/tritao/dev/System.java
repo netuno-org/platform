@@ -44,9 +44,7 @@ public class System extends WebMaster {
         Out out = resource(Out.class);
         if (req.getString("action").equals("data")) {
             try {
-                Values data = (Values)Class.forName("org.netuno.cli.Monitor")
-                        .getMethod("performanceData")
-                        .invoke(null);
+                Values data = org.netuno.cli.monitoring.Stats.performanceData();
                 out.json(data);
             } catch (Exception e) {
                 logger.debug(e);
