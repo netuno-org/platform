@@ -127,7 +127,7 @@ public class Cron {
         }
     }
 
-    public static boolean pause(String app, String key) throws SchedulerException {
+    public static boolean pause(String app, String key) throws Exception {
         Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
         for (JobKey jobKey : jobsKeys) {
             if (jobKey.getName().equalsIgnoreCase(key)) {
@@ -138,7 +138,7 @@ public class Cron {
         return false;
     }
 
-    public static boolean resume(String app, String key) throws SchedulerException {
+    public static boolean resume(String app, String key) throws Exception {
         Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
         for (JobKey jobKey : jobsKeys) {
             if (jobKey.getName().equalsIgnoreCase(key)) {
@@ -149,7 +149,7 @@ public class Cron {
         return false;
     }
 
-    public static boolean interrupt(String app, String key) throws SchedulerException {
+    public static boolean interrupt(String app, String key) throws Exception {
         Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
         for (JobKey jobKey : jobsKeys) {
             if (jobKey.getName().equalsIgnoreCase(key)) {
@@ -160,7 +160,7 @@ public class Cron {
         return false;
     }
 
-    public static boolean delete(String app, String key) throws SchedulerException {
+    public static boolean delete(String app, String key) throws Exception {
         Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
         for (JobKey jobKey : jobsKeys) {
             if (jobKey.getName().equalsIgnoreCase(key)) {
@@ -171,7 +171,7 @@ public class Cron {
         return false;
     }
 
-    public static boolean checkExists(String app, String key) throws SchedulerException {
+    public static boolean checkExists(String app, String key) throws Exception {
         Set<JobKey> jobsKeys = scheduler.getJobKeys(jobGroupEquals(app));
         for (JobKey jobKey : jobsKeys) {
             if (jobKey.getName().equalsIgnoreCase(key)) {
