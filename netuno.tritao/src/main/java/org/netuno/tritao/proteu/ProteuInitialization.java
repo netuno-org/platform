@@ -67,31 +67,25 @@ public class ProteuInitialization {
         );
 
         try {
-            Class cls = Class.forName("org.netuno.cli.Config");
-            org.netuno.proteu.Config.setDownloadDefaultCache((int)cls.getMethod("getDownloadDefaultCache").invoke(null));
-            org.netuno.proteu.Config.setDownloadLogsAllowed((boolean)cls.getMethod("isDownloadLogsAllowed").invoke(null));
-        } catch (ClassNotFoundException e) {
+            org.netuno.proteu.Config.setDownloadDefaultCache(org.netuno.cli.Config.getDownloadDefaultCache());
+            org.netuno.proteu.Config.setDownloadLogsAllowed(org.netuno.cli.Config.isDownloadLogsAllowed());
         } catch (Exception e) {
             logger.fatal(e);
         }
 
         try {
-            Class cls = Class.forName("org.netuno.cli.License");
-            Config.setLicenseMail((String)cls.getMethod("getMail").invoke(null));
-            Config.setLicenseType((String)cls.getMethod("getType").invoke(null));
-            Config.setLicenseKey((String)cls.getMethod("getKey").invoke(null));
-            Config.setLicense((String)cls.getMethod("getLicense").invoke(null));
-        } catch (ClassNotFoundException e) {
+            Config.setLicenseMail(org.netuno.cli.License.getMail());
+            Config.setLicenseType(org.netuno.cli.License.getType());
+            Config.setLicenseKey(org.netuno.cli.License.getKey());
+            Config.setLicense(org.netuno.cli.License.getLicense());
         } catch (Exception e) {
             logger.fatal(e);
         }
 
         try {
-            Class cls = Class.forName("org.netuno.cli.Config");
-            Config.setManageSecret((String)cls.getMethod("getManageSecret").invoke(null));
-            Config.setMaxCPUTime((int)cls.getMethod("getMaxCPUTime").invoke(null));
-            Config.setMaxMemory((int)cls.getMethod("getMaxMemory").invoke(null));
-        } catch (ClassNotFoundException e) {
+            Config.setManageSecret(org.netuno.cli.Config.getManageSecret());
+            Config.setMaxCPUTime(org.netuno.cli.Config.getMaxCPUTime());
+            Config.setMaxMemory(org.netuno.cli.Config.getMaxMemory());
         } catch (Exception e) {
             logger.fatal(e);
         }

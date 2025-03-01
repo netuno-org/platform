@@ -118,15 +118,8 @@ public class ProteuEvents implements Events {
     public void beforeStart(Proteu proteu, Object faros) {
         if (firstStart) {
             firstStart = false;
-            
-            try {
-                Class<?> cls = Class.forName("org.netuno.cli.utils.Build");
-                Config.BUILD_NUMBER = (String)cls.getMethod("getNumber").invoke(null);
-            } catch (ClassNotFoundException e) {
-                logger.trace("CLI Build class can not be found.", e);
-            } catch (Exception e) {
-                logger.fatal("Error loading build number.", e);
-            }
+
+            Config.BUILD_NUMBER = org.netuno.cli.utils.Build.getNumber();
             
             System.out.println();
             System.out.println("    TRITAO "+ Config.BUILD_NUMBER +" IN ORBIT");
@@ -148,27 +141,25 @@ public class ProteuEvents implements Events {
 
         try {
             Class<?> cls = Class.forName("org.netuno.cli.Config");
-            String appsHome = (String)cls.getMethod("getAppsHome").invoke(null);
+            String appsHome = org.netuno.cli.Config.getAppsHome();
             Config.setAppsHome(appsHome);
-            appConfig = (Values)cls.getMethod("getAppConfigByHost", String.class).invoke(null, host);
+            appConfig = org.netuno.cli.Config.getAppConfigByHost(host);
             if (appConfig == null) {
-	            appConfig = (Values)cls.getMethod("getAppConfig", String.class).invoke(null, app);
+	            appConfig = org.netuno.cli.Config.getAppConfig(app);
 	            if (appConfig == null) {
-	                app = (String)cls.getMethod("getAppDefault").invoke(null);
-	                appConfig = (Values)cls.getMethod("getAppConfig", String.class).invoke(null, app);
+	                app = org.netuno.cli.Config.getAppDefault();
+	                appConfig = org.netuno.cli.Config.getAppConfig(app);
 	            }
             }
-            String forceApp = (String)cls.getMethod("getAppForce").invoke(null);
+            String forceApp = org.netuno.cli.Config.getAppForce();
             if (forceApp != null && !forceApp.isEmpty()) {
                 app = forceApp;
-                appConfig = (Values)cls.getMethod("getAppConfig", String.class).invoke(null, app);
+                appConfig = org.netuno.cli.Config.getAppConfig(app);
             }
-            environment = (String)cls.getMethod("getEnv").invoke(null);
+            environment = org.netuno.cli.Config.getEnv();
             @SuppressWarnings("unchecked")
             List<String> permittedLanguages = (List<String>)cls.getMethod("getPermittedLanguages").invoke(null);
             Config.setPermittedLanguages(permittedLanguages.toArray(new String[0]));
-        } catch (ClassNotFoundException e) {
-            logger.trace("CLI Config class can not be found.", e);
         } catch (Exception e) {
             logger.fatal("Error loading app config.", e);
         }
