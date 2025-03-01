@@ -32,6 +32,18 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.netuno.cli</groupId>
+            <artifactId>netuno-cli</artifactId>
+            <version>${netuno.cli.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.netuno.psamata</groupId>
             <artifactId>netuno-psamata</artifactId>
             <version>${netuno.psamata.version}</version>
