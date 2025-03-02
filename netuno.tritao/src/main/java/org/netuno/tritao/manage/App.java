@@ -36,23 +36,14 @@ public class App {
         if (proteu.getRequestAll().hasKey("configs")) {
             org.netuno.proteu.Config.getDataSources().clear();
             try {
-                Class.forName("org.netuno.cli.Config")
-                        .getMethod("loadAppConfigs")
-                        .invoke(
-                                null
-                        );
+                org.netuno.cli.Config.loadAppConfigs();
             } catch (Exception e) {
                 logger.debug(e);
             }
         }
         if (proteu.getRequestAll().hasKey("default")) {
             try {
-                Class.forName("org.netuno.cli.Config")
-                        .getMethod("setAppDefault", String.class)
-                        .invoke(
-                                null,
-                                proteu.getRequestAll().getString("default")
-                        );
+                org.netuno.cli.Config.setAppDefault(proteu.getRequestAll().getString("default"));
             } catch (Exception e) {
                 logger.debug(e);
             }
