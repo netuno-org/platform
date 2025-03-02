@@ -329,21 +329,13 @@ public class Cron extends ResourceBase {
             }
             url = Config.getFullOrLocalURL(getProteu(), url);
             params.set("app", Config.getApp(getProteu()));
-            Class.forName("org.netuno.cli.Cron")
-                    .getMethod("schedule",
-                            String.class,
-                            String.class,
-                            String.class,
-                            String.class,
-                            String.class)
-                    .invoke(
-                            null,
-                            Config.getApp(getProteu()),
-                            key,
-                            config,
-                            url,
-                            params.toJSON()
-                    );
+            org.netuno.cli.Cron.schedule(
+                    Config.getApp(getProteu()),
+                    key,
+                    config,
+                    url,
+                    params.toJSON()
+            );
         } catch (Exception e) {
             throw new ResourceException("cron.schedule("+ key +")", e);
         }
@@ -379,13 +371,7 @@ public class Cron extends ResourceBase {
     )
     public Values schedules() throws ResourceException {
         try {
-            return (Values)Class.forName("org.netuno.cli.Cron")
-                    .getMethod("schedules",
-                            String.class)
-                    .invoke(
-                            null,
-                            Config.getApp(getProteu())
-                    );
+            return org.netuno.cli.Cron.schedules(Config.getApp(getProteu()));
         } catch (Exception e) {
             throw new ResourceException("cron.schedules()", e);
         }
@@ -436,15 +422,7 @@ public class Cron extends ResourceBase {
     )
     public boolean pause(String key) throws ResourceException {
         try {
-            return (Boolean)Class.forName("org.netuno.cli.Cron")
-                    .getMethod("pause",
-                            String.class,
-                            String.class)
-                    .invoke(
-                            null,
-                            Config.getApp(getProteu()),
-                            key
-                    );
+            return org.netuno.cli.Cron.pause(Config.getApp(getProteu()), key);
         } catch (Exception e) {
             throw new ResourceException("cron.pause("+ key +")", e);
         }
@@ -496,15 +474,7 @@ public class Cron extends ResourceBase {
     )
     public boolean resume(String key) throws ResourceException {
         try {
-            return (Boolean)Class.forName("org.netuno.cli.Cron")
-                    .getMethod("resume",
-                            String.class,
-                            String.class)
-                    .invoke(
-                            null,
-                            Config.getApp(getProteu()),
-                            key
-                    );
+            return org.netuno.cli.Cron.resume(Config.getApp(getProteu()), key);
         } catch (Exception e) {
             throw new ResourceException("cron.resume("+ key +")", e);
         }
@@ -555,15 +525,7 @@ public class Cron extends ResourceBase {
     )
     public boolean interrupt(String key) throws ResourceException {
         try {
-            return (Boolean)Class.forName("org.netuno.cli.Cron")
-                    .getMethod("interrupt",
-                            String.class,
-                            String.class)
-                    .invoke(
-                            null,
-                            Config.getApp(getProteu()),
-                            key
-                    );
+            return org.netuno.cli.Cron.interrupt(Config.getApp(getProteu()), key);
         } catch (Exception e) {
             throw new ResourceException("cron.interrupt("+ key +")", e);
         }
@@ -614,15 +576,7 @@ public class Cron extends ResourceBase {
     )
     public boolean delete(String key) throws ResourceException {
         try {
-            return (Boolean)Class.forName("org.netuno.cli.Cron")
-                    .getMethod("delete",
-                            String.class,
-                            String.class)
-                    .invoke(
-                            null,
-                            Config.getApp(getProteu()),
-                            key
-                    );
+            return org.netuno.cli.Cron.delete(Config.getApp(getProteu()), key);
         } catch (Exception e) {
             throw new ResourceException("cron.delete("+ key +")", e);
         }
@@ -673,15 +627,7 @@ public class Cron extends ResourceBase {
     )
     public boolean remove(String key) throws ResourceException {
         try {
-            return (Boolean)Class.forName("org.netuno.cli.Cron")
-                    .getMethod("delete",
-                            String.class,
-                            String.class)
-                    .invoke(
-                            null,
-                            Config.getApp(getProteu()),
-                            key
-                    );
+            return org.netuno.cli.Cron.delete(Config.getApp(getProteu()), key);
         } catch (Exception e) {
             throw new ResourceException("cron.remove("+ key +")", e);
         }
@@ -736,15 +682,7 @@ public class Cron extends ResourceBase {
     )
     public boolean checkExists(String key) throws ResourceException {
         try {
-            return (Boolean)Class.forName("org.netuno.cli.Cron")
-                    .getMethod("checkExists",
-                            String.class,
-                            String.class)
-                    .invoke(
-                            null,
-                            Config.getApp(getProteu()),
-                            key
-                    );
+            return org.netuno.cli.Cron.checkExists(Config.getApp(getProteu()), key);
         } catch (Exception e) {
             throw new ResourceException("cron.checkExists("+ key +")", e);
         }
