@@ -743,9 +743,7 @@ public class Val extends ResourceBase {
     public Values persistent() throws ResourceException {
         try {
             String appName = resource(App.class).name();
-            return (Values)Class.forName("org.netuno.cli.utils.PersistentMemoryData")
-                    .getMethod("forApp", String.class)
-                    .invoke(null, appName);
+            return org.netuno.cli.utils.PersistentMemoryData.forApp(appName);
         } catch (Exception e) {
             throw new ResourceException("val.persistent()", e);
         }
