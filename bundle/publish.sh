@@ -1,5 +1,27 @@
 #!/bin/bash
 
+echo
+
+PS3='Publish Mode: '
+PublishModeOptions=("Testing" "Release")
+PublishMode=
+select optPublishMode in "${PublishModeOptions[@]}"
+do
+    case $optPublishMode in
+        "Testing")
+            PublishMode="testing"
+            break
+            ;;
+        "Release")
+            PublishMode="release"
+            break
+            ;;
+        *) echo "invalid option $REPLY";;
+    esac
+done
+
+echo
+
 PS3='Version Type: '
 VersionTypeOptions=("Upgrade" "Critical")
 VersionType=
@@ -35,7 +57,11 @@ echo
 
 cp netuno.cli/pom-base.xml netuno.cli/pom.xml
 
+node bundle/publish-mode.js "$PublishMode"
+
 ./mvn-package.sh
+
+node bundle/publish-mode.js
 
 cd netuno.cli/protect && ./run.sh && cd ../..
 
@@ -53,7 +79,11 @@ cd ../../../../
 
 cp netuno.cli/pom-setup.xml netuno.cli/pom.xml
 
+node bundle/publish-mode.js "$PublishMode"
+
 cd netuno.cli && mvn clean && mvn package && cd ..
+
+node bundle/publish-mode.js
 
 cd netuno.cli/protect && ./run.sh && cd ../..
 
@@ -77,7 +107,7 @@ mv bundle/out/netuno.zip bundle/dist/netuno.zip
 
 BuildVersion=`unzip -p bundle/out/netuno/netuno.jar META-INF/MANIFEST.MF | grep "Build-Number:" | grep -Eow "[0-9\.]+"`
 
-cp bundle/dist/netuno.zip bundle/dist/netuno-v7-`echo $BuildVersion | sed -E 's/[\\.]/_/g'`.zip
+cp bundle/dist/netuno.zip bundle/dist/netuno-`echo $BuildVersion | sed -E 's/[\\.]/_/g'`.zip
 
 cd bundle
 printf '{"version":"%s","type":"%s"}\n' "$BuildVersion" "$VersionType" > dist/netuno.json
