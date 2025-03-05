@@ -207,7 +207,7 @@
                     <configuration>
                         <doCheck>false</doCheck>
                         <doUpdate>false</doUpdate>
-                        <format>{0,date,yyyy.MM}</format>
+                        <format>{0,date,yyyy.MM.dd}</format>
                         <items>
                             <item>timestamp</item>
                         </items>

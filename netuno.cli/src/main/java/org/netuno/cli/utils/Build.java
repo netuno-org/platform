@@ -37,7 +37,7 @@ public class Build {
         String className = clazz.getSimpleName() + ".class";
         String classPath = clazz.getResource(className).toString();
         if (!classPath.startsWith("jar")) {
-            return "9999.99";
+            return "9999.99.99-development";
         }
         try {
             Manifest manifest = new Manifest(new URL(
