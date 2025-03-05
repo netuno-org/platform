@@ -33,16 +33,21 @@ public class Update {
     
     public static void check() {
         try {
+            String buildNumber = Build.getNumber();
+            String mode = "testing";
+            if (buildNumber.endsWith("-stable")) {
+                mode = "stable";
+            }
             Values data = Values.fromJSON(
                     new Remote()
                             .setConnectTimeout(10000)
                             .setReadTimeout(10000)
-                            .get("https://github.com/netuno-org/platform/releases/download/stable/netuno.json")
+                            .get("https://github.com/netuno-org/platform/releases/download/"+ mode +"/netuno.json")
                             .toString()
             );
-            String stableVersion = data.getString("version");
-            int compareVersion = Build.getNumber().compareTo(stableVersion);
-            if (stableVersion.length() > 8) {
+            String remoteVersion = data.getString("version");
+            int compareVersion = Build.getNumber().compareTo(remoteVersion);
+            if (remoteVersion.length() > 8) {
                 compareVersion = 1;
             }
             if (compareVersion < 0) {
@@ -52,7 +57,7 @@ public class Update {
                 System.out.println();
                 System.out.println("   " + OS.consoleOutput("@|green New version released! |@") + " You can upgrade with this command:");
                 System.out.println();
-                System.err.println(OS.consoleCommand("install-stable"));
+                System.err.println(OS.consoleCommand("install-"+ mode));
                 System.out.println();
                 System.out.println();
                 //Thread.sleep(1000);
