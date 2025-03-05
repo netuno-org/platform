@@ -54,6 +54,8 @@ base/graalvm
 
 out/
 
+/publish-release.json
+
 *~
 \#*\#
 .\#*
