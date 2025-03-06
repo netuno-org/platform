@@ -6,6 +6,10 @@ const config = require(path.join(__dirname, 'publish-release.json'));
 const publishMode = process.argv[2];
 
 (async () => {
+    console.log();
+    console.log(`Publishing files in the ${publishMode} release.`);
+    console.log();
+    
     const releases = await request({
         path: '/releases'
     });
@@ -22,10 +26,10 @@ const publishMode = process.argv[2];
 
     await (async ()=> {
         for (const asset of assets.filter((a) => bundleFiles.some((f) => a.name == f))) {
-            console.log(await request({
+            await request({
                 method: 'DELETE',
                 path: `/releases/assets/${asset.id}`
-            }));
+            });
             console.log(`Asset ${asset.name} removed.`);
         }
     })();
@@ -39,7 +43,7 @@ const publishMode = process.argv[2];
         });
     }
     console.log();
-    console.log('DONE');
+    console.log(`The ${publishMode} release was successfully published.`);
     console.log();
 })()
 
@@ -63,7 +67,7 @@ function request({method = 'GET', path, bodyFile}) {
             options.headers['Content-Length'] = fs.statSync(bodyFile).size;
         }
         const request = https.request(options, (res) => {
-            if (res.statusCode !== 200 && res.statusCode !== 201) {
+            if (res.statusCode !== 200 && res.statusCode !== 201 && res.statusCode !== 204) {
                 console.error(`Did not get an OK for ${options.path}, the code is: ${res.statusCode}`);
                 let errorData = '';
                 res.on('data', (chunk) => {
@@ -83,7 +87,11 @@ function request({method = 'GET', path, bodyFile}) {
             });
         
             res.on('close', () => {
-                resolve(JSON.parse(data));
+                if (data != '') {
+                    resolve(JSON.parse(data));
+                } else {
+                    resolve();
+                }
             });
         });
         request.on('error', (err) => {
