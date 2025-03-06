@@ -111,8 +111,30 @@ cp bundle/dist/netuno.zip bundle/dist/netuno-`echo $BuildVersion | sed -E 's/[\\
 
 cd bundle
 printf '{"version":"%s","type":"%s"}\n' "$BuildVersion" "$VersionType" > dist/netuno.json
+cd ..
 
 echo
 echo
 echo "Done."
 echo
+
+echo
+
+PS3='Publish Release: '
+PublishReleaseOptions=("Yes" "No")
+select optPublishRelease in "${PublishReleaseOptions[@]}"
+do
+    case $optPublishRelease in
+        "Yes")
+            node bundle/publish-release.js "$PublishMode"
+            break
+            ;;
+        "No")
+            echo
+            break
+            ;;
+        *) echo "invalid option $REPLY";;
+    esac
+done
+
+cd bundle
