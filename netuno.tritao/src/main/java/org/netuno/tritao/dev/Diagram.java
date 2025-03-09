@@ -48,21 +48,25 @@ public class Diagram {
             List<Values> links = new ArrayList<>();
             for (Values table : tables) {
                 List<Values> fields = Config.getDataBaseBuilder(proteu).selectTableDesign(table.getString("id"), "");
+                int linksCount = 0;
                 for (Values field : fields) {
                     Component com = Config.getNewComponent(proteu, hili, field.getString("type"));
                     com.setProteu(proteu);
                     com.setDesignData(field);
                     for (String key : com.getConfiguration().getParameters().keySet()) {
                         Parameter parameter = com.getConfiguration().getParameters().get(key);
-                        if (parameter.getType() == ParameterType.LINK) {
-                            String toTable = Link.getTableName(com.getConfiguration().getParameter("LINK").getValue());
+                        if (parameter.getType() == ParameterType.LINK && parameter.getKey().equalsIgnoreCase("LINK")) {
+                            String toTable = Link.getTableName(parameter.getValue());
                             Values link = new Values();
+                            link.set("field", field.getString("name"));
                             link.set("from", table.getString("name"));
                             link.set("to", toTable);
                             links.add(link);
+                            linksCount++;
                         }
                     }
                 }
+                table.set("links_count", linksCount);
                 table.set("fields", fields);
             }
             data.set("tables", tables);
