@@ -23,7 +23,7 @@
             <a href="javascript:nomnoml.magnifyViewport(2)" title="Zoom in">
                 <img src="_{netuno-config=url-dev-images}/diagram/plus.png">
             </a>
-            <a href="javascript:nomnoml.resetViewport()" title="Reset zoom and panning">
+            <a href="javascript:nomnoml.resetViewport(true)" title="Reset zoom and panning">
                 <img src="_{netuno-config=url-dev-images}/diagram/equals.png">
             </a>
             <a href="javascript:nomnoml.magnifyViewport(-2)" title="Zoom out">
@@ -33,19 +33,27 @@
     </div>
 </div>
 <script type="text/vnd.nomnoml.class" id="defaultGraph">
+#.links0: fill=#f1d1d1
+#.links1: fill=#d1d1f1
+#.links2: fill=#d1f1d1
+#.links3: fill=#f1f1d1
+#.links4: fill=#d1f1F1
+#.links6: fill=#f1d1f1
+
 #foreach($table in $data.get("tables"))
 
-[$table.getString("name")|id: int#foreach($field in $table.get("fields"))| $field.getString("name"): $field.getString("type") #end]
+[<links#if($table.getInt("links_count")<5)$table.getInt("links_count")#else 5#end> $table.getString("name")|id: int#foreach($field in $table.get("fields"))| $field.getString("name"): $field.getString("type") #end]
 
 #end
 #foreach($link in $data.get("links"))
 
-[$link.getString("from")]->[$link.getString("to")]
+[$link.getString("from")] -> $link.getString("field") [$link.getString("to")]
 
 #end
 </script>
 
 <!--[marca]->[carro]-->
+<!--
 <script src="_{netuno-config=url-dev-scripts}/diagram/lib/zepto.min.js"></script>
 <script src="_{netuno-config=url-dev-scripts}/diagram/lib/lodash.min.js"></script>
 <script src="_{netuno-config=url-dev-scripts}/diagram/lib/dagre.min.js"></script>
@@ -60,6 +68,11 @@
 <script src="_{netuno-config=url-dev-scripts}/diagram/diagram.renderer.js"></script>
 <script src="_{netuno-config=url-dev-scripts}/diagram/diagram.js"></script>
 <script src="_{netuno-config=url-dev-scripts}/diagram/diagram.app.js"></script>
-
+-->
+<script type="text/javascript" src="_{netuno-config=url-scripts}/plugins/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="_{netuno-config=url-dev-scripts}/diagram/lodash.js"></script>
+<script type="text/javascript" src="_{netuno-config=url-dev-scripts}/diagram/graphre.js"></script>
+<script type="text/javascript" src="_{netuno-config=url-dev-scripts}/diagram/nomnoml.js"></script>
+<script type="text/javascript" src="_{netuno-config=url-dev-scripts}/diagram/diagram.js"></script>
 </body>
 </html>
