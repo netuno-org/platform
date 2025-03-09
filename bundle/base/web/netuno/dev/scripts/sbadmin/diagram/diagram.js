@@ -1,100 +1,134 @@
-var nomnoml = nomnoml || {};
+var nomnoml = nomnoml || {}
 
-(function () {
-    'use strict';
+$(document).ready(function (){
 
-    function getConfig(d) {
-        var userStyles = {}
-        _.each(d, function (styleDef, key){
-            if (key[0] != '.') return
-            userStyles[key.substring(1).toUpperCase()] = {
-                center: _.contains(styleDef, 'center'),
-                bold: _.contains(styleDef, 'bold'),
-                underline: _.contains(styleDef, 'underline'),
-                italic: _.contains(styleDef, 'italic'),
-                dashed: _.contains(styleDef, 'dashed'),
-                empty: _.contains(styleDef, 'empty'),
-                fill: _.last(styleDef.match('fill=([^ ]*)')),
-                visual: _.last(styleDef.match('visual=([^ ]*)')) || 'class',
-                direction: { down: 'TB', right: 'LR' }[_.last(styleDef.match('direction=([^ ]*)'))] || 'TB'
-            }
-        })
-        return {
-            arrowSize: +d.arrowSize || 1,
-            bendSize: +d.bendSize || 0.3,
-            direction: { down: 'TB', right: 'LR' }[d.direction] || 'TB',
-            gutter: +d.gutter || 5,
-            edgeMargin: (+d.edgeMargin) || 0,
-            edges: { hard: 'hard', rounded: 'rounded' }[d.edges] || 'rounded',
-            fill: (d.fill || '#e8e8e8;#f1f1f1;#e8e8e8;#f1f1f1').split(';'),
-            fillArrows: d.fillArrows === 'true',
-            font: d.font || 'Calibri',
-            fontSize: (+d.fontSize) || 10,
-            leading: (+d.leading) || 1.0,
-            lineWidth: (+d.lineWidth) || 1,
-            padding: (+d.padding) || 8,
-            spacing: (+d.spacing) || 40,
-            stroke: d.stroke || '#333333',
-            title: d.title || 'diagram',
-            zoom: +d.zoom || 1,
-            styles: _.extend({}, nomnoml.styles, userStyles)
-        };
+    var jqCanvas = $('#canvas')
+    var viewport = $(window)
+    var jqBody = $('body')
+    var imgLink = document.getElementById('savebutton')
+    var canvasElement = document.getElementById('canvas')
+    var canvasPanner = document.getElementById('canvas-panner')
+    var canvasTools = document.getElementById('canvas-tools')
+    var defaultSource = document.getElementById('defaultGraph').innerHTML
+    var zoomLevel = 0;
+    var offset = {x:0, y:0}
+    var mouseDownPoint = false
+
+    canvasPanner.addEventListener('mouseenter', classToggler(jqBody, 'canvas-mode', true))
+    canvasPanner.addEventListener('mouseleave', classToggler(jqBody, 'canvas-mode', false))
+    canvasTools.addEventListener('mouseenter', classToggler(jqBody, 'canvas-mode', true))
+    canvasTools.addEventListener('mouseleave', classToggler(jqBody, 'canvas-mode', false))
+    canvasPanner.addEventListener('mousedown', mouseDown)
+    window.addEventListener('mousemove', _.throttle(mouseMove,50))
+    canvasPanner.addEventListener('mouseup', mouseUp)
+    canvasPanner.addEventListener('mouseleave', mouseUp)
+    canvasPanner.addEventListener('wheel', _.throttle(magnify, 50))
+    initImageDownloadLink(imgLink, canvasElement)
+
+    function classToggler(element, className, state){
+        var jqElement = $(element)
+        return _.bind(jqElement.toggleClass, jqElement, className, state)
     }
 
-    function fitCanvasSize(canvas, rect, zoom) {
-        canvas.width = rect.width * zoom;
-        canvas.height = rect.height * zoom;
+    function diff(a, b) {
+        return { x: a.x - b.x, y: a.y - b.y }
     }
 
-    function setFont(config, isBold, isItalic, graphics) {
-        var style = (isBold === 'bold' ? 'bold' : '')
-        if (isItalic) style = 'italic ' + style
-        var defaultFont = 'Helvetica, sans-serif'
-        var font = skanaar.format('# #pt #, #', style, config.fontSize, config.font, defaultFont)
-        graphics.font(font)
+    function mouseDown(e){
+        $(canvasPanner).css({width: '100%'})
+        mouseDownPoint = diff({ x: e.pageX, y: e.pageY }, offset)
     }
 
-    function parseAndRender(code, graphics, canvas, scale) {
-        var ast = nomnoml.parse(code);
-        var config = getConfig(ast.directives);
-        var measurer = {
-            setFont: function (a, b, c) { setFont(a, b, c, graphics); },
-            textWidth: function (s) { return graphics.measureText(s).width },
-            textHeight: function () { return config.leading * config.fontSize }
-        };
-        var layout = nomnoml.layout(measurer, config, ast);
-        fitCanvasSize(canvas, layout, config.zoom * scale);
-        config.zoom *= scale;
-        nomnoml.render(graphics, config, layout, measurer.setFont);
-        return { config: config };
-    }
-
-    nomnoml.draw = function (canvas, code, scale) {
-        return parseAndRender(code, skanaar.Canvas(canvas), canvas, scale || 1)
-    };
-
-    nomnoml.renderSvg = function (code) {
-        var ast = nomnoml.parse(code)
-        var config = getConfig(ast.directives)
-        var skCanvas = skanaar.Svg('')
-        function setFont(config, isBold, isItalic) {
-            var style = (isBold === 'bold' ? 'bold' : '')
-            if (isItalic) style = 'italic ' + style
-            var defFont = 'Helvetica, sans-serif'
-            var template = 'font-weight:#; font-size:#pt; font-family:\'#\', #'
-            var font = skanaar.format(template, style, config.fontSize, config.font, defFont)
-            skCanvas.font(font)
+    function mouseMove(e){
+        if (mouseDownPoint){
+            offset = diff({ x: e.pageX, y: e.pageY }, mouseDownPoint)
+            sourceChanged()
         }
-        var measurer = {
-            setFont: function (a, b, c) { setFont(a, b, c, skCanvas); },
-            textWidth: function (s) { return skCanvas.measureText(s).width },
-            textHeight: function () { return config.leading * config.fontSize }
-        };
-        var layout = nomnoml.layout(measurer, config, ast)
-        nomnoml.render(skCanvas, config, layout, measurer.setFont)
-        return skCanvas.serialize({
-            width: layout.width,
-            height: layout.height
+    }
+
+    function mouseUp(){
+        mouseDownPoint = false
+        $(canvasPanner).css({width: '100%'})
+    }
+
+    function magnify(e) {
+        zoomLevel = Math.min(10, zoomLevel - (e.deltaY < 0 ? -1 : 1))
+        sourceChanged()
+        window.localStorage.setItem('dev:diagram:zoom:level', zoomLevel)
+    }
+
+    nomnoml.resetViewport = function (force) {
+        zoomLevel = -8
+        if (force === true) {
+            window.localStorage.removeItem('dev:diagram:zoom:level')
+            window.localStorage.removeItem('dev:diagram:offset')
+        }
+        if (window.localStorage.getItem('dev:diagram:zoom:level')) {
+            zoomLevel = parseInt(window.localStorage.getItem('dev:diagram:zoom:level'))
+        }
+        offset = { x: (canvasElement.width / 4) * -0.25, y: 0 }
+        if (window.localStorage.getItem('dev:diagram:offset')) {
+            offset = JSON.parse(window.localStorage.getItem('dev:diagram:offset'))
+        }
+        sourceChanged()
+    }
+
+    nomnoml.toggleSidebar = function (id){
+        var sidebars = ['reference', 'about']
+        _.each(sidebars, function (key){
+            if (id !== key) $(document.getElementById(key)).toggleClass('visible', false)
         })
-    };
-})();
+        $(document.getElementById(id)).toggleClass('visible')
+    }
+
+    nomnoml.exitViewMode = function (){
+        window.location = './'
+    }
+
+    function initImageDownloadLink(link, canvasElement){
+        link.addEventListener('click', downloadImage, false);
+        function downloadImage(){
+            var url = canvasElement.toDataURL('image/png')
+            link.href = url;
+        }
+    }
+
+    function positionCanvas(rect, superSampling, offset){
+        var w = rect.width / superSampling
+        var h = rect.height / superSampling
+        // top: h * (1 - h/viewport.height()) / 2 + offset.y,
+        // left: (w / 4) + (viewport.width() - w)/2 + offset.x,
+        window.localStorage.setItem('dev:diagram:offset', JSON.stringify(offset));
+        jqCanvas.css({
+            top: h * (1 - h/viewport.height()) / 4 + offset.y,
+            left: (w / 4) + (viewport.width() - w)/2 + offset.x,
+            width: w,
+            height: h
+        })
+    }
+
+    function setFilename(filename){
+        imgLink.download = filename + '.png'
+    }
+
+    function currentText(){
+        return defaultSource
+    }
+
+    function sourceChanged(){
+        try {
+            var superSampling = window.devicePixelRatio || 1
+            var scale = superSampling * Math.exp(zoomLevel/10)
+
+            nomnoml.draw(canvasElement, currentText(), scale)
+            positionCanvas(canvasElement, superSampling, offset)
+            setFilename('netuno-diagram')
+        } catch (e) {
+            throw e
+        }
+    }
+    window.setTimeout(function () {
+        nomnoml.resetViewport()
+    }, 250);
+    //sourceChanged()
+})
