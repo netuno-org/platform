@@ -38,37 +38,20 @@
 #.links2: fill=#d1f1d1
 #.links3: fill=#f1f1d1
 #.links4: fill=#d1f1F1
-#.links6: fill=#f1d1f1
+#.links5: fill=#f1d1f1
 
 #foreach($table in $data.get("tables"))
 
-[<links#if($table.getInt("links_count")<5)$table.getInt("links_count")#else 5#end> $table.getString("name")|id: int#foreach($field in $table.get("fields"))| $field.getString("name"): $field.getString("type") #end]
+[#if($table.getInt("links_count")<5)<links$table.getInt("links_count")>#else<links5>#end $table.getString("name")|id: int ! *#foreach($field in $table.get("fields")); $field.getString("name"): $field.getString("type")#if($field.getBoolean("primarykey")) !#end#if($field.getBoolean("notnull")) *#end#end]
 
 #end
 #foreach($link in $data.get("links"))
 
-[$link.getString("from")] -> $link.getString("field") [$link.getString("to")]
+ [$link.getString("from")] (o--o) [<state> $link.getString("field")] <:->o [$link.getString("to")]
 
 #end
 </script>
 
-<!--[marca]->[carro]-->
-<!--
-<script src="_{netuno-config=url-dev-scripts}/diagram/lib/zepto.min.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/lib/lodash.min.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/lib/dagre.min.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/skanaar.canvas.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/skanaar.svg.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/skanaar.util.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/skanaar.vector.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.jison.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.parser.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.visuals.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.layouter.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.renderer.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.js"></script>
-<script src="_{netuno-config=url-dev-scripts}/diagram/diagram.app.js"></script>
--->
 <script type="text/javascript" src="_{netuno-config=url-scripts}/plugins/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript" src="_{netuno-config=url-dev-scripts}/diagram/lodash.js"></script>
 <script type="text/javascript" src="_{netuno-config=url-dev-scripts}/diagram/graphre.js"></script>
