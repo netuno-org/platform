@@ -76,6 +76,12 @@ $(document).ready(function (){
         sourceChanged()
     }
 
+    nomnoml.magnifyViewport = function (z) {
+        zoomLevel += z
+        sourceChanged()
+        window.localStorage.setItem('dev:diagram:zoom:level', zoomLevel)
+    }
+
     nomnoml.toggleSidebar = function (id){
         var sidebars = ['reference', 'about']
         _.each(sidebars, function (key){
