@@ -46,6 +46,8 @@ public class Diagram {
 
             List<Values> tables = Config.getDataBaseBuilder(proteu).selectTable();
             List<Values> links = new ArrayList<>();
+            List<Values> linksFrom = new ArrayList<>();
+            List<Values> linksTo = new ArrayList<>();
             for (Values table : tables) {
                 List<Values> fields = Config.getDataBaseBuilder(proteu).selectTableDesign(table.getString("id"), "");
                 int linksCount = 0;
@@ -62,6 +64,20 @@ public class Diagram {
                             link.set("from", table.getString("name"));
                             link.set("to", toTable);
                             links.add(link);
+                            if (linksFrom.stream().noneMatch((l) -> l.getString("from").equals(table.getString("name")) && l.getString("field").equals(field.getString("name")))) {
+                                linksFrom.add(
+                                        Values.newMap()
+                                                .set("from", table.getString("name"))
+                                                .set("field", field.getString("name"))
+                                );
+                            }
+                            if (linksTo.stream().noneMatch((l) -> l.getString("to").equals(toTable) && l.getString("field").equals(field.getString("name")))) {
+                                linksTo.add(
+                                        Values.newMap()
+                                                .set("to", toTable)
+                                                .set("field", field.getString("name"))
+                                );
+                            }
                             linksCount++;
                         }
                     }
@@ -71,6 +87,8 @@ public class Diagram {
             }
             data.set("tables", tables);
             data.set("links", links);
+            data.set("linksFrom", linksFrom);
+            data.set("linksTo", linksTo);
             TemplateBuilder.output(proteu, hili, "dev/diagram/iframe", data);
             return;
         }
