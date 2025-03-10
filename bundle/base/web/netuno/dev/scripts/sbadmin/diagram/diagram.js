@@ -9,7 +9,10 @@ $(document).ready(function (){
     var canvasElement = document.getElementById('canvas')
     var canvasPanner = document.getElementById('canvas-panner')
     var canvasTools = document.getElementById('canvas-tools')
-    var defaultSource = document.getElementById('defaultGraph').innerHTML
+    var defaultSource = document.getElementById('defaultSource').innerHTML
+        .replaceAll('&#key', '⚷')
+        .replaceAll('&#star', '*')
+
     var zoomLevel = 0;
     var offset = {x:0, y:0}
     var mouseDownPoint = false
