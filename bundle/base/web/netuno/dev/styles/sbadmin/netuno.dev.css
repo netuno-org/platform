@@ -52,7 +52,8 @@
 }
 
 #management_diagram iframe {
-    border: 1px solid #f1f1f1;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 5px;
 }
 
 .note-group-select-from-files {
