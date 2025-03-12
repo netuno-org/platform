@@ -45,6 +45,11 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.layout.renderer.IRenderer;
 import org.apache.logging.log4j.LogManager;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.io.RandomAccessInputStream;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -4664,7 +4669,7 @@ public class PDF extends ResourceBase {
     }
 
     public void toImage(File source, int startPage, int endPage, File destinationPath, String filePrefixName, String fileExtension, int dpi) throws IOException {
-        try (PDDocument document = PDDocument.load(source.input())) {
+        try (PDDocument document = Loader.loadPDF(new RandomAccessReadBufferedFile(source.getFullPath()))) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
             int numberOfPages = document.getNumberOfPages();
             for (int i = (startPage >= 0 ? startPage : 0); i < (endPage >= 0 ? endPage + 1 : numberOfPages); ++i) {
@@ -4723,9 +4728,10 @@ public class PDF extends ResourceBase {
     }
 
     public String toHTML(java.io.InputStream in) throws IOException {
-        PDDocument pddDocument = PDDocument.load(in);
-        PDFText2HTML stripper = new PDFText2HTML();
-        return stripper.getText(pddDocument);
+        try (PDDocument pddDocument = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(in))) {
+            PDFText2HTML stripper = new PDFText2HTML();
+            return stripper.getText(pddDocument);
+        }
     }
 
     public String toText(Storage storage) throws TikaException, IOException {
