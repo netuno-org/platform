@@ -46,6 +46,8 @@ import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.layout.renderer.IRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.PDFText2HTML;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
@@ -63,6 +65,8 @@ import com.itextpdf.layout.Document;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.FileSystemPath;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.StringWriter;
@@ -4643,15 +4647,37 @@ public class PDF extends ResourceBase {
         }
     }
 
-    public String toHTML(Storage storage) throws IOException {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage));
-            return toHTML(fis);
-        } finally {
-            if (fis != null) {
-                fis.close();
+    public void toImage(File source, File destinationPath, String filePrefixName, String fileExtension) throws IOException {
+        toImage(source, -1, destinationPath, filePrefixName, fileExtension);
+    }
+
+    public void toImage(File source, File destinationPath, String filePrefixName, String fileExtension, int dpi) throws IOException {
+        toImage(source, -1, -1, destinationPath, filePrefixName, fileExtension, dpi);
+    }
+
+    public void toImage(File source, int pageNumber, File destinationPath, String filePrefixName, String fileExtension) throws IOException {
+        toImage(source, pageNumber, pageNumber, destinationPath, filePrefixName, fileExtension, 300);
+    }
+
+    public void toImage(File source, int pageNumber, File destinationPath, String filePrefixName, String fileExtension, int dpi) throws IOException {
+        toImage(source, pageNumber, pageNumber, destinationPath, filePrefixName, fileExtension, dpi);
+    }
+
+    public void toImage(File source, int startPage, int endPage, File destinationPath, String filePrefixName, String fileExtension, int dpi) throws IOException {
+        try (PDDocument document = PDDocument.load(source.input())) {
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+            int numberOfPages = document.getNumberOfPages();
+            for (int i = (startPage >= 0 ? startPage : 0); i < (endPage >= 0 ? endPage + 1 : numberOfPages); ++i) {
+                java.io.File outFile = new java.io.File(destinationPath.fullPath(), filePrefixName + "-" + (i + 1) + "." + fileExtension);
+                BufferedImage bufImage = pdfRenderer.renderImageWithDPI(i, dpi, fileExtension.equalsIgnoreCase("png") ? ImageType.ARGB : ImageType.RGB);
+                ImageIO.write(bufImage, fileExtension, outFile);
             }
+        }
+    }
+
+    public String toHTML(Storage storage) throws IOException {
+        try (FileInputStream fis = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage))) {
+            return toHTML(fis);
         }
     }
 
@@ -4703,14 +4729,8 @@ public class PDF extends ResourceBase {
     }
 
     public String toText(Storage storage) throws TikaException, IOException {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage));
+        try (FileInputStream fis = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage))) {
             return toText(fis);
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
         }
     }
 
