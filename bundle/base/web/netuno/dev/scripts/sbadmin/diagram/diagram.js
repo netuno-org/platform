@@ -5,6 +5,15 @@ $(document).ready(function (){
     var jqCanvas = $('#canvas')
     var viewport = $(window)
     var jqBody = $('body')
+
+    $(window).on('mouseenter', function(e) {
+        parent.netuno.diagram.noScroll = true;
+    });
+
+    $(window).on('mouseleave', function(e) {
+        parent.netuno.diagram.noScroll = false;
+    });
+
     var imgLink = document.getElementById('savebutton')
     var canvasElement = document.getElementById('canvas')
     var canvasPanner = document.getElementById('canvas-panner')
@@ -25,7 +34,7 @@ $(document).ready(function (){
     window.addEventListener('mousemove', _.throttle(mouseMove,50))
     canvasPanner.addEventListener('mouseup', mouseUp)
     canvasPanner.addEventListener('mouseleave', mouseUp)
-    canvasPanner.addEventListener('wheel', _.throttle(magnify, 50))
+    canvasPanner.addEventListener('wheel', _.throttle(magnify, 50), false)
     initImageDownloadLink(imgLink, canvasElement)
 
     function classToggler(element, className, state){
