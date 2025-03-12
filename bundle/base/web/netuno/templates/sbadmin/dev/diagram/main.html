@@ -2,7 +2,31 @@
 <iframe id="diagram" src="Diagram_{netuno-config=extension}?action=iframe" style="width: 100%; height: 100%;"></iframe>
 
 <script>
-    (function (NetunoDiagram) {
-        new NetunoDiagram($('#diagram'));
-    })(typeof NetunoDiagram == 'undefined' ? parent.NetunoDiagram : NetunoDiagram);
+    (function (netuno, $) {
+        netuno.diagram = {
+            noScroll: false
+        };
+        const diagram = $('#diagram');
+        let event = null;
+        function offWindowEvents() {
+            $(window).off('scroll.diagram');
+        }
+        offWindowEvents();
+        $(window).on('scroll.diagram', function(e) {
+            if ($('#diagram').length == 0) {
+                offWindowEvents();
+                return;
+            }
+            if (netuno.diagram.noScroll) {
+                window.scrollTo({
+                    top: 0,
+                    left: 0,
+                    behavior: 'instant'
+                });
+            }
+        });
+        diagram.on("load", function() {
+            return diagram.fadeIn("slow");
+        });
+    })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
 </script>
