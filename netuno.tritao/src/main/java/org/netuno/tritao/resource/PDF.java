@@ -31,6 +31,7 @@ import com.itextpdf.kernel.pdf.canvas.draw.DashedLine;
 import com.itextpdf.kernel.pdf.canvas.draw.DottedLine;
 import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
+import com.itextpdf.layout.Style;
 import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.element.Image;
@@ -3925,6 +3926,48 @@ public class PDF extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
+                    description = "Cria um parágrafo.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a paragraph.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "text", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "texto",
+                            description = "Objeto de texto que será utilizado como conteúdo no parágrafo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Text object that will be used as content in the paragraph."
+                    )
+            })
+    },
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O novo objeto de parágrafo com o objeto de texto adicionado como conteúdo."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The new paragraph object with the text object added as content."
+            )
+    })
+    public Paragraph paragraph(Text text) {
+        Paragraph paragraph = new Paragraph(text);
+        return paragraph;
+    }
+
+    public Paragraph paragraph() {
+        Paragraph paragraph = new Paragraph();
+        return paragraph;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
                     description = "Calcula a área de um parágrafo, permite obter a altura e a largura que o texto do parágrafo ocupará no PDF.",
                     howToUse = {}),
             @MethodTranslationDoc(
@@ -4419,6 +4462,31 @@ public class PDF extends ResourceBase {
                 embedded ? EmbeddingStrategy.FORCE_EMBEDDED : EmbeddingStrategy.PREFER_EMBEDDED
         );
         return font;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria um novo estilo que é útil para reutilizar a estilização.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a new style that is useful for reusing styling.",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna um novo estilo para PDF."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns a new style to PDF."
+            )
+    })
+    public Style style() {
+        Style style = new Style();
+        return style;
     }
 
     @MethodDoc(translations = {
