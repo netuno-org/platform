@@ -51,24 +51,20 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.PDFText2HTML;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.pdf.PDFParser;
-import org.apache.tika.sax.BodyContentHandler;
+
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
-import org.netuno.psamata.io.IO;
 import org.netuno.psamata.io.InputStream;
 import com.itextpdf.layout.Document;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.pdf.PDFExtract;
 import org.netuno.tritao.resource.pdf.PDFToImage;
 import org.netuno.tritao.resource.util.FileSystemPath;
 
 import java.io.IOException;
 import java.io.FileInputStream;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 
@@ -86,7 +82,7 @@ import java.net.MalformedURLException;
                 howToUse = { }
         )
 })
-public class PDF extends ResourceBase implements PDFToImage {
+public class PDF extends ResourceBase implements PDFExtract, PDFToImage {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(PDF.class);
 
     public PdfWriter writer = null;
@@ -4748,96 +4744,5 @@ public class PDF extends ResourceBase implements PDFToImage {
     }
     public String toText(java.io.InputStream in) throws TikaException, IOException {
         return new Tika().parseToString(in);
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Extrai o conteúdo de PDFs.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Extracts the content of PDFs.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "storage", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "armazenamento",
-                            description = "Caminho do armazenamento."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Caminho do armazenamento."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna o conteúdo extraido."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns the extracted content."
-            )
-    })
-    public Values extract(IO io) throws Exception {
-        try (InputStream in = io.input()) {
-            return extract(in);
-        }
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Extrai o conteúdo de PDFs.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Extracts the content of PDF's.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "content", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "conteúdo",
-                            description = "Conteúdo a ser extraído."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Content to be extracted."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna o conteudo extraído."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns the extracted content."
-            )
-    })public Values extract(InputStream in) throws Exception {
-        return extract((java.io.InputStream)in);
-    }
-
-    public Values extract(java.io.InputStream in) throws Exception {
-        StringWriter any = new StringWriter();
-        BodyContentHandler handler = new BodyContentHandler(any);
-        Metadata metadata = new Metadata();
-        ParseContext pContext = new ParseContext();
-
-        PDFParser pdfparser = new PDFParser();
-        pdfparser.parse(in, handler, metadata, pContext);
-
-        Values result = new Values();
-        Values resultMetadata = new Values();
-        String[] metadataNames = metadata.names();
-        for(String name : metadataNames) {
-            resultMetadata.set(name, metadata.get(name));
-        }
-        result.set("metadata", resultMetadata);
-        result.set("content", handler.toString());
-        return result;
     }
 }
