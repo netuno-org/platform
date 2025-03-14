@@ -6,12 +6,11 @@ import org.netuno.library.doc.*;
 import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.tritao.resource.Storage;
-import org.netuno.tritao.resource.util.FileSystemPath;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class PDFText {
+public interface PDFToText {
 
     @MethodDoc(translations = {
             @MethodTranslationDoc(
@@ -44,23 +43,23 @@ public class PDFText {
                     description = "Returns the Html."
             )
     })
-    public String toText(Storage storage) throws TikaException, IOException {
+    default String toText(Storage storage) throws TikaException, IOException {
         try (FileInputStream fis = new FileInputStream(storage.absolutePath())) {
             return toText(fis);
         }
     }
 
-    public String toText(File file) throws TikaException, IOException {
+    default String toText(File file) throws TikaException, IOException {
         try (java.io.InputStream in = file.inputStream()) {
             return toText(in);
         }
     }
 
-    public String toText(InputStream in) throws TikaException, IOException {
+    default String toText(InputStream in) throws TikaException, IOException {
         return toText((java.io.InputStream)in);
     }
 
-    public String toText(java.io.InputStream in) throws TikaException, IOException {
+    default String toText(java.io.InputStream in) throws TikaException, IOException {
         return new Tika().parseToString(in);
     }
 }
