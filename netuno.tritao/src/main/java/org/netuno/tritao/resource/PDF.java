@@ -45,10 +45,6 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.layout.renderer.IRenderer;
 import org.apache.logging.log4j.LogManager;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.io.RandomAccessReadBuffer;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.tools.PDFText2HTML;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 
@@ -60,6 +56,7 @@ import org.netuno.psamata.io.InputStream;
 import com.itextpdf.layout.Document;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.pdf.PDFExtract;
+import org.netuno.tritao.resource.pdf.PDFHTML;
 import org.netuno.tritao.resource.pdf.PDFToImage;
 import org.netuno.tritao.resource.util.FileSystemPath;
 
@@ -82,7 +79,7 @@ import java.net.MalformedURLException;
                 howToUse = { }
         )
 })
-public class PDF extends ResourceBase implements PDFExtract, PDFToImage {
+public class PDF extends ResourceBase implements PDFHTML, PDFExtract, PDFToImage {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(PDF.class);
 
     public PdfWriter writer = null;
@@ -4639,60 +4636,6 @@ public class PDF extends ResourceBase implements PDFExtract, PDFToImage {
             return (VerticalAlignment)VerticalAlignment.class.getDeclaredField(key).get(VerticalAlignment.class);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             return null;
-        }
-    }
-
-    public String toHTML(Storage storage) throws IOException {
-        try (FileInputStream fis = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage))) {
-            return toHTML(fis);
-        }
-    }
-
-    public String toHTML(File file) throws TikaException, IOException {
-        try (java.io.InputStream in = file.inputStream()) {
-            return toHTML(in);
-        }
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Passa para HTML o conteúdo inserido.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Converts the inserted content to HTML.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "content", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "conteúdo",
-                            description = "Conteúdo a passar pra HTML."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Content to HTML."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna o HTML."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns the Html."
-            )
-    })
-    public String toHTML(InputStream in) throws IOException {
-        return toHTML((java.io.InputStream)in);
-    }
-
-    public String toHTML(java.io.InputStream in) throws IOException {
-        try (PDDocument pddDocument = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(in))) {
-            PDFText2HTML stripper = new PDFText2HTML();
-            return stripper.getText(pddDocument);
         }
     }
 
