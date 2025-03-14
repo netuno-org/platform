@@ -172,12 +172,14 @@ public interface PDFToImage {
         try (PDDocument document = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(in))) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
             int numberOfPages = document.getNumberOfPages();
-            byte[][] images = new byte[endPage - startPage][];
+            byte[][] images = new byte[(endPage >= 0 ? endPage : numberOfPages) - (startPage >= 0 ? startPage : 0)][];
+            int idx = 0;
             for (int i = (startPage >= 0 ? startPage : 0); i < (endPage >= 0 ? endPage : numberOfPages); ++i) {
                 BufferedImage bufImage = pdfRenderer.renderImageWithDPI(i, dpi, fileExtension.equalsIgnoreCase("png") ? ImageType.ARGB : ImageType.RGB);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ImageIO.write(bufImage, fileExtension, baos);
-                images[startPage + i - endPage] = baos.toByteArray();
+                images[idx] = baos.toByteArray();
+                idx++;
             }
             return images;
         }
