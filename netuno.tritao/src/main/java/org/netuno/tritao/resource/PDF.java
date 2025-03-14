@@ -45,14 +45,11 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.layout.renderer.IRenderer;
 import org.apache.logging.log4j.LogManager;
-import org.apache.tika.Tika;
-import org.apache.tika.exception.TikaException;
 
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
-import org.netuno.psamata.io.InputStream;
 import com.itextpdf.layout.Document;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.pdf.PDFExtract;
@@ -61,7 +58,6 @@ import org.netuno.tritao.resource.pdf.PDFToImage;
 import org.netuno.tritao.resource.util.FileSystemPath;
 
 import java.io.IOException;
-import java.io.FileInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 
@@ -79,7 +75,7 @@ import java.net.MalformedURLException;
                 howToUse = { }
         )
 })
-public class PDF extends ResourceBase implements PDFHTML, PDFExtract, PDFToImage {
+public class PDF extends ResourceBase implements PDFText, PDFHTML, PDFExtract, PDFToImage {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(PDF.class);
 
     public PdfWriter writer = null;
@@ -4637,55 +4633,5 @@ public class PDF extends ResourceBase implements PDFHTML, PDFExtract, PDFToImage
         } catch (NoSuchFieldException | IllegalAccessException e) {
             return null;
         }
-    }
-
-    public String toText(Storage storage) throws TikaException, IOException {
-        try (FileInputStream fis = new FileInputStream(FileSystemPath.absoluteFromStorage(getProteu(), storage))) {
-            return toText(fis);
-        }
-    }
-
-    public String toText(File file) throws TikaException, IOException {
-        try (java.io.InputStream in = file.inputStream()) {
-            return toText(in);
-        }
-    }
-
-    @MethodDoc(translations = {
-            @MethodTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Passa o conteúdo inserido para texto.",
-                    howToUse = {}),
-            @MethodTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Converts to text the inserted content.",
-                    howToUse = {})
-    }, parameters = {
-            @ParameterDoc(name = "content", translations = {
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.PT,
-                            name = "conteúdo",
-                            description = "Conteúdo a passar para texto."
-                    ),
-                    @ParameterTranslationDoc(
-                            language=LanguageDoc.EN,
-                            description = "Content to text."
-                    )
-            })
-    }, returns = {
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.PT,
-                    description = "Retorna o HTML."
-            ),
-            @ReturnTranslationDoc(
-                    language = LanguageDoc.EN,
-                    description = "Returns the Html."
-            )
-    })
-    public String toText(InputStream in) throws TikaException, IOException {
-        return toText((java.io.InputStream)in);
-    }
-    public String toText(java.io.InputStream in) throws TikaException, IOException {
-        return new Tika().parseToString(in);
     }
 }
