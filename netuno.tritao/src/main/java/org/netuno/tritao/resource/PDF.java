@@ -53,7 +53,7 @@ import org.netuno.psamata.io.File;
 import com.itextpdf.layout.Document;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.pdf.PDFExtract;
-import org.netuno.tritao.resource.pdf.PDFHTML;
+import org.netuno.tritao.resource.pdf.PDFToHTML;
 import org.netuno.tritao.resource.pdf.PDFToImage;
 import org.netuno.tritao.resource.util.FileSystemPath;
 
@@ -75,7 +75,7 @@ import java.net.MalformedURLException;
                 howToUse = { }
         )
 })
-public class PDF extends ResourceBase implements PDFText, PDFHTML, PDFExtract, PDFToImage {
+public class PDF extends ResourceBase implements PDFText, PDFToHTML, PDFExtract, PDFToImage {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(PDF.class);
 
     public PdfWriter writer = null;

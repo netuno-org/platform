@@ -13,7 +13,7 @@ import org.netuno.tritao.resource.Storage;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public interface PDFHTML {
+public interface PDFToHTML {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
