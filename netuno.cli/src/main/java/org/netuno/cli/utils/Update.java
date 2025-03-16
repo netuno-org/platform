@@ -47,7 +47,7 @@ public class Update {
             );
             String remoteVersion = data.getString("version");
             int compareVersion = Build.getNumber().compareTo(remoteVersion);
-            if (remoteVersion.length() > 8) {
+            if (remoteVersion.length() > 10) {
                 compareVersion = 1;
             }
             if (compareVersion < 0) {
