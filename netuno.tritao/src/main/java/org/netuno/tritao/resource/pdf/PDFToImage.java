@@ -152,23 +152,23 @@ public interface PDFToImage {
         }
     }
 
-    default byte[][] toImage(java.io.InputStream in, String fileExtension) throws IOException {
-        return toImage(in, -1, fileExtension);
+    default byte[][] toImageAsByteArray(java.io.InputStream in, String fileExtension) throws IOException {
+        return toImageAsByteArray(in, -1, fileExtension);
     }
 
-    default byte[][] toImage(java.io.InputStream in, String fileExtension, int dpi) throws IOException {
-        return toImage(in, -1, -1, fileExtension, dpi);
+    default byte[][] toImageAsByteArray(java.io.InputStream in, String fileExtension, int dpi) throws IOException {
+        return toImageAsByteArray(in, -1, -1, fileExtension, dpi);
     }
 
-    default byte[][] toImage(java.io.InputStream in, int pageNumber, String fileExtension) throws IOException {
-        return toImage(in, pageNumber, pageNumber, fileExtension, 300);
+    default byte[][] toImageAsByteArray(java.io.InputStream in, int pageNumber, String fileExtension) throws IOException {
+        return toImageAsByteArray(in, pageNumber, pageNumber, fileExtension, 300);
     }
 
-    default byte[][] toImage(java.io.InputStream in, int pageNumber, String fileExtension, int dpi) throws IOException {
-        return toImage(in, pageNumber, pageNumber, fileExtension, dpi);
+    default byte[][] toImageAsByteArray(java.io.InputStream in, int pageNumber, String fileExtension, int dpi) throws IOException {
+        return toImageAsByteArray(in, pageNumber, pageNumber, fileExtension, dpi);
     }
 
-    default byte[][] toImage(java.io.InputStream in, int startPage, int endPage, String fileExtension, int dpi) throws IOException {
+    default byte[][] toImageAsByteArray(java.io.InputStream in, int startPage, int endPage, String fileExtension, int dpi) throws IOException {
         try (PDDocument document = Loader.loadPDF(RandomAccessReadBuffer.createBufferFromStream(in))) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
             int numberOfPages = document.getNumberOfPages();
