@@ -210,7 +210,7 @@ public class HTTP implements AutoCloseable {
      * @throws java.lang.Exception Exception
      */
     public static synchronized void buildPostMultipart(org.netuno.psamata.io.InputStream in, Values requestHead, Values requestPost) throws Exception {
-    	DataSource httpMultipartDataSource = new HttpMultipartDataSource((java.io.InputStream)in, requestHead.getString("Content-Type"));
+    	DataSource httpMultipartDataSource = new HttpMultipartDataSource(in, requestHead.getString("Content-Type"));
     	MimeMultipart mimeMultipart = new MimeMultipart(httpMultipartDataSource);
     	
         java.io.File fileTempPath = new java.io.File(Config.getUpload(), Thread.currentThread().getName());
