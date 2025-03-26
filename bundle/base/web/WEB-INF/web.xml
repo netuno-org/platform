@@ -19,6 +19,12 @@
 	<servlet>
 		<servlet-name>NetunoProteuEnterprise</servlet-name>
 		<servlet-class>org.netuno.proteu.Enterprise</servlet-class>
+		<multipart-config>
+			<location>tmp</location>
+			<max-file-size>104857600000</max-file-size>
+			<max-request-size>1048576000000</max-request-size>
+			<file-size-threshold>52428800</file-size-threshold>
+		</multipart-config>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>NetunoProteuEnterprise</servlet-name>
