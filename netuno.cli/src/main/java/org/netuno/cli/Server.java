@@ -29,8 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
-import org.eclipse.jetty.ee10.servlet.DefaultServlet;
-import org.eclipse.jetty.ee10.servlet.ServletHolder;
 
 import org.eclipse.jetty.util.DateCache;
 import org.eclipse.jetty.util.component.LifeCycle;
@@ -300,21 +298,16 @@ public class Server implements MainArg {
                 server.addBean(storeFactory);
             }
 
-            DefaultServlet defaultServlet = new DefaultServlet();
-            ServletHolder holder = new ServletHolder(defaultServlet);
-            holder.setInitParameter("useFileMappedBuffer", "false");
-            holder.setInitParameter("cacheControl", "max-age=0, public");
-            
             List<Handler> handlers = new ArrayList<>();
 
             handlers.addAll(WSServletContextHandler.loadHandlers(forceApp ? appConfig : null));
-            
+
             handlers.add(webapp);
 
             ContextHandlerCollection handlerList = new ContextHandlerCollection();
             handlerList.setHandlers(handlers.toArray(new Handler[0]));
             server.setHandler(handlerList);
-            
+
             ServerConnector connector = (ServerConnector)server.getConnectors()[0];
             connector.setIdleTimeout(0);
             HttpConfiguration httpConfiguration = connector.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration();
