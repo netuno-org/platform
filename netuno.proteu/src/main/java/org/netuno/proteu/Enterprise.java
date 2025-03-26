@@ -27,6 +27,7 @@ import java.util.List;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
+import jakarta.servlet.annotation.MultipartConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,6 +42,12 @@ import org.netuno.psamata.script.ScriptRunner;
  * Enterprise.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
+@MultipartConfig(
+        location="tmp",
+        fileSizeThreshold=1024*1024*50,
+        maxFileSize=1024*1024*100000,
+        maxRequestSize=1024*1024*1000000
+)
 public class Enterprise extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	static Logger logger = LogManager.getLogger(Enterprise.class);
@@ -245,8 +252,7 @@ public class Enterprise extends HttpServlet {
         } catch (Throwable e) {
             logger.error("Enterprise Event - onStarting", e);
         }
-
-        HTTP.clearUploadFolder();
+        Uploader.clearBaseFolder();
     }
     
     /**
@@ -289,7 +295,7 @@ public class Enterprise extends HttpServlet {
             logger.error("Enterprise Event - onDestroying", e);
         }
 
-        HTTP.clearUploadFolder();
+        Uploader.clearBaseFolder();
     }
     
     /** 
@@ -300,6 +306,10 @@ public class Enterprise extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         logger.debug("Proteu Enterprise Start");
+        getServletContext().setAttribute(
+                "org.eclipse.jetty.multipartConfig",
+                new MultipartConfigElement(Config.getUpload(), -1,-1,1024 * 1024 * 20)
+        );
         org.netuno.psamata.io.OutputStream out = new org.netuno.psamata.io.OutputStream((OutputStream) response.getOutputStream());
         out.setEnabled(isOutputEnabled());
         ScriptRunner scriptRunner = null;
@@ -562,6 +572,7 @@ public class Enterprise extends HttpServlet {
                             faros = null;
                             proteu = null;
                             Config.initialized();
+                            Uploader.clearRequestFolder();
                         }
                     }
                 }
