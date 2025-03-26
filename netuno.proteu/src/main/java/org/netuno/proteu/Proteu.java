@@ -299,9 +299,9 @@ public class Proteu {
             while (parameterNames.hasMoreElements()) {
                 String name = parameterNames.nextElement();
                 Object value = null;
-                if (request.getParameterValues(name) != null && request.getParameterValues(name).length > 1) {
+                String[] parameterValues = request.getParameterValues(name);
+                if (request.getParameterValues(name) != null && parameterValues.length > 1) {
                     Values values = new Values();
-                    String[] parameterValues = request.getParameterValues(name);
                     for (String parameterValue : parameterValues) {
                     	values.add(parameterValue);
                     }
@@ -318,7 +318,8 @@ public class Proteu {
                     requestPost.merge(data);
                     data.clear();
                 } else if (request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
-                    HTTP.buildPostMultipart(new org.netuno.psamata.io.InputStream(request.getInputStream()), requestHeader, requestPost);
+                    Uploader.requestLoader(request, requestPost);
+                    //HTTP.buildPostMultipart(new org.netuno.psamata.io.InputStream(request.getInputStream()), requestHeader, requestPost);
                 } else if (request.getContentType().toLowerCase().startsWith("application/octet-stream")) {
                     this.in = new org.netuno.psamata.io.InputStream(request.getInputStream());
                 }
