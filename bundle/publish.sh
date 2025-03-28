@@ -3,7 +3,7 @@
 echo
 
 PS3='Publish Mode: '
-PublishModeOptions=("Testing" "Release")
+PublishModeOptions=("Testing" "Stable")
 PublishMode=
 select optPublishMode in "${PublishModeOptions[@]}"
 do
@@ -12,8 +12,8 @@ do
             PublishMode="testing"
             break
             ;;
-        "Release")
-            PublishMode="release"
+        "Stable")
+            PublishMode="stable"
             break
             ;;
         *) echo "invalid option $REPLY";;
@@ -120,7 +120,7 @@ echo
 
 echo
 
-PS3='Publish Release: '
+PS3='Publish release: $PublishMode'
 PublishReleaseOptions=("Yes" "No")
 select optPublishRelease in "${PublishReleaseOptions[@]}"
 do
