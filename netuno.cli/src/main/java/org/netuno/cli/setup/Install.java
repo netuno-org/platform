@@ -223,8 +223,11 @@ public class Install implements MainArg {
                             }
 
                             @Override
-                            public void onError(Exception e) {
-                                pb.close();
+                            public void onError(String url, Exception e) {
+                                logger.fatal("Fail to download " + url, e);
+                                if (pb != null) {
+                                    pb.close();
+                                }
                             }
                         });
                     } catch (Exception e) {
