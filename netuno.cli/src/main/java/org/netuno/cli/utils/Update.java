@@ -35,7 +35,7 @@ public class Update {
         try {
             String buildNumber = Build.getNumber();
             String mode = "testing";
-            if (buildNumber.endsWith("-stable")) {
+            if (buildNumber.endsWith("-stable") || buildNumber.endsWith("-stable-setup")) {
                 mode = "stable";
             }
             Values data = Values.fromJSON(
