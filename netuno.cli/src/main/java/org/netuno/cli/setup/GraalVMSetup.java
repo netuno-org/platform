@@ -215,8 +215,11 @@ public class GraalVMSetup {
                             }
 
                             @Override
-                            public void onError(Exception e) {
-                                pb.close();
+                            public void onError(String url, Exception e) {
+                                logger.fatal("GraalVM Downloading: "+ url, e);
+                                if (pb != null) {
+                                    pb.close();
+                                }
                             }
                         });
                     } catch (Exception e) {
