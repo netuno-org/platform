@@ -134,7 +134,7 @@ public class Download {
         void onInit(Stats stats);
         void onProgress(Stats stats);
         void onComplete(Stats stats);
-        void onError(Exception e);
+        void onError(String url, Exception e);
     }
 
     static {
@@ -217,7 +217,7 @@ public class Download {
             }
             return stats;
         } catch (IOException e) {
-            event.onError(e);
+            event.onError(url, e);
             throw e;
         }
     }
