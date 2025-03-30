@@ -10,7 +10,7 @@ let data = fs.readFileSync(filePOM).toString()
 let buildNumberFormat = '{0,date,yyyy.MM.dd}'
 
 if (publishMode == 'stable') {
-  buildNumberFormat = '{0,date,yyyy.MM.dd}-stable'
+  buildNumberFormat = '{0,date,yyyy.MM}-stable'
 } else if (publishMode == 'testing') {
   buildNumberFormat = '{0,date,yyyy.MM.dd}-testing'
 }
