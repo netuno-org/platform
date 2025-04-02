@@ -357,6 +357,17 @@ public class HTML extends ResourceBase {
         return Jsoup.clean(bodyHtml, baseUri, safelist, outputSettings);
     }
 
+    public Safelist safelist(String type) {
+        return switch (type.toLowerCase()) {
+            case "basic" -> Safelist.basic();
+            case "basic-with-images", "basicwithimages" -> Safelist.basicWithImages();
+            case "none" -> Safelist.none();
+            case "relaxed" -> Safelist.relaxed();
+            case "simple-text", "simpletext" -> Safelist.simpleText();
+            default -> null;
+        };
+    }
+
     public Safelist safelist() {
         return new Safelist();
     }
