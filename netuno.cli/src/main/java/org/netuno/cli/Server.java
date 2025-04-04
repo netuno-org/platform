@@ -450,15 +450,17 @@ class CheckServerStartedRunnable implements Runnable {
                         if (!isDev && app.equals("demo")) {
                             continue;
                         }
-                        System.out.println();
-                    	System.out.println(OS.consoleOutput("     - @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + server.getURI().getPort() + "/ |@"));
                         Values config = Config.getAppConfig(app);
                         Values configURL = config.getValues("url", new Values());
                         String adminPath = "/";
                         if (configURL.hasKey("admin") && !configURL.getString("admin").isEmpty()) {
                             adminPath = configURL.getString("admin");
                         }
-                        String url = "http://" + app + ".local.netu.no:" + server.getURI().getPort() + adminPath;
+                        String url = "http://" + app.replace("_", "-") + ".local.netu.no:" + server.getURI().getPort() + adminPath;
+
+                        System.out.println();
+                        System.out.println(OS.consoleOutput("     - @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + server.getURI().getPort() + adminPath +" |@"));
+
                         new Remote().get(url);
 
                         Values commands = config.getValues("commands");
