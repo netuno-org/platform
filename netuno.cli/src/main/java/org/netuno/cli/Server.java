@@ -439,143 +439,62 @@ class CheckServerStartedRunnable implements Runnable {
                     if (host.equals("0.0.0.0")) {
                         host = "localhost";
                     }
+                    boolean isDev = Config.getEnv().toLowerCase().startsWith("dev");
                     System.out.println();
                     System.out.println();
                     System.out.println(OS.consoleOutput("    @|yellow Applications available:|@"));
                     for (String app : Config.getAppConfig().keys()) {
-                        if (appConfig != null && !appConfig.getString("name").equals(app)) {
+                        if (isDev && appConfig != null && !appConfig.getString("name").equals(app)) {
+                            continue;
+                        }
+                        if (!isDev && app.equals("demo")) {
                             continue;
                         }
                         System.out.println();
                     	System.out.println(OS.consoleOutput("     - @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + server.getURI().getPort() + "/ |@"));
-                    }
-                    System.out.println();
-                    System.out.println();
-                    System.out.println(OS.consoleOutput("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@ @|cyan http://" + host + ":" + server.getURI().getPort() + "/ |@"));
-                    System.out.println();
-                    System.out.println();
-                    String url = "http://"+ host +":" + server.getURI().getPort() + "/";
-                    new Remote().get(url);
-                    if (launch && Desktop.isDesktopSupported()) {
-                        try {
-                            Desktop.getDesktop().browse(new URI(url));
-                        } catch (Exception e) {
-                            logger.error(e);
+                        Values config = Config.getAppConfig(app);
+                        Values configURL = config.getValues("url", new Values());
+                        String adminPath = "/";
+                        if (configURL.hasKey("admin") && !configURL.getString("admin").isEmpty()) {
+                            adminPath = configURL.getString("admin");
                         }
-                    }
-                    
-                    if (appConfig != null) {
-                        if (code && Config.isCodeServerEnabled()) {
-                            String appHome = new File(Config.getAppsHome(), appConfig.getString("home")).getAbsolutePath();
-                            String cmd = "node index.js --auth "+ Config.getCodeServerAuth() +" --bind-addr "+ Config.getCodeServerHost() +" --user-data-dir ./user --extensions-dir ./extension "+ appHome;
-                            Values env = new Values()
-                                    .add("PORT="+ Config.getCodeServerPort());
-                            String password = "";
-                            if (Config.getCodeServerAuth().equalsIgnoreCase("password")) {
-                                password = new RandomString(36).next();
-                                env.add("PASSWORD="+ password);
-                            }
-                            File homeCode = new File(new File(Config.getWebHome(),"WEB-INF"), "code-server");
-                            if (new File(homeCode, "package.json").exists()
-                                    && !new File(homeCode, "node_modules").exists()) {
-                                System.out.println(OS.consoleOutput("   @|green Code Server :|@ @|yellow Please wait... running NPM Install for the first time. |@"));
-                                System.out.println();
-                                ProcessBuilder builder = new ProcessBuilder();
-                                // ../../../../graalvm/bin/npm
-                                if (OS.isWindows()) {
-                                    builder.command("cmd.exe", "/c", "npm install");
-                                } else {
-                                    builder.command("sh", "-c", "npm install");
-                                }
-                                builder.directory(homeCode);
-                                Process process = builder.start();
-                                StreamGobbler inGobbler = new StreamGobbler(process.getInputStream(), System.out);
-                                StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), System.err);
-                                ExecutorService inExecutorService = Executors.newSingleThreadExecutor();
-                                inExecutorService.submit(inGobbler);
-                                ExecutorService errorExecutorService = Executors.newSingleThreadExecutor();
-                                errorExecutorService.submit(errorGobbler);
-                                int exitCode = process.waitFor();
-                                inExecutorService.shutdownNow();
-                                errorExecutorService.shutdownNow();
-                                if (exitCode != 0) {
-                                    logger.fatal("Code Server NPM Install failed.");
-                                }
-                            }
-                            if (env != null && !env.isEmpty()) {
-                                for (String var : env.list(String.class)) {
-                                    if (OS.isWindows()) {
-                                        cmd = "set "+ var + " & " + cmd;
-                                    } else {
-                                        cmd = var + " " + cmd;
-                                    }
-                                }
-                            }
-                            ProcessBuilder builder = new ProcessBuilder();
-                            if (OS.isWindows()) {
-                                builder.command("cmd.exe", "/c", cmd);
-                            } else {
-                                builder.command("sh", "-c", cmd);
-                            }
-                            builder.directory(homeCode);
-                            Process process = builder.start();
-                            StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out);
-                            Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-                            StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err);
-                            Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-                            
-                            System.out.println();
-                            System.out.println(OS.consoleOutput("   @|yellow Code Server Password :|@ @|green "+ password +" |@"));
-                            System.out.println();
-                            
-                            new Thread(() -> {
-                                try {
-                                    Thread.sleep(5000);
-                                } catch (Exception ex) { }
-                                if (launch && Desktop.isDesktopSupported()) {
-                                    try {
-                                        Desktop.getDesktop().browse(new URI("http://"+ (Config.getCodeServerHost().equals("0.0.0.0") ? "127.0.0.1" : Config.getCodeServerHost()) +":"+ Config.getCodeServerPort()));
-                                    } catch (Exception e) {
-                                        logger.error(e);
-                                    }
-                                }
-                            }).start();
-                        }
-                        
-                        Values commands = appConfig.getValues("commands");
+                        String url = "http://" + app + ".local.netu.no:" + server.getURI().getPort() + adminPath;
+                        new Remote().get(url);
+
+                        Values commands = config.getValues("commands");
                         if (commands != null && !commands.isEmpty()) {
                             if (commands.isMap()) {
-                                logger.fatal("In the app "+ appConfig.getString("name") +" configuration the commands is not array.");
+                                logger.fatal("In the app "+ config.getString("name") +" configuration the commands is not array.");
                                 return;
                             }
-                            
+
                             for (Values command : commands.listOfValues()) {
                                 if (command.getBoolean("enabled")) {
                                     String path = command.getString("path");
                                     if (path.isEmpty()) {
-                                        logger.fatal("In "+ appConfig.getString("name") +", configuration has commands without path:\n"+ command.toJSON());
+                                        logger.fatal("In "+ config.getString("name") +", configuration has commands without path:\n"+ command.toJSON());
                                         return;
                                     }
                                     File folder = null;
                                     if (path.startsWith(File.separator) || path.startsWith("/") || path.startsWith("\\")) {
                                         folder = new File(path);
                                     } else {
-                                        folder = new File(new File(Config.getAppsHome(), appConfig.getString("home")), path);
+                                        folder = new File(new File(Config.getAppsHome(), config.getString("home")), path);
                                     }
                                     String cmd = command.getString("command").trim();
                                     if (cmd.isEmpty()) {
-                                        logger.fatal("In "+ appConfig.getString("name") +", configuration has commands without command:\n"+ command.toJSON());
+                                        logger.fatal("In "+ config.getString("name") +", configuration has commands without command:\n"+ command.toJSON());
                                         return;
                                     }
                                     if (folder.exists()) {
                                         if (new File(folder, "package.json").exists()
-                                            && !new File(folder, "node_modules").exists()) {
+                                                && !new File(folder, "node_modules").exists()) {
                                             String executable = "";
                                             if (cmd.indexOf(" ") > 0) {
                                                 executable = cmd.substring(0, cmd.indexOf(" "));
                                             }
                                             if (executable.equals("npm") || executable.equals("yarn")) {
-                                                System.out.println(OS.consoleOutput("   @|green "+ appConfig.getString("name") +"/"+ path +":|@ @|yellow Please wait... running NPM Install for the first time. |@"));
+                                                System.out.println(OS.consoleOutput("   @|green "+ config.getString("name") +"/"+ path +":|@ @|yellow Please wait... running NPM Install for the first time. |@"));
                                                 System.out.println();
                                                 ProcessBuilder builder = new ProcessBuilder();
                                                 // ../../../../graalvm/bin/npm
@@ -628,7 +547,98 @@ class CheckServerStartedRunnable implements Runnable {
                             }
                         }
                     }
-                    
+                    System.out.println();
+                    System.out.println();
+                    System.out.println(OS.consoleOutput("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@ @|cyan http://" + host + ":" + server.getURI().getPort() + "/ |@"));
+                    System.out.println();
+                    System.out.println();
+                    if (isDev) {
+                        String url = "http://" + host + ":" + server.getURI().getPort() + "/";
+                        new Remote().get(url);
+                        if (launch && Desktop.isDesktopSupported()) {
+                            try {
+                                Desktop.getDesktop().browse(new URI(url));
+                            } catch (Exception e) {
+                                logger.error(e);
+                            }
+                        }
+                    }
+                    if (isDev && appConfig != null && code && Config.isCodeServerEnabled()) {
+                        String appHome = new File(Config.getAppsHome(), appConfig.getString("home")).getAbsolutePath();
+                        String cmd = "node index.js --auth "+ Config.getCodeServerAuth() +" --bind-addr "+ Config.getCodeServerHost() +" --user-data-dir ./user --extensions-dir ./extension "+ appHome;
+                        Values env = new Values()
+                                .add("PORT="+ Config.getCodeServerPort());
+                        String password = "";
+                        if (Config.getCodeServerAuth().equalsIgnoreCase("password")) {
+                            password = new RandomString(36).next();
+                            env.add("PASSWORD="+ password);
+                        }
+                        File homeCode = new File(new File(Config.getWebHome(),"WEB-INF"), "code-server");
+                        if (new File(homeCode, "package.json").exists()
+                                && !new File(homeCode, "node_modules").exists()) {
+                            System.out.println(OS.consoleOutput("   @|green Code Server :|@ @|yellow Please wait... running NPM Install for the first time. |@"));
+                            System.out.println();
+                            ProcessBuilder builder = new ProcessBuilder();
+                            // ../../../../graalvm/bin/npm
+                            if (OS.isWindows()) {
+                                builder.command("cmd.exe", "/c", "npm install");
+                            } else {
+                                builder.command("sh", "-c", "npm install");
+                            }
+                            builder.directory(homeCode);
+                            Process process = builder.start();
+                            StreamGobbler inGobbler = new StreamGobbler(process.getInputStream(), System.out);
+                            StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), System.err);
+                            ExecutorService inExecutorService = Executors.newSingleThreadExecutor();
+                            inExecutorService.submit(inGobbler);
+                            ExecutorService errorExecutorService = Executors.newSingleThreadExecutor();
+                            errorExecutorService.submit(errorGobbler);
+                            int exitCode = process.waitFor();
+                            inExecutorService.shutdownNow();
+                            errorExecutorService.shutdownNow();
+                            if (exitCode != 0) {
+                                logger.fatal("Code Server NPM Install failed.");
+                            }
+                        }
+                        if (env != null && !env.isEmpty()) {
+                            for (String var : env.list(String.class)) {
+                                if (OS.isWindows()) {
+                                    cmd = "set "+ var + " & " + cmd;
+                                } else {
+                                    cmd = var + " " + cmd;
+                                }
+                            }
+                        }
+                        ProcessBuilder builder = new ProcessBuilder();
+                        if (OS.isWindows()) {
+                            builder.command("cmd.exe", "/c", cmd);
+                        } else {
+                            builder.command("sh", "-c", cmd);
+                        }
+                        builder.directory(homeCode);
+                        Process process = builder.start();
+                        StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out);
+                        Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
+                        StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err);
+                        Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
+
+                        System.out.println();
+                        System.out.println(OS.consoleOutput("   @|yellow Code Server Password :|@ @|green "+ password +" |@"));
+                        System.out.println();
+
+                        new Thread(() -> {
+                            try {
+                                Thread.sleep(5000);
+                            } catch (Exception ex) { }
+                            if (launch && Desktop.isDesktopSupported()) {
+                                try {
+                                    Desktop.getDesktop().browse(new URI("http://"+ (Config.getCodeServerHost().equals("0.0.0.0") ? "127.0.0.1" : Config.getCodeServerHost()) +":"+ Config.getCodeServerPort()));
+                                } catch (Exception e) {
+                                    logger.error(e);
+                                }
+                            }
+                        }).start();
+                    }
                     return;
                 }
                 synchronized(this) {
