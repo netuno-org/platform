@@ -5,7 +5,7 @@ const config = require(path.join(__dirname, 'publish-release.json'));
 
 const publishMode = process.argv[2];
 
-const testing = async () => {
+const publishModeRelease = async () => {
     console.log();
     console.log(`Publishing files in the ${publishMode} release.`);
     console.log();
@@ -15,6 +15,19 @@ const testing = async () => {
         path: '/releases'
     });
     let release = releases.find((r) => r.tag_name == publishMode);
+
+    if (release && publishMode == 'stable') {
+      await request({
+        method: 'DELETE',
+        path: `/releases/${release.id}`
+      });
+      await request({
+        method: 'DELETE',
+        path: `/git/refs/tags/${publishMode}`
+      });
+      release = null;
+    }
+  
     if (!release) {
       release = await request({
         method: 'POST',
@@ -22,12 +35,12 @@ const testing = async () => {
         data: {
           owner: 'netuno-org',
           repo: 'platform',
-          tag_name: getVersion('_'),
+          tag_name: publishMode,
           target_commitish: 'main',
-          name: getVersion(),
-          body: getDescription({url: getVersion('_'), install: getVersion()}),
+          name: publishMode.substring(0, 1).toUpperCase() + publishMode.substring(1),
+          body: releaseDescription({url: publishMode, install: publishMode}),
           draft: false,
-          prerelease: false,
+          prerelease: publishMode == 'testing',
           generate_release_notes: false,
         }
       });
@@ -64,48 +77,15 @@ const testing = async () => {
     console.log();
 };
 
-const stable = async () => {
-    console.log();
-    console.log(`Publishing files in the ${publishMode} release.`);
-    console.log();
-
+const publishVersionRelease = async () => {
   const getVersion = (separator = '.') => {
     const date = new Date();
     return date.getFullYear() + separator + (date.getMonth() + 1 < 10 ? '0'+ (date.getMonth() + 1) : date.getMonth() + 1);
   };
 
-  const getDescription = (version)=> {
-    const template = [
-      "Netuno platform is open-source, polyglot, and low-code, for fast development of reliable web solutions.",
-      "Easy database and back-office modeling with the supported databases: PostgreSQL, MariaDB/MySQL, and MSSQL.",
-      "Real-time API development with the supported languages: JavaScript, Python, Ruby, Groovy, Kotlin, and Java.",
-      "You can use it to run over Linux, Windows, and MacOS.",
-      "# Installation",
-      "[Here is more about the installation process, in the official documentation.](https://doc.netuno.org/docs/get-started/installation/)",
-      "## Linux or Mac OS X",
-      "Create the Netuno directory, and execute in the **terminal**:",
-      "```plaintext\nmkdir -p netuno && cd netuno\n```",
-      "Choose one of the following methods of **download**:",
-      "* Download with *WGET*:",
-      "```plaintext\nwget https://github.com/netuno-org/platform/releases/download/%URL-VERSION%/netuno-setup.jar -O netuno-setup.jar\n```",
-      "* Download with *cURL*:",
-      "```plaintext\ncurl -L https://github.com/netuno-org/platform/releases/download/%URL-VERSION%/netuno-setup.jar -o netuno-setup.jar\n```",
-      "After downloading one of the previous methods, execute the **Netuno's installation**:",
-      "* Installation of this version:",
-      "```plaintext\njava -jar netuno-setup.jar install version=%INSTALL-VERSION%\n```",
-      "> On MAC OS X, you need to disable the quarantine, thus inside the `netuno` home folder, please run:\n> `sudo xattr -r -d com.apple.quarantine .`",
-      "## Windows",
-      "In Windows open the terminal of **PowerShell** go to the start menu and type: `powershell`",
-      "Now copy and paste the command below and follow the **Installation** steps:",
-      "```plaintext\nmd netuno; cd netuno\nInvoke-WebRequest -Uri \"https://github.com/netuno-org/platform/releases/download/%URL-VERSION%/netuno-setup.jar\" -OutFile \"netuno-setup.jar\"\n```",
-      "After completing the previous download, execute the **Netuno's installation**:",
-      "* Installation of this version:",
-      "```plaintext\njava -jar netuno-setup.jar install version=%INSTALL-VERSION%\n```"
-    ];
-    return template.join('\n\n')
-      .replaceAll('%URL-VERSION%', version.url)
-      .replaceAll('%INSTALL-VERSION%', version.install)
-  };
+  console.log();
+  console.log(`Publishing files in the ${getVersion()} release.`);
+  console.log();
 
   const release = await request({
     method: 'POST',
@@ -116,7 +96,7 @@ const stable = async () => {
       tag_name: getVersion('_'),
       target_commitish: 'main',
       name: getVersion(),
-      body: getDescription({url: getVersion('_'), install: getVersion()}),
+      body: releaseDescription({url: getVersion('_'), install: getVersion()}),
       draft: false,
       prerelease: false,
       generate_release_notes: false,
@@ -127,7 +107,7 @@ const stable = async () => {
         path: `/releases/${release.id}/assets`
     });
 
-    const bundleFiles = ['netuno.zip', 'netuno.json', 'netuno-setup.jar'];
+    const bundleFiles = [`netuno-${getVersion('_')}.zip`, 'netuno-setup.jar'];
 
     for (const bundleFile of bundleFiles) {
         console.log(`Publishing ${bundleFile}...`);
@@ -139,8 +119,41 @@ const stable = async () => {
     }
 
     console.log();
-    console.log(`The ${publishMode} release was successfully published.`);
+    console.log(`The ${getVersion()} release was successfully published.`);
     console.log();
+};
+
+function releaseDescription(version) {
+  const template = [
+    "Netuno platform is open-source, polyglot, and low-code, for fast development of reliable web solutions.",
+    "Easy database and back-office modeling with the supported databases: PostgreSQL, MariaDB/MySQL, and MSSQL.",
+    "Real-time API development with the supported languages: JavaScript, Python, Ruby, Groovy, Kotlin, and Java.",
+    "You can use it to run over Linux, Windows, and MacOS.",
+    "# Installation",
+    "[Here is more about the installation process, in the official documentation.](https://doc.netuno.org/docs/get-started/installation/)",
+    "## Linux or Mac OS X",
+    "Create the Netuno directory, and execute in the **terminal**:",
+    "```plaintext\nmkdir -p netuno && cd netuno\n```",
+    "Choose one of the following methods of **download**:",
+    "* Download with *WGET*:",
+    "```plaintext\nwget https://github.com/netuno-org/platform/releases/download/%URL-VERSION%/netuno-setup.jar -O netuno-setup.jar\n```",
+    "* Download with *cURL*:",
+    "```plaintext\ncurl -L https://github.com/netuno-org/platform/releases/download/%URL-VERSION%/netuno-setup.jar -o netuno-setup.jar\n```",
+    "After downloading one of the previous methods, execute the **Netuno's installation**:",
+    "* Installation of this version:",
+    "```plaintext\njava -jar netuno-setup.jar install version=%INSTALL-VERSION%\n```",
+    "> On MAC OS X, you need to disable the quarantine, thus inside the `netuno` home folder, please run:\n> `sudo xattr -r -d com.apple.quarantine .`",
+    "## Windows",
+    "In Windows open the terminal of **PowerShell** go to the start menu and type: `powershell`",
+    "Now copy and paste the command below and follow the **Installation** steps:",
+    "```plaintext\nmd netuno; cd netuno\nInvoke-WebRequest -Uri \"https://github.com/netuno-org/platform/releases/download/%URL-VERSION%/netuno-setup.jar\" -OutFile \"netuno-setup.jar\"\n```",
+    "After completing the previous download, execute the **Netuno's installation**:",
+    "* Installation of this version:",
+    "```plaintext\njava -jar netuno-setup.jar install version=%INSTALL-VERSION%\n```"
+  ];
+  return template.join('\n\n')
+    .replaceAll('%URL-VERSION%', version.url)
+    .replaceAll('%INSTALL-VERSION%', version.install)
 };
 
 function request({method = 'GET', path, data = null, bodyFile}) {
@@ -186,7 +199,7 @@ function request({method = 'GET', path, data = null, bodyFile}) {
             });
         
             res.on('close', () => {
-                if (data != '') {
+                if (data != '' && res.statusCode !== 204) {
                     resolve(JSON.parse(resData));
                 } else {
                     resolve();
@@ -211,10 +224,13 @@ function request({method = 'GET', path, data = null, bodyFile}) {
     });
 }
 
-if (publishMode == 'testing') {
-  testing();
-} else if (publishMode == 'stable') {
-  stable();
-} else {
-  console.error('Invalid publish mode:', publishMode);
-}
+(async () => {
+  if (publishMode == 'testing') {
+    await publishModeRelease();
+  } else if (publishMode == 'stable') {
+    await publishModeRelease();
+    await publishVersionRelease();
+  } else {
+    console.error('Invalid publish mode:', publishMode);
+  }
+})();
