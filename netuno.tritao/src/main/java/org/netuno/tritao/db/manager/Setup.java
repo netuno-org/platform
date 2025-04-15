@@ -250,6 +250,19 @@ public class Setup extends Base {
             index.create("netuno_user", "group_id");
             sequence.create("netuno_user_id");
 
+            table.create("netuno_auth_history",
+                    table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
+                    table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
+                    table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(),
+                    table.newColumn().setName("ip").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
+                    table.newColumn().setName("success").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false)
+            );
+            sequence.create("netuno_auth_history_id");
+            index.create("netuno_auth_history", "user_id");
+            index.create("netuno_auth_history", "moment");
+            index.create("netuno_auth_history", "ip");
+
             table.create("netuno_auth_provider_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
