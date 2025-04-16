@@ -233,10 +233,22 @@ public class Auth extends WebMaster {
                     return false;
                 }
                 auth.jwtSignIn(dbUser.getInt("id"), contextData);
+                Config.getDataBaseBuilder(proteu).insertAuthHistory(
+                        Values.newMap()
+                                .set("user_id", dbUser.getInt("id"))
+                                .set("ip", proteu.getClientIP())
+                                .set("success", true)
+                );
                 return true;
             } else if (type == Type.SESSION) {
                 proteu.getSession().merge(contextData);
                 proteu.saveSession();
+                Config.getDataBaseBuilder(proteu).insertAuthHistory(
+                        Values.newMap()
+                                .set("user_id", dbUser.getInt("id"))
+                                .set("ip", proteu.getClientIP())
+                                .set("success", true)
+                );
                 return true;
             } 
             return false;
@@ -253,6 +265,9 @@ public class Auth extends WebMaster {
         Values dbUser = null;
         Values dbUserBase = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUser(username);
         if (dbUserBase == null) {
+            return false;
+        }
+        if (Config.getDataBaseBuilder(proteu).userAuthLockedByHistoryConsecutiveFailure(dbUserBase.getString("id"), proteu.getClientIP())) {
             return false;
         }
         if (!dbUserBase.getBoolean("no_pass")) {
@@ -281,11 +296,16 @@ public class Auth extends WebMaster {
                 }
             }
             return signIn(proteu, hili, dbUser, type, profile);
+        } else {
+            Config.getDataBaseBuilder(proteu).insertAuthHistory(
+                    Values.newMap()
+                            .set("user_id", dbUserBase.getInt("id"))
+                            .set("ip", proteu.getClientIP())
+                            .set("success", false)
+            );
         }
         return false;
     }
-
-
 
     public static Values createContextData(Proteu proteu, Hili hili, Values user) {
         return createContextData(proteu, hili, user, Profile.ALL);
@@ -500,12 +520,16 @@ public class Auth extends WebMaster {
                                                         .set("password", "wrong password.")
                                         )
                         );
-                        return;
+                        DBManager.insertAuthHistory(
+                                Values.newMap()
+                                        .set("user_id", user.getInt("id"))
+                                        .set("ip", proteu.getClientIP())
+                                        .set("success", false)
+                        );
                     }
                 } else {
                     header.status(Proteu.HTTPStatus.Forbidden403);
                     out.json(new Values().set("result", false));
-                    return;
                 }
             } else { // -> Processo de Criar a conta. - Finalisado.
                 if (DBManager.getUser(req.getString("user")) != null) {
@@ -560,7 +584,6 @@ public class Auth extends WebMaster {
                 }
                 header.status(Proteu.HTTPStatus.Forbidden403);
                 out.json(new Values().set("result", false));
-                return;
             }
         }
     }
