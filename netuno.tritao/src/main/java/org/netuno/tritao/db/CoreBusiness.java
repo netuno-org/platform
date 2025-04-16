@@ -17,7 +17,9 @@
 
 package org.netuno.tritao.db;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -547,6 +549,74 @@ public class CoreBusiness extends Base {
         dataItem.setStatus(DataItem.Status.Deleted);
         getManager().scriptRemoved(getProteu(), getHili(), "netuno_user", dataItem);
         return true;
+    }
+
+    public boolean userAuthLockedByHistoryConsecutiveFailure(String userId, String ip) {
+        String select = " success ";
+        String from = " netuno_auth_history ";
+        String where = "WHERE 1 = 1";
+        where += " AND user_id = "+ DB.sqlInjectionInt(userId);
+        where += " AND ip = '" + DB.sqlInjection(ip) + "'";
+        where += " AND moment >= '" + Timestamp.valueOf(LocalDateTime.now().minusHours(1)) + "'";
+        String order = " ORDER BY moment DESC";
+        String sql = "SELECT " + select + " FROM " + from + where + order;
+        if (isMSSQL()) {
+            sql += " FETCH NEXT 3 ROWS ONLY";
+        } else {
+            sql += " LIMIT 3";
+        }
+        List<Values> rows = getManager().query(sql);
+        return (int)rows.stream().filter((r) -> !r.getBoolean("success")).count() == 3;
+    }
+
+    public int insertAuthHistory(Values values) {
+        DataItem dataItem = new DataItem(getProteu(), "0", "");
+        dataItem.setTable("netuno_auth_history");
+        dataItem.setValues(values);
+        dataItem.setStatus(DataItem.Status.Insert);
+        getManager().scriptSave(getProteu(), getHili(), "netuno_auth_history", dataItem);
+
+        if (dataItem.isStatusAsError()) {
+            return 0;
+        }
+
+        Values data = new Values();
+        if (values.hasKey("uid")) {
+            data.set("uid", "'" + DB.sqlInjection(values.getString("uid")) + "'");
+        }
+        if (values.hasKey("user_id")) {
+            data.set("user_id", values.getInt("user_id"));
+        }
+        data.set("moment", getBuilder().getCurrentTimeStampFunction());
+        if (values.hasKey("ip")) {
+            data.set("ip", "'" + DB.sqlInjection(values.getString("ip")) + "'");
+        }
+        if (values.hasKey("success")) {
+            data.set("success", values.getBoolean("success"));
+        }
+
+        int id = insertInto("netuno_auth_history", data);
+        Values record = getAuthHistoryById("" + id);
+        dataItem.setRecord(getAuthHistoryById("" + id));
+        dataItem.setStatus(DataItem.Status.Inserted);
+        dataItem.setId(record.getString("id"));
+        getManager().scriptSaved(getProteu(), getHili(), "netuno_auth_history", dataItem);
+        return id;
+    }
+
+    public Values getAuthHistoryById(String id) {
+        if (id.isEmpty() || id.equals("0")) {
+            return null;
+        }
+        String select = " * ";
+        String from = " netuno_auth_history ";
+        String where = "where id = " + DB.sqlInjectionInt(id);
+        String sql = "select " + select + " from " + from + where;
+        List<Values> results = getManager().query(sql);
+        if (results.size() == 1) {
+            return results.get(0);
+        }
+        return null;
     }
 
     // PROVIDER
