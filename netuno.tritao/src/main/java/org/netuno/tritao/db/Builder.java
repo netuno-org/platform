@@ -107,6 +107,12 @@ public interface Builder {
 
     boolean deleteUser(String id);
 
+    boolean userAuthLockedByHistoryConsecutiveFailure(String userId, String ip);
+
+    int insertAuthHistory(Values values);
+
+    Values getAuthHistoryById(String id);
+
     int insertAuthProvider(String name, String code);
 
     int insertAuthProvider(Values values);
