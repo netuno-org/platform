@@ -223,6 +223,18 @@ public class H2 implements Builder {
     	return coreBusiness.deleteUser(id);
     }
 
+    public boolean userAuthLockedByHistoryConsecutiveFailure(String name, String code) {
+        return coreBusiness.userAuthLockedByHistoryConsecutiveFailure(name, code);
+    }
+
+    public int insertAuthHistory(Values values) {
+        return coreBusiness.insertAuthHistory(values);
+    }
+
+    public Values getAuthHistoryById(String id) {
+        return coreBusiness.getAuthHistoryById(id);
+    }
+
     public int insertAuthProvider(String name, String code) {
         return coreBusiness.insertAuthProvider(name, code);
     }
