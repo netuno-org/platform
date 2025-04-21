@@ -35,13 +35,13 @@ import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
-import org.netuno.tritao.db.manager.Base;
+import org.netuno.tritao.db.manager.ManagerBase;
 
 /**
  * Link - Forms Relations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Link extends Base {
+public class Link extends ManagerBase {
     private String link = "";
     private String filter = "";
     private int deep = 0;
