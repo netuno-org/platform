@@ -31,7 +31,7 @@ import org.netuno.tritao.db.Builder;
  * Form Field Component Base
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class ComponentBase implements Component {
+public abstract class ComponentBase implements Component {
 
     private Proteu proteu = null;
     private Hili hili = null;
