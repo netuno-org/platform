@@ -31,9 +31,6 @@ import org.netuno.tritao.db.form.link.Link;
 import org.netuno.tritao.db.form.link.LinkEngine;
 import org.netuno.tritao.db.form.link.RelationshipLink;
 import org.netuno.tritao.db.form.pagination.Pagination;
-import org.netuno.tritao.db.form.where.ConditionalOperatorType;
-import org.netuno.tritao.db.form.where.RelationalOperator;
-import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DataItem;
@@ -3114,7 +3111,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isH2() {
-        return Base.isMariaDB(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isMariaDB(Config.getDataBaseBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3141,7 +3138,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isH2DataBase() {
-        return Base.isH2(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isH2(Config.getDataBaseBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3168,7 +3165,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isPG() {
-        return Base.isPostgreSQL(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isPostgreSQL(Config.getDataBaseBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3195,7 +3192,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isPostgreSQL() {
-        return Base.isPostgreSQL(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isPostgreSQL(Config.getDataBaseBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3222,7 +3219,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isMariaDB() {
-        return Base.isMariaDB(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isMariaDB(Config.getDataBaseBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
