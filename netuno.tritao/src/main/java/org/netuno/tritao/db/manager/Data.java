@@ -32,7 +32,7 @@ import java.util.List;
  * Inspiration: https://sailsjs.com/documentation/concepts/models-and-orm/query-language
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Data extends Base {
+public class Data extends ManagerBase {
 
     public String select = "";
     public String where = "";
@@ -40,7 +40,7 @@ public class Data extends Base {
     public String group = "";
     public String order = "";
 
-    public Data(Base base) {
+    public Data(ManagerBase base) {
         super(base);
     }
 
@@ -82,7 +82,7 @@ public class Data extends Base {
     }
 
     public List<Values> find(String tableName, Values query) {
-        return getManager().query(findQuery(tableName, query));
+        return getExecutor().query(findQuery(tableName, query));
     }
 
     public String columns(Values columns) {
@@ -231,7 +231,7 @@ public class Data extends Base {
     }
 
     public Values get(String tableName, int id) {
-        List<Values> items = getManager().query("select * from " + getBuilder().escape(tableName) + " where id = " + DB.sqlInjectionInt(id + ""));
+        List<Values> items = getExecutor().query("select * from " + getBuilder().escape(tableName) + " where id = " + DB.sqlInjectionInt(id + ""));
         if (items.size() != 1) {
             return null;
         }
@@ -245,7 +245,7 @@ public class Data extends Base {
     public boolean delete(String tableName, int id) {
         String deleteCommand = "delete from " + getBuilder().escape(tableName)
                 + " where id = " + id;
-        return getManager().execute(deleteCommand) == 1;
+        return getExecutor().execute(deleteCommand) == 1;
     }
 
     public boolean update(String tableName, String id, Values data) {
@@ -264,7 +264,7 @@ public class Data extends Base {
                                 .set("booleanFalse", getBuilder().booleanFalse())
                 )
                 + " where id = " + id;
-        return getManager().execute(updateCommand) == 1;
+        return getExecutor().execute(updateCommand) == 1;
     }
 
     public int insert(String tableName, Values data) {
@@ -275,7 +275,7 @@ public class Data extends Base {
         boolean sequenceRestart = false;
         if (sequence()) {
             if (id == 0) {
-                List<Values> sequence = getManager().query(
+                List<Values> sequence = getExecutor().query(
                         "select "
                         + new Sequence(this).commandNextValue(tableName + "_id")
                         + " as id"
@@ -297,18 +297,18 @@ public class Data extends Base {
                 + ")";
         if (isMariaDB() || isMSSQL()) {
             if (id == 0) {
-                id = getManager().insert(insertCommand);
+                id = getExecutor().insert(insertCommand);
             } else {
                 if (isMSSQL()) {
-                    getManager().execute("set identity_insert " + getBuilder().escape(tableName) + " on");
+                    getExecutor().execute("set identity_insert " + getBuilder().escape(tableName) + " on");
                 }
-                getManager().execute(insertCommand);
+                getExecutor().execute(insertCommand);
                 if (isMSSQL()) {
-                    getManager().execute("set identity_insert " + getBuilder().escape(tableName) + " off");
+                    getExecutor().execute("set identity_insert " + getBuilder().escape(tableName) + " off");
                 }
             }
         } else {
-            getManager().execute(insertCommand);
+            getExecutor().execute(insertCommand);
         }
         if (sequenceRestart) {
             Sequence sequence = new Sequence(this);
@@ -323,7 +323,7 @@ public class Data extends Base {
         if (id.matches("^\\d+$")) {
             return Integer.parseInt(id);
         }
-        List<Values> items = getManager().query("select id from " + getBuilder().escape(tableName) + " where uid = '" + DB.sqlInjection(id) + "'");
+        List<Values> items = getExecutor().query("select id from " + getBuilder().escape(tableName) + " where uid = '" + DB.sqlInjection(id) + "'");
         if (items.size() != 1) {
             return 0;
         }
