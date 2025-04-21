@@ -51,10 +51,10 @@ import org.netuno.tritao.db.DBError;
                 }
         )
 })
-public class Table extends Base {
+public class Table extends ManagerBase {
     private static Logger logger = LogManager.getLogger(Table.class);
 
-    public Table(Base base) {
+    public Table(ManagerBase base) {
         super(base);
     }
 
@@ -67,9 +67,9 @@ public class Table extends Base {
             String newRawSQLName = DB.sqlInjectionRawName(newName);
             if (!new CheckExists(this).table(newRawSQLName)) {
                 if (isH2() || isPostgreSQL()) {
-                    getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " rename to " + getBuilder().escape(newRawSQLName) + "");
+                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " rename to " + getBuilder().escape(newRawSQLName) + "");
                 } else if (isMariaDB()) {
-                    getManager().execute("rename table " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " to " + getBuilder().escape(newRawSQLName) + "");
+                    getExecutor().execute("rename table " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " to " + getBuilder().escape(newRawSQLName) + "");
                 }
             }
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public class Table extends Base {
         try {
             String rawSQLName = DB.sqlInjectionRawName(name);
             if (new CheckExists(this).table(rawSQLName)) {
-                getManager().execute("drop table "+ getBuilder().escape(rawSQLName) + "");
+                getExecutor().execute("drop table "+ getBuilder().escape(rawSQLName) + "");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Dropping table "+ name +".");
@@ -134,7 +134,7 @@ public class Table extends Base {
                     if (!extraDefinitions.isEmpty()) {
                         extraDefinitions += ")";
                     }
-                    getManager().execute("create table " + getBuilder().appendIfNotExists() + " " + getBuilder().escape(DB.sqlInjectionRawName(name)) + "(" +
+                    getExecutor().execute("create table " + getBuilder().appendIfNotExists() + " " + getBuilder().escape(DB.sqlInjectionRawName(name)) + "(" +
                             columnsDefinitions
                             + (extraDefinitions.isEmpty() ? "" : ", " + extraDefinitions)
                             + ")");
@@ -152,16 +152,16 @@ public class Table extends Base {
                         if (isPostgreSQL() || isH2()) {
                             alterTableCommands += command;
                         } else if (isMariaDB()) {
-                            getManager().execute(command);
+                            getExecutor().execute(command);
                         } else if (isMSSQL()) {
-                            getManager().execute(command);
+                            getExecutor().execute(command);
                         } else {
                             throw new Exception("Not supported!");
                         }
                     }
                 }
                 if (!alterTableCommands.isEmpty()) {
-                    getManager().execute(alterTableCommands);
+                    getExecutor().execute(alterTableCommands);
                 }
             }
         } catch (Exception e) {
