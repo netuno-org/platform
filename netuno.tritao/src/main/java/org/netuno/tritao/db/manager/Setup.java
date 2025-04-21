@@ -32,10 +32,10 @@ import java.util.List;
  * Database Setup
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Setup extends Base {
+public class Setup extends ManagerBase {
     private static Logger logger = LogManager.getLogger(Setup.class);
 
-    public Setup(Base base) {
+    public Setup(ManagerBase base) {
         super(base);
     }
 
@@ -481,7 +481,7 @@ public class Setup extends Base {
                 getBuilder().insertUser("Administrator", "admin", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "admin", "admin"), getBuilder().booleanFalse(), "", ""+ groupAdmin.getString("id"), getBuilder().booleanTrue());
             }
             if (checkExists.column("netuno_design", "search")) {
-                getManager().execute(
+                getExecutor().execute(
                         "alter table netuno_design add column whenresult boolean default true;" +
                         "alter table netuno_design add column whenfilter boolean default true;" +
                         "alter table netuno_design add column whenedit boolean default true;" +
@@ -490,8 +490,8 @@ public class Setup extends Base {
                         "update netuno_design set whenresult = false, whenfilter = false where search = false;" +
                         "alter table netuno_design drop column search;");
             }
-            getManager().execute("update netuno_design set type = 'user' where type = 'tritaouser'");
-            getManager().execute("update netuno_design set type = 'group' where type = 'tritaogroup'");
+            getExecutor().execute("update netuno_design set type = 'user' where type = 'tritaouser'");
+            getExecutor().execute("update netuno_design set type = 'group' where type = 'tritaogroup'");
             if (!checkExists.column("netuno_table", "show_id")) {
                 table.create(
                         "netuno_table",
@@ -522,7 +522,7 @@ public class Setup extends Base {
                         table.newColumn().setName("login_allowed").setType(Column.Type.BOOLEAN).setDefault(true)
                 );
             }
-            List<Values> formTables = getManager().query("select * from netuno_table where report = "+ getBuilder().booleanFalse());
+            List<Values> formTables = getExecutor().query("select * from netuno_table where report = "+ getBuilder().booleanFalse());
             for (Values formTable : formTables) {
                 if (!checkExists.column(formTable.getString("name"), "uid")) {
                     table.create(
