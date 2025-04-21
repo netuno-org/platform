@@ -36,9 +36,9 @@ import java.util.ArrayList;
  * Database Manager
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Manager {
+public class DBExecutor {
 
-    private static Logger logger = LogManager.getLogger(Manager.class);
+    private static Logger logger = LogManager.getLogger(DBExecutor.class);
 
     private List<DBConnection> dbConnections = new ArrayList<DBConnection>();
     private Proteu proteu = null;
@@ -46,7 +46,7 @@ public class Manager {
     private String key = null;
     private String dbName = null;
 
-    public Manager(Proteu proteu, Hili hili, String key) {
+    public DBExecutor(Proteu proteu, Hili hili, String key) {
         this.proteu = proteu;
         this.hili = hili;
         this.key = key;
