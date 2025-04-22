@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.db.manager.ManagerBase;
 import org.netuno.tritao.hili.Hili;
 
 import java.util.List;
@@ -37,6 +38,36 @@ public class MariaDB implements Builder {
 
     public MariaDB(Proteu proteu, Hili hili, String key) {
         coreBusiness = new CoreBusiness(proteu, hili, key, this);
+    }
+
+    @Override
+    public Proteu getProteu() {
+        return coreBusiness.getProteu();
+    }
+
+    @Override
+    public Hili getHili() {
+        return coreBusiness.getHili();
+    }
+
+    @Override
+    public String getKey() {
+        return coreBusiness.getKey();
+    }
+
+    @Override
+    public Builder getBuilder() {
+        return coreBusiness.getBuilder();
+    }
+
+    @Override
+    public DBExecutor getExecutor() {
+        return coreBusiness.getExecutor();
+    }
+
+    @Override
+    public ManagerBase getManager() {
+        return coreBusiness.getManager();
     }
 
     public void setup() {
@@ -222,18 +253,6 @@ public class MariaDB implements Builder {
 
     public boolean deleteUser(String id) {
         return coreBusiness.deleteUser(id);
-    }
-
-    public boolean userAuthLockedByHistoryConsecutiveFailure(String name, String code) {
-        return coreBusiness.userAuthLockedByHistoryConsecutiveFailure(name, code);
-    }
-
-    public int insertAuthHistory(Values values) {
-        return coreBusiness.insertAuthHistory(values);
-    }
-
-    public Values getAuthHistoryById(String id) {
-        return coreBusiness.getAuthHistoryById(id);
     }
 
     public int insertAuthProvider(String name, String code) {
