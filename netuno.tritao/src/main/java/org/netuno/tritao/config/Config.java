@@ -25,7 +25,7 @@ import org.netuno.tritao.com.Group;
 import org.netuno.tritao.com.TextHTML;
 import org.netuno.tritao.com.User;
 import org.netuno.tritao.db.Builder;
-import org.netuno.tritao.db.Manager;
+import org.netuno.tritao.db.DBExecutor;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.PasswordBuilder;
 import org.netuno.tritao.util.PasswordSHA256Hex;
@@ -148,15 +148,15 @@ public class Config {
         return "netuno$" + getApp(proteu) +"$"+ key;
     }
 
-    public static Manager getDataBaseManager(Proteu proteu) {
+    public static DBExecutor getDataBaseManager(Proteu proteu) {
         return getDataBaseManager(proteu, "default");
     }
 
-    public static Manager getDataBaseManager(Proteu proteu, String key) {
+    public static DBExecutor getDataBaseManager(Proteu proteu, String key) {
         if (!proteu.getConfig().hasKey("_database:manager:"+ key)) {
             throw new ConfigError("Netuno data base manager "+ key +" wasn't set.");
         }
-        return (Manager)proteu.getConfig().get("_database:manager:"+ key);
+        return (DBExecutor)proteu.getConfig().get("_database:manager:"+ key);
     }
     public static Builder getDataBaseBuilder(Proteu proteu) {
         return getDataBaseBuilder(proteu, "default");
