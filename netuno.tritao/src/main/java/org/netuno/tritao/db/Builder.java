@@ -19,14 +19,14 @@ package org.netuno.tritao.db;
 
 import java.util.List;
 
-import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.db.builder.AuthHistory;
 
 /**
  * Database Builder Interface - Core Operations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public interface Builder {
+public interface Builder extends AuthHistory {
 	
     void setup();
 
@@ -106,12 +106,6 @@ public interface Builder {
     int insertUser(Values values);
 
     boolean deleteUser(String id);
-
-    boolean userAuthLockedByHistoryConsecutiveFailure(String userId, String ip);
-
-    int insertAuthHistory(Values values);
-
-    Values getAuthHistoryById(String id);
 
     int insertAuthProvider(String name, String code);
 

@@ -29,6 +29,7 @@ import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.ConfigError;
+import org.netuno.tritao.db.DBExecutor;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Setup;
 import org.netuno.tritao.resource.URL;
@@ -419,7 +420,7 @@ public class ProteuEvents implements Events {
                 continue;
             }
             String dbEngine = db.getString("engine");
-            proteu.getConfig().set("_database:manager:"+ key, new org.netuno.tritao.db.Manager(proteu, hili, key));
+            proteu.getConfig().set("_database:manager:"+ key, new DBExecutor(proteu, hili, key));
             if (dbEngine.equalsIgnoreCase("h2")
                     || dbEngine.equalsIgnoreCase("h2database")) {
                 proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.H2(proteu, hili, key));
@@ -672,8 +673,8 @@ public class ProteuEvents implements Events {
         for (String key : proteu.getConfig().keys()) {
             if (key.startsWith("_database:manager:")) {
                 Object o = proteu.getConfig().get(key);
-                if (o instanceof org.netuno.tritao.db.Manager) {
-                    ((org.netuno.tritao.db.Manager)o).closeConnections();
+                if (o instanceof DBExecutor) {
+                    ((DBExecutor)o).closeConnections();
                 }
             }
         }
