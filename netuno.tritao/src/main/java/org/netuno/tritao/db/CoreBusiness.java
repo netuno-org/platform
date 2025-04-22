@@ -17,9 +17,7 @@
 
 package org.netuno.tritao.db;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,8 +33,9 @@ import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.ComponentData.Type;
 import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.builder.AuthHistory;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.db.manager.Base;
+import org.netuno.tritao.db.manager.ManagerBase;
 import org.netuno.tritao.db.manager.CheckExists;
 import org.netuno.tritao.db.manager.Column;
 import org.netuno.tritao.db.manager.Index;
@@ -52,10 +51,10 @@ import org.netuno.tritao.util.Translation;
  * Database Core Business Operations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class CoreBusiness extends Base {
+public class CoreBusiness extends ManagerBase {
     private static Logger logger = LogManager.getLogger(CoreBusiness.class);
 
-    protected CoreBusiness(Base base) {
+    protected CoreBusiness(ManagerBase base) {
         super(base);
     }
 
@@ -71,8 +70,8 @@ public class CoreBusiness extends Base {
         super(proteu, hili, key, builder);
     }
 
-    protected CoreBusiness(Proteu proteu, Hili hili, String key, Builder builder, Manager manager) {
-        super(proteu, hili, key, builder, manager);
+    protected CoreBusiness(Proteu proteu, Hili hili, String key, Builder builder, DBExecutor DBExecutor) {
+        super(proteu, hili, key, builder, DBExecutor);
     }
 
     public void setup() {
@@ -84,7 +83,7 @@ public class CoreBusiness extends Base {
     }
     
     public List<Values> listApps() {
-    	return getManager().query("select * from netuno_app order by name");
+    	return getExecutor().query("select * from netuno_app order by name");
     }
     
     public Values getApp(String term) {
@@ -95,7 +94,7 @@ public class CoreBusiness extends Base {
     	} else {
             name = term;
     	}
-    	List<Values> results = getManager().query(
+    	List<Values> results = getExecutor().query(
                 "select * from netuno_app"
                 +" where "
                 + (!uid.isEmpty() ? "uid = '"+ DB.sqlInjection(uid) +"' " : "name = '"+ DB.sqlInjection(name) +"'")
@@ -136,7 +135,7 @@ public class CoreBusiness extends Base {
     }
     
     public List<Values> getAppTables(String term) {
-    	List<Values> results = getManager().query(
+    	List<Values> results = getExecutor().query(
             "select netuno_table.* from "
             + " netuno_app "
             + " inner join netuno_app_table on netuno_app.id = netuno_app_table.app_id "
@@ -147,7 +146,7 @@ public class CoreBusiness extends Base {
     }
 
     public List<Values> selectClientsByToken(String clientToken) {
-        return getManager().query("select * from netuno_client where token = ?", clientToken);
+        return getExecutor().query("select * from netuno_client where token = ?", clientToken);
     }
 
     public Values selectUser(String term) {
@@ -163,7 +162,7 @@ public class CoreBusiness extends Base {
         where += " and netuno_group.active = " + getBuilder().booleanTrue();
         String order = " order by netuno_user.name ";
         String sql = "select " + select + " from " + from + where + order;
-        List<Values> dbUsers = getManager().query(sql, term, term);
+        List<Values> dbUsers = getExecutor().query(sql, term, term);
         if (dbUsers.isEmpty()) {
             return null;
         }
@@ -184,7 +183,7 @@ public class CoreBusiness extends Base {
         where += " and netuno_group.active = " + getBuilder().booleanTrue();
         String order = " order by netuno_user.name ";
         String sql = "select " + select + " from " + from + where + order;
-        List<Values> dbUsers = getManager().query(sql, user, user, pass);
+        List<Values> dbUsers = getExecutor().query(sql, user, user, pass);
         if (dbUsers.isEmpty()) {
             return null;
         }
@@ -192,7 +191,7 @@ public class CoreBusiness extends Base {
     }
 
     public void setUserPassword(String user, String pass) {
-        getManager().execute(
+        getExecutor().execute(
             "update netuno_user set " + getBuilder().escape("pass") + " = ? " + "where "
                 + getBuilder().escape("user") + " = ?",
             Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), user, pass),
@@ -208,7 +207,7 @@ public class CoreBusiness extends Base {
         where += " and user_id = " + DB.sqlInjectionInt(userId);
         where += " and identifier = '" + DB.sqlInjection(identifier) + "'";
         String sql = "select " + select + " from " + from + where;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public void insertClientHit(String clientId, String userId, String identifier) {
@@ -241,7 +240,7 @@ public class CoreBusiness extends Base {
         where += " and group_id >= 0 ";
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectUsersByIdAndGroupId(String user_id, String group_id) {
@@ -256,7 +255,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectUserByEmail(String email) {
@@ -268,7 +267,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectUserByNonce(String nonce) {
@@ -280,7 +279,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
     public Values getUser(String user) {
         String select = " * ";
@@ -288,7 +287,7 @@ public class CoreBusiness extends Base {
         String where = "where 1 = 1 ";
         where += " and " + getBuilder().escape("user") + " = '" + DB.sqlInjection(user) + "'";
         String sql = "select " + select + " from " + from + where;
-        List<Values> users = getManager().query(sql);
+        List<Values> users = getExecutor().query(sql);
         if (users.size() == 1) {
             return users.get(0);
         }
@@ -318,7 +317,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        List<Values> rows = getManager().query(sql);
+        List<Values> rows = getExecutor().query(sql);
         if (rows.size() > 0) {
             return rows.get(0);
         }
@@ -348,12 +347,12 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public int selectUsersCount() {
         String sql = "select count(id) as counter from netuno_user where active = " + getBuilder().booleanTrue();
-        return getManager().query(sql).get(0).getInt("counter");
+        return getExecutor().query(sql).get(0).getInt("counter");
     }
 
     public boolean updateUser(String id, String name, String user, String pass, String noPass, String mail, String group, String active) {
@@ -398,7 +397,7 @@ public class CoreBusiness extends Base {
         dataItem.setRecord(dataRecord);
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Update);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_user", dataItem);
+        getExecutor().scriptSave(getProteu(), getHili(), "netuno_user", dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
@@ -439,9 +438,9 @@ public class CoreBusiness extends Base {
         if (values.hasKey("extra")) {
             update += ", " + getBuilder().escape("extra") + " = '" + DB.sqlInjection(values.getString("extra")) + "'";
         }
-        getManager().execute("update netuno_user set id = " + id + update + " where id = " + id);
+        getExecutor().execute("update netuno_user set id = " + id + update + " where id = " + id);
         dataItem.setStatus(DataItem.Status.Updated);
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_user", dataItem);
+        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_user", dataItem);
         return true;
     }
 
@@ -478,7 +477,7 @@ public class CoreBusiness extends Base {
         dataItem.setTable("netuno_user");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_user", dataItem);
+        getExecutor().scriptSave(getProteu(), getHili(), "netuno_user", dataItem);
         if (dataItem.isStatusAsError()) {
             return 0;
         }
@@ -527,7 +526,7 @@ public class CoreBusiness extends Base {
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
         dataItem.setUid(record.getString("uid"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_user", dataItem);
+        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_user", dataItem);
         return id;
     }
 
@@ -541,83 +540,17 @@ public class CoreBusiness extends Base {
         dataItem.setTable("netuno_user");
         dataItem.setRecord(dataRecord);
         dataItem.setStatus(DataItem.Status.Delete);
-        getManager().scriptRemove(getProteu(), getHili(), "netuno_user", dataItem);
+        getExecutor().scriptRemove(getProteu(), getHili(), "netuno_user", dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
-        getManager().execute("delete from netuno_user where id = " + id);
+        getExecutor().execute("delete from netuno_user where id = " + id);
         dataItem.setStatus(DataItem.Status.Deleted);
-        getManager().scriptRemoved(getProteu(), getHili(), "netuno_user", dataItem);
+        getExecutor().scriptRemoved(getProteu(), getHili(), "netuno_user", dataItem);
         return true;
     }
 
-    public boolean userAuthLockedByHistoryConsecutiveFailure(String userId, String ip) {
-        String select = " success ";
-        String from = " netuno_auth_history ";
-        String where = "WHERE 1 = 1";
-        where += " AND user_id = "+ DB.sqlInjectionInt(userId);
-        where += " AND ip = '" + DB.sqlInjection(ip) + "'";
-        where += " AND moment >= '" + Timestamp.valueOf(LocalDateTime.now().minusHours(1)) + "'";
-        String order = " ORDER BY moment DESC";
-        String sql = "SELECT " + select + " FROM " + from + where + order;
-        if (isMSSQL()) {
-            sql += " FETCH NEXT 3 ROWS ONLY";
-        } else {
-            sql += " LIMIT 3";
-        }
-        List<Values> rows = getManager().query(sql);
-        return (int)rows.stream().filter((r) -> !r.getBoolean("success")).count() == 3;
-    }
 
-    public int insertAuthHistory(Values values) {
-        DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_auth_history");
-        dataItem.setValues(values);
-        dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_auth_history", dataItem);
-
-        if (dataItem.isStatusAsError()) {
-            return 0;
-        }
-
-        Values data = new Values();
-        if (values.hasKey("uid")) {
-            data.set("uid", "'" + DB.sqlInjection(values.getString("uid")) + "'");
-        }
-        if (values.hasKey("user_id")) {
-            data.set("user_id", values.getInt("user_id"));
-        }
-        data.set("moment", getBuilder().getCurrentTimeStampFunction());
-        if (values.hasKey("ip")) {
-            data.set("ip", "'" + DB.sqlInjection(values.getString("ip")) + "'");
-        }
-        if (values.hasKey("success")) {
-            data.set("success", values.getBoolean("success"));
-        }
-
-        int id = insertInto("netuno_auth_history", data);
-        Values record = getAuthHistoryById("" + id);
-        dataItem.setRecord(getAuthHistoryById("" + id));
-        dataItem.setStatus(DataItem.Status.Inserted);
-        dataItem.setId(record.getString("id"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_auth_history", dataItem);
-        return id;
-    }
-
-    public Values getAuthHistoryById(String id) {
-        if (id.isEmpty() || id.equals("0")) {
-            return null;
-        }
-        String select = " * ";
-        String from = " netuno_auth_history ";
-        String where = "where id = " + DB.sqlInjectionInt(id);
-        String sql = "select " + select + " from " + from + where;
-        List<Values> results = getManager().query(sql);
-        if (results.size() == 1) {
-            return results.get(0);
-        }
-        return null;
-    }
 
     // PROVIDER
     public int insertAuthProvider(String name, String code) {
@@ -635,7 +568,7 @@ public class CoreBusiness extends Base {
         dataItem.setTable("netuno_auth_provider");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_auth_provider", dataItem);
+        getExecutor().scriptSave(getProteu(), getHili(), "netuno_auth_provider", dataItem);
 
         if (dataItem.isStatusAsError()) {
             return 0;
@@ -655,7 +588,7 @@ public class CoreBusiness extends Base {
         dataItem.setRecord(getAuthProviderById("" + id));
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_auth_provider", dataItem);
+        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_auth_provider", dataItem);
         return id;
     }
 
@@ -665,7 +598,7 @@ public class CoreBusiness extends Base {
         String where = "where lower(code) = '" + DB.sqlInjection(code.toLowerCase()) + "'";
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        List<Values> rows = getManager().query(sql);
+        List<Values> rows = getExecutor().query(sql);
         if (rows.size() > 0) {
             return rows.get(0);
         }
@@ -681,7 +614,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public Values getAuthProviderById(String id) {
@@ -693,7 +626,7 @@ public class CoreBusiness extends Base {
         String where = "where id = " + DB.sqlInjectionInt(id);
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        List<Values> results = getManager().query(sql);
+        List<Values> results = getExecutor().query(sql);
         if (results.size() == 1) {
             return results.get(0);
         }
@@ -705,7 +638,7 @@ public class CoreBusiness extends Base {
         String from = " netuno_auth_provider_user INNER JOIN netuno_auth_provider ON netuno_auth_provider_user.provider_id = netuno_auth_provider.id ";
         String where = " netuno_auth_provider_user.user_id = " + DB.sqlInjectionInt(userId);
         String sql = "SELECT " + select + " FROM " + from + " WHERE " + where;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public boolean isAuthProviderUserAssociate(Values values) {
@@ -716,7 +649,7 @@ public class CoreBusiness extends Base {
         where += " AND code = '" + DB.sqlInjection(values.getString("code")) + "'";
 
         String sql = "select " + select + " from " + from + where;
-        return getManager().query(sql).size() == 1;
+        return getExecutor().query(sql).size() == 1;
     }
 
     public Values getAuthProviderUserById(String id) {
@@ -730,7 +663,7 @@ public class CoreBusiness extends Base {
             where += " and netuno_auth_provider_user.id = " + DB.sqlInjectionInt(id);
         }
         String sql = "select " + select + " from " + from + where;
-        List<Values> rows = getManager().query(sql);
+        List<Values> rows = getExecutor().query(sql);
         if (rows.size() > 0) {
             return rows.get(0);
         }
@@ -744,7 +677,7 @@ public class CoreBusiness extends Base {
                 + " AND netuno_auth_provider_user.provider_id = " + DB.sqlInjection(providerId)
                 + " AND netuno_auth_provider_user.user_id = " + DB.sqlInjectionInt(userId);
         String sql = "SELECT " + select + " FROM " + from + " WHERE " + where;
-        List<Values> results = getManager().query(sql);
+        List<Values> results = getExecutor().query(sql);
         if (results.size() == 1) {
             return results.get(0);
         }
@@ -764,7 +697,7 @@ public class CoreBusiness extends Base {
         String where = "WHERE 1 = 1 ";
         where += " AND netuno_auth_provider_user.uid = '" + DB.sqlInjection(uid) + "'";
         String sql = "SELECT " + select + " FROM " + from + where;
-        List<Values> rows = getManager().query(sql);
+        List<Values> rows = getExecutor().query(sql);
         if (rows.size() > 0) {
             return rows.get(0);
         }
@@ -781,7 +714,7 @@ public class CoreBusiness extends Base {
         where += " AND netuno_auth_provider_user.provider_id = " + DB.sqlInjection(providerId);
         where += " AND netuno_auth_provider_user.code = '" + DB.sqlInjection(code) + "'";
         String sql = "SELECT " + select + " FROM " + from + where;
-        List<Values> rows = getManager().query(sql);
+        List<Values> rows = getExecutor().query(sql);
         if (rows.size() > 0) {
             return rows.get(0);
         }
@@ -798,7 +731,7 @@ public class CoreBusiness extends Base {
         where += " AND netuno_auth_provider_user.provider_id = " + DB.sqlInjection(providerId);
         where += " AND netuno_auth_provider_user.email = '" + DB.sqlInjection(email) + "'";
         String sql = "SELECT " + select + " FROM " + from + where;
-        List<Values> rows = getManager().query(sql);
+        List<Values> rows = getExecutor().query(sql);
         if (rows.size() > 0) {
             return rows.get(0);
         }
@@ -806,7 +739,7 @@ public class CoreBusiness extends Base {
     }
 
     public int clearOldAuthProviderUser(String provider_id, String code) {
-        return getManager().execute("DELETE FROM netuno_auth_provider_user WHERE provider_id = "+ DB.sqlInjectionInt(provider_id) +" AND code NOT LIKE '" + DB.sqlInjection(code) + "' ");
+        return getExecutor().execute("DELETE FROM netuno_auth_provider_user WHERE provider_id = "+ DB.sqlInjectionInt(provider_id) +" AND code NOT LIKE '" + DB.sqlInjection(code) + "' ");
     }
 
     public int insertAuthProviderUser(Values values) {
@@ -814,7 +747,7 @@ public class CoreBusiness extends Base {
         dataItem.setTable("netuno_auth_provider_user");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
+        getExecutor().scriptSave(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
 
         if (dataItem.isStatusAsError()) {
             return 0;
@@ -852,7 +785,7 @@ public class CoreBusiness extends Base {
         dataItem.setRecord(record);
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
+        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
         return id;
     }
 
@@ -874,7 +807,7 @@ public class CoreBusiness extends Base {
         dataItem.setRecord(dataRecord);
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Update);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
+        getExecutor().scriptSave(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
@@ -903,9 +836,9 @@ public class CoreBusiness extends Base {
         if (values.hasKey("avatar")) {
             update += ", avatar = '" + DB.sqlInjection(values.getString("avatar")) + "'";
         }
-        getManager().execute("update netuno_auth_provider_user set id = " + id + update + " where id = " + id);
+        getExecutor().execute("update netuno_auth_provider_user set id = " + id + update + " where id = " + id);
         dataItem.setStatus(DataItem.Status.Updated);
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
+        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
         return true;
     }
 
@@ -920,13 +853,13 @@ public class CoreBusiness extends Base {
         dataItem.setTable("netuno_auth_provider_user");
         dataItem.setRecord(dataRecord);
         dataItem.setStatus(DataItem.Status.Delete);
-        getManager().scriptRemove(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
+        getExecutor().scriptRemove(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
-        getManager().execute("delete from netuno_auth_provider_user where id = " + id);
+        getExecutor().execute("delete from netuno_auth_provider_user where id = " + id);
         dataItem.setStatus(DataItem.Status.Deleted);
-        getManager().scriptRemoved(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
+        getExecutor().scriptRemoved(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
         return true;
     }
 
@@ -942,7 +875,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectGroupSearch(String term) {
@@ -960,7 +893,7 @@ public class CoreBusiness extends Base {
         where += " and id > 0 ";
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectGroup(String group_id) {
@@ -972,7 +905,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public Values getGroupById(String id) {
@@ -998,7 +931,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        List<Values> rows = getManager().query(sql);
+        List<Values> rows = getExecutor().query(sql);
         if (rows.size() > 0) {
             return rows.get(0);
         }
@@ -1014,7 +947,7 @@ public class CoreBusiness extends Base {
         String where = "where 1 = 1 ";
         where += " and netuno_group = " + DB.sqlInjectionInt(netunoGroup) + "";
         String sql = "select " + select + " from " + from + where;
-        List<Values> rows = getManager().query(sql);
+        List<Values> rows = getExecutor().query(sql);
         if (rows.size() > 0) {
             return rows.get(0);
         }
@@ -1023,7 +956,7 @@ public class CoreBusiness extends Base {
 
     public List<Values> selectGroupCounter() {
         String sql = "select count(id) as counter from netuno_group";
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String active) {
@@ -1063,7 +996,7 @@ public class CoreBusiness extends Base {
         dataItem.setRecord(dataRecord);
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Update);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_group", dataItem);
+        getExecutor().scriptSave(getProteu(), getHili(), "netuno_group", dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
@@ -1092,9 +1025,9 @@ public class CoreBusiness extends Base {
         if (values.hasKey("extra")) {
             update += ", " + getBuilder().escape("extra") + " = '" + DB.sqlInjection(values.getString("extra")) + "'";
         }
-        getManager().execute("update netuno_group set id = " + id + update + " where id = " + id);
+        getExecutor().execute("update netuno_group set id = " + id + update + " where id = " + id);
         dataItem.setStatus(DataItem.Status.Updated);
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_group", dataItem);
+        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_group", dataItem);
         return true;
     }
 
@@ -1126,7 +1059,7 @@ public class CoreBusiness extends Base {
         dataItem.setTable("netuno_group");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getManager().scriptSave(getProteu(), getHili(), "netuno_group", dataItem);
+        getExecutor().scriptSave(getProteu(), getHili(), "netuno_group", dataItem);
         if (dataItem.isStatusAsError()) {
             return 0;
         }
@@ -1166,7 +1099,7 @@ public class CoreBusiness extends Base {
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
         dataItem.setUid(record.getString("uid"));
-        getManager().scriptSaved(getProteu(), getHili(), "netuno_group", dataItem);
+        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_group", dataItem);
         return id;
     }
 
@@ -1179,13 +1112,13 @@ public class CoreBusiness extends Base {
         dataItem.setTable("netuno_group");
         dataItem.setRecord(dataRecord);
         dataItem.setStatus(DataItem.Status.Delete);
-        getManager().scriptRemove(getProteu(), getHili(), "netuno_group", dataItem);
+        getExecutor().scriptRemove(getProteu(), getHili(), "netuno_group", dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
-        getManager().execute("delete from netuno_group where id = " + id);
+        getExecutor().execute("delete from netuno_group where id = " + id);
         dataItem.setStatus(DataItem.Status.Deleted);
-        getManager().scriptRemoved(getProteu(), getHili(), "netuno_group", dataItem);
+        getExecutor().scriptRemoved(getProteu(), getHili(), "netuno_group", dataItem);
         return true;
     }
 
@@ -1204,7 +1137,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by id ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public void setUserRule(String user_id, String table_id, String active, String ruleRead, String ruleWrite, String ruleDelete) {
@@ -1252,12 +1185,12 @@ public class CoreBusiness extends Base {
             if (!ruleDelete.equals("")) {
                 update += ", rule_delete = " + DB.sqlInjectionInt(ruleDelete) + "";
             }
-            getManager().execute("update netuno_user_rule set id = " + id + update + " where id = " + id);
+            getExecutor().execute("update netuno_user_rule set id = " + id + update + " where id = " + id);
         }
     }
 
     public void deleteUserRules(String group_id) {
-        getManager().execute("delete from netuno_user_rule where user_id = " + DB.sqlInjectionInt(group_id));
+        getExecutor().execute("delete from netuno_user_rule where user_id = " + DB.sqlInjectionInt(group_id));
     }
 
     public List<Values> selectGroupRule(String group_id, String table_id, String active) {
@@ -1275,7 +1208,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by id ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public void setGroupRule(String group_id, String table_id, String active, String ruleRead, String ruleWrite, String ruleDelete) {
@@ -1322,12 +1255,12 @@ public class CoreBusiness extends Base {
             if (!ruleDelete.equals("")) {
                 update += ", rule_delete = " + DB.sqlInjectionInt(ruleDelete) + "";
             }
-            getManager().execute("update netuno_group_rule set id = " + id + update + " where id = " + id);
+            getExecutor().execute("update netuno_group_rule set id = " + id + update + " where id = " + id);
         }
     }
 
     public void deleteGroupRules(String group_id) {
-        getManager().execute("delete from netuno_group_rule where group_id = " + DB.sqlInjectionInt(group_id));
+        getExecutor().execute("delete from netuno_group_rule where group_id = " + DB.sqlInjectionInt(group_id));
     }
 
     public List<Values> selectGroupAdmin(String group_id) {
@@ -1340,7 +1273,7 @@ public class CoreBusiness extends Base {
         where += " and netuno_group <= 2";
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectTableRows(String table, String ids) {
@@ -1353,7 +1286,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by id ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectTableOrder(String table, String order_by) {
@@ -1362,7 +1295,7 @@ public class CoreBusiness extends Base {
         String where = " ";
         String order = " order by " + order_by;
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectTableOrder(String table, String control_user, String control_group, String user_id, String group_id, String active, String order_by) {
@@ -1385,7 +1318,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by " + order_by;
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     // ## Table Operations ## //
@@ -1516,7 +1449,7 @@ public class CoreBusiness extends Base {
                         }
                     }
                     if (needUpdate) {
-                        getManager().execute(
+                        getExecutor().execute(
                                 "update netuno_design set properties = '" +
                                         DB.sqlInjection(configuration.toString()) +
                                         "' where id = " + fieldDesign.getString("id") + ";");
@@ -1565,7 +1498,7 @@ public class CoreBusiness extends Base {
             values.set("reorder", getProteu().getRequestAll().getInt("reorder") > 0 ? getProteu().getRequestAll().getInt("reorder") : 0);
             values.set("firebase", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("firebase")) + "'");
 
-            getManager().execute("update netuno_table set " + values.toString(", ", " = ") + " where id = "
+            getExecutor().execute("update netuno_table set " + values.toString(", ", " = ") + " where id = "
                     + DB.sqlInjectionInt(getProteu().getRequestAll().getString("id")) + ";");
 
             new org.netuno.tritao.resource.Setup(getProteu(), getHili()).autoCreateSchema();
@@ -1579,7 +1512,7 @@ public class CoreBusiness extends Base {
     public boolean deleteTable() {
         boolean result = false;
         try {
-            DB db = new DB(getManager().getConnection());
+            DB db = new DB(getExecutor().getConnection());
             List<Values> rsTableTritao = selectTable(getProteu().getRequestAll().getString("id"), "", "");
             if (rsTableTritao.size() == 1) {
                 Values table = rsTableTritao.get(0);
@@ -1707,7 +1640,7 @@ public class CoreBusiness extends Base {
                     data.getString("table_id"),
                     DB.sqlInjection(data.getString("name"))
             );
-            DB db = new DB(getManager().getConnection());
+            DB db = new DB(getExecutor().getConnection());
             if (rsTableDesign.size() == 0) {
                 List<Values> rsTable = selectTable(data.getString("table_id"), "", "", data.getBoolean("report"));
                 Values table = rsTable.get(0);
@@ -1814,7 +1747,7 @@ public class CoreBusiness extends Base {
     public boolean updateTableField() {
         boolean result = false;
         try {
-            List<Values> rsTableDesign = getManager().query("select * from netuno_design where table_id = "
+            List<Values> rsTableDesign = getExecutor().query("select * from netuno_design where table_id = "
                     + DB.sqlInjectionInt(getProteu().getRequestGet().getString("netuno_table_id")) + " and name = '"
                     + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "' and id != "
                     + DB.sqlInjectionInt(getProteu().getRequestAll().getString("id")));
@@ -1828,7 +1761,7 @@ public class CoreBusiness extends Base {
                 } else if (getProteu().getRequestAll().getString("type").equals("group")) {
                     getProteu().getRequestAll().set("link", "netuno_group:name");
                 }
-                DB db = new DB(getManager().getConnection());
+                DB db = new DB(getExecutor().getConnection());
                 if (!getProteu().getRequestAll().getBoolean("report")) {
                     org.netuno.tritao.com.Component comNew = Config.getNewComponent(getProteu(), getHili(),
                             getProteu().getRequestAll().getString("type"));
@@ -1987,7 +1920,7 @@ public class CoreBusiness extends Base {
                 Values field = rsTableDesignField.get(0);
                 List<Values> rsTable = selectTable(getProteu().getRequestGet().getString("netuno_table_id"), "", "");
                 Values table = rsTable.get(0);
-                DB db = new DB(getManager().getConnection());
+                DB db = new DB(getExecutor().getConnection());
                 if (!getProteu().getRequestAll().getBoolean("report")) {
                     org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
                                     field.getString("type"));
@@ -2031,7 +1964,7 @@ public class CoreBusiness extends Base {
                 if (rsField.size() == 1) {
                     Values field = rsField.get(0);
 
-                    DB db = new DB(getManager().getConnection());
+                    DB db = new DB(getExecutor().getConnection());
 
                     Component com = Config.getNewComponent(getProteu(), getHili(), field.getString("type"));
                     com.getConfiguration().load(getComponentPropertiesFromRequestAll());
@@ -2097,7 +2030,7 @@ public class CoreBusiness extends Base {
 
     public void updateTableFieldXY(String fieldId, int x, int y) {
         try {
-            DB db = new DB(getManager().getConnection());
+            DB db = new DB(getExecutor().getConnection());
             db.execute("update netuno_design set x = " + x + ", y = " + y 
                     + " where id = " + DB.sqlInjectionInt(fieldId)
                     + ";");
@@ -2145,7 +2078,7 @@ public class CoreBusiness extends Base {
         where += " and report = " + getBuilder().booleanValue(data.getBoolean("report", false));
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public Values selectTableByName(String name) {
@@ -2191,7 +2124,7 @@ public class CoreBusiness extends Base {
         where += conditionToRestrictTables(false);
         where += " and firebase = '" + DB.sqlInjection(name) + "'";
         String sql = "select " + select + " from " + from + where;
-        List<Values> tables = getManager().query(sql);
+        List<Values> tables = getExecutor().query(sql);
         if (tables.size() == 1) {
             return tables.get(0);
         }
@@ -2209,7 +2142,7 @@ public class CoreBusiness extends Base {
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
         String order = " order by reorder, displayname ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectTablesByParent(String parent_id) {
@@ -2223,7 +2156,7 @@ public class CoreBusiness extends Base {
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
         String order = " order by reorder, displayname ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectTablesByOrphans() {
@@ -2235,7 +2168,7 @@ public class CoreBusiness extends Base {
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
         String order = " order by reorder, displayname ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectDesign(Values data) {
@@ -2256,7 +2189,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectTableDesign() {
@@ -2293,7 +2226,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectTableDesign(Values data) {
@@ -2314,7 +2247,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by name ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public List<Values> selectTableDesignXY(String table_id) {
@@ -2326,7 +2259,7 @@ public class CoreBusiness extends Base {
         }
         String order = " order by y, x ";
         String sql = "select " + select + " from " + from + where + order;
-        List<Values> rsDesignXY = getManager().query(sql);
+        List<Values> rsDesignXY = getExecutor().query(sql);
         List<List<Map<String, Integer>>> allWidths = new ArrayList<>();
         int y = 0;
         List<Map<String, Integer>> rowWidths = new ArrayList<>();
@@ -2391,17 +2324,17 @@ public class CoreBusiness extends Base {
         }
         String order = " ";
         String sql = "select " + select + " from " + from + where + order;
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public int selectFormsCount() {
         String sql = "select count(id) as counter from netuno_table where report = " + getBuilder().booleanFalse();
-        return getManager().query(sql).get(0).getInt("counter");
+        return getExecutor().query(sql).get(0).getInt("counter");
     }
 
     public int selectReportsCount() {
         String sql = "select count(id) as counter from netuno_table where report = " + getBuilder().booleanTrue();
-        return getManager().query(sql).get(0).getInt("counter");
+        return getExecutor().query(sql).get(0).getInt("counter");
     }
 
     public String selectSearchId(String query, String id) {
@@ -2643,13 +2576,13 @@ public class CoreBusiness extends Base {
         String fullCount = "select count(".concat(getBuilder().escape(tableName)).concat(".id) as TOTAL from ")
                 .concat(getBuilder().escape(tableName)).concat("");
         DataSelected dataSelected = new DataSelected();
-        dataSelected.setResults(getManager().query(search));
+        dataSelected.setResults(getExecutor().query(search));
         dataSelected.setTableName(tableName);
         dataSelected.setQueryId(queryID);
-        dataSelected.setTotal(getManager().query(count).get(0).getInt("TOTAL"));
+        dataSelected.setTotal(getExecutor().query(count).get(0).getInt("TOTAL"));
         dataSelected.setOffset(offset);
         dataSelected.setLength(length);
-        dataSelected.setFullTotal(getManager().query(fullCount).get(0).getInt("TOTAL"));
+        dataSelected.setFullTotal(getExecutor().query(fullCount).get(0).getInt("TOTAL"));
         return dataSelected;
     }
 
@@ -2657,7 +2590,7 @@ public class CoreBusiness extends Base {
         if (id.isEmpty() || id.equals("0")) {
             return null;
         }
-        List<Values> rows = getManager()
+        List<Values> rows = getExecutor()
             .query("select * from " + getBuilder().escape(tableName) + " where id = " + DB.sqlInjectionInt(id));
         if (rows.size() > 0) {
             return rows.get(0);
@@ -2669,7 +2602,7 @@ public class CoreBusiness extends Base {
         if (uid.isEmpty() || uid.equals("0")) {
             return null;
         }
-        List<Values> rows = getManager().query(
+        List<Values> rows = getExecutor().query(
             "select * from " + getBuilder().escape(tableName) + " where uid = '" + DB.sqlInjection(uid) + "'");
         if (rows.size() > 0) {
             return rows.get(0);
@@ -2695,7 +2628,7 @@ public class CoreBusiness extends Base {
         getProteu().getRequestPost().set("netuno_item_uid", dataItem.getUid());
         update(table, getProteu().getRequestAll(), dataItem);
         if (dataItem.getStatusType() == DataItem.StatusType.Error) {
-            getManager().execute("delete from ".concat(getBuilder().escape(table.getString("name"))).concat(" where id = ")
+            getExecutor().execute("delete from ".concat(getBuilder().escape(table.getString("name"))).concat(" where id = ")
                     .concat(DB.sqlInjectionInt(dataItem.getId())).concat(""));
         }
         return dataItem;
@@ -2717,7 +2650,7 @@ public class CoreBusiness extends Base {
         dataItem.setProgrammatically(true);
         update(table, data, dataItem);
         if (dataItem.getStatusType() == DataItem.StatusType.Error) {
-            getManager().execute("delete from ".concat(getBuilder().escape(tableName)).concat(" where id = ")
+            getExecutor().execute("delete from ".concat(getBuilder().escape(tableName)).concat(" where id = ")
                 .concat(DB.sqlInjectionInt(dataItem.getId())).concat(""));
         }
         return dataItem;
@@ -2750,7 +2683,7 @@ public class CoreBusiness extends Base {
 
         String id = "" + insertInto(tableName, insertData);
 
-        Values record = getManager().query("select * from " + getBuilder().escape(tableName) + " where id = " + id)
+        Values record = getExecutor().query("select * from " + getBuilder().escape(tableName) + " where id = " + id)
                         .get(0);
         dataItem.setId(id);
         dataItem.setUid(record.getString("uid"));
@@ -2835,11 +2768,11 @@ public class CoreBusiness extends Base {
             com.onSave();
         }
 
-        getManager().scriptSave(getProteu(), getHili(), table.getString("name"), dataItem);
+        getExecutor().scriptSave(getProteu(), getHili(), table.getString("name"), dataItem);
 
         if (dataItem.isStatusAsError()) {
             if (insert) {
-                getManager().execute("delete from ".concat(getBuilder().escape(table.getString("name"))).concat(" where id = ")
+                getExecutor().execute("delete from ".concat(getBuilder().escape(table.getString("name"))).concat(" where id = ")
                     .concat(DB.sqlInjectionInt(dataItem.getId())).concat(""));
             }
             return;
@@ -2940,7 +2873,7 @@ public class CoreBusiness extends Base {
                         }
                     }
                 }
-                List<Values> rsCheckPrimary = getManager().query(
+                List<Values> rsCheckPrimary = getExecutor().query(
                         "select ".concat(getBuilder().escape(rowTritaoDesignXY.getString("name"))).concat(" from ")
                         .concat(getBuilder().escape(table.getString("name"))).concat(" where 1 = 1 ")
                         .concat(where).concat(" and "+ getBuilder().escape("id") +" <> ").concat(DB.sqlInjectionInt(dataItem.getId())));
@@ -2998,7 +2931,7 @@ public class CoreBusiness extends Base {
             return;
         }
         dataItem.setStatus(DataItem.Status.Updated);
-        dataItem.setCounter(getManager().execute("update "
+        dataItem.setCounter(getExecutor().execute("update "
             .concat(getBuilder().escape(table.getString("name")))
             .concat(" set ").concat(update).concat(" where id = ").concat(DB.sqlInjectionInt(dataItem.getId()))));
 
@@ -3010,7 +2943,7 @@ public class CoreBusiness extends Base {
 
         dataItem.setRecord(getItemById(table.getString("name"), dataItem.getId()));
 
-        getManager().scriptSaved(getProteu(), getHili(), table.getString("name"), dataItem);
+        getExecutor().scriptSaved(getProteu(), getHili(), table.getString("name"), dataItem);
 
         for (Values rowTritaoDesignXY : rsDesignXY) {
             org.netuno.tritao.com.Component com = Config.getNewComponent(
@@ -3140,7 +3073,7 @@ public class CoreBusiness extends Base {
                     }
                     for (ComponentData data : com.getDataStructure()) {
                         if (data.getType() == ComponentData.Type.Integer) {
-                            List<Values> rsVerify = getManager().query(
+                            List<Values> rsVerify = getExecutor().query(
                                     "select * from ".concat(getBuilder().escape(rowLinkedTable.getString("name")))
                                     .concat(" where ").concat(getBuilder().escape(data.getName())).concat(" = ")
                                     .concat(DB.sqlInjectionInt(dataItem.getId())));
@@ -3161,15 +3094,15 @@ public class CoreBusiness extends Base {
         if (dataItem.isStatusAsError()) {
             return;
         }
-        getManager().scriptRemove(getProteu(), getHili(), tableName, dataItem);
+        getExecutor().scriptRemove(getProteu(), getHili(), tableName, dataItem);
         if (dataItem.isStatusAsError()) {
             return;
         }
-        dataItem.setCounter(getManager().execute("delete from ".concat(getBuilder().escape(tableName))
+        dataItem.setCounter(getExecutor().execute("delete from ".concat(getBuilder().escape(tableName))
                 .concat(" where id = ").concat(DB.sqlInjectionInt(dataItem.getId())).concat("")));
         dataItem.setStatus(DataItem.Status.Deleted);
         saveLog(LogAction.Delete, table, dataItem, itemLog);
-        getManager().scriptRemoved(getProteu(), getHili(), tableName, dataItem);
+        getExecutor().scriptRemoved(getProteu(), getHili(), tableName, dataItem);
         for (Values rowTritaoDesignXY : rsTritaoDesignXY) {
             org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
                     rowTritaoDesignXY.getString("type"));
@@ -3315,7 +3248,7 @@ public class CoreBusiness extends Base {
                 sql += " OFFSET "+ (page * pageSize);
             }
         }
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public Values logDetail(String uid) {
@@ -3330,7 +3263,7 @@ public class CoreBusiness extends Base {
         sql += " WHERE 1 = 1";
         sql += " AND uid = '"+ DB.sqlInjection(uid) +"'";
         sql += " ORDER BY moment DESC";
-        List<Values> results = getManager().query(sql);
+        List<Values> results = getExecutor().query(sql);
         if (results.size() == 0) {
             return null;
         }
@@ -3352,7 +3285,7 @@ public class CoreBusiness extends Base {
                 sql += " OFFSET "+ (page * pageSize);
             }
         }
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public void queryHistoryInsert(Values values) {
@@ -3385,7 +3318,7 @@ public class CoreBusiness extends Base {
     }
 
     public void queryDelete(String uid) {
-        getManager().execute("DELETE FROM netuno_query_stored WHERE uid = '" + DB.sqlInjection(uid) + "'");
+        getExecutor().execute("DELETE FROM netuno_query_stored WHERE uid = '" + DB.sqlInjection(uid) + "'");
     }
 
     public List<Values> queryStoredList(int page) {
@@ -3403,7 +3336,7 @@ public class CoreBusiness extends Base {
                 sql += " OFFSET "+ (page * pageSize);
             }
         }
-        return getManager().query(sql);
+        return getExecutor().query(sql);
     }
 
     public boolean tableExists(String table) {
