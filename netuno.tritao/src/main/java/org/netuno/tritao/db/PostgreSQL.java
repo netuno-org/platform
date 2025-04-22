@@ -24,6 +24,7 @@ import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import java.util.*;
 
+import org.netuno.tritao.db.manager.ManagerBase;
 import org.netuno.tritao.hili.Hili;
 
 /**
@@ -41,6 +42,36 @@ public class PostgreSQL implements Builder {
         this.proteu = proteu;
         this.key = key;
         coreBusiness = new CoreBusiness(proteu, hili, key, this);
+    }
+
+    @Override
+    public Proteu getProteu() {
+        return coreBusiness.getProteu();
+    }
+
+    @Override
+    public Hili getHili() {
+        return coreBusiness.getHili();
+    }
+
+    @Override
+    public String getKey() {
+        return coreBusiness.getKey();
+    }
+
+    @Override
+    public Builder getBuilder() {
+        return coreBusiness.getBuilder();
+    }
+
+    @Override
+    public DBExecutor getExecutor() {
+        return coreBusiness.getExecutor();
+    }
+
+    @Override
+    public ManagerBase getManager() {
+        return coreBusiness.getManager();
     }
 
     public void setup() {
@@ -232,18 +263,6 @@ public class PostgreSQL implements Builder {
 
     public boolean deleteUser(String id) {
         return coreBusiness.deleteUser(id);
-    }
-
-    public boolean userAuthLockedByHistoryConsecutiveFailure(String name, String code) {
-        return coreBusiness.userAuthLockedByHistoryConsecutiveFailure(name, code);
-    }
-
-    public int insertAuthHistory(Values values) {
-        return coreBusiness.insertAuthHistory(values);
-    }
-
-    public Values getAuthHistoryById(String id) {
-        return coreBusiness.getAuthHistoryById(id);
     }
 
     public int insertAuthProvider(String name, String code) {
