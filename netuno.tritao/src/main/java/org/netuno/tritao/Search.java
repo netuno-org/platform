@@ -81,13 +81,13 @@ public class Search {
         String tableId = proteu.getRequestAll().getString("netuno_table_id");
 
         if (tableId.isEmpty() && proteu.getRequestAll().hasKey("netuno_table_name")) {
-            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable("", proteu.getRequestAll().getString("netuno_table_name"));
+            List<Values> rsTables = Config.getDBBuilder(proteu).selectTable("", proteu.getRequestAll().getString("netuno_table_name"));
             if (rsTables.size() > 0) {
                 rowTritaoTable = rsTables.get(0);
                 tableId = rowTritaoTable.getString("id");
             }
         } else if (tableId.isEmpty()) {
-            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_table_uid"));
+            List<Values> rsTables = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_table_uid"));
             if (rsTables.size() > 0) {
                 rowTritaoTable = rsTables.get(0);
                 tableId = rowTritaoTable.getString("id");
@@ -95,7 +95,7 @@ public class Search {
                 return;
             }
         } else {
-            List<Values> rsTable = Config.getDataBaseBuilder(proteu).selectTable(tableId);
+            List<Values> rsTable = Config.getDBBuilder(proteu).selectTable(tableId);
             if (rsTable.size() == 1) {
                 rowTritaoTable = rsTable.get(0);
             }
@@ -118,7 +118,7 @@ public class Search {
 
             if (proteu.getRequestAll().hasKey("netuno_relation_table_uid") && proteu.getRequestAll().hasKey("netuno_relation_item_uid")
                     && !proteu.getRequestAll().getString("netuno_relation_table_uid").isEmpty() && !proteu.getRequestAll().getString("netuno_relation_item_uid").isEmpty()) {
-                List<Values> rsRelationTables = Config.getDataBaseBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_relation_table_uid"));
+                List<Values> rsRelationTables = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_relation_table_uid"));
                 if (rsRelationTables.size() == 1) {
                     Values rowRelationTable = rsRelationTables.get(0);
                     proteu.getConfig().set("netuno_relation_table", rowRelationTable);
@@ -126,7 +126,7 @@ public class Search {
                     proteu.getConfig().set("netuno_relation_table_name", rowRelationTable.getString("name"));
                     proteu.getConfig().set("_relation_table_name", rowRelationTable.getString("name"));
                     String relationTableName = rowRelationTable.getString("name");
-                    Values item = Config.getDataBaseBuilder(proteu).getItemByUId(relationTableName, proteu.getRequestAll().getString("netuno_relation_item_uid"));
+                    Values item = Config.getDBBuilder(proteu).getItemByUId(relationTableName, proteu.getRequestAll().getString("netuno_relation_item_uid"));
                     if (item != null) {
                         proteu.getConfig().set("netuno_relation_item", item);
                         proteu.getConfig().set("_relation_item", item);
@@ -149,8 +149,8 @@ public class Search {
             if (proteu.isAcceptJSON()) {
                 proteu.setResponseHeader(Proteu.ContentType.JSON);
                 
-                List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
-                org.netuno.tritao.db.DataSelected dataSelected = Config.getDataBaseBuilder(proteu).selectSearch(0, 0, "");
+                List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
+                org.netuno.tritao.db.DataSelected dataSelected = Config.getDBBuilder(proteu).selectSearch(0, 0, "");
                 JSONArray jsonArray = new JSONArray();
                 List<Values> rsSearch = dataSelected.getResults();
                 for (int i = 0; i < rsSearch.size(); i++) {
@@ -196,12 +196,12 @@ public class Search {
                 proteu.setResponseHeader(Proteu.ContentType.JSON);
                 List<DataItem> fails = new ArrayList<>();
                 proteu.getRequestAll().getValues("netuno_items_uids").list(String.class).forEach((uid) -> {
-                    Values item = Config.getDataBaseBuilder(proteu).getItemByUId(tableName, uid);
+                    Values item = Config.getDBBuilder(proteu).getItemByUId(tableName, uid);
                     DataItem dataItem = null;
                     if (proteu.getRequestAll().getString("netuno_action").equals("bulk-delete")) {
-                        dataItem = Config.getDataBaseBuilder(proteu).delete(tableName, item.getString("id"));
+                        dataItem = Config.getDBBuilder(proteu).delete(tableName, item.getString("id"));
                     } else if (proteu.getRequestAll().getString("netuno_action").equals("bulk-inactive")) {
-                        dataItem = Config.getDataBaseBuilder(proteu).update(tableName, item.getString("id"), new Values().set("active", false));
+                        dataItem = Config.getDBBuilder(proteu).update(tableName, item.getString("id"), new Values().set("active", false));
                     }
                     if (dataItem.isStatusTypeAsError()) {
                         fails.add(dataItem);
@@ -212,7 +212,7 @@ public class Search {
             }
             if (proteu.getRequestAll().getString("netuno_action").equals("datasource")) {
                 proteu.setResponseHeader(Proteu.ContentType.JSON);
-                List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
+                List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
                 String searchOrderBy = "";
                 if (proteu.getRequestAll().getInt("order[0][column]") == 0) {
                     if (proteu.getRequestAll().getString("order[0][dir]").equals("asc")) {
@@ -254,7 +254,7 @@ public class Search {
                 if (!searchOrderBy.isEmpty()) {
                     searchOrderBy = searchOrderBy.substring(0, searchOrderBy.length() - 2);
                 }
-                org.netuno.tritao.db.DataSelected dataSelected = Config.getDataBaseBuilder(proteu).selectSearch(proteu.getRequestAll().getInt("start") ,proteu.getRequestAll().getInt("length"), searchOrderBy);
+                org.netuno.tritao.db.DataSelected dataSelected = Config.getDBBuilder(proteu).selectSearch(proteu.getRequestAll().getInt("start") ,proteu.getRequestAll().getInt("length"), searchOrderBy);
                 Values jsonObject = new Values();
                 jsonObject.set("draw", proteu.getRequestAll().getInt("draw"));
                 jsonObject.set("recordsTotal", Integer.toString(dataSelected.getFullTotal()));
@@ -331,7 +331,7 @@ public class Search {
 
             Rule rule = Rule.getRule(proteu, hili, tableId);
 
-            List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
+            List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
 
             if (rule.getWrite() > Rule.NONE) {
                 rowTritaoTable.put("button-new", TemplateBuilder.getOutput(proteu, hili, "search/buttons/new", rowTritaoTable));
@@ -482,8 +482,8 @@ public class Search {
     	wb.setSheetName(0, WorkbookUtil.createSafeSheetName(
                 Translation.formTitle(proteu, hili, rowTritaoTable)
         ));
-    	List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
-    	org.netuno.tritao.db.DataSelected dataSelected = Config.getDataBaseBuilder(proteu).selectSearch(0, 0, "");
+    	List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
+    	org.netuno.tritao.db.DataSelected dataSelected = Config.getDBBuilder(proteu).selectSearch(0, 0, "");
     	List<Values> rsSearch = dataSelected.getResults();
     	row = sheet.createRow(0);
     	row.setHeight((short)0x249);
@@ -584,8 +584,8 @@ public class Search {
         xmldoc = impl.createDocument(null, tableName, null);
         Element root = xmldoc.getDocumentElement();
         root.setAttribute("name", Translation.formTitle(proteu, hili, rowTritaoTable));
-    	List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
-    	org.netuno.tritao.db.DataSelected dataSelected = Config.getDataBaseBuilder(proteu).selectSearch(0, 0, "");
+    	List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
+    	org.netuno.tritao.db.DataSelected dataSelected = Config.getDBBuilder(proteu).selectSearch(0, 0, "");
     	List<Values> rsSearch = dataSelected.getResults();
     	for (int i = 0; i < rsSearch.size(); i++) {
         	Values rowSearch = rsSearch.get(i);
@@ -652,8 +652,8 @@ public class Search {
     	String tableName = rowTritaoTable.getString("name");
     	Values root = new Values();
     	root.set("name", tableName);
-    	List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
-    	org.netuno.tritao.db.DataSelected dataSelected = Config.getDataBaseBuilder(proteu).selectSearch(0, 0, "");
+    	List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTritaoTable.getString("id"));
+    	org.netuno.tritao.db.DataSelected dataSelected = Config.getDBBuilder(proteu).selectSearch(0, 0, "");
     	List<Values> rsSearch = dataSelected.getResults();
     	Values list = new Values();
     	for (int i = 0; i < rsSearch.size(); i++) {

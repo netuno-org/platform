@@ -43,7 +43,7 @@ public class Sync {
         if (!proteu.getConfig().getString("_firebase:listener_secret").isEmpty()
                 && proteu.getRequestAll().getString("mode").equalsIgnoreCase("firebase")
                 && proteu.getRequestAll().getString("secret").equals(proteu.getConfig().getString("_firebase:listener_secret"))) {
-            Builder builder = Config.getDataBaseBuilder(proteu);
+            Builder builder = Config.getDBBuilder(proteu);
 
             proteu.getConfig().put("_sync:firebase", true);
 

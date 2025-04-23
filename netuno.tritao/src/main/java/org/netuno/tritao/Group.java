@@ -44,7 +44,7 @@ public class Group {
 	    	String json = "";
 	        if (proteu.getRequestAll().hasKey("data_uid")) {
 	        	String dataId = proteu.getRequestAll().getString("data_uid");
-	        	Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(dataId);
+	        	Values group = Config.getDBBuilder(proteu).getGroupByUId(dataId);
 	        	JSONObject jsonObject = new JSONObject();
 	        	if (group != null) {
 	                jsonObject.put("id", dataId);
@@ -54,7 +54,7 @@ public class Group {
 	        } else {
 				boolean noDevs = proteu.getRequestAll().getBoolean("no_devs");
 				boolean allowAll = proteu.getRequestAll().getBoolean("allow_all");
-		        List<Values> rsQuery = Config.getDataBaseBuilder(proteu).selectGroupSearch(proteu.getRequestAll().getString("q"));
+		        List<Values> rsQuery = Config.getDBBuilder(proteu).selectGroupSearch(proteu.getRequestAll().getString("q"));
 		        JSONArray jsonArray = new JSONArray();
 	            String groupsMode = proteu.getRequestAll().getString("groups_mode");
 	            String[] groups = proteu.getRequestAll().getString("groups").split(",");
@@ -105,13 +105,13 @@ public class Group {
     		return;
     	}
     	if (proteu.getRequestAll().getString("service").equals("form_rules")) {
-			Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
+			Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
 			if (group != null) {
 				proteu.getOutput().print(listTablesRules(proteu, hili, group, "form", "0", 0));
 			}
     		return;
     	} else if (proteu.getRequestAll().getString("service").equals("report_rules")) {
-			Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
+			Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
 			if (group != null) {
 				proteu.getOutput().print(listTablesRules(proteu, hili, group, "report", "0", 0));
 			}
@@ -120,9 +120,9 @@ public class Group {
     	Values data = new Values();
     	boolean restore = false;
         if (proteu.getRequestAll().getString("execute").equals("save") && proteu.getRequestAll().getString("uid").isEmpty()) {
-        	int id = Config.getDataBaseBuilder(proteu).insertGroup(proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getBoolean("active") ? "1" : "0");
+        	int id = Config.getDBBuilder(proteu).insertGroup(proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getBoolean("active") ? "1" : "0");
             if (id > 0) {
-				Values group = Config.getDataBaseBuilder(proteu).getGroupById(Integer.toString(id));
+				Values group = Config.getDBBuilder(proteu).getGroupById(Integer.toString(id));
             	proteu.getRequestAll().set("id", id);
 				proteu.getRequestAll().set("uid", group.get("uid"));
             	saveRules(proteu, hili, group);
@@ -132,10 +132,10 @@ public class Group {
             	restore = true;
             }
         } else if (proteu.getRequestAll().getString("execute").equals("save") && !proteu.getRequestAll().getString("uid").isEmpty()) {
-        	Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
+        	Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
 			if (group != null) {
 				saveRules(proteu, hili, group);
-				if (Config.getDataBaseBuilder(proteu).updateGroup(group.getString("id"), proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getBoolean("active") ? "1" : "0")) {
+				if (Config.getDBBuilder(proteu).updateGroup(group.getString("id"), proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getBoolean("active") ? "1" : "0")) {
 					TemplateBuilder.output(proteu, hili, "group/notification/saved", data);
 				} else {
 					TemplateBuilder.output(proteu, hili, "group/notification/error_exists", data);
@@ -143,10 +143,10 @@ public class Group {
 				}
 			}
         } else if (proteu.getRequestAll().getString("execute").equals("delete") && !proteu.getRequestAll().getString("uid").isEmpty()) {
-			Values group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
+			Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
 			if (group != null) {
-                Config.getDataBaseBuilder(proteu).deleteGroupRules(group.getString("id"));
-                Config.getDataBaseBuilder(proteu).deleteGroup(group.getString("id"));
+                Config.getDBBuilder(proteu).deleteGroupRules(group.getString("id"));
+                Config.getDBBuilder(proteu).deleteGroup(group.getString("id"));
                 TemplateBuilder.output(proteu, hili, "group/notification/deleted", data);
 				proteu.getRequestAll().remove("id");
 				proteu.getRequestPost().remove("id");
@@ -158,7 +158,7 @@ public class Group {
         }
         Values group = null;
         if (!proteu.getRequestAll().getString("uid").isEmpty()) {
-			group = Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
+			group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
         }
     	if (restore) {
         	data.set("group.id.value", proteu.getRequestAll().getString("id"));
@@ -209,14 +209,14 @@ public class Group {
     
     private static void saveRules(Proteu proteu, Hili hili, Values group) {
     	if (proteu.getRequestAll().getString("execute").equals("save")) {
-            for (Values tritaoTable : Config.getDataBaseBuilder(proteu).selectTable()) {
+            for (Values tritaoTable : Config.getDBBuilder(proteu).selectTable()) {
             	if (tritaoTable.getInt("group_id") == -2) {
             		continue;
             	}
             	if (proteu.getRequestAll().hasKey("form_rule_read_"+ tritaoTable.getString("id"))
 	    			&& proteu.getRequestAll().hasKey("form_rule_write_"+ tritaoTable.getString("id"))
 	    			&& proteu.getRequestAll().hasKey("form_rule_delete_"+ tritaoTable.getString("id"))) {
-	                Config.getDataBaseBuilder(proteu).setGroupRule(group.getString("id"), tritaoTable.getString("id")
+	                Config.getDBBuilder(proteu).setGroupRule(group.getString("id"), tritaoTable.getString("id")
 	                        , proteu.getRequestAll().getBoolean("form_rule_active_"+ tritaoTable.getString("id")) ? "1" : "0"
 	                        , proteu.getRequestAll().getString("form_rule_read_"+ tritaoTable.getString("id"))
 	                        , proteu.getRequestAll().getString("form_rule_write_"+ tritaoTable.getString("id"))
@@ -224,14 +224,14 @@ public class Group {
             	}
             }
 			proteu.getRequestAll().set("report", "true");
-            for (Values tritaoReport : Config.getDataBaseBuilder(proteu).selectTable()) {
+            for (Values tritaoReport : Config.getDBBuilder(proteu).selectTable()) {
             	if (tritaoReport.getInt("group_id") == -2) {
             		continue;
             	}
             	if (proteu.getRequestAll().hasKey("report_rule_read_"+ tritaoReport.getString("id"))
 	    			&& proteu.getRequestAll().hasKey("report_rule_write_"+ tritaoReport.getString("id"))
 	    			&& proteu.getRequestAll().hasKey("report_rule_delete_"+ tritaoReport.getString("id"))) {
-	                Config.getDataBaseBuilder(proteu).setGroupRule(group.getString("id"), tritaoReport.getString("id")
+	                Config.getDBBuilder(proteu).setGroupRule(group.getString("id"), tritaoReport.getString("id")
 	                        , proteu.getRequestAll().getBoolean("report_rule_active_"+ tritaoReport.getString("id")) ? "1" : "0"
 	                        , proteu.getRequestAll().getString("report_rule_read_"+ tritaoReport.getString("id"))
 	                        , proteu.getRequestAll().getString("report_rule_write_"+ tritaoReport.getString("id"))
@@ -246,10 +246,10 @@ public class Group {
         List<Values> rsTableByParent;
         if (type.equals("report")) {
 			proteu.getRequestAll().set("report", "true");
-        	rsTableByParent = Config.getDataBaseBuilder(proteu).selectTablesByParent(baseTableId);
+        	rsTableByParent = Config.getDBBuilder(proteu).selectTablesByParent(baseTableId);
 			proteu.getRequestAll().set("report", "false");
         } else {
-        	rsTableByParent = Config.getDataBaseBuilder(proteu).selectTablesByParent(baseTableId);
+        	rsTableByParent = Config.getDBBuilder(proteu).selectTablesByParent(baseTableId);
         }
         String content = "";
         Values data = new Values();
@@ -258,7 +258,7 @@ public class Group {
         		continue;
         	}
             String tableId = rowTritaoTableByParent.getString("id");
-            List<Values> rules = Config.getDataBaseBuilder(proteu).selectGroupRule(Integer.toString(group.getInt("id")), tableId);
+            List<Values> rules = Config.getDBBuilder(proteu).selectGroupRule(Integer.toString(group.getInt("id")), tableId);
             Values rule = null;
             if (rules.size() > 0) {
                 rule = rules.get(0);

@@ -43,7 +43,7 @@ public class Password {
             org.netuno.psamata.io.File avatarFile = (org.netuno.psamata.io.File)proteu.getRequestAll().get("avatar_file");
             if (avatarFile.getPath().endsWith(".jpg") || avatarFile.getPath().endsWith(".jpeg") || avatarFile.getPath().endsWith(".png")) {
                     String path = Config.getPathAppImages(proteu).concat("/avatar/")
-                            .concat(Config.getDabaBase(proteu)).concat("_")
+                            .concat(Config.getDBKey(proteu)).concat("_")
                             .concat(user.getString("user"))
                             .concat(".jpg");
                     avatarFile.save(path);
@@ -75,9 +75,9 @@ public class Password {
                 data.set("password.insecure.message", new Lang(proteu, hili).get(Config.getPasswordBuilder(proteu).getPasswordInecureLangKey()));
                 TemplateBuilder.output(proteu, hili, "notification/password_insecure", data);
             } else if (!proteu.getRequestPost().getString("newpassword").equals("")) {
-                Builder builder = Config.getDataBaseBuilder(proteu, "default");
+                Builder builder = Config.getDBBuilder(proteu, "default");
                 if (Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), proteu.getRequestPost().getString("verifypassword")).equals(user.getString("pass"))) {
-                    Config.getDataBaseBuilder(proteu).updateUser(user.getString("id"), "", user.getString("user"), Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), proteu.getRequestPost().getString("newpassword")), user.getString("no_pass"), "", user.getString("group_id"), builder.booleanTrue());
+                    Config.getDBBuilder(proteu).updateUser(user.getString("id"), "", user.getString("user"), Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), proteu.getRequestPost().getString("newpassword")), user.getString("no_pass"), "", user.getString("group_id"), builder.booleanTrue());
                     TemplateBuilder.output(proteu, hili, "notification/password_success");
                 } else {
                     TemplateBuilder.output(proteu, hili, "notification/password_wrong");
