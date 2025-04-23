@@ -685,7 +685,7 @@ public class Auth extends ResourceBase {
     )
     public boolean check(String password) {
         String username = resource(User.class).data().getString("user");
-        Values user = Config.getDataBaseBuilder(getProteu()).selectUserLogin(
+        Values user = Config.getDBBuilder(getProteu()).selectUserLogin(
                 username,
                 Config.getPasswordBuilder(getProteu()).getCryptPassword(
                         getProteu(),
@@ -765,7 +765,7 @@ public class Auth extends ResourceBase {
         }
     )
     public boolean check(String username, String password) {
-        Values user = Config.getDataBaseBuilder(getProteu()).selectUserLogin(
+        Values user = Config.getDBBuilder(getProteu()).selectUserLogin(
                 username,
                 Config.getPasswordBuilder(getProteu()).getCryptPassword(
                         getProteu(),

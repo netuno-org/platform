@@ -129,7 +129,7 @@ public class DB extends ResourceBase {
         }
         Connection connection = null;
         try {
-            connection = Config.getDataBaseManager(getProteu(), key).getConnection();
+            connection = Config.getDBExecutor(getProteu(), key).getConnection();
         } catch (Throwable e) {
             logger.trace(e);
             throw new ErrorException(getProteu(), getHili(), "Database connection failed!");
@@ -199,7 +199,7 @@ public class DB extends ResourceBase {
         DB _db = new DB(getProteu(), getHili());
         _db.key = key;
         try {
-            _db.dbOps = new org.netuno.psamata.DB(Config.getDataBaseManager(getProteu(), key).getConnection());
+            _db.dbOps = new org.netuno.psamata.DB(Config.getDBExecutor(getProteu(), key).getConnection());
         } catch (Throwable e) {
             throw new ErrorException(getProteu(), getHili(), "Database connection failed!", e);
         }
@@ -1614,7 +1614,7 @@ public class DB extends ResourceBase {
         if (!data.hasKey("active")) {
             data.set("active", true);
         }
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         DataSelected dataSelected = builder.selectSearch(table, data, wildcards);
         return new DBSearchResult()
                 .setResults(dataSelected.getResults())
@@ -1989,7 +1989,7 @@ public class DB extends ResourceBase {
         if (!data.hasKey("active")) {
             data.set("active", true);
         }
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         DataItem dataItem = checkErrors("insert", table, null, data, builder.insert(table, data));
         int id = Integer.valueOf(dataItem.getId()).intValue();
         dataItem = null;
@@ -2065,7 +2065,7 @@ public class DB extends ResourceBase {
         if (!data.hasKey("active")) {
             data.set("active", true);
         }
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         DataSelected dataSelected = builder.selectSearch(table, data, false);
         if (dataSelected.getTotal() == 0) {
             DataItem dataItem = checkErrors("insert", table, null, data, builder.insert(table, data));
@@ -2158,7 +2158,7 @@ public class DB extends ResourceBase {
         if (!data.hasKey("active")) {
             data.set("active", true);
         }
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         Form form = resource(Form.class);
         List<String> primaryKeys = form.primaryKeys(table);
         if (primaryKeys == null) {
@@ -2561,7 +2561,7 @@ public class DB extends ResourceBase {
         if (!data.hasKey("active")) {
             data.set("active", true);
         }
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         id = ensureIDFromUID(table, id);
         if (id == null) {
             throw new ResourceException("db.update(" + table + ", " + id + ", " + data.toJSON() + "):\nNot found.");
@@ -2906,7 +2906,7 @@ public class DB extends ResourceBase {
         }
     )
     public int delete(String table, String id) throws ResourceException {
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         id = ensureIDFromUID(table, id);
         if (id == null) {
             throw new ResourceException("db.delete(" + table + ", " + id + "):\nNot found.");
@@ -3024,7 +3024,7 @@ public class DB extends ResourceBase {
         if (!data.hasKey("active")) {
             data.set("active", true);
         }
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         String existsId = ensureIDFromUID(table, id);
         if (existsId == null) {
             DataItem dataItem = checkErrors("save", table, id, data, builder.insert(table, data));
@@ -3049,7 +3049,7 @@ public class DB extends ResourceBase {
 
     private String ensureIDFromUID(String table, String id) {
         if (!id.matches("^\\d+$")) {
-            Builder builder = Config.getDataBaseBuilder(getProteu());
+            Builder builder = Config.getDBBuilder(getProteu());
             Values item = builder.getItemByUId(table, id);
             if (item == null) {
                 return null;
@@ -3111,7 +3111,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isH2() {
-        return ManagerBase.isMariaDB(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isMariaDB(Config.getDBBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3138,7 +3138,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isH2DataBase() {
-        return ManagerBase.isH2(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isH2(Config.getDBBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3165,7 +3165,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isPG() {
-        return ManagerBase.isPostgreSQL(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isPostgreSQL(Config.getDBBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3192,7 +3192,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isPostgreSQL() {
-        return ManagerBase.isPostgreSQL(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isPostgreSQL(Config.getDBBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3219,7 +3219,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isMariaDB() {
-        return ManagerBase.isMariaDB(Config.getDataBaseBuilder(getProteu()));
+        return ManagerBase.isMariaDB(Config.getDBBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3246,7 +3246,7 @@ public class DB extends ResourceBase {
         }
     )
     public String escapeStart() {
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         return builder.escapeStart();
     }
 
@@ -3274,7 +3274,7 @@ public class DB extends ResourceBase {
         }
     )
     public String escapeEnd() {
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         return builder.escapeEnd();
     }
 
@@ -3313,7 +3313,7 @@ public class DB extends ResourceBase {
         }
     )
     public String escape(String data) {
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         return builder.escape(data);
     }
 
@@ -3466,7 +3466,7 @@ public class DB extends ResourceBase {
         }
     )
     public String sanitizeBoolean(String data) {
-        Builder builder = Config.getDataBaseBuilder(getProteu());
+        Builder builder = Config.getDBBuilder(getProteu());
         return builder.booleanValue(data);
     }
 

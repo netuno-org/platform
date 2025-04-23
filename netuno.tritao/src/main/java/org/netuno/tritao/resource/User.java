@@ -355,7 +355,7 @@ public class User extends ResourceBase {
         )
     })
     public List<Values> all() {
-        List<Values> users = Config.getDataBaseBuilder(getProteu()).selectUserSearch("");
+        List<Values> users = Config.getDBBuilder(getProteu()).selectUserSearch("");
         return users;
     }
     
@@ -462,7 +462,7 @@ public class User extends ResourceBase {
         )
     })
     public List<Values> search(String term) {
-        List<Values> users = Config.getDataBaseBuilder(getProteu()).selectUserSearch(
+        List<Values> users = Config.getDBBuilder(getProteu()).selectUserSearch(
                 term
         );
         return users;
@@ -513,7 +513,7 @@ public class User extends ResourceBase {
         )
     })
     public Values get(int user) {
-        return Config.getDataBaseBuilder(getProteu()).getUserById(Integer.toString(user));
+        return Config.getDBBuilder(getProteu()).getUserById(Integer.toString(user));
     }
 
     @MethodDoc(translations = {
@@ -563,11 +563,11 @@ public class User extends ResourceBase {
     })
     public Values get(String idOrUidOrUsername) {
         if (idOrUidOrUsername.matches("^\\d+$")) {
-            return Config.getDataBaseBuilder(getProteu()).getUserById(idOrUidOrUsername);
+            return Config.getDBBuilder(getProteu()).getUserById(idOrUidOrUsername);
         }
-        Values user = Config.getDataBaseBuilder(getProteu()).getUser(idOrUidOrUsername);
+        Values user = Config.getDBBuilder(getProteu()).getUser(idOrUidOrUsername);
         if (user == null) {
-            user = Config.getDataBaseBuilder(getProteu()).getUserByUId(
+            user = Config.getDBBuilder(getProteu()).getUserByUId(
                     idOrUidOrUsername
             );
         }
@@ -900,7 +900,7 @@ public class User extends ResourceBase {
                     userData.getString("pass")
             ));
         }
-        return Config.getDataBaseBuilder(getProteu()).insertUser(
+        return Config.getDBBuilder(getProteu()).insertUser(
                 userData
         );
     }
@@ -988,7 +988,7 @@ public class User extends ResourceBase {
                     userData.getString("pass")
             ));
         }
-        Config.getDataBaseBuilder(getProteu()).insertUser(
+        Config.getDBBuilder(getProteu()).insertUser(
                 userData
         );
         return true;
@@ -1149,7 +1149,7 @@ public class User extends ResourceBase {
         } else {
             userData.unset("pass");
         }
-        return Config.getDataBaseBuilder(getProteu()).updateUser(
+        return Config.getDBBuilder(getProteu()).updateUser(
                 user_id,
                 userData
         );
@@ -1208,7 +1208,7 @@ public class User extends ResourceBase {
         )
     })
     public boolean remove(int id) {
-        return Config.getDataBaseBuilder(getProteu()).deleteUser(
+        return Config.getDBBuilder(getProteu()).deleteUser(
                 Integer.toString(id)
         );
     }
@@ -1218,7 +1218,7 @@ public class User extends ResourceBase {
     }
 
     public boolean hasProvider(int userId, String providerCode) {
-        Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
+        Builder dbBuilder = Config.getDBBuilder(getProteu());
         Values dbProvider = dbBuilder.getAuthProviderByCode(providerCode);
         if (dbProvider == null) {
             throw new ResourceException("The provider code "+ providerCode +" was not found.");
@@ -1231,7 +1231,7 @@ public class User extends ResourceBase {
     }
 
     public Values allProvidersData(int userId) {
-        return new Values(Config.getDataBaseBuilder(getProteu()).allAuthProviderUserByUser(Integer.toString(userId)));
+        return new Values(Config.getDBBuilder(getProteu()).allAuthProviderUserByUser(Integer.toString(userId)));
     }
 
     public Values providerData(String providerCode) {
@@ -1239,7 +1239,7 @@ public class User extends ResourceBase {
     }
 
     public Values providerData(int userId, String providerCode) {
-        Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
+        Builder dbBuilder = Config.getDBBuilder(getProteu());
         Values dbProvider = dbBuilder.getAuthProviderByCode(providerCode);
         if (dbProvider == null) {
             throw new ResourceException("The provider code "+ providerCode +" was not found.");
@@ -1248,7 +1248,7 @@ public class User extends ResourceBase {
     }
 
     public Values providerDataByUid(String uid) {
-        Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
+        Builder dbBuilder = Config.getDBBuilder(getProteu());
         return dbBuilder.getAuthProviderUserByUid(uid);
     }
 
@@ -1263,7 +1263,7 @@ public class User extends ResourceBase {
     public boolean setPassword(int id, String password) {
         Values userData = get(id);
         String userId = userData.getString("id");
-        return Config.getDataBaseBuilder(getProteu()).updateUser(
+        return Config.getDBBuilder(getProteu()).updateUser(
                 userId,
                 new Values()
                         .set("pass", Config.getPasswordBuilder(getProteu()).getCryptPassword(
@@ -1290,7 +1290,7 @@ public class User extends ResourceBase {
     public boolean setNoPassword(int id, boolean active) {
         Values userData = get(id);
         String userId = userData.getString("id");
-        return Config.getDataBaseBuilder(getProteu()).updateUser(
+        return Config.getDBBuilder(getProteu()).updateUser(
                 userId,
                 new Values()
                         .set("no_pass", active)
@@ -1312,17 +1312,17 @@ public class User extends ResourceBase {
 
     public boolean setProviderLDAP(int id, boolean active) {
         Values userData = get(id);
-        Values dbUserProviderLDAP = Config.getDataBaseBuilder(getProteu()).getAuthProviderUserByCode(userData.getString("id"), "ldap");
+        Values dbUserProviderLDAP = Config.getDBBuilder(getProteu()).getAuthProviderUserByCode(userData.getString("id"), "ldap");
         if (active && dbUserProviderLDAP == null) {
-            Config.getDataBaseBuilder(getProteu()).insertAuthProviderUser(
+            Config.getDBBuilder(getProteu()).insertAuthProviderUser(
                     new Values()
                             .set("user_id", userData.getInt("id"))
-                            .set("provider_id", Config.getDataBaseBuilder(getProteu()).getAuthProviderByCode("ldap").getInt("id"))
+                            .set("provider_id", Config.getDBBuilder(getProteu()).getAuthProviderByCode("ldap").getInt("id"))
                             .set("code", "")
             );
             return true;
         } else if (!active && dbUserProviderLDAP != null) {
-            Config.getDataBaseBuilder(getProteu()).deleteAuthProviderUser(dbUserProviderLDAP.getString("id"));
+            Config.getDBBuilder(getProteu()).deleteAuthProviderUser(dbUserProviderLDAP.getString("id"));
             return true;
         }
         return false;
