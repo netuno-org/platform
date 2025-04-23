@@ -236,9 +236,9 @@ public class ProteuEvents implements Events {
             if (!db.getBoolean("enabled", true)) {
                 continue;
             }
-            if (org.netuno.proteu.Config.getDataSources().hasKey(Config.getDabaBase(proteu, key))
-            		&& org.netuno.proteu.Config.getDataSources().getLong(Config.getDabaBase(proteu, key) +"$LastModified") != appConfig.getLong("lastModified")) {
-            	Object dataSource = org.netuno.proteu.Config.getDataSources().get(Config.getDabaBase(proteu, key));
+            if (org.netuno.proteu.Config.getDataSources().hasKey(Config.getDBKey(proteu, key))
+            		&& org.netuno.proteu.Config.getDataSources().getLong(Config.getDBKey(proteu, key) +"$LastModified") != appConfig.getLong("lastModified")) {
+            	Object dataSource = org.netuno.proteu.Config.getDataSources().get(Config.getDBKey(proteu, key));
             	if (dataSource != null) {
                     if (dataSource instanceof org.h2.jdbcx.JdbcDataSource) {
                         try {
@@ -269,15 +269,15 @@ public class ProteuEvents implements Events {
                             logger.warn("Error closing MSSQL data source connections.");
                         }
                     }
-                    org.netuno.proteu.Config.getDataSources().unset(Config.getDabaBase(proteu, key));
+                    org.netuno.proteu.Config.getDataSources().unset(Config.getDBKey(proteu, key));
             	}
             }
             String dbEngine = db.getString("engine");
             if (dbEngine.isEmpty()) {
                 String message = "App "+ app +" with empty database engine.";
                 throw new DBError(message).setLogFatal(true);
-            } else if (!org.netuno.proteu.Config.getDataSources().hasKey(Config.getDabaBase(proteu, key))) {
-            	org.netuno.proteu.Config.getDataSources().set(Config.getDabaBase(proteu, key) +"$LastModified", appConfig.getLong("lastModified"));
+            } else if (!org.netuno.proteu.Config.getDataSources().hasKey(Config.getDBKey(proteu, key))) {
+            	org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key) +"$LastModified", appConfig.getLong("lastModified"));
                 try {
                     if (dbEngine.equalsIgnoreCase("h2")
                             || dbEngine.equalsIgnoreCase("h2database")) {
@@ -300,7 +300,7 @@ public class ProteuEvents implements Events {
                         config.setUsername("sa");
                         config.setPassword("");
                         loadHikariConfig(app, config, db);
-                        org.netuno.proteu.Config.getDataSources().set(Config.getDabaBase(proteu, key), new HikariDataSource(config));
+                        org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
                     } else if (dbEngine.equalsIgnoreCase("pg")
                             || dbEngine.equalsIgnoreCase("postgresql")) {
                         HikariConfig config = new HikariConfig();
@@ -335,7 +335,7 @@ public class ProteuEvents implements Events {
                             config.setDataSource(ds);
                         }
                         loadHikariConfig(app, config, db);
-                        org.netuno.proteu.Config.getDataSources().set(Config.getDabaBase(proteu, key), new HikariDataSource(config));
+                        org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
                     } else if (dbEngine.equalsIgnoreCase("mariadb")) {
                         HikariConfig config = new HikariConfig();
                         config.setDriverClassName("org.mariadb.jdbc.Driver");
@@ -360,7 +360,7 @@ public class ProteuEvents implements Events {
                             config.setDataSource(ds);
                         }
                         loadHikariConfig(app, config, db);
-                        org.netuno.proteu.Config.getDataSources().set(Config.getDabaBase(proteu, key), new HikariDataSource(config));
+                        org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
                     } else if (dbEngine.equalsIgnoreCase("mssql")) {
                         HikariConfig config = new HikariConfig();
                         config.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -385,7 +385,7 @@ public class ProteuEvents implements Events {
                             config.setDataSource(ds);
                         }
                         loadHikariConfig(app, config, db);
-                        org.netuno.proteu.Config.getDataSources().set(Config.getDabaBase(proteu, key), new HikariDataSource(config));
+                        org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
                     } else {
                         String message = "App "+ app +" with invalid database engine: "+ dbEngine;
                         throw new DBError(message).setLogFatal(true);
@@ -420,7 +420,7 @@ public class ProteuEvents implements Events {
                 continue;
             }
             String dbEngine = db.getString("engine");
-            proteu.getConfig().set("_database:manager:"+ key, new DBExecutor(proteu, hili, key));
+            proteu.getConfig().set("_database:executor:"+ key, new DBExecutor(proteu, hili, key));
             if (dbEngine.equalsIgnoreCase("h2")
                     || dbEngine.equalsIgnoreCase("h2database")) {
                 proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.H2(proteu, hili, key));
@@ -671,7 +671,7 @@ public class ProteuEvents implements Events {
 
     public void afterEnd(Proteu proteu, Object faros) {
         for (String key : proteu.getConfig().keys()) {
-            if (key.startsWith("_database:manager:")) {
+            if (key.startsWith("_database:executor:")) {
                 Object o = proteu.getConfig().get(key);
                 if (o instanceof DBExecutor) {
                     ((DBExecutor)o).closeConnections();
