@@ -126,7 +126,7 @@ public class Rule {
         if (Auth.getGroup(proteu, hili) == null) {
             return new Rule();
         }
-        return getRule(Config.getDataBaseBuilder(proteu), Auth.getUser(proteu, hili).getString("id"), Auth.getGroup(proteu, hili).getString("id"), "0");
+        return getRule(Config.getDBBuilder(proteu), Auth.getUser(proteu, hili).getString("id"), Auth.getGroup(proteu, hili).getString("id"), "0");
     }
     
     public static Rule getRule(Proteu proteu, Hili hili, String table_id) {
@@ -136,15 +136,15 @@ public class Rule {
         if (Auth.getGroup(proteu, hili) == null) {
             return new Rule();
         }
-        return getRule(Config.getDataBaseBuilder(proteu), Auth.getUser(proteu, hili).getString("id"), Auth.getGroup(proteu, hili).getString("id"), table_id);
+        return getRule(Config.getDBBuilder(proteu), Auth.getUser(proteu, hili).getString("id"), Auth.getGroup(proteu, hili).getString("id"), table_id);
     }
 
     public static Rule getRule(Proteu proteu, Hili hili, String user_id, String group_id) {
-        return getRule(Config.getDataBaseBuilder(proteu), user_id, group_id, "0");
+        return getRule(Config.getDBBuilder(proteu), user_id, group_id, "0");
     }
     
     public static Rule getRule(Proteu proteu, Hili hili, String user_id, String group_id, String table_id) {
-        return getRule(Config.getDataBaseBuilder(proteu), user_id, group_id, table_id);
+        return getRule(Config.getDBBuilder(proteu), user_id, group_id, table_id);
     }
 
     public static Rule getRule(Builder dbBuilder, String user_id, String group_id, String table_id) {

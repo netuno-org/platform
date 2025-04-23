@@ -38,14 +38,14 @@ public class MenuLoader {
     }
 
     public void loadTablesOrphans(Values jsonArray) throws IOException, JSONException {
-        List<Values> rsTableByOrphans = Config.getDataBaseBuilder(proteu).selectTablesByOrphans();
+        List<Values> rsTableByOrphans = Config.getDBBuilder(proteu).selectTablesByOrphans();
         for (Values rowTritaoTableByOrphans : rsTableByOrphans) {
             addTable(jsonArray, rowTritaoTableByOrphans);
         }
     }
 
     public void loadTables(Values jsonArray, String id) throws IOException, JSONException {
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(proteu).selectTablesByParent(id);
+        List<Values> rsTableByParent = Config.getDBBuilder(proteu).selectTablesByParent(id);
         for (Values rowTritaoTableByParent : rsTableByParent) {
             addTable(jsonArray, rowTritaoTableByParent);
         }
@@ -55,7 +55,7 @@ public class MenuLoader {
         if (Rule.getRule(proteu, hili, id).haveAccess()) {
             return true;
         }
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(proteu).selectTablesByParent(id);
+        List<Values> rsTableByParent = Config.getDBBuilder(proteu).selectTablesByParent(id);
         for (Values rowTritaoTableByParent : rsTableByParent) {
             if (Rule.getRule(proteu, hili, rowTritaoTableByParent.getString("id")).haveAccess()
                     || haveAnyChildTableToAccess(rowTritaoTableByParent.getString("id"))) {

@@ -112,7 +112,7 @@ public class Management<T> extends Pagination {
     
     public void open() throws SQLException {
     	close();
-        connection = Config.getDataBaseManager(proteu).getConnection();
+        connection = Config.getDBExecutor(proteu).getConnection();
         proteu.getConfig().set("Hibernate-Connection", connection);
         openSession();
     }
@@ -129,7 +129,7 @@ public class Management<T> extends Pagination {
                     }
                 }
             } finally {
-                Config.getDataBaseManager(proteu).closeConnections();
+                Config.getDBExecutor(proteu).closeConnections();
             }
         }
     }
