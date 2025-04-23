@@ -291,7 +291,7 @@ public class ComponentData {
         Object result = getValueAsObject();
         if (hasLink()) {
             String tableName = Link.getTableName(link);
-            DBExecutor DBExecutor = Config.getDataBaseManager(proteu);
+            DBExecutor DBExecutor = Config.getDBExecutor(proteu);
             List<Values> foreignData = DBExecutor.query(
                     "select * from "+ tableName +" where id = ?",
                     new Object[] { result });
@@ -308,7 +308,7 @@ public class ComponentData {
         Object result = valueToImport;
         if (hasLink()) {
             String tableName = Link.getTableName(link);
-            DBExecutor DBExecutor = Config.getDataBaseManager(proteu);
+            DBExecutor DBExecutor = Config.getDBExecutor(proteu);
             List<Values> foreignData = DBExecutor.query(
                 "select * from "+ tableName +" where uid = ?",
                 new Object[] {

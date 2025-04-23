@@ -101,7 +101,7 @@ public class MultiSelect extends ComponentBase {
         rootTableName = linkBase.getRootTableName();
         foreignTableName = linkBase.getTableName();
         if (getMode() == Mode.EditExists || isModeSave()) {
-            Values currentItem = Config.getDataBaseBuilder(getProteu()).getItemByUId(getTableData().getString("name"), getValuesUid());
+            Values currentItem = Config.getDBBuilder(getProteu()).getItemByUId(getTableData().getString("name"), getValuesUid());
             if (currentItem != null) {
                 int id = currentItem.getInt("id");
 
@@ -109,7 +109,7 @@ public class MultiSelect extends ComponentBase {
                         + "from " + foreignTableName
                         + "  inner join " + rootTableName + " on " + foreignTableName + ".id = " + rootTableName + "." + linkFieldName + " "
                         + "where " + rootTableName + "." + referenceFieldName + " = " + Integer.toString(id);
-                List<Values> rsForeign = Config.getDataBaseManager(getProteu()).query(queryForeign);
+                List<Values> rsForeign = Config.getDBExecutor(getProteu()).query(queryForeign);
                 value = "";
 
                 String valueColumnSeparator = getConfiguration().getParameter("COLUMN_SEPARATOR").getValue();
@@ -223,15 +223,15 @@ public class MultiSelect extends ComponentBase {
         if (getHili().sandbox().isScriptsRunning()) {
             return this;
         }
-        Values currentItem = Config.getDataBaseBuilder(getProteu()).getItemByUId(getTableData().getString("name"), getValuesUid());
+        Values currentItem = Config.getDBBuilder(getProteu()).getItemByUId(getTableData().getString("name"), getValuesUid());
         if (currentItem == null) {
             return this;
         }
-        Builder dbBuilder = Config.getDataBaseBuilder(getProteu());
+        Builder dbBuilder = Config.getDBBuilder(getProteu());
         String whereInUids = "";
         Values selectedItems = getProteu().getRequestAll().getValues(getDesignData().getString("name") + "[]");
         if (selectedItems == null) {
-            Config.getDataBaseManager(getProteu()).execute(
+            Config.getDBExecutor(getProteu()).execute(
                     "delete from "
                     + dbBuilder.escape(rootTableName)
                     + "where " + dbBuilder.escape(referenceFieldName) + " = " + currentItem.getInt("id")
@@ -247,7 +247,7 @@ public class MultiSelect extends ComponentBase {
         Values addNewItems = new Values().forceList();
         Values removeOldItems = new Values().forceList();
         String foreignQuery = "select id, uid from " + dbBuilder.escape(foreignTableName) + " where uid in (" + whereInUids + ")";
-        List<Values> rsSelectedItems = Config.getDataBaseManager(getProteu()).query(foreignQuery);
+        List<Values> rsSelectedItems = Config.getDBExecutor(getProteu()).query(foreignQuery);
         for (Values selectedItem : rsSelectedItems) {
             boolean found = false;
             for (Values itemExists : items.listOfValues()) {
@@ -290,7 +290,7 @@ public class MultiSelect extends ComponentBase {
             whereInRemoveIds += item.getInt("id");
         }
         if (!whereInRemoveIds.isEmpty()) {
-            Config.getDataBaseManager(getProteu()).execute(
+            Config.getDBExecutor(getProteu()).execute(
                     "delete from "
                     + dbBuilder.escape(rootTableName)
                     + "where " + dbBuilder.escape(linkFieldName) + " in "
@@ -314,7 +314,7 @@ public class MultiSelect extends ComponentBase {
             valueMaxColumnLength = DEFAULT_MAX_COLUMN_LENGTH;
         }
         if (valueReference.isEmpty() || valueLink.isEmpty()) {
-            List<Values> dsDesigns = Config.getDataBaseBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("com_uid"));
+            List<Values> dsDesigns = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("com_uid"));
             if (dsDesigns.size() < 1) {
                 return;
             }
@@ -339,7 +339,7 @@ public class MultiSelect extends ComponentBase {
             Link link = new Link(proteu, hili, "default", valueLink, "", 1);
             String referenceFieldName = reference.getRootFieldNames().get(0);
             String linkFieldName = link.getRootFieldNames().get(0);
-            List<Values> rsExists = Config.getDataBaseManager(proteu).query(
+            List<Values> rsExists = Config.getDBExecutor(proteu).query(
                     "select uid, ".concat(linkFieldName)
                             .concat(" as \"link_uid\" from ").concat(reference.getRootTableName())
                             .concat(" where ").concat(linkFieldName).concat(" in (")
@@ -378,7 +378,7 @@ public class MultiSelect extends ComponentBase {
             Link link = new Link(proteu, hili, "default", linkBase.getLinks().get(1), proteu.getRequestAll().getString("q"));
             link.setOnlyActives(valueOnlyActives);
             String query = link.getQuery(10);
-            List<Values> rsQuery = Config.getDataBaseManager(proteu).query(query);
+            List<Values> rsQuery = Config.getDBExecutor(proteu).query(query);
             JSONArray jsonArray = new JSONArray();
             for (Values queryRow : rsQuery) {
                 String uid = queryRow.getString("uid");

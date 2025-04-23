@@ -70,7 +70,7 @@ public class MultiView  extends ComponentBase {
             String referenceFieldName = reference.getRootFieldNames().get(0);
             String linkFieldName = link.getRootFieldNames().get(0);
 
-            List<Values> rsExists = Config.getDataBaseManager(getProteu()).query(
+            List<Values> rsExists = Config.getDBExecutor(getProteu()).query(
                 "select id, ".concat(linkFieldName)
                 .concat(" as \"link_id\" from ").concat(reference.getRootTableName())
                 .concat(" where ").concat(referenceFieldName).concat(" = ")

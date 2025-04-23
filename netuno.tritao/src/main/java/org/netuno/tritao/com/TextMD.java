@@ -114,10 +114,10 @@ public class TextMD extends ComponentBase {
     public static void _main(Proteu proteu, Hili hili) throws IOException, ProteuException {
     	Values rowDesign = null;
     	Values rowTable = null;
-    	List<Values> dsDesigns = Config.getDataBaseBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("com_uid"));
+    	List<Values> dsDesigns = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("com_uid"));
     	if (dsDesigns.size() == 1) {
             rowDesign = dsDesigns.get(0);
-            List<Values> dsTables = Config.getDataBaseBuilder(proteu).selectTable(rowDesign.getString("table_id"));
+            List<Values> dsTables = Config.getDBBuilder(proteu).selectTable(rowDesign.getString("table_id"));
             if (dsTables.size() == 1) {
                 rowTable = dsTables.get(0);
             }
