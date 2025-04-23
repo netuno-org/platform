@@ -43,10 +43,10 @@ public class ReportDesign extends FormDesign {
         proteu.getRequestAll().set("report", "true");
         List<Values> rsTable = null;
         if (!proteu.getRequestAll().getString("netuno_table_id").isEmpty()) {
-            rsTable = Config.getDataBaseBuilder(proteu).selectTable(proteu.getRequestAll().getString("netuno_table_id"));
+            rsTable = Config.getDBBuilder(proteu).selectTable(proteu.getRequestAll().getString("netuno_table_id"));
         }
         if (!proteu.getRequestAll().getString("netuno_table_uid").isEmpty()) {
-            rsTable = Config.getDataBaseBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_table_uid"));
+            rsTable = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_table_uid"));
         }
         if (rsTable == null || rsTable.size() == 0) {
             proteu.setResponseHeaderStatus(400);
@@ -65,14 +65,14 @@ public class ReportDesign extends FormDesign {
         if (proteu.getRequestAll().getString("execute").equals("copy")) {
             List<Values> rsField = null;
             if (proteu.getRequestAll().getInt("copy") > 0) {
-                rsField = Config.getDataBaseBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("copy"));
+                rsField = Config.getDBBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("copy"));
             }
             if (!proteu.getRequestAll().getString("copy").isEmpty()) {
-                rsField = Config.getDataBaseBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("copy"));
+                rsField = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("copy"));
             }
             if (rsField != null && rsField.size() == 1) {
-                Config.getDataBaseBuilder(proteu).copyTableField(rsField.get(0).getString("id"), table.getString("id"), rsField.get(0).getString("name"));
-                List<Values> rsNewField = Config.getDataBaseBuilder(proteu).selectTableDesign(table.getString("id"), rsField.get(0).getString("name"));
+                Config.getDBBuilder(proteu).copyTableField(rsField.get(0).getString("id"), table.getString("id"), rsField.get(0).getString("name"));
+                List<Values> rsNewField = Config.getDBBuilder(proteu).selectTableDesign(table.getString("id"), rsField.get(0).getString("name"));
                 if (rsNewField.size() == 1) {
                     Values newField = rsNewField.get(0);
                     arrangeXY(proteu, hili, table, newField);
@@ -85,11 +85,11 @@ public class ReportDesign extends FormDesign {
         Values field = null;
         List<Values> rsField = null;
         if (!proteu.getRequestAll().getString("id").isEmpty()) {
-            rsField = Config.getDataBaseBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
+            rsField = Config.getDBBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
 
         }
         if (!proteu.getRequestAll().getString("uid").isEmpty()) {
-            rsField = Config.getDataBaseBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("uid"));
+            rsField = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("uid"));
         }
         if (rsField != null && rsField.size() == 1) {
             field = rsField.get(0);
@@ -114,8 +114,8 @@ public class ReportDesign extends FormDesign {
                 data.set("name", proteu.getRequestPost().getString("name"));
                 data.set("displayname", proteu.getRequestPost().getString("displayname"));
                 if (proteu.getRequestPost().getInt("id") > 0) {
-                    if (Config.getDataBaseBuilder(proteu).updateTableField()) {
-                        rsField = Config.getDataBaseBuilder(proteu).selectTableDesign(proteu.getRequestPost().getString("id"));
+                    if (Config.getDBBuilder(proteu).updateTableField()) {
+                        rsField = Config.getDBBuilder(proteu).selectTableDesign(proteu.getRequestPost().getString("id"));
                         if (rsField.size() == 1) {
                             field = rsField.get(0);
                             arrangeXY(proteu, hili, table, field);
@@ -125,8 +125,8 @@ public class ReportDesign extends FormDesign {
                         TemplateBuilder.output(proteu, hili, "dev/notification/reportdesign_exists", data);
                     }
                 } else {
-                    if (Config.getDataBaseBuilder(proteu).createTableField()) {
-                        List<Values> rsNewField = Config.getDataBaseBuilder(proteu).selectTableDesign(table.getString("id"), proteu.getRequestAll().getString("name"));
+                    if (Config.getDBBuilder(proteu).createTableField()) {
+                        List<Values> rsNewField = Config.getDBBuilder(proteu).selectTableDesign(table.getString("id"), proteu.getRequestAll().getString("name"));
                         if (rsNewField.size() == 1) {
                             field = rsNewField.get(0);
                             arrangeXY(proteu, hili, table, field);
@@ -138,12 +138,12 @@ public class ReportDesign extends FormDesign {
                 }
             }
         } else if (proteu.getRequestPost().getString("execute").equals("delete")) {
-            if (Config.getDataBaseBuilder(proteu).deleteTableField()) {
+            if (Config.getDBBuilder(proteu).deleteTableField()) {
                 field = null;
                 TemplateBuilder.output(proteu, hili, "dev/notification/reportdesign_deleted", data);
             }
         }
-        List<Values> fields = Config.getDataBaseBuilder(proteu).selectTableDesign(table.getString("id"), "");
+        List<Values> fields = Config.getDBBuilder(proteu).selectTableDesign(table.getString("id"), "");
         String fieldItems = "";
         int nextLine = 0;
         for (Values fieldItem : fields) {

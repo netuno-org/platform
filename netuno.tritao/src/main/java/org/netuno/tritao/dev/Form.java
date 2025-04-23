@@ -51,9 +51,9 @@ public class Form {
 
         List<Values> rsTable = null;
         if (!proteu.getRequestAll().getString("id").equals("")) {
-            rsTable = Config.getDataBaseBuilder(proteu).selectTable(proteu.getRequestAll().getString("id"));
+            rsTable = Config.getDBBuilder(proteu).selectTable(proteu.getRequestAll().getString("id"));
         } else if (!proteu.getRequestAll().getString("uid").isEmpty()) {
-            rsTable = Config.getDataBaseBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("uid"));
+            rsTable = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("uid"));
         }
         if (rsTable != null && rsTable.size() == 1) {
             table = rsTable.get(0);
@@ -72,7 +72,7 @@ public class Form {
                 return;
             } else {
                 if (table != null) {
-                    if (Config.getDataBaseBuilder(proteu).updateTable()) {
+                    if (Config.getDBBuilder(proteu).updateTable()) {
                         if (new Firebase(proteu, hili).active()
                                 && !proteu.getRequestAll().getString("firebase").equals(table.getString("firebase"))) {
                             data.set("firebase.changed", true);
@@ -82,7 +82,7 @@ public class Form {
                         TemplateBuilder.output(proteu, hili, "dev/notification/form_exists", data);
                     }
                 } else {
-                    if (Config.getDataBaseBuilder(proteu).createTable()) {
+                    if (Config.getDBBuilder(proteu).createTable()) {
                         if (new Firebase(proteu, hili).active()
                                 && !proteu.getRequestAll().getString("firebase").isEmpty()) {
                             data.set("firebase.changed", true);
@@ -92,13 +92,13 @@ public class Form {
                         TemplateBuilder.output(proteu, hili, "dev/notification/form_exists", data);
                     }
                 }
-                rsTable = Config.getDataBaseBuilder(proteu).selectTable("", proteu.getRequestAll().getString("name"));
+                rsTable = Config.getDBBuilder(proteu).selectTable("", proteu.getRequestAll().getString("name"));
                 if (rsTable.size() == 1) {
                     table = rsTable.get(0);
                 }
             }
         } else if (proteu.getRequestPost().getString("execute").equals("delete")) {
-            if (Config.getDataBaseBuilder(proteu).deleteTable()) {
+            if (Config.getDBBuilder(proteu).deleteTable()) {
                 TemplateBuilder.output(proteu, hili, "dev/notification/form_deleted", data);
                 table = null;
             }
@@ -119,7 +119,7 @@ public class Form {
             DB _db = new DB(proteu, hili);
             StringBuilder sb = new StringBuilder();
             List<Values> databaseData = _db.all(tableName);
-            List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(table.getString("id"));
+            List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(table.getString("id"));
             sb.append("\n");
             sb.append("\n// -----------------------------------------------------------");
             sb.append("\n// ");
@@ -150,7 +150,7 @@ public class Form {
                         String key = componentData.getName();
                         Object value = databaseItem.get(componentData.getName());
                         if (componentData.getType() == Type.Integer && componentData.hasLink()) {
-                            Values item = Config.getDataBaseBuilder(proteu).getItemById(Link.getTableName(componentData.getLink()), databaseItem.getString(key));
+                            Values item = Config.getDBBuilder(proteu).getItemById(Link.getTableName(componentData.getLink()), databaseItem.getString(key));
                             if (item != null) {
                                 sb.append("    .set(\"" + key + "\", \"" + item.getString("uid") + "\")\n");
                             } else {
@@ -190,7 +190,7 @@ public class Form {
             proteu.outputJSON(databaseData);
             return;
         }
-        List<Values> tables = Config.getDataBaseBuilder(proteu).selectTable();
+        List<Values> tables = Config.getDBBuilder(proteu).selectTable();
         String formItems = "";
         for (Values t : tables) {
             data.set("table.item.id", t.getString("id"));
@@ -220,7 +220,7 @@ public class Form {
 
         data.set("reorder.value", table != null ? table.getInt("reorder") : "0");
 
-        List<Values> parentTables = Config.getDataBaseBuilder(proteu).selectTable();
+        List<Values> parentTables = Config.getDBBuilder(proteu).selectTable();
         String parentItems = "";
         for (Values t : parentTables) {
             if (table != null && t.getInt("id") == table.getInt("id")) {
@@ -235,7 +235,7 @@ public class Form {
         data.set("parent.items", parentItems);
 
         String optionsUser = "";
-        for (Values user : Config.getDataBaseBuilder(proteu).selectUserSearch("")) {
+        for (Values user : Config.getDBBuilder(proteu).selectUserSearch("")) {
             data.set("option.value", user.getString("uid"));
             data.set("option.text", user.getString("name"));
             data.set("option.selected", table != null && table.getInt("user_id") == user.getInt("id") ? " selected" : "");
@@ -245,7 +245,7 @@ public class Form {
         data.set("user.options", optionsUser);
 
         String optionsGroup = "";
-        for (Values group : Config.getDataBaseBuilder(proteu).selectGroupSearch("")) {
+        for (Values group : Config.getDBBuilder(proteu).selectGroupSearch("")) {
             data.set("option.value", group.getString("uid"));
             data.set("option.text", group.getString("name"));
             data.set("option.selected", table != null && table.getInt("group_id") == group.getInt("id") ? " selected" : "");

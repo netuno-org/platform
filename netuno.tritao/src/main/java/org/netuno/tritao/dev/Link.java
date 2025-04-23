@@ -42,14 +42,14 @@ public class Link {
         TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_head", data);
         List<Values> rsTables = null;
         if (!proteu.getRequestAll().getString("table_uid").isEmpty()) {
-            rsTables = Config.getDataBaseBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("table_uid"));
+            rsTables = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("table_uid"));
             if (rsTables.size() == 1) {
                 proteu.getRequestAll().set("table_id", rsTables.get(0).getString("id"));
                 proteu.getRequestPost().set("table_id", rsTables.get(0).getString("id"));
                 proteu.getRequestGet().set("table_id", rsTables.get(0).getString("id"));
             }
         } else {
-            rsTables = Config.getDataBaseBuilder(proteu).selectTable(proteu.getRequestAll().getString("table_id"), "");
+            rsTables = Config.getDBBuilder(proteu).selectTable(proteu.getRequestAll().getString("table_id"), "");
         }
         if (rsTables.size() == 1) {
             Values rowTable = rsTables.get(0);
@@ -58,7 +58,7 @@ public class Link {
             data.set("table.name", rowTable.getString("name"));
             data.set("table.displayname", rowTable.getString("displayname"));
             TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_fields_head", data);
-            List<Values> rsFields = Config.getDataBaseBuilder(proteu).selectTableDesign(rowTable.getString("id"), "");
+            List<Values> rsFields = Config.getDBBuilder(proteu).selectTableDesign(rowTable.getString("id"), "");
             for (Values rowField : rsFields) {
                 data.set("field.id", rowField.getString("id"));
                 data.set("field.uid", rowField.getString("uid"));

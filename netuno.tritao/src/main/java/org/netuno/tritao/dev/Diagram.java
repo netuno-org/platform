@@ -44,12 +44,12 @@ public class Diagram {
             proteu.setResponseHeaderNoCache();
             Values data = new Values();
 
-            List<Values> tables = Config.getDataBaseBuilder(proteu).selectTable();
+            List<Values> tables = Config.getDBBuilder(proteu).selectTable();
             List<Values> links = new ArrayList<>();
             List<Values> linksFrom = new ArrayList<>();
             List<Values> linksTo = new ArrayList<>();
             for (Values table : tables) {
-                List<Values> fields = Config.getDataBaseBuilder(proteu).selectTableDesign(table.getString("id"), "");
+                List<Values> fields = Config.getDBBuilder(proteu).selectTableDesign(table.getString("id"), "");
                 int linksCount = 0;
                 for (Values field : fields) {
                     Component com = Config.getNewComponent(proteu, hili, field.getString("type"));

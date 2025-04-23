@@ -57,11 +57,11 @@ public class ComponentConfiguration {
 		List<Values> fields = null;
 
     	if (!proteu.getRequestAll().getString("id").isEmpty()) {
-	    	fields = Config.getDataBaseBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
+	    	fields = Config.getDBBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
     	}
 
 		if (!proteu.getRequestAll().getString("uid").isEmpty()) {
-			fields = Config.getDataBaseBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("uid"));
+			fields = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("uid"));
 		}
 
 		if (fields != null && fields.size() == 1) {
@@ -92,7 +92,7 @@ public class ComponentConfiguration {
 					&& param.getValue().indexOf(":") > 0) {
 				String tableName = param.getValue().substring(0, param.getValue().indexOf(":"));
 				comData.set("table.name", tableName);
-				Values table = Config.getDataBaseBuilder(proteu).selectTableByName(tableName);
+				Values table = Config.getDBBuilder(proteu).selectTableByName(tableName);
 				if (table != null) {
 					comData.set("table.id", table.getString("id"));
 					comData.set("table.uid", table.getString("uid"));
