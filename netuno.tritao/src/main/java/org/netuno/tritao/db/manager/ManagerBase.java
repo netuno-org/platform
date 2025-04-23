@@ -24,7 +24,7 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.*;
 
 /**
- * Database Manager
+ * Database Manager Base
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public abstract class ManagerBase implements BuilderBase {
@@ -46,8 +46,8 @@ public abstract class ManagerBase implements BuilderBase {
         this.proteu = proteu;
         this.hili = hili;
         this.key = key;
-        this.builder = Config.getDataBaseBuilder(proteu, key);
-        this.DBExecutor = Config.getDataBaseManager(proteu, key);
+        this.builder = Config.getDBBuilder(proteu, key);
+        this.DBExecutor = Config.getDBExecutor(proteu, key);
     }
 
     public ManagerBase(Proteu proteu, Hili hili, String key, Builder builder) {
@@ -55,7 +55,7 @@ public abstract class ManagerBase implements BuilderBase {
         this.hili = hili;
         this.key = key;
         this.builder = builder;
-        this.DBExecutor = Config.getDataBaseManager(proteu, key);
+        this.DBExecutor = Config.getDBExecutor(proteu, key);
     }
 
     public ManagerBase(Proteu proteu, Hili hili, String key, Builder builder, DBExecutor DBExecutor) {

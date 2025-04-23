@@ -534,12 +534,12 @@ public class Setup extends ManagerBase {
         } catch (Throwable e) {
             if (isPostgreSQL() && e.getMessage() != null && e.getMessage().contains("ERROR: function uuid_generate_v4() does not exist")) {
                 throw new DBError("\n"
-                        + "# "+ EmojiParser.parseToUnicode(":skull_crossbones:") +" Setting up " + Config.getDabaBase(getProteu(), getKey()) +" fails because the uuid_generate_v4() does not exists!\n\n"
+                        + "# "+ EmojiParser.parseToUnicode(":skull_crossbones:") +" Setting up " + Config.getDBKey(getProteu(), getKey()) +" fails because the uuid_generate_v4() does not exists!\n\n"
                         +"\tPlease execute this command below in your database before start the Netuno Server:\n\n"
                         +"\tCREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\n")
                         .setLogFatal(true);
             } else {
-                throw new DBError(e).setLogFatal("Setting up " + Config.getDabaBase(getProteu(), getKey()));
+                throw new DBError(e).setLogFatal("Setting up " + Config.getDBKey(getProteu(), getKey()));
             }
         }
     }

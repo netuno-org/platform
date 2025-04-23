@@ -33,7 +33,6 @@ import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.ComponentData.Type;
 import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.db.builder.AuthHistory;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.manager.ManagerBase;
 import org.netuno.tritao.db.manager.CheckExists;
@@ -1364,9 +1363,9 @@ public class CoreBusiness extends ManagerBase {
             }
             List<Values> rsParentTable = null;
             if (data.getInt("parent_id") > 0) {
-                rsParentTable = Config.getDataBaseBuilder(getProteu()).selectTable(data.getString("parent_id"));
+                rsParentTable = Config.getDBBuilder(getProteu()).selectTable(data.getString("parent_id"));
             } else if (data.get("parent_uid") != null && !data.getString("parent_uid").isEmpty()) {
-                rsParentTable = Config.getDataBaseBuilder(getProteu()).selectTable("", "",
+                rsParentTable = Config.getDBBuilder(getProteu()).selectTable("", "",
                         data.getString("parent_uid"));
             }
             Values user = null;
@@ -1458,10 +1457,10 @@ public class CoreBusiness extends ManagerBase {
             }
             List<Values> rsParentTable = null;
             if (getProteu().getRequestAll().getInt("parent_id") > 0) {
-                rsParentTable = Config.getDataBaseBuilder(getProteu())
+                rsParentTable = Config.getDBBuilder(getProteu())
                         .selectTable(getProteu().getRequestAll().getString("parent_id"));
             } else if (!getProteu().getRequestAll().getString("parent_uid").isEmpty()) {
-                rsParentTable = Config.getDataBaseBuilder(getProteu()).selectTable("", "",
+                rsParentTable = Config.getDBBuilder(getProteu()).selectTable("", "",
                         getProteu().getRequestAll().getString("parent_uid"));
             }
             Values user = null;
@@ -1960,7 +1959,7 @@ public class CoreBusiness extends ManagerBase {
                 List<Values> rsTable = selectTable(toTableId, "", "");
                 Values table = rsTable.get(0);
 
-                List<Values> rsField = Config.getDataBaseBuilder(getProteu()).selectTableDesign(fieldId);
+                List<Values> rsField = Config.getDBBuilder(getProteu()).selectTableDesign(fieldId);
                 if (rsField.size() == 1) {
                     Values field = rsField.get(0);
 
