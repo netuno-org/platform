@@ -63,7 +63,7 @@ public class DataExport extends WebMaster {
         getProteu().getRequestAll().set("report", "false");
         
         if (!_req.getString("uid").isEmpty()) {
-            List<Values> rsTable = Config.getDataBaseBuilder(getProteu()).selectTable("", "", _req.getString("uid"));
+            List<Values> rsTable = Config.getDBBuilder(getProteu()).selectTable("", "", _req.getString("uid"));
             if (rsTable != null && rsTable.size() == 1) {
                 table = rsTable.get(0);
                 getProteu().getRequestAll().set("id", table.getString("id"));
@@ -80,7 +80,7 @@ public class DataExport extends WebMaster {
         
         if (_req.getString("type").equals("script-js")) {
             StringBuilder sb = new StringBuilder();
-            List<Values> rsDesignXY = Config.getDataBaseBuilder(getProteu()).selectTableDesignXY(table.getString("id"));
+            List<Values> rsDesignXY = Config.getDBBuilder(getProteu()).selectTableDesignXY(table.getString("id"));
             sb.append("\n");
             sb.append("\n// -----------------------------------------------------------");
             sb.append("\n// ");
@@ -111,7 +111,7 @@ public class DataExport extends WebMaster {
                         String key = componentData.getName();
                         Object value = databaseItem.get(componentData.getName());
                         if (componentData.getType() == ComponentData.Type.Integer && componentData.hasLink()) {
-                            Values item = Config.getDataBaseBuilder(getProteu()).getItemById(org.netuno.tritao.util.Link.getTableName(componentData.getLink()), databaseItem.getString(key));
+                            Values item = Config.getDBBuilder(getProteu()).getItemById(org.netuno.tritao.util.Link.getTableName(componentData.getLink()), databaseItem.getString(key));
                             if (item != null) {
                                 sb.append("        .set(\"" + key + "\", \"" + item.getString("uid") + "\")\n");
                             } else {

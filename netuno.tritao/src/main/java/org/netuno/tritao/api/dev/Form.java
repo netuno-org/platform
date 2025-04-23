@@ -63,7 +63,7 @@ public class Form extends WebMaster {
         
         Values data = new Values();
         if (_header.isGet() && _req.getString("uid").isEmpty()) {
-            List<Values> tables = Config.getDataBaseBuilder(getProteu()).selectTable();
+            List<Values> tables = Config.getDBBuilder(getProteu()).selectTable();
             tables.stream().map((Values t) -> {
                 return loadTableData(t, new Values());
             }).forEachOrdered(item -> {
@@ -73,7 +73,7 @@ public class Form extends WebMaster {
             return;
         }
         if (!_req.getString("uid").isEmpty()) {
-            List<Values> rsTable = Config.getDataBaseBuilder(getProteu()).selectTable("", "", _req.getString("uid"));
+            List<Values> rsTable = Config.getDBBuilder(getProteu()).selectTable("", "", _req.getString("uid"));
             if (rsTable != null && rsTable.size() == 1) {
                 table = rsTable.get(0);
                 getProteu().getRequestAll().set("id", table.getString("id"));
@@ -98,7 +98,7 @@ public class Form extends WebMaster {
                 return;
             }
             if (table != null && _header.isPost()) {
-                if (Config.getDataBaseBuilder(getProteu()).updateTable()) {
+                if (Config.getDBBuilder(getProteu()).updateTable()) {
                     if (resource(Firebase.class).active()
                             && !_req.getString("firebase").equals(table.getString("firebase"))) {
                         data.set("firebase.changed", true);
@@ -110,7 +110,7 @@ public class Form extends WebMaster {
                 return;
             }
             if (table == null && _header.isPut()) {
-                if (Config.getDataBaseBuilder(getProteu()).createTable()) {
+                if (Config.getDBBuilder(getProteu()).createTable()) {
                     if (resource(Firebase.class).active()
                             && !_req.getString("firebase").isEmpty()) {
                         data.set("firebase.changed", true);
@@ -125,7 +125,7 @@ public class Form extends WebMaster {
             return;            
         }
         if (table != null && _header.isDelete()) {
-            if (Config.getDataBaseBuilder(getProteu()).deleteTable()) {
+            if (Config.getDBBuilder(getProteu()).deleteTable()) {
                 _out.json(data.set("result", true));
                 return;
             }
@@ -170,19 +170,19 @@ public class Form extends WebMaster {
                 .set("lastchange", table.getBoolean("export_lastchange"))
         );
         if (table.getInt("user_id") > 0) {
-            Values user = Config.getDataBaseBuilder(getProteu()).getUserById(table.getString("user_id"));
+            Values user = Config.getDBBuilder(getProteu()).getUserById(table.getString("user_id"));
             if (user != null) {
                 data.set("user_uid", user.getString("uid"));
             }
         }
         if (table.getInt("group_id") > 0) {
-            Values group = Config.getDataBaseBuilder(getProteu()).getGroupById(table.getString("group_id"));
+            Values group = Config.getDBBuilder(getProteu()).getGroupById(table.getString("group_id"));
             if (group != null) {
                 data.set("group_uid", group.getString("uid"));
             }
         }
         if (table.getInt("parent_id") > 0) {
-            List<Values> rsParentTable = Config.getDataBaseBuilder(getProteu()).selectTable(table.getString("parent_id"));
+            List<Values> rsParentTable = Config.getDBBuilder(getProteu()).selectTable(table.getString("parent_id"));
             if (rsParentTable != null && rsParentTable.size() == 1) {
                 data.set("parent_uid", rsParentTable.get(0).getString("uid"));
             }

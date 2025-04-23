@@ -74,7 +74,7 @@ public class SQLClient extends WebMaster {
                         ResultSet rs = null;
                         long time = java.lang.System.currentTimeMillis();
                         try {
-                            stat = Config.getDataBaseManager(getProteu()).getConnection().createStatement();
+                            stat = Config.getDBExecutor(getProteu()).getConnection().createStatement();
                             rs = stat.executeQuery(commandLine);
                             Values columns = new Values();
                             command.set("columns", columns);
@@ -112,7 +112,7 @@ public class SQLClient extends WebMaster {
                         Statement stat = null;
                         long time = java.lang.System.currentTimeMillis();
                         try {
-                            stat = Config.getDataBaseManager(getProteu()).getConnection().createStatement();
+                            stat = Config.getDBExecutor(getProteu()).getConnection().createStatement();
                             int count = stat.executeUpdate(commandLine);
                             command.set("count", count);
                             command.set("time", java.lang.System.currentTimeMillis() - time);

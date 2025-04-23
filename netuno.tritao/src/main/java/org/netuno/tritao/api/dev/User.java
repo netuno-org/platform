@@ -53,7 +53,7 @@ public class User extends WebMaster {
         
         Values list = new Values();
         
-        for (Values user : Config.getDataBaseBuilder(getProteu()).selectUserSearch("")) {
+        for (Values user : Config.getDBBuilder(getProteu()).selectUserSearch("")) {
             list.add(
                     new Values()
                             .set("uid", user.getString("uid"))
