@@ -94,14 +94,14 @@ public class Navigation extends WebMaster {
     }
     
     private void jsonMenuTablesOrphans(Values jsonArray) throws IOException, JSONException {
-    	List<Values> rsTableByOrphans = Config.getDataBaseBuilder(getProteu()).selectTablesByOrphans();
+    	List<Values> rsTableByOrphans = Config.getDBBuilder(getProteu()).selectTablesByOrphans();
         for (Values rowTritaoTableByOrphans : rsTableByOrphans) {
         	addTable(jsonArray, rowTritaoTableByOrphans);
         }
     }
     
     private void jsonMenuTables(Values jsonArray, String id) throws IOException, JSONException {
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(getProteu()).selectTablesByParent(id);
+        List<Values> rsTableByParent = Config.getDBBuilder(getProteu()).selectTablesByParent(id);
         for (Values rowTritaoTableByParent : rsTableByParent) {
         	addTable(jsonArray, rowTritaoTableByParent);
         }
@@ -111,7 +111,7 @@ public class Navigation extends WebMaster {
         if (Rule.getRule(getProteu(), getHili(), id).haveAccess()) {
             return true;
         }
-        List<Values> rsTableByParent = Config.getDataBaseBuilder(getProteu()).selectTablesByParent(id);
+        List<Values> rsTableByParent = Config.getDBBuilder(getProteu()).selectTablesByParent(id);
         for (Values rowTritaoTableByParent : rsTableByParent) {
             if (Rule.getRule(getProteu(), getHili(), rowTritaoTableByParent.getString("id")).haveAccess()
             	|| haveAnyChildTableToAccess(rowTritaoTableByParent.getString("id"))) {
