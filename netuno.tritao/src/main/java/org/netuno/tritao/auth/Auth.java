@@ -89,7 +89,7 @@ public class Auth extends WebMaster {
             if (values == null) {
                 return null;
             }
-            Values user = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).getUserByUId(values.getString("_user_uid"));
+            Values user = org.netuno.tritao.config.Config.getDBBuilder(proteu).getUserByUId(values.getString("_user_uid"));
             proteu.getConfig().set("_auth:jwt:db:user", user);
             return user;
         }
@@ -98,7 +98,7 @@ public class Auth extends WebMaster {
                     && proteu.getConfig().getValues("_auth:session:db:user") != null) {
                 return proteu.getConfig().getValues("_auth:session:db:user");
             }
-            Values user = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).getUserByUId(proteu.getSession().getString("_user_uid"));
+            Values user = org.netuno.tritao.config.Config.getDBBuilder(proteu).getUserByUId(proteu.getSession().getString("_user_uid"));
             proteu.getConfig().set("_auth:session:db:user", user);
             return user;
         }
@@ -126,14 +126,14 @@ public class Auth extends WebMaster {
             if (values == null) {
                 return null;
             }
-            return org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).getGroupByUId(values.getString("_group_uid"));
+            return org.netuno.tritao.config.Config.getDBBuilder(proteu).getGroupByUId(values.getString("_group_uid"));
         }
         if (type == Type.SESSION) {
             if (proteu.getConfig().has("_auth:session:db:group")
                     && proteu.getConfig().getValues("_auth:session:db:group") != null) {
                 return proteu.getConfig().getValues("_auth:session:db:group");
             }
-            return org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).getGroupByUId(proteu.getSession().getString("_group_uid"));
+            return org.netuno.tritao.config.Config.getDBBuilder(proteu).getGroupByUId(proteu.getSession().getString("_group_uid"));
         }
         return null;
     }
@@ -233,7 +233,7 @@ public class Auth extends WebMaster {
                     return false;
                 }
                 auth.jwtSignIn(dbUser.getInt("id"), contextData);
-                Config.getDataBaseBuilder(proteu).insertAuthHistory(
+                Config.getDBBuilder(proteu).insertAuthHistory(
                         Values.newMap()
                                 .set("user_id", dbUser.getInt("id"))
                                 .set("ip", proteu.getClientIP())
@@ -243,7 +243,7 @@ public class Auth extends WebMaster {
             } else if (type == Type.SESSION) {
                 proteu.getSession().merge(contextData);
                 proteu.saveSession();
-                Config.getDataBaseBuilder(proteu).insertAuthHistory(
+                Config.getDBBuilder(proteu).insertAuthHistory(
                         Values.newMap()
                                 .set("user_id", dbUser.getInt("id"))
                                 .set("ip", proteu.getClientIP())
@@ -263,15 +263,15 @@ public class Auth extends WebMaster {
 
     public static boolean signIn(Proteu proteu, Hili hili, String username, String password, Type type, Profile profile) {
         Values dbUser = null;
-        Values dbUserBase = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUser(username);
+        Values dbUserBase = org.netuno.tritao.config.Config.getDBBuilder(proteu).selectUser(username);
         if (dbUserBase == null) {
             return false;
         }
-        if (Config.getDataBaseBuilder(proteu).userAuthLockedByHistoryConsecutiveFailure(dbUserBase.getString("id"), proteu.getClientIP())) {
+        if (Config.getDBBuilder(proteu).userAuthLockedByHistoryConsecutiveFailure(dbUserBase.getString("id"), proteu.getClientIP())) {
             return false;
         }
         if (!dbUserBase.getBoolean("no_pass")) {
-            dbUser = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectUserLogin(
+            dbUser = org.netuno.tritao.config.Config.getDBBuilder(proteu).selectUserLogin(
                     username,
                     org.netuno.tritao.config.Config.getPasswordBuilder(proteu).getCryptPassword(
                             proteu, hili, username, password
@@ -286,7 +286,7 @@ public class Auth extends WebMaster {
         }
         if (dbUser != null) {
             if (type == Type.SESSION) {
-                List<Values> dbGroups = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectGroup(dbUser.getString("group_id"));
+                List<Values> dbGroups = org.netuno.tritao.config.Config.getDBBuilder(proteu).selectGroup(dbUser.getString("group_id"));
                 if (dbGroups.size() != 1) {
                     return false;
                 }
@@ -297,7 +297,7 @@ public class Auth extends WebMaster {
             }
             return signIn(proteu, hili, dbUser, type, profile);
         } else {
-            Config.getDataBaseBuilder(proteu).insertAuthHistory(
+            Config.getDBBuilder(proteu).insertAuthHistory(
                     Values.newMap()
                             .set("user_id", dbUserBase.getInt("id"))
                             .set("ip", proteu.getClientIP())
@@ -317,7 +317,7 @@ public class Auth extends WebMaster {
         data.set("_user_uid", user.getString("uid"));
         data.set("_user_name", user.getString("name"));
         data.set("_user_code", user.getString("code"));
-        List<Values> groups = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).selectGroup(user.getString("group_id"));
+        List<Values> groups = org.netuno.tritao.config.Config.getDBBuilder(proteu).selectGroup(user.getString("group_id"));
         if (groups.size() == 1) {
             Values group = groups.get(0);
             data.set("_group_uid", group.getString("uid"));
@@ -396,7 +396,7 @@ public class Auth extends WebMaster {
     }
 
     public static boolean userSignIn(Proteu proteu, Hili hili, String userUid) {
-        Values user = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).getUserByUId(userUid);
+        Values user = org.netuno.tritao.config.Config.getDBBuilder(proteu).getUserByUId(userUid);
         if (user != null) {
             proteu.getSession().merge(createContextData(proteu, hili, user));
             proteu.saveSession();
@@ -406,7 +406,7 @@ public class Auth extends WebMaster {
     }
 
     public static boolean userSignIn(Proteu proteu, Hili hili, int userId) {
-        Values user = org.netuno.tritao.config.Config.getDataBaseBuilder(proteu).getUserById(Integer.toString(userId));
+        Values user = org.netuno.tritao.config.Config.getDBBuilder(proteu).getUserById(Integer.toString(userId));
         if (user != null) {
             proteu.getSession().merge(createContextData(proteu, hili, user));
             proteu.saveSession();
@@ -435,7 +435,7 @@ public class Auth extends WebMaster {
         if (req.hasKey("secret") && req.hasKey("provider")) {
             String secret = req.getString("secret");
             String provider = req.getString("provider");
-            Builder DBManager = Config.getDataBaseBuilder(proteu);
+            Builder DBManager = Config.getDBBuilder(proteu);
 
             Values dbProvider = DBManager.getAuthProviderByCode(provider);
             if (dbProvider == null) {
