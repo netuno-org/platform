@@ -136,33 +136,33 @@ public class Config {
         return proteu.getConfig().getBoolean("_login:auto");
     }
 
-    public static String getDabaBaseNamingBase(Proteu proteu, String key) {
+    public static String getDBNamingBase(Proteu proteu, String key) {
         return proteu.getConfig().getString("_database:naming:base:"+ key);
     }
 
-    public static String getDabaBase(Proteu proteu) {
-        return getDabaBase(proteu, "default");
+    public static String getDBKey(Proteu proteu) {
+        return getDBKey(proteu, "default");
     }
 
-    public static String getDabaBase(Proteu proteu, String key) {
+    public static String getDBKey(Proteu proteu, String key) {
         return "netuno$" + getApp(proteu) +"$"+ key;
     }
 
-    public static DBExecutor getDataBaseManager(Proteu proteu) {
-        return getDataBaseManager(proteu, "default");
+    public static DBExecutor getDBExecutor(Proteu proteu) {
+        return getDBExecutor(proteu, "default");
     }
 
-    public static DBExecutor getDataBaseManager(Proteu proteu, String key) {
-        if (!proteu.getConfig().hasKey("_database:manager:"+ key)) {
-            throw new ConfigError("Netuno data base manager "+ key +" wasn't set.");
+    public static DBExecutor getDBExecutor(Proteu proteu, String key) {
+        if (!proteu.getConfig().hasKey("_database:executor:"+ key)) {
+            throw new ConfigError("Netuno database executor "+ key +" wasn't set.");
         }
-        return (DBExecutor)proteu.getConfig().get("_database:manager:"+ key);
+        return (DBExecutor)proteu.getConfig().get("_database:executor:"+ key);
     }
-    public static Builder getDataBaseBuilder(Proteu proteu) {
-        return getDataBaseBuilder(proteu, "default");
+    public static Builder getDBBuilder(Proteu proteu) {
+        return getDBBuilder(proteu, "default");
     }
 
-    public static Builder getDataBaseBuilder(Proteu proteu, String key) {
+    public static Builder getDBBuilder(Proteu proteu, String key) {
         if (!proteu.getConfig().hasKey("_database:builder:"+ key)) {
             throw new ConfigError("Netuno data base builder "+ key +" wasn't set.");
         }
