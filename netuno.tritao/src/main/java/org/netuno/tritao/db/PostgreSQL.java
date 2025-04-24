@@ -183,14 +183,6 @@ public class PostgreSQL implements Builder {
     public List<Values> selectClientsByToken(String clientToken) {
     	return coreBusiness.selectClientsByToken(clientToken);
     }
-
-    public Values selectUserLogin(String user, String pass) {
-        return coreBusiness.selectUserLogin(user, pass);
-    }
-
-    public void setUserPassword(String user, String pass) {
-        coreBusiness.setUserPassword(user, pass);
-    }
     
     public List<Values> selectClientHitsByIdentifier(String clientId, String userId, String identifier) {
     	return coreBusiness.selectClientHitsByIdentifier(clientId, userId, identifier);
@@ -198,71 +190,6 @@ public class PostgreSQL implements Builder {
     
     public void insertClientHit(String clientId, String userId, String identifier) {
     	coreBusiness.insertClientHit(clientId, userId, identifier);
-    }
-
-    public List<Values> selectUserSearch(String term) {
-    	return coreBusiness.selectUserSearch(term);
-    }
-    
-    public Values selectUser(String term) {
-        return coreBusiness.selectUser(term);
-    }
-
-    public List<Values> selectUsersByIdAndGroupId(String user_id, String group_id) {
-        return coreBusiness.selectUsersByIdAndGroupId(user_id, group_id);
-    }
-
-    public List<Values> selectUserByEmail(String email) {
-        return coreBusiness.selectUserByEmail(email);
-    }
-
-    public List<Values> selectUserByNonce(String nonce) {
-        return coreBusiness.selectUserByNonce(nonce);
-    }
-    public Values getUser(String user) {
-        return coreBusiness.getUser(user);
-    }
-    public Values getUserById(String id) {
-        return coreBusiness.getUserById(id);
-    }
-
-    public Values getUserByUId(String uid) {
-        return coreBusiness.getUserByUId(uid);
-    }
-
-    public Values getUserByEmail(String email) {
-        return coreBusiness.getUserByEmail(email);
-    }
-
-    public List<Values> selectUserOther(String id, String name, String user) {
-        return coreBusiness.selectUserOther(id, name, user);
-    }
-
-    public int selectUsersCount() {
-        return coreBusiness.selectUsersCount();
-    }
-
-    public boolean updateUser(String id, String name, String user, String pass, String noPass, String mail, String group, String active) {
-        return coreBusiness.updateUser(id, name, user, pass, noPass, mail, group, active);
-    }
-    public boolean updateUser(Values values) {
-        return coreBusiness.updateUser(values);
-    }
-
-    public boolean updateUser(String id, Values values) {
-        return coreBusiness.updateUser(id, values);
-    }
-
-    public int insertUser(String name, String user, String pass, String noPass, String mail, String group, String active) {
-        return coreBusiness.insertUser(name, user, pass, noPass, mail, group, active);
-    }
-
-    public int insertUser(Values values) {
-        return coreBusiness.insertUser(values);
-    }
-
-    public boolean deleteUser(String id) {
-        return coreBusiness.deleteUser(id);
     }
 
     public int insertAuthProvider(String name, String code) {
