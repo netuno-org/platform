@@ -21,12 +21,13 @@ import java.util.List;
 
 import org.netuno.psamata.Values;
 import org.netuno.tritao.db.builder.AuthHistory;
+import org.netuno.tritao.db.builder.User;
 
 /**
  * Database Builder Interface - Core Operations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public interface Builder extends AuthHistory {
+public interface Builder extends AuthHistory, User {
 	
     void setup();
 
@@ -71,41 +72,6 @@ public interface Builder extends AuthHistory {
     List<Values> selectClientHitsByIdentifier(String clientId, String userId, String identifier);
     
     void insertClientHit(String clientId, String userId, String identifier);
-
-    Values selectUserLogin(String user, String pass);
-
-    void setUserPassword(String user, String pass);
-
-    List<Values> selectUserSearch(String term);
-
-    Values selectUser(String term);
-
-    List<Values> selectUserByEmail(String email);
-
-    List<Values> selectUserByNonce(String nonce);
-    Values getUser(String user);
-    Values getUserById(String id);
-    Values getUserByUId(String uid);
-
-    Values getUserByEmail(String email);
-
-    List<Values> selectUsersByIdAndGroupId(String user_id, String group_id);
-
-    List<Values> selectUserOther(String id, String name, String user);
-
-    int selectUsersCount();
-
-    boolean updateUser(String id, String name, String user, String pass, String nopass, String mail, String group, String active);
-
-    boolean updateUser(Values values);
-
-    boolean updateUser(String id, Values values);
-
-    int insertUser(String name, String user, String pass, String nopass, String mail, String group, String active);
-
-    int insertUser(Values values);
-
-    boolean deleteUser(String id);
 
     int insertAuthProvider(String name, String code);
 
