@@ -21,13 +21,14 @@ import java.util.List;
 
 import org.netuno.psamata.Values;
 import org.netuno.tritao.db.builder.AuthHistory;
+import org.netuno.tritao.db.builder.Group;
 import org.netuno.tritao.db.builder.User;
 
 /**
  * Database Builder Interface - Core Operations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public interface Builder extends AuthHistory, User {
+public interface Builder extends AuthHistory, User, Group {
 	
     void setup();
 
@@ -108,30 +109,6 @@ public interface Builder extends AuthHistory, User {
     boolean updateAuthProviderUser(String id, Values values);
 
     boolean deleteAuthProviderUser(String id);
-    
-    List<Values> selectGroupOther(String id, String name);
-
-    List<Values> selectGroupSearch(String term);
-
-    List<Values> selectGroup(String group_id);
-
-    Values getGroupById(String id);
-    Values getGroupByUId(String uid);
-    Values getGroupByNetuno(String netunoGroup);
-
-    List<Values> selectGroupCounter();
-
-    boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String active);
-
-    boolean updateGroup(Values values);
-
-    boolean updateGroup(String id, Values values);
-
-    int insertGroup(String name, String netuno_group, String login_allowed, String mail, String active);
-
-    int insertGroup(Values values);
-
-    boolean deleteGroup(String id);
 
     List<Values> selectUserRule(String user_id, String table_id);
 
