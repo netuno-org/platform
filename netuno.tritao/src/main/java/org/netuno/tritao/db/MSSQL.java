@@ -252,58 +252,6 @@ public class MSSQL implements Builder {
         return coreBusiness.deleteAuthProviderUser(id);
     }
 
-    public List<Values> selectGroupOther(String id, String name) {
-        return coreBusiness.selectGroupOther(id, name);
-    }
-
-    public List<Values> selectGroupSearch(String term) {
-        return coreBusiness.selectGroupSearch(term);
-    }
-
-    public List<Values> selectGroup(String group_id) {
-        return coreBusiness.selectGroup(group_id);
-    }
-
-    public Values getGroupById(String id) {
-        return coreBusiness.getGroupById(id);
-    }
-
-    public Values getGroupByUId(String uid) {
-        return coreBusiness.getGroupByUId(uid);
-    }
-    
-    public Values getGroupByNetuno(String netunoGroup) {
-        return coreBusiness.getGroupByNetuno(netunoGroup);
-    }
-
-    public List<Values> selectGroupCounter() {
-        return coreBusiness.selectGroupCounter();
-    }
-
-    public boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String active) {
-        return coreBusiness.updateGroup(id, name, netuno_group, login_allowed, mail, active);
-    }
-
-    public boolean updateGroup(Values values) {
-        return coreBusiness.updateGroup(values);
-    }
-
-    public boolean updateGroup(String id, Values values) {
-        return coreBusiness.updateGroup(id, values);
-    }
-
-    public int insertGroup(String name, String netuno_group, String login_allowed, String mail, String active) {
-        return coreBusiness.insertGroup(name, netuno_group, login_allowed, mail, active);
-    }
-
-    public int insertGroup(Values values) {
-        return coreBusiness.insertGroup(values);
-    }
-
-    public boolean deleteGroup(String id) {
-        return coreBusiness.deleteGroup(id);
-    }
-
     public List<Values> selectUserRule(String user_id, String table_id) {
         return coreBusiness.selectUserRule(user_id, table_id, "");
     }
