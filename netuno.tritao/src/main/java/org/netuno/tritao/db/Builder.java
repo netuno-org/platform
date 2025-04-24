@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.netuno.psamata.Values;
 import org.netuno.tritao.db.builder.AuthHistory;
+import org.netuno.tritao.db.builder.AuthProvider;
 import org.netuno.tritao.db.builder.Group;
 import org.netuno.tritao.db.builder.User;
 
@@ -28,7 +29,7 @@ import org.netuno.tritao.db.builder.User;
  * Database Builder Interface - Core Operations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public interface Builder extends AuthHistory, User, Group {
+public interface Builder extends AuthHistory, AuthProvider, User, Group {
 	
     void setup();
 
@@ -73,42 +74,6 @@ public interface Builder extends AuthHistory, User, Group {
     List<Values> selectClientHitsByIdentifier(String clientId, String userId, String identifier);
     
     void insertClientHit(String clientId, String userId, String identifier);
-
-    int insertAuthProvider(String name, String code);
-
-    int insertAuthProvider(Values values);
-
-    Values getAuthProviderByCode(String code);
-
-    List<Values> selectAuthProviderSearch(String term);
-
-    Values getAuthProviderById(String id);
-
-    List<Values> allAuthProviderUserByUser(String userId);
-
-    boolean isAuthProviderUserAssociate(Values values);
-
-    Values getAuthProviderUserById(String id);
-
-    Values getAuthProviderUserByUser(String providerId, String userId);
-
-    boolean hasAuthProviderUserByUser(String providerId, String userId);
-
-    Values getAuthProviderUserByUid(String uid);
-
-    Values getAuthProviderUserByCode(String providerId, String code);
-
-    Values getAuthProviderUserByEmail(String providerId, String email);
-
-    void clearOldAuthProviderUser(String provider_id, String code);
-
-    int insertAuthProviderUser(Values values);
-
-    boolean updateAuthProviderUser(Values values);
-
-    boolean updateAuthProviderUser(String id, Values values);
-
-    boolean deleteAuthProviderUser(String id);
 
     List<Values> selectUserRule(String user_id, String table_id);
 
