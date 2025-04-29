@@ -178,10 +178,6 @@ public class H2 implements Builder {
         coreBusiness.insertClientHit(clientId, userId, identifier);
     }
 
-    public List<Values> selectGroupAdmin(String group_id) {
-        return coreBusiness.selectGroupAdmin(group_id);
-    }
-
     public List<Values> selectTableRows(String table, String ids) {
         return coreBusiness.selectTableRows(table, ids);
     }

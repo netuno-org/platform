@@ -170,19 +170,6 @@ public class CoreBusiness extends ManagerBase {
         }
     }
 
-    public List<Values> selectGroupAdmin(String group_id) {
-        String select = " * ";
-        String from = " netuno_group ";
-        String where = "where 1 = 1 ";
-        if (!group_id.equals("") && !group_id.equals("0")) {
-            where += " and id = " + DB.sqlInjectionInt(group_id);
-        }
-        where += " and netuno_group <= 2";
-        String order = " order by name ";
-        String sql = "select " + select + " from " + from + where + order;
-        return getExecutor().query(sql);
-    }
-
     public List<Values> selectTableRows(String table, String ids) {
         ids = DB.sqlInjectionIntSequence(ids);
         String select = " * ";

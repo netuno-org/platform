@@ -29,6 +29,19 @@ import java.util.UUID;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public interface Group extends BuilderBase {
+    default List<Values> selectGroupAdmin(String group_id) {
+        String select = " * ";
+        String from = " netuno_group ";
+        String where = "where 1 = 1 ";
+        if (!group_id.equals("") && !group_id.equals("0")) {
+            where += " and id = " + DB.sqlInjectionInt(group_id);
+        }
+        where += " and netuno_group <= 2";
+        String order = " order by name ";
+        String sql = "select " + select + " from " + from + where + order;
+        return getExecutor().query(sql);
+    }
+
     default List<Values> selectGroupOther(String id, String name) {
         String select = " * ";
         String from = " netuno_group ";

@@ -72,8 +72,6 @@ public interface Builder extends AuthHistory, AuthProvider, User, Group, UserRul
     
     void insertClientHit(String clientId, String userId, String identifier);
 
-    List<Values> selectGroupAdmin(String group_id);
-
     List<Values> selectTableRows(String table, String ids);
 
     List<Values> selectTableOrder(String table, String order_by);
