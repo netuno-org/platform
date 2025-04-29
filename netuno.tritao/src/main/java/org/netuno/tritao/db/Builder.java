@@ -26,7 +26,7 @@ import org.netuno.tritao.db.builder.*;
  * Database Builder Interface - Core Operations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public interface Builder extends AuthHistory, AuthProvider, User, Group, UserRule {
+public interface Builder extends AuthHistory, AuthProvider, User, Group, UserRule, GroupRule {
 	
     void setup();
 
@@ -71,14 +71,6 @@ public interface Builder extends AuthHistory, AuthProvider, User, Group, UserRul
     List<Values> selectClientHitsByIdentifier(String clientId, String userId, String identifier);
     
     void insertClientHit(String clientId, String userId, String identifier);
-
-    List<Values> selectGroupRule(String group_id, String table_id);
-
-    List<Values> selectGroupRule(String group_id, String table_id, String active);
-    
-    void setGroupRule(String group_id, String table_id, String active, String canRead, String canWrite, String canDelete);
-
-    void deleteGroupRules(String group_id);
 
     List<Values> selectGroupAdmin(String group_id);
 
