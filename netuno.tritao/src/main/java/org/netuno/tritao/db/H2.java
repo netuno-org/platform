@@ -178,22 +178,6 @@ public class H2 implements Builder {
         coreBusiness.insertClientHit(clientId, userId, identifier);
     }
 
-    public List<Values> selectUserRule(String user_id, String table_id) {
-        return coreBusiness.selectUserRule(user_id, table_id, "");
-    }
-
-    public List<Values> selectUserRule(String user_id, String table_id, String active) {
-        return coreBusiness.selectUserRule(user_id, table_id, active);
-    }
-
-    public void setUserRule(String user_id, String table_id, String active, String ruleRead, String ruleWrite, String ruleDelete) {
-        coreBusiness.setUserRule(user_id, table_id, active, ruleRead, ruleWrite, ruleDelete);
-    }
-
-    public void deleteUserRules(String group_id) {
-        coreBusiness.deleteUserRules(group_id);
-    }
-
     public List<Values> selectGroupRule(String group_id, String table_id) {
         return coreBusiness.selectGroupRule(group_id, table_id, "");
     }
