@@ -20,16 +20,13 @@ package org.netuno.tritao.db;
 import java.util.List;
 
 import org.netuno.psamata.Values;
-import org.netuno.tritao.db.builder.AuthHistory;
-import org.netuno.tritao.db.builder.AuthProvider;
-import org.netuno.tritao.db.builder.Group;
-import org.netuno.tritao.db.builder.User;
+import org.netuno.tritao.db.builder.*;
 
 /**
  * Database Builder Interface - Core Operations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public interface Builder extends AuthHistory, AuthProvider, User, Group {
+public interface Builder extends AuthHistory, AuthProvider, User, Group, UserRule {
 	
     void setup();
 
@@ -74,14 +71,6 @@ public interface Builder extends AuthHistory, AuthProvider, User, Group {
     List<Values> selectClientHitsByIdentifier(String clientId, String userId, String identifier);
     
     void insertClientHit(String clientId, String userId, String identifier);
-
-    List<Values> selectUserRule(String user_id, String table_id);
-
-    List<Values> selectUserRule(String user_id, String table_id, String active);
-
-    void setUserRule(String user_id, String table_id, String active, String canRead, String canWrite, String canDelete);
-
-    void deleteUserRules(String user_id);
 
     List<Values> selectGroupRule(String group_id, String table_id);
 
