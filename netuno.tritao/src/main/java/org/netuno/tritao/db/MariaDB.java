@@ -180,22 +180,6 @@ public class MariaDB implements Builder {
         coreBusiness.insertClientHit(clientId, userId, identifier);
     }
 
-    public List<Values> selectGroupRule(String group_id, String table_id) {
-        return coreBusiness.selectGroupRule(group_id, table_id, "");
-    }
-
-    public List<Values> selectGroupRule(String group_id, String table_id, String active) {
-        return coreBusiness.selectGroupRule(group_id, table_id, active);
-    }
-
-    public void setGroupRule(String group_id, String table_id, String active, String ruleRead, String ruleWrite, String ruleDelete) {
-        coreBusiness.setGroupRule(group_id, table_id, active, ruleRead, ruleWrite, ruleDelete);
-    }
-
-    public void deleteGroupRules(String group_id) {
-        coreBusiness.deleteGroupRules(group_id);
-    }
-
     public List<Values> selectGroupAdmin(String group_id) {
         return coreBusiness.selectGroupAdmin(group_id);
     }
