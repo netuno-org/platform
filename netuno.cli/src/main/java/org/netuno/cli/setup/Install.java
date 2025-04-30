@@ -393,7 +393,7 @@ public class Install implements MainArg {
                 System.out.println(OS.consoleOutput("@|green Netuno removed. |@ "));
             } else {
                 if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
-                    if (new File(path, "netuno.sh").exists() && !new File(path, "netuno").exists()) {
+                    if (new File(path, "netuno.sh").exists()) {
                         ProcessBuilder builder = new ProcessBuilder();
                         builder.command(new String[]{"sh", "-c", "chmod +x netuno.sh && cp netuno.sh netuno"});
                         builder.directory(new File(path));
