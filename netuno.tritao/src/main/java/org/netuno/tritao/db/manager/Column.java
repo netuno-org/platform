@@ -24,6 +24,7 @@ import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DBError;
@@ -124,7 +125,7 @@ public class Column extends ManagerBase {
     protected int maxLength = 0;
     protected String _default;
 
-    public Column(ManagerBase base) {
+    public Column(BuilderBase base) {
         super(base);
     }
 

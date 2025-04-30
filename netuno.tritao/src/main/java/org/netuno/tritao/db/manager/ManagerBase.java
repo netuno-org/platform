@@ -34,7 +34,7 @@ public abstract class ManagerBase implements BuilderBase {
     private Builder builder = null;
     private DBExecutor DBExecutor = null;
 
-    public ManagerBase(ManagerBase base) {
+    public ManagerBase(BuilderBase base) {
         this.proteu = base.getProteu();
         this.hili = base.getHili();
         this.key = base.getKey();

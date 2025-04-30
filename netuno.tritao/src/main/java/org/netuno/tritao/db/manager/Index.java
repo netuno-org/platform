@@ -27,6 +27,7 @@ import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.PsamataException;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DBError;
 
@@ -55,7 +56,7 @@ import org.netuno.tritao.db.DBError;
 public class Index extends ManagerBase {
     private static Logger logger = LogManager.getLogger(Index.class);
 
-    public Index(ManagerBase base) {
+    public Index(BuilderBase base) {
         super(base);
     }
 

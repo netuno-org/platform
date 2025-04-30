@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DBError;
 
@@ -35,7 +36,7 @@ import java.util.List;
 public class Setup extends ManagerBase {
     private static Logger logger = LogManager.getLogger(Setup.class);
 
-    public Setup(ManagerBase base) {
+    public Setup(BuilderBase base) {
         super(base);
     }
 

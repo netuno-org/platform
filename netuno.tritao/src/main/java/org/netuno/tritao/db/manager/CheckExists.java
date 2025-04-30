@@ -26,6 +26,7 @@ import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 
 /**
@@ -54,7 +55,7 @@ import org.netuno.tritao.hili.Hili;
 public class CheckExists extends ManagerBase {
     private static Logger logger = LogManager.getLogger(CheckExists.class);
 
-    public CheckExists(ManagerBase base) {
+    public CheckExists(BuilderBase base) {
         super(base);
     }
 

@@ -27,6 +27,7 @@ import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DBError;
 
@@ -57,7 +58,7 @@ import java.util.List;
 public class Sequence extends ManagerBase {
     private static Logger logger = LogManager.getLogger(Sequence.class);
 
-    public Sequence(ManagerBase base) {
+    public Sequence(BuilderBase base) {
         super(base);
     }
 

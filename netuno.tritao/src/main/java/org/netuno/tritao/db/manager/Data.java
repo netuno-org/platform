@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class Data extends ManagerBase {
     public String group = "";
     public String order = "";
 
-    public Data(ManagerBase base) {
+    public Data(BuilderBase base) {
         super(base);
     }
 
