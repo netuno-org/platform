@@ -299,4 +299,10 @@ public class Link {
         this.relationLink.getSubLinks().put(formLink, link);
         return this;
     }
+
+    public Link where( Where where) {
+        where.setTable(this.getForm());
+        setWhere(where);
+        return this;
+    }
 }
