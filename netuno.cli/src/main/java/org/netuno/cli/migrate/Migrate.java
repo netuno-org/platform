@@ -32,13 +32,16 @@ import java.util.Scanner;
  */
 @CommandLine.Command(name = "migrate", helpCommand = true, description = "Tools to migrating operations.")
 public class Migrate implements MainArg {
-    @CommandLine.Option(names = { "h2" }, paramLabel = "export-v1|import-v2|export-v2|import-v2.2|clean", description = {
-            "Options available:",
-            "export-v1: Exports all H2 databases (version 1.4+) used by Apps to SQL file; each SQL file is saved inside the same folder of the database original file.",
-            "import-v2: Imports all SQL files exported before in a new database (version 2+); only for Apps using H2Database; this process makes a backup of original database files.",
-            "export-v2: Exports all H2 databases (version 2+) used by Apps to SQL file; each SQL file is saved inside the same folder of the database original file.",
-            "import-v2.2: Imports all SQL files exported before in a new database (version 2.2+); only for Apps using H2Database; this process makes a backup of original database files.",
-            "clean: Clean all database backup and SQL files are deleted; this operation cannot be reversed, be careful."
+    @CommandLine.Option(names = { "h2" }, paramLabel = "export-v1|import-v2|export-v2|import-v2.2|export-v2.2|clean", description = {
+            "Exports H2 Database used by Apps to SQL file; each SQL file is saved inside the same folder of the database original file. Options available:",
+            "  - export-v1: From version 1.4.*",
+            "  - export-v2: From version 2.0 or 2.1",
+            "  - export-v2.2: From version 2.2 or 2.3.",
+            "Imports SQL files exported before in a new database; only for Apps using H2 Database; this process makes a backup of original database files. Options available:",
+            "  - import-v2: To version 2.0 or 2.1",
+            "  - import-v2.2: To version 2.2 or 2.3",
+            "Clean all database backup and SQL files are deleted; this operation cannot be reversed, be careful:",
+            "  - clean: Delete backups and SQL files."
     })
     protected String h2 = "";
 
@@ -59,6 +62,8 @@ public class Migrate implements MainArg {
             H2DatabaseMigration.exportationVersion_1(app);
         } else if (h2.equalsIgnoreCase("export-v2")) {
             H2DatabaseMigration.exportationVersion_2(app);
+        } else if (h2.equalsIgnoreCase("export-v2.2")) {
+            H2DatabaseMigration.exportationVersion_2_2(app);
         } else if (h2.equalsIgnoreCase("import-v2")) {
             H2DatabaseMigration.importationVersion_2(app);
         } else if (h2.equalsIgnoreCase("import-v2.2")) {
