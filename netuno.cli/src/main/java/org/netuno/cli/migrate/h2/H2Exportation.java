@@ -40,11 +40,13 @@ public class H2Exportation {
         } catch (IOException e) {
             logger.warn("Fail to write the migration file: "+ fileIdPath, e);
         }
+        boolean notFound = true;
         for (var key : Config.getAppConfig().keys()) {
             var appConfig = Config.getAppConfig().getValues(key);
             if (!app.equals("*") && !key.equalsIgnoreCase(app)) {
                 continue;
             }
+            notFound = false;
             H2ProcessInfo.create(
                     H2MigrationType.EXPORTATION,
                     id,
@@ -52,6 +54,9 @@ public class H2Exportation {
             ).ifPresent((pi) -> {
                 H2Process.run(pi, version);
             });
+        }
+        if (!app.equals("*") && notFound) {
+            logger.warn("Cannot export from application "+ app +" because the configuration was not found.");
         }
     }
 }
