@@ -10,7 +10,7 @@ import org.netuno.psamata.io.GlobFileVisitor;
 public enum H2Version {
     V_1("h2-1.4.*.jar"),
     V_2("h2-2.{0,1}.*.jar"),
-    V_2_2("h2-2.2.*.jar");
+    V_2_2("h2-2.{2,3}.*.jar");
 
     private static Logger logger = LogManager.getLogger(H2Version.class);
     
