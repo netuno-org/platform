@@ -300,7 +300,7 @@ public class Link {
         return this;
     }
 
-    public Link where( Where where) {
+    public Link where(Where where) {
         where.setTable(this.getForm());
         setWhere(where);
         return this;
