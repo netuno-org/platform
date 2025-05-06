@@ -552,4 +552,10 @@ public class Relationship {
         this.subRelations.put(new Random().toString(), join);
         return this;
     }
+
+    public Relationship where(Where where) {
+        where.setTable(this.getTableName());
+        this.setWhere(where);
+        return this;
+    }
 }
