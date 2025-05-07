@@ -28,6 +28,7 @@ public class LinkEngine extends TableBuilderResourceBase {
         Join join = new Join();
         join.setRelation(this.buildRelation(link.getForm(),link.getRelationLink()));
         join.setTable(link.getForm());
+        join.setJoinType(link.getJoinType());
         if (link.getWhere() != null) {
             join.setWhere(link.getWhere().setTable(link.getRelationLink().getFormLink()));
         }
