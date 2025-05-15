@@ -161,7 +161,18 @@ public class User {
 			}
     		return;
     	}
-    	Values data = new Values();
+		if (proteu.getRequestAll().getString("service").equalsIgnoreCase("auth-history")) {
+			Values user = Config.getDBBuilder(proteu).getUserByUId(proteu.getRequestAll().getString("uid"));
+			List<Values> items = Config.getDBBuilder(proteu).allAuthHistoryForUser(
+					user.getString("id"),
+					proteu.getRequestAll().getInt("page", 0)
+			);
+			Values data = new Values();
+			data.set("items", items);
+			TemplateBuilder.output(proteu, hili, "user/auth_history", data);
+			return;
+		}
+		Values data = new Values();
     	boolean restore = false;
         if (proteu.getRequestAll().getString("execute").equals("save") && proteu.getRequestAll().getString("uid").isEmpty()) {
 			Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("group_uid"));
@@ -241,7 +252,18 @@ public class User {
 					proteu.getRequestAll().remove("uid");
 					proteu.getRequestPost().remove("uid");
 				}
-            }
+			}
+		} else if (proteu.getRequestAll().getString("execute").equalsIgnoreCase("auth-unlock")) {
+			Values user = Config.getDBBuilder(proteu).getUserByUId(proteu.getRequestAll().getString("uid"));
+			Config.getDBBuilder(proteu).insertAuthHistory(
+					Values.newMap()
+							.set("user_id", user.getInt("id"))
+							.set("ip", proteu.getClientIP())
+							.set("success", true)
+							.set("lock", false)
+							.set("unlock", true)
+			);
+			TemplateBuilder.output(proteu, hili, "user/notification/auth_unlocked", user);
 		} else if (proteu.getRequestAll().hasKey("uid") && proteu.getRequestAll().getString("uid").isEmpty()) {
         	TemplateBuilder.output(proteu, hili, "user/notification/new", data);
         }
@@ -298,6 +320,17 @@ public class User {
 				for (String field : List.of("moment", "code", "name", "username", "email", "avatar")) {
 					data.set(String.format("user.providers.%s.%s", authProvider.getString("provider_code"), field), authProvider.get(field));
 				}
+			}
+			Values authHistoryLatest = Config.getDBBuilder(proteu).getAuthHistoryUserLatest(user.getString("id"));
+			if (authHistoryLatest != null) {
+				data.set("user.auth.history.latest", true);
+				data.set("user.auth.history.latest.ip", authHistoryLatest.getString("ip"));
+				data.set("user.auth.history.latest.moment", new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(authHistoryLatest.getSQLDate("moment")));
+				data.set("user.auth.history.latest.success", authHistoryLatest.getBoolean("success"));
+				data.set("user.auth.history.latest.lock", authHistoryLatest.getBoolean("lock"));
+				data.set("user.auth.history.latest.unlock", authHistoryLatest.getBoolean("unlock"));
+			} else {
+				data.set("user.auth.history.latest", false);
 			}
         } else {
 			data.set("user.password.validation", "required");
