@@ -215,6 +215,55 @@
     #end
     <br>
     #end
+
+    #if ($data.getBoolean("user.auth.history.latest"))
+    <h2>
+        _{&lang=netuno.user.auth.history.title}
+        <button id="netuno-user-form-auth-history-button-modal_{util=requestuuid}" href="#"
+           title="_{&lang=netuno.user.auth.history.button.info}"
+           type="button" class="btn-auth-history"
+           data-toggle="modal" data-target="#netuno-user-form-auth-history-modal-_{util=requestuuid}">
+            <i class="fa fa-fw fa-clock-o"></i>
+        </button>
+    </h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>IP:</label>
+                <span>_{data=user.auth.history.latest.ip}</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>_{&lang=netuno.user.auth.history.moment}:</label>
+                <span>_{data=user.auth.history.latest.moment}</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>_{&lang=netuno.user.auth.history.access}:</label>
+                #if ($data.getBoolean("user.auth.history.latest.success"))
+                    <span class="label label-success" title="_{&lang=netuno.user.auth.history.access.successful}"><i class="fa fa-check"></i></span>
+                    #if ($data.getBoolean("user.auth.history.latest.unlock"))
+                        <span class="label label-warning" title="_{&lang=netuno.user.auth.history.access.unlocked}"><i class="fa fa-unlock"></i></span>
+                    #end
+                #else
+                    <span class="label label-warning" title="_{&lang=netuno.user.auth.history.access.denied}"><i class="fa fa-close"></i></span>
+                    #if ($data.getBoolean("user.auth.history.latest.lock"))
+                        <span class="label label-danger" title="_{&lang=netuno.user.auth.history.access.locked}"><i class="fa fa-lock"></i></span>
+                        <button id="netuno-user-form-auth-history-button-unlock_{util=requestuuid}" href="#"
+                                title="_{&lang=netuno.user.auth.history.button.unlock.info}"
+                                type="button" class="btn-auth-history-unlock">
+                            <i class="fa fa-unlock-alt"></i>
+                        </button>
+                        <div id="netuno-user-form-auth-history-button-unlock-response_{util=requestuuid}"></div>
+                    #end
+                #end
+            </div>
+        </div>
+    </div>
+    #end
+
     <h2>_{&lang=netuno.user.rules.title}</h2>
     <ul class="nav nav-tabs nav-justified">
         <li role="presentation"><a href="javascript: void(0);" id="netuno_user_form_rules_button">_{&lang=netuno.rules.forms}</a></li>
@@ -269,6 +318,28 @@
     </div>
 </form>
 <div id="netunoUserResult"></div>
+<div class="modal fade" id="netuno-user-form-auth-history-modal-_{util=requestuuid}" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">_{&lang=netuno.user.auth.history.title}</h4>
+            </div>
+            <div class="modal-body" data-empty="_{&lang=netuno.user.auth.history.modal.empty}">
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="col-xs-6" style="text-align: left;">
+                        <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{&lang=netuno.form.button.previous}</button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button type="button" data-type="next" class="btn btn-default">_{&lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     (function () {
         if (typeof netuno === 'undefined') {
@@ -348,8 +419,6 @@
         var providersCodes = ['ldap', 'google', 'github', 'discord'];
         providersCodes.forEach(function (providerCode) {
             var providerButton = $('a#netuno_user_providers_'+ providerCode +'_button');
-            console.log(providerCode)
-            providerButton.click
             providerButton.click(function (e) {
                 providersCodes.forEach(function (hideProviderCode) {
                     if (hideProviderCode == providerCode) {
@@ -358,11 +427,86 @@
                     $('a#netuno_user_providers_'+ hideProviderCode +'_button').parent().removeClass('active');
                     $('div#netuno_user_providers_'+ hideProviderCode +'_container').hide();
                 });
-                console.log('x', providerCode)
                 $('a#netuno_user_providers_'+ providerCode +'_button').parent().addClass('active');
                 $('div#netuno_user_providers_'+ providerCode +'_container').fadeIn();
             });
         });
+
+        (function AuthHistory () {
+            var historyModal = $("#netuno-user-form-auth-history-modal-_{util=requestuuid}");
+            var historyPage = 0;
+            function historyModalLoadPage() {
+                var historyModalBody = historyModal.find(".modal-body");
+                historyModalBody.load(url, {
+                    service: 'auth-history',
+                    page: historyPage,
+                    uid: '_{request=uid}'
+                }, ()=> {
+                    netuno.contentLoaded(historyModalBody);
+                    var items = historyModalBody.children('div');
+                    historyModal.find('.modal-footer button[data-type="next"]').hide();
+                    if (items.length == 0) {
+                        historyModalBody.text(historyModalBody.data().empty);
+                    } else if (items.length == 10) {
+                        historyModal.find('.modal-footer button[data-type="next"]').show();
+                    }
+                    if (historyPage > 0) {
+                        historyModal.find('.modal-footer button[data-type="prev"]').show();
+                    } else {
+                        historyModal.find('.modal-footer button[data-type="prev"]').hide();
+                    }
+                    items.each(function () {
+                        var item = $(this);
+                        item.children('pre').on('click', function () {
+                            var commands = $('#managementQueryCommands');
+                            if (commands.data().editor.getValue().trim() == '') {
+                                commands.data().editor.setValue(
+                                    item.children('pre').text()
+                                );
+                            } else {
+                                commands.data().editor.setValue(
+                                    commands.data().editor.getValue()
+                                    + '\n'
+                                    + ';;'
+                                    + '\n'
+                                    + item.children('pre').text()
+                                );
+                            }
+                            historyModal.modal('hide');
+                        });
+                    });
+                    historyModal[0].scrollTo(0, 0);
+                });
+            }
+            $('#netuno-user-form-auth-history-button-modal_{util=requestuuid}').on("click", function () {
+                historyPage = 0;
+                historyModal.find('.modal-footer button[data-type="prev"]').hide();
+                historyModal.find('.modal-footer button[data-type="next"]').show();
+                historyModalLoadPage();
+            });
+            historyModal.find('.modal-footer button[data-type="prev"]').on("click", function () {
+                historyPage--;
+                historyModalLoadPage();
+            });
+            historyModal.find('.modal-footer button[data-type="next"]').on("click", function () {
+                historyPage++;
+                historyModalLoadPage();
+            });
+            $('#netuno-user-form-auth-history-button-unlock_{util=requestuuid}').click(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: url + '?execute=auth-unlock',
+                    data: {
+                        uid: '_{request=uid}'
+                    },
+                    success: function(response) {
+                        container.html(response);
+                        form = $('#netuno_user_form');
+                        netuno.contentLoaded(container);
+                    }
+                });
+            });
+        })();
 
         var formRulesButton = $('a#netuno_user_form_rules_button');
         var reportRulesButton = $('a#netuno_user_report_rules_button');
