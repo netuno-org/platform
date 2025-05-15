@@ -257,7 +257,9 @@ public class Setup extends ManagerBase {
                     table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(),
                     table.newColumn().setName("ip").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
-                    table.newColumn().setName("success").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false)
+                    table.newColumn().setName("success").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
+                    table.newColumn().setName("lock").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
+                    table.newColumn().setName("unlock").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false)
             );
             sequence.create("netuno_auth_history_id");
             index.create("netuno_auth_history", "user_id");
