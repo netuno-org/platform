@@ -73,6 +73,12 @@ public interface AuthHistory extends BuilderBase {
         if (values.hasKey("success")) {
             data.set("success", values.getBoolean("success"));
         }
+        if (values.hasKey("lock")) {
+            data.set("lock", values.getBoolean("lock"));
+        }
+        if (values.hasKey("unlock")) {
+            data.set("unlock", values.getBoolean("unlock"));
+        }
 
         int id = insertInto("netuno_auth_history", data);
         Values record = getAuthHistoryById("" + id);
@@ -89,12 +95,52 @@ public interface AuthHistory extends BuilderBase {
         }
         String select = " * ";
         String from = " netuno_auth_history ";
-        String where = "where id = " + DB.sqlInjectionInt(id);
-        String sql = "select " + select + " from " + from + where;
+        String where = "WHERE id = " + DB.sqlInjectionInt(id);
+        String sql = "SELECT " + select + " FROM " + from + where;
         List<Values> results = getExecutor().query(sql);
         if (results.size() == 1) {
-            return results.get(0);
+            return results.getFirst();
         }
         return null;
+    }
+
+    default Values getAuthHistoryUserLatest(String userId) {
+        if (userId.isEmpty() || userId.equals("0")) {
+            return null;
+        }
+        String select = " * ";
+        String from = " netuno_auth_history ";
+        String where = "WHERE user_id = " + DB.sqlInjectionInt(userId);
+        String order = " ORDER BY moment DESC";
+        String sql = "SELECT " + select + " FROM " + from + where + order + " LIMIT 1";
+        List<Values> results = getExecutor().query(sql);
+        if (results.size() == 1) {
+            return results.getFirst();
+        }
+        return null;
+    }
+
+    default List<Values> allAuthHistoryForUser(String userId, int page) {
+        if (userId.isEmpty() || userId.equals("0")) {
+            return null;
+        }
+        String select = " * ";
+        String from = " netuno_auth_history ";
+        String where = "WHERE user_id = " + DB.sqlInjectionInt(userId);
+        String order = " ORDER BY moment DESC";
+        String sql = "SELECT " + select + " FROM " + from + where + order;
+        int pageSize = 10;
+        if (isMSSQL()) {
+            if (page > 0) {
+                sql += " OFFSET "+ (page * pageSize) +" ROWS";
+            }
+            sql += " FETCH NEXT "+ pageSize +" ROWS ONLY";
+        } else {
+            sql += " LIMIT "+ pageSize;
+            if (page > 0) {
+                sql += " OFFSET "+ (page * pageSize);
+            }
+        }
+        return getExecutor().query(sql);
     }
 }
