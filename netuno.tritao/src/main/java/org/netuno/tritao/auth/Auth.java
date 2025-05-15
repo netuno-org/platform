@@ -238,6 +238,8 @@ public class Auth extends WebMaster {
                                 .set("user_id", dbUser.getInt("id"))
                                 .set("ip", proteu.getClientIP())
                                 .set("success", true)
+                                .set("lock", false)
+                                .set("unlock", false)
                 );
                 return true;
             } else if (type == Type.SESSION) {
@@ -248,6 +250,8 @@ public class Auth extends WebMaster {
                                 .set("user_id", dbUser.getInt("id"))
                                 .set("ip", proteu.getClientIP())
                                 .set("success", true)
+                                .set("lock", false)
+                                .set("unlock", false)
                 );
                 return true;
             } 
@@ -268,6 +272,14 @@ public class Auth extends WebMaster {
             return false;
         }
         if (Config.getDBBuilder(proteu).userAuthLockedByHistoryConsecutiveFailure(dbUserBase.getString("id"), proteu.getClientIP())) {
+            Config.getDBBuilder(proteu).insertAuthHistory(
+                    Values.newMap()
+                            .set("user_id", dbUserBase.getInt("id"))
+                            .set("ip", proteu.getClientIP())
+                            .set("success", false)
+                            .set("lock", true)
+                            .set("unlock", false)
+            );
             return false;
         }
         if (!dbUserBase.getBoolean("no_pass")) {
@@ -302,6 +314,8 @@ public class Auth extends WebMaster {
                             .set("user_id", dbUserBase.getInt("id"))
                             .set("ip", proteu.getClientIP())
                             .set("success", false)
+                            .set("lock", false)
+                            .set("unlock", false)
             );
         }
         return false;
@@ -525,6 +539,8 @@ public class Auth extends WebMaster {
                                         .set("user_id", user.getInt("id"))
                                         .set("ip", proteu.getClientIP())
                                         .set("success", false)
+                                        .set("lock", false)
+                                        .set("unlock", false)
                         );
                     }
                 } else {
