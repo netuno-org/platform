@@ -2609,19 +2609,18 @@ public class XLS extends ResourceBase {
                 description = "The color reference."
         )
     })
-    public short color(String color) {
+    public Object color(String color) {
         if (workbook instanceof XSSFWorkbook) {
             if (color.startsWith("#")) {
-                IndexedColorMap colorMap = ((XSSFWorkbook)workbook).getStylesSource().getIndexedColors();
-                XSSFColor c = new XSSFColor(java.awt.Color.decode(color), colorMap);
-                return c.getIndex();
+                return new XSSFColor(java.awt.Color.decode(color), null);
             }
             return IndexedColors.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
         }
         if (workbook instanceof HSSFWorkbook) {
             if (color.startsWith("#")) {
                 java.awt.Color c = java.awt.Color.decode(color);
-                return ((HSSFWorkbook) workbook).getCustomPalette().addColor((byte)c.getRed(), (byte)c.getGreen(), (byte)c.getBlue()).getIndex();
+                HSSFPalette palette = ((HSSFWorkbook) workbook).getCustomPalette();
+                return palette.findSimilarColor(c.getRed(), c.getGreen(), c.getBlue());
             }
             return HSSFColor.HSSFColorPredefined.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
         }
