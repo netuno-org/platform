@@ -2610,21 +2610,28 @@ public class XLS extends ResourceBase {
         )
     })
     public Object color(String color) {
-        if (workbook instanceof XSSFWorkbook) {
-            if (color.startsWith("#")) {
-                return new XSSFColor(java.awt.Color.decode(color), null);
+        switch (workbook) {
+            case null -> {
+                return null;
             }
-            return IndexedColors.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
-        }
-        if (workbook instanceof HSSFWorkbook) {
-            if (color.startsWith("#")) {
-                java.awt.Color c = java.awt.Color.decode(color);
-                HSSFPalette palette = ((HSSFWorkbook) workbook).getCustomPalette();
-                return palette.findSimilarColor(c.getRed(), c.getGreen(), c.getBlue());
+            case XSSFWorkbook sheets -> {
+                if (color.startsWith("#")) {
+                    return new XSSFColor(java.awt.Color.decode(color), null);
+                }
+                return IndexedColors.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
             }
-            return HSSFColor.HSSFColorPredefined.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
+            case HSSFWorkbook sheets -> {
+                if (color.startsWith("#")) {
+                    java.awt.Color c = java.awt.Color.decode(color);
+                    HSSFPalette palette = sheets.getCustomPalette();
+                    return palette.findSimilarColor(c.getRed(), c.getGreen(), c.getBlue());
+                }
+                return HSSFColor.HSSFColorPredefined.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
+            }
+            default -> {
+            }
         }
-        return -1;
+        return null;
     }
 
     @MethodDoc(dependency = "create", translations = {
