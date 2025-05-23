@@ -138,6 +138,9 @@ public class Auth extends ResourceBase {
     )
     public Auth load() {
         Values auth = getProteu().getConfig().getValues("_auth", Values.newMap());
+        Values attempts = auth.getValues("attempts", Values.newMap());
+        getProteu().getConfig().set("_auth:attempts:interval", attempts.getInt("interval", Config.getAuthAttemptsInterval(getProteu())));
+        getProteu().getConfig().set("_auth:attempts:max_fails", attempts.getInt("maxFails", Config.getAuthAttemptsMaxFails(getProteu())));
         Values jwt = auth.getValues("jwt", Values.newMap());
         this.jwtEnabled = jwt.getBoolean("enabled", this.jwtEnabled);
         this.jwtGroups = jwt.getValues("groups", Values.newList());
@@ -992,6 +995,70 @@ public class Auth extends ResourceBase {
 
     public Auth setSignInAbortWithData(Values data) {
         return signInAbortWithData(data);
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Número em minutos para definir o intervalo de tempo para realizar o bloqueio da conta.",
+                            howToUse = {}),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Number in minutes to set the time interval to perform account blocking.",
+                            howToUse = {})
+            },
+            parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o número de minutos para o intervalo de tempo para a conta bloqueada."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the number of minutes for the time interval for the locked account."
+                    )
+            }
+    )
+    public int attemptsInterval() {
+        return Config.getAuthAttemptsInterval(getProteu());
+    }
+
+    public Auth attemptsInterval(int attemptsInterval) {
+        getProteu().getConfig().set("_auth:attempts:interval", attemptsInterval);
+        return this;
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Número máximo de tentativas de autenticação falhadas consecutivamente para realizar o bloqueio da conta.",
+                            howToUse = {}),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Maximum number of consecutive failed authentication attempts to trigger account lockout.",
+                            howToUse = {})
+            },
+            parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o número máximo de tentativas consecutivas falhadas para bloquear a autenticação."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the maximum number of consecutive failed attempts to block authentication."
+                    )
+            }
+    )
+    public int attemptsMaxFails() {
+        return Config.getAuthAttemptsMaxFails(getProteu());
+    }
+
+    public Auth attemptsMaxFails(int attemptsMaxFails) {
+        getProteu().getConfig().set("_auth:attempts:max_fails", attemptsMaxFails);
+        return this;
     }
 
     @MethodDoc(
