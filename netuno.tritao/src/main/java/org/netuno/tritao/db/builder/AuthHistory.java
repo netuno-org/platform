@@ -19,6 +19,7 @@ package org.netuno.tritao.db.builder;
 
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.DataItem;
 
 import java.sql.Timestamp;
@@ -31,21 +32,23 @@ import java.util.List;
  */
 public interface AuthHistory extends BuilderBase {
     default boolean userAuthLockedByHistoryConsecutiveFailure(String userId, String ip) {
+        int authAttemptsInterval = Config.getAuthAttemptsInterval(getProteu());
+        int authAttemptsMaxFails = Config.getAuthAttemptsMaxFails(getProteu());
         String select = " success ";
         String from = " netuno_auth_history ";
         String where = "WHERE 1 = 1";
         where += " AND user_id = "+ DB.sqlInjectionInt(userId);
         where += " AND ip = '" + DB.sqlInjection(ip) + "'";
-        where += " AND moment >= '" + Timestamp.valueOf(LocalDateTime.now().minusHours(1)) + "'";
+        where += " AND moment >= '" + Timestamp.valueOf(LocalDateTime.now().minusMinutes(authAttemptsInterval)) + "'";
         String order = " ORDER BY moment DESC";
         String sql = "SELECT " + select + " FROM " + from + where + order;
         if (isMSSQL()) {
-            sql += " FETCH NEXT 3 ROWS ONLY";
+            sql += " FETCH NEXT "+ authAttemptsMaxFails +" ROWS ONLY";
         } else {
-            sql += " LIMIT 3";
+            sql += " LIMIT "+ authAttemptsMaxFails;
         }
         List<Values> rows = getExecutor().query(sql);
-        return (int)rows.stream().filter((r) -> !r.getBoolean("success")).count() == 3;
+        return (int)rows.stream().filter((r) -> !r.getBoolean("success")).count() == authAttemptsMaxFails;
     }
 
     default int insertAuthHistory(Values values) {
