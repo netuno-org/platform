@@ -51,7 +51,7 @@ public class Config {
     public static String BUILD_NUMBER = "9999.99";
 
     private static PasswordBuilder defaultPasswordBuilder = new PasswordSHA256Hex();
-    
+
     private static List<Class> definitionsClasses = new ArrayList<>();
     private static List<Class> resourcesClasses = new ArrayList<>();
 
@@ -689,6 +689,20 @@ public class Config {
             return defaultPasswordBuilder;
         }
         return (PasswordBuilder)proteu.getConfig().get("_password:builder");
+    }
+
+    public static int getAuthAttemptsInterval(Proteu proteu) {
+        if (!proteu.getConfig().hasKey("_auth:attempts:interval")) {
+            return 60;
+        }
+        return proteu.getConfig().getInt("_auth:attempts:interval");
+    }
+
+    public static int getAuthAttemptsMaxFails(Proteu proteu) {
+        if (!proteu.getConfig().hasKey("_auth:attempts:max_fails")) {
+            return 3;
+        }
+        return proteu.getConfig().getInt("_auth:attempts:max_fails");
     }
 
     public static String getSupportFrameUrl(Proteu proteu) {
