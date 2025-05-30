@@ -1,0 +1,86 @@
+/*
+ *
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.netuno.tritao.sandbox.debug;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.netuno.tritao.sandbox.ScriptSourceCode;
+import org.netuno.tritao.sandbox.Scriptable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Debugger
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
+public class Debugger {
+    private static Logger logger = LogManager.getLogger(Debugger.class);
+
+    private static List<DebugContext> contexts = Collections.synchronizedList(new ArrayList<>());
+
+    private DebugContext context = null;
+
+    public Debugger(ScriptSourceCode script, Scriptable scriptable) {
+        context = new DebugContext(script, scriptable);
+        contexts.add(context);
+    }
+
+    public void pause() {
+        while (true) {
+            try {
+                boolean found = false;
+                for (int i = contexts.size() - 1; i >= 0; i--) {
+                    DebugContext dc = contexts.get(i);
+                    if (dc.getId() == context.getId()) {
+                        found = true;
+                    }
+                }
+                if (found) {
+                    Thread.sleep(200);
+                } else {
+                    break;
+                }
+            } catch (InterruptedException e) {
+                logger.warn("Debug pause thread sleep: "+ e.getMessage());
+                logger.trace("Debug pause thread sleep.", e);
+            }
+        }
+    }
+
+    public static synchronized void stepOver(int id) {
+        for (int i = contexts.size() - 1; i >= 0; i--) {
+            DebugContext dc = contexts.get(i);
+            if (dc.getId() == id) {
+                contexts.remove(i);
+            }
+        }
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            logger.warn("Debug step over thread sleep: "+ e.getMessage());
+            logger.trace("Debug step over thread sleep.", e);
+        }
+    }
+
+    public static List<DebugContext> getContexts() {
+        return contexts;
+    }
+}
