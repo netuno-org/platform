@@ -88,6 +88,12 @@ public class GraalSandbox implements Scriptable {
     }
 
     @Override
+    public Object get(ScriptSourceCode script, String name) {
+        String lang = getGraalLanguage(script.extension());
+        return graalRunner.get(lang, name);
+    }
+
+    @Override
     public void stop() throws Exception {
         graalRunner.closeContext();
     }
