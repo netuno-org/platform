@@ -34,6 +34,7 @@ import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.sandbox.debug.Debugger;
 
 import javax.script.ScriptException;
 import java.io.File;
@@ -68,6 +69,8 @@ public class SandboxManager implements AutoCloseable {
     private  Map<String, Scriptable> sandboxes = new HashMap<>();
 
     private Values bindings = new Values();
+
+    private List<ScriptSourceCode> scriptSourceCodeStack = new ArrayList<>();
 
     private List<Scriptable> scriptablesRunning = new ArrayList<>();
 
@@ -192,6 +195,12 @@ public class SandboxManager implements AutoCloseable {
         }
     }
 
+    public void debugger() {
+        new Debugger(
+                scriptSourceCodeStack.getLast(),
+                scriptablesRunning.getLast()
+        ).pause();
+    }
 
     public Scriptable getSandbox(String extension) {
         return sandboxes.entrySet().stream().filter((es) ->
@@ -303,6 +312,7 @@ public class SandboxManager implements AutoCloseable {
                     if (!scriptable.isPresent()) {
                         throw new Exception("This script "+ file +"."+ scriptExtension +" is not supported.");
                     } else {
+                        scriptSourceCodeStack.add(scriptSourceCode.get());
                         scriptablesRunning.add(scriptable.get());
                         return runScriptSandbox(scriptSourceCode.get(), scriptable.get());
                     }
@@ -385,6 +395,9 @@ public class SandboxManager implements AutoCloseable {
                 }
                 if (scriptablesRunning.size() > 0) {
                     scriptablesRunning.remove(scriptablesRunning.size() - 1);
+                }
+                if (scriptSourceCodeStack.size() > 0) {
+                    scriptSourceCodeStack.remove(scriptSourceCodeStack.size() - 1);
                 }
             }
         }
