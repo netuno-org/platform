@@ -31,4 +31,6 @@ public interface Scriptable extends AutoCloseable {
 
     void run(ScriptSourceCode script, Values bindings) throws Exception;
 
+    Object get(ScriptSourceCode script, String name);
+
 }
