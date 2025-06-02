@@ -45,22 +45,23 @@ public class Debugger {
 
     public void pause() {
         while (true) {
-            try {
-                boolean found = false;
-                for (int i = contexts.size() - 1; i >= 0; i--) {
-                    DebugContext dc = contexts.get(i);
-                    if (dc.getId() == context.getId()) {
-                        found = true;
-                    }
+            boolean found = false;
+            for (int i = contexts.size() - 1; i >= 0; i--) {
+                DebugContext dc = contexts.get(i);
+                if (dc.getId() == context.getId()) {
+                    found = true;
                 }
-                if (found) {
+            }
+            if (found) {
+                context.loadWatches();
+                try {
                     Thread.sleep(200);
-                } else {
-                    break;
+                } catch (InterruptedException e) {
+                    logger.warn("Debug pause thread sleep: "+ e.getMessage());
+                    logger.trace("Debug pause thread sleep.", e);
                 }
-            } catch (InterruptedException e) {
-                logger.warn("Debug pause thread sleep: "+ e.getMessage());
-                logger.trace("Debug pause thread sleep.", e);
+            } else {
+                break;
             }
         }
     }
