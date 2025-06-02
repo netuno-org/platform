@@ -18,19 +18,28 @@
 
 package org.netuno.tritao.sandbox.debug;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.netuno.tritao.sandbox.ScriptSourceCode;
 import org.netuno.tritao.sandbox.Scriptable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * DebugContext
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class DebugContext {
+    private static Logger logger = LogManager.getLogger(DebugContext.class);
     private static int idCounter = 0;
     private long threadId = Thread.currentThread().threadId();
     private int id = 1;
     private ScriptSourceCode script = null;
     private Scriptable scriptable = null;
+    private final List<Watch> watchList = Collections.synchronizedList(new ArrayList<>());
 
     protected DebugContext(ScriptSourceCode script, Scriptable scriptable) {
         this.id = ++idCounter;
@@ -54,12 +63,68 @@ public class DebugContext {
         return scriptable;
     }
 
-    public Object get(String name) {
-        return scriptable.get(getScript(), name);
+    public void run(String string) {
+
+    }
+
+    public void watch(String name, Consumer<Object> callback) {
+        Watch watch = new Watch(name, callback);
+        watchList.add(watch);
+        while (!watch.isLoaded()) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                logger.warn("Debug context watch sleep: "+ e.getMessage());
+                logger.trace("Debug context watch sleep.", e);
+            }
+        }
+        watchList.remove(watch);
+        watch.getCallback().accept(watch.value);
+    }
+
+    protected void loadWatches() {
+        if (threadId != Thread.currentThread().threadId()) {
+            throw new DebugError("Load watches in wrong thread context.");
+        }
+        watchList.stream()
+                .filter((w) -> !w.isLoaded())
+                .forEach((w) -> w.setValue(getScriptable().get(getScript(), w.getName())));
     }
 
     @Override
     public boolean equals(Object obj) {
         return ((DebugContext)obj).getId() == this.getId();
+    }
+
+    protected static class Watch {
+        private String name = "";
+        private Consumer<Object> callback;
+        private boolean loaded = false;
+        private Object value = null;
+        public Watch(String name, Consumer<Object> callback) {
+            this.name = name;
+            this.callback = callback;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Consumer<Object> getCallback() {
+            return callback;
+        }
+
+        public boolean isLoaded() {
+            return loaded;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
+            this.loaded = true;
+        }
     }
 }
