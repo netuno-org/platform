@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
@@ -363,6 +365,10 @@ public class Exec extends ResourceBaseValues {
     }, parameters = { }, returns = {})
     public void gc() {
         System.gc();
+    }
+
+    public void debug() {
+        getHili().sandbox().debugger();
     }
 
     public void beforeClose(Function<Object[], Object> function) {
