@@ -20,6 +20,9 @@ package org.netuno.tritao.sandbox.debug;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.psamata.Values;
+import org.netuno.tritao.sandbox.SandboxManager;
+import org.netuno.tritao.sandbox.ScriptResult;
 import org.netuno.tritao.sandbox.ScriptSourceCode;
 import org.netuno.tritao.sandbox.Scriptable;
 
@@ -37,12 +40,15 @@ public class DebugContext {
     private static int idCounter = 0;
     private long threadId = Thread.currentThread().threadId();
     private int id = 1;
+    private SandboxManager sandboxManager = null;
     private ScriptSourceCode script = null;
     private Scriptable scriptable = null;
     private final List<Watch> watchList = Collections.synchronizedList(new ArrayList<>());
+    private final List<Execute> executeList = Collections.synchronizedList(new ArrayList<>());
 
-    protected DebugContext(ScriptSourceCode script, Scriptable scriptable) {
+    protected DebugContext(SandboxManager sandboxManager, ScriptSourceCode script, Scriptable scriptable) {
         this.id = ++idCounter;
+        this.sandboxManager = sandboxManager;
         this.script = script;
         this.scriptable = scriptable;
     }
@@ -63,32 +69,55 @@ public class DebugContext {
         return scriptable;
     }
 
-    public void run(String string) {
-
-    }
-
-    public void watch(String name, Consumer<Object> callback) {
-        Watch watch = new Watch(name, callback);
+    public Object watch(String name) {
+        Watch watch = new Watch(name);
         watchList.add(watch);
         while (!watch.isLoaded()) {
             try {
-                Thread.sleep(200);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 logger.warn("Debug context watch sleep: "+ e.getMessage());
                 logger.trace("Debug context watch sleep.", e);
             }
         }
         watchList.remove(watch);
-        watch.getCallback().accept(watch.value);
+        return watch.value;
     }
 
     protected void loadWatches() {
         if (threadId != Thread.currentThread().threadId()) {
-            throw new DebugError("Load watches in wrong thread context.");
+            throw new DebugError("Loading the watching list in the wrong thread context.");
         }
         watchList.stream()
                 .filter((w) -> !w.isLoaded())
                 .forEach((w) -> w.setValue(getScriptable().get(getScript(), w.getName())));
+    }
+
+    public ScriptResult execute(String script) {
+        Execute execute = new Execute(script);
+        executeList.add(execute);
+        while (!execute.isLoaded()) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                logger.warn("Debug context execute sleep: "+ e.getMessage());
+                logger.trace("Debug context execute sleep.", e);
+            }
+        }
+        executeList.remove(execute);
+        return execute.scriptResult;
+    }
+
+    protected void loadExecutions() {
+        if (threadId != Thread.currentThread().threadId()) {
+            throw new DebugError("Loading the execution list in the wrong thread context.");
+        }
+        executeList.stream()
+                .filter((exec) -> !exec.isLoaded())
+                .forEach((exec) -> exec.setResult(sandboxManager.runScript(
+                        getScript().clone("debug-"+ getId(), exec.getScript()),
+                        scriptable
+                )));
     }
 
     @Override
@@ -96,22 +125,42 @@ public class DebugContext {
         return ((DebugContext)obj).getId() == this.getId();
     }
 
+    protected static class Execute {
+        private String script = "";
+        private boolean loaded = false;
+        private ScriptResult scriptResult;
+        public Execute(String script) {
+            this.script = script;
+        }
+
+        public String getScript() {
+            return script;
+        }
+
+        public boolean isLoaded() {
+            return loaded;
+        }
+
+        public ScriptResult getResult() {
+            return scriptResult;
+        }
+
+        public void setResult(ScriptResult scriptResult) {
+            this.scriptResult = scriptResult;
+            loaded = true;
+        }
+    }
+
     protected static class Watch {
         private String name = "";
-        private Consumer<Object> callback;
         private boolean loaded = false;
         private Object value = null;
-        public Watch(String name, Consumer<Object> callback) {
+        public Watch(String name) {
             this.name = name;
-            this.callback = callback;
         }
 
         public String getName() {
             return name;
-        }
-
-        public Consumer<Object> getCallback() {
-            return callback;
         }
 
         public boolean isLoaded() {
