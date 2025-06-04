@@ -12,6 +12,7 @@ import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -168,6 +169,9 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 case Timestamp timestampValue -> {
                     values.set(field.getColumn(), timestampValue);
+                }
+                case LocalDateTime localDateTimeValue -> {
+                    values.set(field.getColumn(), Timestamp.valueOf(localDateTimeValue));
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + value);
             }
