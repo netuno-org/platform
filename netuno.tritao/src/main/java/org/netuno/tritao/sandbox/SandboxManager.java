@@ -197,6 +197,7 @@ public class SandboxManager implements AutoCloseable {
 
     public void debugger() {
         new Debugger(
+                this,
                 scriptSourceCodeStack.getLast(),
                 scriptablesRunning.getLast()
         ).pause();
@@ -314,7 +315,7 @@ public class SandboxManager implements AutoCloseable {
                     } else {
                         scriptSourceCodeStack.add(scriptSourceCode.get());
                         scriptablesRunning.add(scriptable.get());
-                        return runScriptSandbox(scriptSourceCode.get(), scriptable.get());
+                        return runScript(scriptSourceCode.get(), scriptable.get());
                     }
                 } else {
                     return ScriptResult.withSuccess();
@@ -403,7 +404,7 @@ public class SandboxManager implements AutoCloseable {
         }
     }
 
-    private ScriptResult runScriptSandbox(ScriptSourceCode script, Scriptable sandbox) {
+    public ScriptResult runScript(ScriptSourceCode script, Scriptable sandbox) {
         Throwable throwable = null;
         try {
             //ThreadMonitor threadMonitor = new ThreadMonitor(Config.getMaxCPUTime(), Config.getMaxMemory());
