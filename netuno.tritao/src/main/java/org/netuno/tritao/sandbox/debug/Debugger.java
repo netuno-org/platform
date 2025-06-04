@@ -20,6 +20,7 @@ package org.netuno.tritao.sandbox.debug;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.tritao.sandbox.SandboxManager;
 import org.netuno.tritao.sandbox.ScriptSourceCode;
 import org.netuno.tritao.sandbox.Scriptable;
 
@@ -36,10 +37,13 @@ public class Debugger {
 
     private static List<DebugContext> contexts = Collections.synchronizedList(new ArrayList<>());
 
+    private SandboxManager sandboxManager = null;
+
     private DebugContext context = null;
 
-    public Debugger(ScriptSourceCode script, Scriptable scriptable) {
-        context = new DebugContext(script, scriptable);
+    public Debugger(SandboxManager sandboxManager, ScriptSourceCode script, Scriptable scriptable) {
+        this.sandboxManager = sandboxManager;
+        context = new DebugContext(sandboxManager, script, scriptable);
         contexts.add(context);
     }
 
@@ -53,6 +57,7 @@ public class Debugger {
                 }
             }
             if (found) {
+                context.loadExecutions();
                 context.loadWatches();
                 try {
                     Thread.sleep(200);
