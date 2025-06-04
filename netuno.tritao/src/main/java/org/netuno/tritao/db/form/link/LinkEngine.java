@@ -3,6 +3,7 @@ package org.netuno.tritao.db.form.link;
 import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.io.File;
 import org.netuno.tritao.db.form.Field;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.form.join.Join;
@@ -184,6 +185,9 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 case Instant instantValue -> {
                     values.set(field.getColumn(), Timestamp.from(instantValue));
+                }
+                case File fileValue -> {
+                    values.set(field.getColumn(), fileValue);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + value);
             }
