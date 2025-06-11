@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
 public class SandboxManager implements AutoCloseable {
     private static final Logger logger = LogManager.getLogger(SandboxManager.class);
 
-    private static final Pattern REGEX_IMPORT_CORE = Pattern.compile("^\\s*\\/\\/\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE);
+    private static final Pattern REGEX_IMPORT_CORE = Pattern.compile("^\\s*(\\/\\/|#|--)\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE);
 
     private static Map<String, ImmutablePair<Long, String>> cachedSourceCodes = new ConcurrentHashMap<>();
 
@@ -287,8 +287,8 @@ public class SandboxManager implements AutoCloseable {
                     ));
                     Matcher m = REGEX_IMPORT_CORE.matcher(sourceCode);
                     while (m.find()) {
-                        String importScriptFolder = m.group(1);
-                        String importScriptPath = m.group(2);
+                        String importScriptFolder = m.group(2);
+                        String importScriptPath = m.group(3);
                         importScriptPath = SafePath.fileSystemPath(importScriptPath);
                         if (importScriptFolder.equals("_core")) {
                             String importScriptCorePath = Config.getPathAppCore(proteu) +"/"+ importScriptPath;

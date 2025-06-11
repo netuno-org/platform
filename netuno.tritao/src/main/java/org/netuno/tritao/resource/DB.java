@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.resource;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
@@ -112,7 +113,7 @@ import java.util.UUID;
 })
 public class DB extends ResourceBase {
 
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(DB.class);
+    private static Logger logger = LogManager.getLogger(DB.class);
 
     private String key = "default";
     private org.netuno.psamata.DB dbOps = null;
