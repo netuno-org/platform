@@ -46,6 +46,16 @@ public class GraalSandbox implements Scriptable {
         options.put("js.v8-compat", "true");
         options.put("js.commonjs-require", "true");
         options.put("js.commonjs-require-cwd", Config.getPathAppBaseServer(manager.getProteu()));
+        options.put(
+                "js.commonjs-core-modules-replacements",
+                "buffer:buffer/,"
+                        + "events:events/,"
+                        + "util:util/,"
+                        + "path:path-browserify,"
+                        + "stream:stream-browserify,"
+                        + "http:http-browserify,"
+                        + "https:https-browserify,"
+        );
         options.put("python.CoreHome", Config.getPathAppBaseServer(manager.getProteu()));
         options.put("python.SysPrefix", "lib/python/sys");
         options.put("python.StdLibHome", "lib/python/std");
