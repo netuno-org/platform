@@ -61,6 +61,7 @@ public class WSEndpoint {
     private Values config;
     
     private String authorization;
+    private String cookie;
 
     private Socket streamSocket = null;
     private OutputStream streamOutput = null;
@@ -73,17 +74,18 @@ public class WSEndpoint {
         
         this.app = userProperties.get("app").toString();
         this.config = (Values)userProperties.get("config");
+        this.cookie = (String)userProperties.get("cookie");
         this.authorization = (String)userProperties.get("authorization");
         
         String urlPublic = this.config.getString("public");
         String path = session.getRequestURI().getPath().substring(urlPublic.length());
-
         this.data = new Values()
                 .set("config", this.config)
                 .set("path", path)
                 .set("id", session.getId())
                 .set("session", session)
                 .set("data", new Values())
+                .set("cookie", cookie)
                 .set("authorization", authorization)
                 .set("streamSemaphore", streamSemaphore)
                 .set("streamBytesLength", 0);
@@ -108,6 +110,7 @@ public class WSEndpoint {
             return;
         }
         Remote remote = new Remote();
+        remote.getHeader().set("Cookie", cookie);
         remote.getHeader().set("Authorization", authorization);
         remote.getHeader().set("WS-App", this.app);
         remote.getHeader().set("WS-Session-Id", session.getId());
@@ -142,6 +145,9 @@ public class WSEndpoint {
                 streamOutput.println("WS-QS: "+ new Values(session.getRequestURI().getQuery(), "&", "=").toJSON());
                 streamOutput.println("WS-Stream: true");
                 streamOutput.println("WS-Message-Boundary: ----//>"+ UUID.randomUUID() +"<//----");
+                if (cookie != null && !cookie.isEmpty()) {
+                    streamOutput.println("Cookie: "+ cookie);
+                }
                 if (authorization != null && !authorization.isEmpty()) {
                     streamOutput.println("Authorization: "+ authorization);
                 }
@@ -208,6 +214,7 @@ public class WSEndpoint {
                                 .set("message", jsonMessage)
                 );
         Remote remote = new Remote();
+        remote.getHeader().set("Cookie", cookie);
         remote.getHeader().set("Authorization", authorization);
         remote.getHeader().set("WS-App", this.app);
         remote.getHeader().set("WS-Session-Id", session.getId());
@@ -320,6 +327,7 @@ public class WSEndpoint {
         String urlService = App.getURL(this.app, this.config.getString("service"));
         if (!urlService.isEmpty() && this.config.getBoolean("enabled", true)) {
             Remote remote = new Remote();
+            remote.getHeader().set("Cookie", cookie);
             remote.getHeader().set("Authorization", authorization);
             remote.getHeader().set("WS-App", this.app);
             remote.getHeader().set("WS-Session-Id", session.getId());
@@ -376,8 +384,12 @@ public class WSEndpoint {
     public String getApp() {
         return app;
     }
-    
-    public boolean isAuthorization() {
+
+    public boolean hasCookie() {
+        return authorization != null && !authorization.isEmpty();
+    }
+
+    public boolean hasAuthorization() {
         return authorization != null && !authorization.isEmpty();
     }
     
