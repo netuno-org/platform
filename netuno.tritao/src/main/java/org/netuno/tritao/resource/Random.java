@@ -45,6 +45,8 @@ public class Random extends ResourceBase {
 
     public final String ALPHANUMERIC = RandomString.ALPHANUMERIC;
 
+    public final String SYMBOLS = RandomString.SYMBOLS;
+
     public Random(Proteu proteu, Hili hili) {
         super(proteu, hili);
     }
@@ -143,8 +145,16 @@ public class Random extends ResourceBase {
         return new RandomString(length, random);
     }
 
+    public RandomString initString(int length, boolean defaultSymbols) {
+        return new RandomString(length, defaultSymbols);
+    }
+
     public RandomString initString(int length, java.util.Random random, String symbols) {
         return new RandomString(length, random, symbols);
+    }
+
+    public RandomString initString(int length, java.util.Random random, boolean defaultSymbols) {
+        return new RandomString(length, random, defaultSymbols);
     }
     
     public RandomString initString(int length, String symbols) {
