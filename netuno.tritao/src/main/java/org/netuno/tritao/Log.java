@@ -55,7 +55,7 @@ public class Log extends WebMaster {
         }
         Values flattenForms = menuLoader.flattenWithPath(jsonForms);
         if (header.isPost() && req.hasKey("uid")) {
-            Values detail = Config.getDataBaseBuilder(getProteu()).logDetail(req.getString("uid"));
+            Values detail = Config.getDBBuilder(getProteu()).logDetail(req.getString("uid"));
             if (detail == null) {
                 header.status(Proteu.HTTPStatus.NotFound404);
                 return;
@@ -71,7 +71,7 @@ public class Log extends WebMaster {
             TemplateBuilder.output(getProteu(), getHili(), "log/detail", detail);
             return;
         } else if (header.isPost()) {
-            List<Values> items = Config.getDataBaseBuilder(getProteu()).logSearch(
+            List<Values> items = Config.getDBBuilder(getProteu()).logSearch(
                     req.getInt("page", 0),
                     new Values()
                             .set("user_uid", req.getString("user_id"))

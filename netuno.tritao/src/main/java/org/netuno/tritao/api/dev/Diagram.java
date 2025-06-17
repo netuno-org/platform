@@ -58,10 +58,10 @@ public class Diagram extends WebMaster {
         
         Values data = new Values();
 
-        List<Values> tables = Config.getDataBaseBuilder(getProteu()).selectTable();
+        List<Values> tables = Config.getDBBuilder(getProteu()).selectTable();
         List<Values> links = new ArrayList<>();
         for (Values table : tables) {
-            List<Values> fields = Config.getDataBaseBuilder(getProteu()).selectTableDesign(table.getString("id"), "");
+            List<Values> fields = Config.getDBBuilder(getProteu()).selectTableDesign(table.getString("id"), "");
             for (Values field : fields) {
                 Component com = Config.getNewComponent(getProteu(), getHili(), field.getString("type"));
                 com.setProteu(getProteu());

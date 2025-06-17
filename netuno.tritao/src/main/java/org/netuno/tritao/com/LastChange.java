@@ -62,7 +62,7 @@ public class LastChange extends ComponentBase {
     	String userId = DB.sqlInjectionInt(getDataStructure().get(1).getValue());
         if (!userId.equals("0")) {
             getDesignData().set("com.lastchange.user_id", userId);
-            Values rsUser = Config.getDataBaseBuilder(getProteu()).getUserById(userId);
+            Values rsUser = Config.getDBBuilder(getProteu()).getUserById(userId);
             if (rsUser != null) {
             	getDesignData().set("com.lastchange.user", rsUser.getString("name"));
             }
@@ -99,7 +99,7 @@ public class LastChange extends ComponentBase {
     }
     
     public static void _main(Proteu proteu, Hili hili) throws IOException, JSONException {
-    	List<Values> dsDesigns = Config.getDataBaseBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
+    	List<Values> dsDesigns = Config.getDBBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
     	if (dsDesigns.size() < 1) {
             return;
     	}
@@ -118,7 +118,7 @@ public class LastChange extends ComponentBase {
             jsonObject.put("label", Link.getDataShow(proteu, hili, "default", dataId, com.getConfiguration().getParameter("LINK").getValue(), com.getConfiguration().getParameter("COLUMN_SEPARATOR").getValue(), com.getConfiguration().getParameter("MAX_COLUMN_LENGTH").getValueAsInt(), true));
             json = jsonObject.toString();
         } else {
-            List<Values> rsQuery = Config.getDataBaseBuilder(proteu).selectUserSearch(proteu.getRequestAll().getString("q"));
+            List<Values> rsQuery = Config.getDBBuilder(proteu).selectUserSearch(proteu.getRequestAll().getString("q"));
             JSONArray jsonArray = new JSONArray();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", "0");

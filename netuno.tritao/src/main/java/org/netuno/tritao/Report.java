@@ -48,13 +48,13 @@ public class Report {
         String tableName = proteu.getRequestAll().getString("netuno_report_name");
 
         if (tableId.isEmpty() && !tableName.isEmpty()) {
-            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable("", tableName);
+            List<Values> rsTables = Config.getDBBuilder(proteu).selectTable("", tableName);
             if (rsTables.size() == 1) {
                 rowTable = rsTables.get(0);
                 tableId = rsTables.get(0).getString("id");
             }
         } else if (!tableUid.isEmpty()) {
-            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable("", "", tableUid);
+            List<Values> rsTables = Config.getDBBuilder(proteu).selectTable("", "", tableUid);
             if (rsTables.size() == 1) {
                 rowTable = rsTables.get(0);
                 tableId = rsTables.get(0).getString("id");
@@ -62,7 +62,7 @@ public class Report {
                 return;
             }
         } else if (!tableId.isEmpty()) {
-            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable(tableId);
+            List<Values> rsTables = Config.getDBBuilder(proteu).selectTable(tableId);
             if (rsTables.size() == 1) {
                 rowTable = rsTables.get(0);
             }
@@ -94,7 +94,7 @@ public class Report {
             proteu.getConfig().set("netuno_table_type", "report");
             proteu.getConfig().set("netuno_form_mode", "report");
 
-            List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTable.getString("id"));
+            List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTable.getString("id"));
 
             TemplateBuilder.output(proteu, hili, "report/head", rowTable);
             TemplateBuilder.output(proteu, hili, "form/head");

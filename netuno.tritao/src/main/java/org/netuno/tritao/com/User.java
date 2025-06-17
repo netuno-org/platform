@@ -64,7 +64,7 @@ public class User extends ComponentBase {
     	super.setValues(prefix, values);
         value = getDataStructure().get(0).getValue();
         if (value.indexOf("-") > 0 && value.length() >= 32) {
-            Values relationItem = Config.getDataBaseBuilder(getProteu()).getUserByUId(value);
+            Values relationItem = Config.getDBBuilder(getProteu()).getUserByUId(value);
             if (relationItem == null) {
                 logger.warn("The user with id " + value + " was not found!");
                 valueId = "0";
@@ -73,7 +73,7 @@ public class User extends ComponentBase {
             }
         } else if (!value.isEmpty() && !value.equals("0")) {
             valueId = value;
-            Values item = Config.getDataBaseBuilder(getProteu()).getUserById(value);
+            Values item = Config.getDBBuilder(getProteu()).getUserById(value);
             if (item != null) {
                 value = item.getString("uid");
             } else {
@@ -107,7 +107,7 @@ public class User extends ComponentBase {
     
     public String getTextValue() {
     	String dataShow = "";
-        Values tritaoUser = Config.getDataBaseBuilder(getProteu()).getUserByUId(value);
+        Values tritaoUser = Config.getDBBuilder(getProteu()).getUserByUId(value);
     	if (tritaoUser != null) {
             dataShow = tritaoUser.getHTMLEncode("user") +" - "+ tritaoUser.getHTMLEncode("name");
     	}
@@ -119,7 +119,7 @@ public class User extends ComponentBase {
             try {
                 getDesignData().set("com.select.value", value);
                 String dataShow = "";
-                Values tritaoUser = Config.getDataBaseBuilder(getProteu()).getUserByUId(value);
+                Values tritaoUser = Config.getDBBuilder(getProteu()).getUserByUId(value);
                 if (tritaoUser != null) {
                     dataShow = tritaoUser.getHTMLEncode("user") +" - "+ tritaoUser.getHTMLEncode("name");
                 }

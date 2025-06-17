@@ -49,13 +49,13 @@ public class Edit {
         String tableId = proteu.getRequestAll().getString("netuno_table_id");
 
         if (tableId.isEmpty() && proteu.getRequestAll().hasKey("netuno_table_name")) {
-        	 List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable("", proteu.getRequestAll().getString("netuno_table_name"));
+        	 List<Values> rsTables = Config.getDBBuilder(proteu).selectTable("", proteu.getRequestAll().getString("netuno_table_name"));
         	 if (rsTables.size() == 1) {
                  rowTable = rsTables.get(0);
         		 tableId = rsTables.get(0).getString("id");
         	 }
         } else if (tableId.isEmpty()) {
-            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_table_uid"));
+            List<Values> rsTables = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_table_uid"));
             if (rsTables.size() == 1) {
                 rowTable = rsTables.get(0);
                 tableId = rsTables.get(0).getString("id");
@@ -63,7 +63,7 @@ public class Edit {
                 return;
             }
         } else {
-            List<Values> rsTables = Config.getDataBaseBuilder(proteu).selectTable(tableId);
+            List<Values> rsTables = Config.getDBBuilder(proteu).selectTable(tableId);
             if (rsTables.size() == 1) {
                 rowTable = rsTables.get(0);
             }
@@ -85,7 +85,7 @@ public class Edit {
             proteu.getRequestAll().set("netuno_table_id", tableId);
             String tableName = rowTable.getString("name");
             if (!proteu.getRequestAll().hasKey("netuno_item_id") && proteu.getRequestAll().hasKey("netuno_item_uid")) {
-                Values item = Config.getDataBaseBuilder(proteu).getItemByUId(tableName, proteu.getRequestAll().getString("netuno_item_uid"));
+                Values item = Config.getDBBuilder(proteu).getItemByUId(tableName, proteu.getRequestAll().getString("netuno_item_uid"));
                 if (item != null) {
                     proteu.getRequestAll().set("netuno_item_id", item.getString("id"));
                     proteu.getRequestPost().set("netuno_item_id", item.getString("id"));
@@ -95,7 +95,7 @@ public class Edit {
 
             if (proteu.getRequestAll().hasKey("netuno_relation_table_uid") && proteu.getRequestAll().hasKey("netuno_relation_item_uid")
                && !proteu.getRequestAll().getString("netuno_relation_table_uid").isEmpty() && !proteu.getRequestAll().getString("netuno_relation_item_uid").isEmpty()) {
-                List<Values> rsRelationTables = Config.getDataBaseBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_relation_table_uid"));
+                List<Values> rsRelationTables = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_relation_table_uid"));
                 if (rsRelationTables.size() == 1) {
                     Values rowRelationTable = rsRelationTables.get(0);
                     proteu.getConfig().set("netuno_relation_table", rowRelationTable);
@@ -103,7 +103,7 @@ public class Edit {
                     proteu.getConfig().set("netuno_relation_table_name", rowRelationTable.getString("name"));
                     proteu.getConfig().set("_relation_table_name", rowRelationTable.getString("name"));
                     String relationTableName = rowRelationTable.getString("name");
-                    Values item = Config.getDataBaseBuilder(proteu).getItemByUId(relationTableName, proteu.getRequestAll().getString("netuno_relation_item_uid"));
+                    Values item = Config.getDBBuilder(proteu).getItemByUId(relationTableName, proteu.getRequestAll().getString("netuno_relation_item_uid"));
                     if (item != null) {
                         proteu.getConfig().set("netuno_relation_item", item);
                         proteu.getConfig().set("_relation_item", item);
@@ -125,12 +125,12 @@ public class Edit {
             List<Values> rsItem = null;
             Values rowItem = null;
             String searchQuery = "";
-            DataSelected dataSelected = Config.getDataBaseBuilder(proteu).selectSearch();
+            DataSelected dataSelected = Config.getDBBuilder(proteu).selectSearch();
             if(!itemId.equals("")) {
-                searchQuery = Config.getDataBaseBuilder(proteu).selectSearchId(dataSelected.getQueryId(), itemId);
+                searchQuery = Config.getDBBuilder(proteu).selectSearchId(dataSelected.getQueryId(), itemId);
             }
             if (!searchQuery.equals("")) {
-                rsItem = Config.getDataBaseManager(proteu).query(searchQuery);
+                rsItem = Config.getDBExecutor(proteu).query(searchQuery);
                 rowItem = rsItem.get(0);
                 proteu.getConfig().set("netuno_edit_item_user_id", rowItem.getInt(rowTable.getString("name") + "_user_id"));
                 proteu.getConfig().set("_edit_item_user_id", rowItem.getInt(rowTable.getString("name") + "_user_id"));
@@ -141,7 +141,7 @@ public class Edit {
             if (proteu.getRequestAll().getString("netuno_action").equals("save")
                     && rule.getWrite() > Rule.NONE) {
                 if (itemId.equals("")) {
-                    DataItem dataItem = Config.getDataBaseBuilder(proteu).insert();
+                    DataItem dataItem = Config.getDBBuilder(proteu).insert();
                     if (dataItem.getStatus() == DataItem.Status.Updated) {
                         TemplateBuilder.output(proteu, hili, "edit/notification/new_saved", rowTable);
                         if (!proteu.getRequestAll().getBoolean("netuno_autosave")) {
@@ -171,7 +171,7 @@ public class Edit {
                     if (rule.getWrite() == Rule.OWN && rowItem.getInt(rowTable.getString("name") + "_user_id") != Auth.getUser(proteu, hili, Auth.Type.SESSION).getInt("id")) {
                         return;
                     }
-                    DataItem dataItem = Config.getDataBaseBuilder(proteu).update();
+                    DataItem dataItem = Config.getDBBuilder(proteu).update();
                     if (dataItem.getStatus() == DataItem.Status.Updated) {
                         TemplateBuilder.output(proteu, hili, "edit/notification/saved", rowTable);
                         if (!proteu.getRequestAll().getBoolean("netuno_autosave")) {
@@ -201,7 +201,7 @@ public class Edit {
                 if (rule.getDelete() == Rule.OWN && rowItem.getInt(rowTable.getString("name") + "_user_id") != Auth.getUser(proteu, hili, Auth.Type.SESSION).getInt("id")) {
                     return;
                 }
-                DataItem dataItem = Config.getDataBaseBuilder(proteu).delete();
+                DataItem dataItem = Config.getDBBuilder(proteu).delete();
                 if (dataItem.getStatus() == DataItem.Status.Deleted) {
                     TemplateBuilder.output(proteu, hili, "edit/notification/deleted", rowTable);
                     if (!proteu.getRequestAll().getBoolean("netuno_edit_only")) {
@@ -231,12 +231,12 @@ public class Edit {
             rsItem = null;
             rowItem = null;
             searchQuery = "";
-            dataSelected = Config.getDataBaseBuilder(proteu).selectSearch();
+            dataSelected = Config.getDBBuilder(proteu).selectSearch();
             if(!itemId.equals("")) {
-                searchQuery = Config.getDataBaseBuilder(proteu).selectSearchId(dataSelected.getQueryId(), itemId);
+                searchQuery = Config.getDBBuilder(proteu).selectSearchId(dataSelected.getQueryId(), itemId);
             }
             if (!searchQuery.equals("")) {
-                rsItem = Config.getDataBaseManager(proteu).query(searchQuery);
+                rsItem = Config.getDBExecutor(proteu).query(searchQuery);
                 rowItem = rsItem.get(0);
             }
 
@@ -300,7 +300,7 @@ public class Edit {
             if (!isLocked && !canSave) {
                 mode = Component.Mode.View;
             }
-            List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(rowTable.getString("id"));
+            List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTable.getString("id"));
             for (int i = 0; i < rsDesignXY.size(); i++) {
                 Values rowTritaoDesignXY = rsDesignXY.get(i);
                 if (!Rule.hasDesignFieldViewAccess(proteu, hili, rowTritaoDesignXY) && !Rule.hasDesignFieldEditAccess(proteu, hili, rowTritaoDesignXY)) {
@@ -440,7 +440,7 @@ public class Edit {
             TemplateBuilder.output(proteu, hili, "form/foot", rowTable);
             TemplateBuilder.output(proteu, hili, "edit/form_foot", rowTable);
 
-            List<Values> relations = Config.getDataBaseBuilder(proteu).getRelations(rowTable, rsDesignXY);
+            List<Values> relations = Config.getDBBuilder(proteu).getRelations(rowTable, rsDesignXY);
             if (relations.size() > 0) {
                 TemplateBuilder.output(proteu, hili, "edit/relations/head", rowTable);
                 for (Values relation : relations) {

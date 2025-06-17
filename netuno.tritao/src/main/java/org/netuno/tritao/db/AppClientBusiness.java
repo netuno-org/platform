@@ -22,16 +22,16 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.db.manager.Base;
+import org.netuno.tritao.db.manager.ManagerBase;
 
 /**
  * Application Client Business
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class AppClientBusiness extends Base {
+public class AppClientBusiness extends ManagerBase {
     private static Logger logger = LogManager.getLogger(CoreBusiness.class);
 
-    protected AppClientBusiness(Base base) {
+    protected AppClientBusiness(ManagerBase base) {
         super(base);
     }
 
@@ -47,8 +47,8 @@ public class AppClientBusiness extends Base {
         super(proteu, hili, key, builder);
     }
 
-    protected AppClientBusiness(Proteu proteu, Hili hili, String key, Builder builder, Manager manager) {
-        super(proteu, hili, key, builder, manager);
+    protected AppClientBusiness(Proteu proteu, Hili hili, String key, Builder builder, DBExecutor DBExecutor) {
+        super(proteu, hili, key, builder, DBExecutor);
     }
 
     public Values getApp(Values data) {

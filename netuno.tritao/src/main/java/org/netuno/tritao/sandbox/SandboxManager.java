@@ -34,6 +34,7 @@ import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.sandbox.debug.Debugger;
 
 import javax.script.ScriptException;
 import java.io.File;
@@ -56,7 +57,7 @@ import java.util.regex.Pattern;
 public class SandboxManager implements AutoCloseable {
     private static final Logger logger = LogManager.getLogger(SandboxManager.class);
 
-    private static final Pattern REGEX_IMPORT_CORE = Pattern.compile("^\\s*\\/\\/\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE);
+    private static final Pattern REGEX_IMPORT_CORE = Pattern.compile("^\\s*(\\/\\/|#|--)\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE);
 
     private static Map<String, ImmutablePair<Long, String>> cachedSourceCodes = new ConcurrentHashMap<>();
 
@@ -68,6 +69,8 @@ public class SandboxManager implements AutoCloseable {
     private  Map<String, Scriptable> sandboxes = new HashMap<>();
 
     private Values bindings = new Values();
+
+    private List<ScriptSourceCode> scriptSourceCodeStack = new ArrayList<>();
 
     private List<Scriptable> scriptablesRunning = new ArrayList<>();
 
@@ -192,6 +195,13 @@ public class SandboxManager implements AutoCloseable {
         }
     }
 
+    public void debugger() {
+        new Debugger(
+                this,
+                scriptSourceCodeStack.getLast(),
+                scriptablesRunning.getLast()
+        ).pause();
+    }
 
     public Scriptable getSandbox(String extension) {
         return sandboxes.entrySet().stream().filter((es) ->
@@ -277,8 +287,8 @@ public class SandboxManager implements AutoCloseable {
                     ));
                     Matcher m = REGEX_IMPORT_CORE.matcher(sourceCode);
                     while (m.find()) {
-                        String importScriptFolder = m.group(1);
-                        String importScriptPath = m.group(2);
+                        String importScriptFolder = m.group(2);
+                        String importScriptPath = m.group(3);
                         importScriptPath = SafePath.fileSystemPath(importScriptPath);
                         if (importScriptFolder.equals("_core")) {
                             String importScriptCorePath = Config.getPathAppCore(proteu) +"/"+ importScriptPath;
@@ -303,8 +313,9 @@ public class SandboxManager implements AutoCloseable {
                     if (!scriptable.isPresent()) {
                         throw new Exception("This script "+ file +"."+ scriptExtension +" is not supported.");
                     } else {
+                        scriptSourceCodeStack.add(scriptSourceCode.get());
                         scriptablesRunning.add(scriptable.get());
-                        return runScriptSandbox(scriptSourceCode.get(), scriptable.get());
+                        return runScript(scriptSourceCode.get(), scriptable.get());
                     }
                 } else {
                     return ScriptResult.withSuccess();
@@ -386,11 +397,14 @@ public class SandboxManager implements AutoCloseable {
                 if (scriptablesRunning.size() > 0) {
                     scriptablesRunning.remove(scriptablesRunning.size() - 1);
                 }
+                if (scriptSourceCodeStack.size() > 0) {
+                    scriptSourceCodeStack.remove(scriptSourceCodeStack.size() - 1);
+                }
             }
         }
     }
 
-    private ScriptResult runScriptSandbox(ScriptSourceCode script, Scriptable sandbox) {
+    public ScriptResult runScript(ScriptSourceCode script, Scriptable sandbox) {
         Throwable throwable = null;
         try {
             //ThreadMonitor threadMonitor = new ThreadMonitor(Config.getMaxCPUTime(), Config.getMaxMemory());

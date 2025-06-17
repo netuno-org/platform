@@ -130,7 +130,7 @@ public class Setup extends ResourceBase {
             }
             ScriptResult scriptStartResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), "_start");
             result.set(result.get() && scriptStartResult.isSuccess());
-            Config.getDataBaseBuilder(getProteu(), "default").setup();
+            Config.getDBBuilder(getProteu(), "default").setup();
             if (setupConfig == null
                     || setupConfig.getValues("schema") == null
                     || setupConfig.getValues("schema").getBoolean("execution", true)) {

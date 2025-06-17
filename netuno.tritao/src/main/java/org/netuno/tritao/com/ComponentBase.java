@@ -31,7 +31,7 @@ import org.netuno.tritao.db.Builder;
  * Form Field Component Base
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class ComponentBase implements Component {
+public abstract class ComponentBase implements Component {
 
     private Proteu proteu = null;
     private Hili hili = null;
@@ -243,7 +243,7 @@ public class ComponentBase implements Component {
     }
 
     public Values getDatabaseValues() {
-        Builder dbBuilder = Config.getDataBaseBuilder(proteu);
+        Builder dbBuilder = Config.getDBBuilder(proteu);
         return dbBuilder.getItemById(getTableData().getString("name"), "" + getValuesId());
     }
 
@@ -309,7 +309,7 @@ public class ComponentBase implements Component {
     }
 
     public static Component getInstance(Proteu proteu, Hili hili, String tableName, String fieldName) throws ComponentNotFoundException {
-        Builder dbBuilder = Config.getDataBaseBuilder(proteu);
+        Builder dbBuilder = Config.getDBBuilder(proteu);
         Values table = dbBuilder.selectTableByName(tableName);
         if (table != null) {
             List<Values> dsDesigns = dbBuilder.selectTableDesign(table.getString("id"), fieldName);

@@ -20,11 +20,12 @@ package org.netuno.tritao.resource;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.WorkbookUtil;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
@@ -178,6 +179,40 @@ public class XLS extends ResourceBase {
         )
     })
     public XLS create() {
+        Workbook workbook = new XSSFWorkbook();
+        return new XLS(getProteu(), getHili(), workbook, workbook.createSheet());
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria um novo documento Excel 97-2007, no formato antigo.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const excel = _xls.create2007();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a new Excel 97-2007 document, in the old format.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const excel = _xls.create2007();"
+                            )
+                    })
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nova instância do recurso XLS."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "New XLS resource instance."
+            )
+    })
+    public XLS create2007() {
         Workbook workbook = new HSSFWorkbook();
         return new XLS(getProteu(), getHili(), workbook, workbook.createSheet());
     }
@@ -683,7 +718,7 @@ public class XLS extends ResourceBase {
                     description = "Sets the spreadsheet that is active.",
                     howToUse = { })
     }, parameters = {
-            @ParameterDoc(name = "index", translations = {
+            @ParameterDoc(name = "sheet", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
                             description = "Objeto de referência da folha de cálculos."
@@ -703,8 +738,19 @@ public class XLS extends ResourceBase {
                     description = "The current instance of the XLS resource."
             )
     })
-    public XLS activeSheet(HSSFSheet sheet) {
-        sheet.setActive(true);
+    public XLS activeSheet(Sheet sheet) {
+        if (sheet instanceof XSSFSheet) {
+            int i = 0;
+            for (Iterator<Sheet> it = workbook.sheetIterator(); it.hasNext();) {
+                Sheet _sheet = it.next();
+                if (sheet == _sheet) {
+                    workbook.setActiveSheet(i);
+                }
+                i++;
+            }
+        } else if (sheet instanceof HSSFSheet) {
+            ((HSSFSheet)sheet).setActive(true);
+        }
         this.sheet = sheet;
         return this;
     }
@@ -2563,8 +2609,29 @@ public class XLS extends ResourceBase {
                 description = "The color reference."
         )
     })
-    public short color(String color) {
-        return HSSFColor.HSSFColorPredefined.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
+    public Object color(String color) {
+        switch (workbook) {
+            case null -> {
+                return null;
+            }
+            case XSSFWorkbook sheets -> {
+                if (color.startsWith("#")) {
+                    return new XSSFColor(java.awt.Color.decode(color), null);
+                }
+                return IndexedColors.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
+            }
+            case HSSFWorkbook sheets -> {
+                if (color.startsWith("#")) {
+                    java.awt.Color c = java.awt.Color.decode(color);
+                    HSSFPalette palette = sheets.getCustomPalette();
+                    return palette.findSimilarColor(c.getRed(), c.getGreen(), c.getBlue());
+                }
+                return HSSFColor.HSSFColorPredefined.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
+            }
+            default -> {
+            }
+        }
+        return null;
     }
 
     @MethodDoc(dependency = "create", translations = {

@@ -24,6 +24,7 @@ import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DBError;
@@ -51,7 +52,7 @@ import org.netuno.tritao.db.DBError;
                 }
         )
 })
-public class Column extends Base {
+public class Column extends ManagerBase {
 
     public enum Type {
         INT,
@@ -124,7 +125,7 @@ public class Column extends Base {
     protected int maxLength = 0;
     protected String _default;
 
-    public Column(Base base) {
+    public Column(BuilderBase base) {
         super(base);
     }
 
@@ -351,19 +352,19 @@ public class Column extends Base {
     public Column changeType(String table) {
         try {
             if (isMariaDB()) {
-                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " modify column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
+                getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " modify column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
             } else if (isMSSQL()) {
-                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
+                getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
             } else if (isPostgreSQL()) {
                 //getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " drop default;");
-                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition()
+                getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition()
                  + " using " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + "::" + toTypeDefinition() + ";");
                 String defaultDefinition = toDefaultDefinition();
                 if (!defaultDefinition.isEmpty()) {
-                    getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " set " + toDefaultDefinition() + ";");
+                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " set " + toDefaultDefinition() + ";");
                 }
             } else {
-                getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
+                getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Changing column type on "+ table +"."+ getName());
@@ -377,11 +378,11 @@ public class Column extends Base {
             String newRawSQLName = DB.sqlInjectionRawName(newName);
             if (!new CheckExists(this).column(table, newRawSQLName)) {
                 if (isH2()) {
-                    getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
+                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
                 } else if (isPostgreSQL() || isMariaDB()) {
-                    getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " rename column " + getBuilder().escape(oldRawSQLName) + " to " + getBuilder().escape(newRawSQLName) + "");
+                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " rename column " + getBuilder().escape(oldRawSQLName) + " to " + getBuilder().escape(newRawSQLName) + "");
                 } else if (isMSSQL()) {
-                	getManager().execute("exec sp_rename '" + DB.sqlInjectionRawName(table) + "." + getBuilder().escape(oldRawSQLName) + "', '" + newRawSQLName + "', 'COLUMN'");
+                	getExecutor().execute("exec sp_rename '" + DB.sqlInjectionRawName(table) + "." + getBuilder().escape(oldRawSQLName) + "', '" + newRawSQLName + "', 'COLUMN'");
                 }
             }
         } catch (Exception e) {
@@ -406,7 +407,7 @@ public class Column extends Base {
     public Column drop(String table, String column) {
         try {
             if (new CheckExists(this).column(table, column)) {
-                getManager().execute("alter table "+ getBuilder().escape(DB.sqlInjectionRawName(table)) +" drop column "+ getBuilder().escape(DB.sqlInjectionRawName(column)) + ";");
+                getExecutor().execute("alter table "+ getBuilder().escape(DB.sqlInjectionRawName(table)) +" drop column "+ getBuilder().escape(DB.sqlInjectionRawName(column)) + ";");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Dropping column "+ table +"."+ column +".");

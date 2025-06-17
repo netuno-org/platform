@@ -76,7 +76,7 @@ public class Select extends ComponentBase {
         value = getDataStructure().get(0).getValue();
         String tableName = Link.getTableName(getConfiguration().getParameter("LINK").getValue());
         if (value != null && value.contains("-")) {
-            Values relationItem = Config.getDataBaseBuilder(getProteu()).getItemByUId(tableName, value);
+            Values relationItem = Config.getDBBuilder(getProteu()).getItemByUId(tableName, value);
             if (relationItem == null) {
                 logger.fatal("The " + tableName + " with item " + value + " was not found!");
                 valueId = "0";
@@ -85,7 +85,7 @@ public class Select extends ComponentBase {
             }
         } else if (value != null && !value.isEmpty() && !value.equals("0")) {
             valueId = value;
-            Values item = Config.getDataBaseBuilder(getProteu()).getItemById(tableName, value);
+            Values item = Config.getDBBuilder(getProteu()).getItemById(tableName, value);
             if (item != null) {
                 value = item.getString("uid");
             } else {
@@ -164,7 +164,7 @@ public class Select extends ComponentBase {
             valueMaxColumnLength = DEFAULT_MAX_COLUMN_LENGTH;
     	}
     	if (valueLink.isEmpty()) {
-            List<Values> dsDesigns = Config.getDataBaseBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("com_uid"));
+            List<Values> dsDesigns = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("com_uid"));
             if (dsDesigns.size() < 1 ) {
                 return;
             }
@@ -194,7 +194,7 @@ public class Select extends ComponentBase {
                     proteu.getOutput().print(")");
                 }
             }
-            Values item = Config.getDataBaseBuilder(proteu).getItemByUId(Link.getTableName(valueLink), dataUid);
+            Values item = Config.getDBBuilder(proteu).getItemByUId(Link.getTableName(valueLink), dataUid);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", item.getString("uid"));
             jsonObject.put("label", Link.getDataShow(proteu, hili, "default", item.getString("id"), valueLink, valueColumnSeparator, valueMaxColumnLength, true));
@@ -203,7 +203,7 @@ public class Select extends ComponentBase {
             Link link = new Link(proteu, hili, "default", valueLink, proteu.getRequestAll().getString("q"));
             link.setOnlyActives(valueOnlyActives);
             String query = link.getQuery(100);
-            List<Values> rsQuery = Config.getDataBaseManager(proteu).query(query);
+            List<Values> rsQuery = Config.getDBExecutor(proteu).query(query);
             JSONArray jsonArray = new JSONArray();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", "");

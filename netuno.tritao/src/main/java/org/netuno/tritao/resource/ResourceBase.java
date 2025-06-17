@@ -24,7 +24,7 @@ import org.netuno.tritao.hili.Hili;
  * Resource Base
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class ResourceBase {
+public abstract class ResourceBase {
 
     private Proteu proteu = null;
     private Hili hili = null;

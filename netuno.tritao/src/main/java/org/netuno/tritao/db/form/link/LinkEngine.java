@@ -3,6 +3,7 @@ package org.netuno.tritao.db.form.link;
 import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.io.File;
 import org.netuno.tritao.db.form.Field;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.form.join.Join;
@@ -11,6 +12,11 @@ import org.netuno.tritao.db.form.join.RelationshipType;
 import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,6 +34,7 @@ public class LinkEngine extends TableBuilderResourceBase {
         Join join = new Join();
         join.setRelation(this.buildRelation(link.getForm(),link.getRelationLink()));
         join.setTable(link.getForm());
+        join.setJoinType(link.getJoinType());
         if (link.getWhere() != null) {
             join.setWhere(link.getWhere().setTable(link.getRelationLink().getFormLink()));
         }
@@ -163,6 +170,24 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 case Values valuesValue -> {
                     values.set(field.getColumn(), valuesValue);
+                }
+                case Timestamp timestampValue -> {
+                    values.set(field.getColumn(), timestampValue);
+                }
+                case LocalDateTime localDateTimeValue -> {
+                    values.set(field.getColumn(), Timestamp.valueOf(localDateTimeValue));
+                }
+                case Time timeValue -> {
+                    values.set(field.getColumn(), timeValue);
+                }
+                case LocalTime localTimeValue -> {
+                    values.set(field.getColumn(), Time.valueOf(localTimeValue));
+                }
+                case Instant instantValue -> {
+                    values.set(field.getColumn(), Timestamp.from(instantValue));
+                }
+                case File fileValue -> {
+                    values.set(field.getColumn(), fileValue);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + value);
             }

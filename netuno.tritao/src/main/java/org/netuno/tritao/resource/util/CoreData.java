@@ -32,7 +32,7 @@ public class CoreData {
 
     public static Values getTable(Proteu proteu, boolean isReport, Values data) {
         Values _data = new Values(data);
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         _data.set("report", isReport);
         List<Values> result = builder.selectTable(_data);
         if (result.size() > 0) {
@@ -43,13 +43,13 @@ public class CoreData {
     }
 
     public static List<Values> getAllTables(Proteu proteu, boolean isReport) {
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         return builder.selectTable(new Values().set("report", isReport));
     }
 
     public static boolean createTable(Proteu proteu, boolean isReport, Values data) {
         Values _data = new Values(data);
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         _data.set("report", isReport);
         return builder.createTable(_data);
     }
@@ -57,7 +57,7 @@ public class CoreData {
     public static boolean createTableIfNotExists(Proteu proteu, boolean isReport, Values data) {
         Values _data = new Values(data);
         _data.set("report", isReport);
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         Values result = getTable(proteu, isReport, new Values().set("name", _data.getString("name")));
         if (result == null) {
             return builder.createTable(_data);
@@ -66,7 +66,7 @@ public class CoreData {
     }
 
     public static List<Values> getAllComponents(Proteu proteu, boolean isReport, int tableId) {
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         List<Values> result = builder.selectTableDesign(
                 new Values()
                         .set("table_id", tableId)
@@ -77,7 +77,7 @@ public class CoreData {
 
     public static Values getComponent(Proteu proteu, boolean isReport, int tableId, Values data) {
         Values _data = new Values(data);
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         _data.set("table_id", tableId);
         _data.set("report", isReport);
         List<Values> result = builder.selectTableDesign(_data);
@@ -90,7 +90,7 @@ public class CoreData {
 
     public static boolean createComponent(Proteu proteu, boolean isReport, int tableId, Values data) {
         Values _data = new Values(data);
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         _data.set("table_id", tableId);
         _data.set("report", isReport);
         return builder.createTableField(_data);
@@ -105,7 +105,7 @@ public class CoreData {
         	data.set("table_id", tableData.getInt("id"));
     	}
         data.set("report", isReport);
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         Values result = getComponent(proteu, isReport, tableId, new Values().set("name", data.getString("name")));
         if (result == null) {
             return builder.createTableField(data);
@@ -114,12 +114,12 @@ public class CoreData {
     }
     
     public static List<String> primaryKeys(Proteu proteu, String tableName) {
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         return builder.primaryKeys(tableName);
     }
     
     public static List<String> notNulls(Proteu proteu, String tableName) {
-        Builder builder = Config.getDataBaseBuilder(proteu);
+        Builder builder = Config.getDBBuilder(proteu);
         return builder.notNulls(tableName);
     }
 }

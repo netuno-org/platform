@@ -7,7 +7,6 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.form.join.Join;
 import org.netuno.tritao.db.form.join.Relationship;
-import org.netuno.tritao.db.form.pagination.Pagination;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.db.form.pagination.Page;
 import org.netuno.tritao.db.form.populate.Populate;
@@ -197,7 +196,7 @@ public class OperationEngine extends Data {
                                         ? populate.getFilter().getAlias()
                                         : populate.getFilter().getColumn().split("\\.")[1]
                 )).toString() + "'";
-                List<Values> items = getManager().query(commandSQL);
+                List<Values> items = getExecutor().query(commandSQL);
                 if (items.isEmpty()) {
                     results.get(i).set(populate.getTable(), Collections.EMPTY_LIST);
                     continue;
@@ -221,7 +220,7 @@ public class OperationEngine extends Data {
         if (query.isDebug()) {
             logger.warn("SQL Command executed:\n {}", selectCommandSQL);
         }
-        List<Values> items = getManager().query(selectCommandSQL);
+        List<Values> items = getExecutor().query(selectCommandSQL);
         if (items.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -241,7 +240,7 @@ public class OperationEngine extends Data {
         if (query.isDebug()) {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
-        List<Values> items = getManager().query(selectCommandSQL);
+        List<Values> items = getExecutor().query(selectCommandSQL);
         if (items.isEmpty()) {
             return null;
         }
@@ -262,7 +261,7 @@ public class OperationEngine extends Data {
         if (query.isDebug()) {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
-        var dbTotal = getManager().query(selectCommandSQL);
+        var dbTotal = getExecutor().query(selectCommandSQL);
 
         return !dbTotal.isEmpty() ? dbTotal.getFirst().getInt("total") : 0;
     }
@@ -280,7 +279,7 @@ public class OperationEngine extends Data {
         if (query.isDebug()) {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
-        List<Values> items = getManager().query(selectCommandSQL);
+        List<Values> items = getExecutor().query(selectCommandSQL);
         items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
         int total = this.count(query);
         return new Page(items.isEmpty() ? Collections.EMPTY_LIST : items , total, query.getPagination());
@@ -292,7 +291,7 @@ public class OperationEngine extends Data {
             selectIdsCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
         selectIdsCommandSQL += "\nLIMIT " + query.getLimit();
-        List<Values> recordIDs = getManager().query(selectIdsCommandSQL);
+        List<Values> recordIDs = getExecutor().query(selectIdsCommandSQL);
         if (recordIDs.isEmpty()) {
             throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
         }
@@ -327,7 +326,7 @@ public class OperationEngine extends Data {
         for (Values recordID : recordIDs) {
             for (Map.Entry<String, Object> deleteLink: deleteLinks.entrySet()) {
                 String selectDeleteLinkIdsCommandSQL = "SELECT id FROM " + deleteLink.getKey() + " WHERE " + deleteLink.getValue() + " = " + recordID.get("id");
-                List<Values> deleteLinkIds = getManager().query(selectDeleteLinkIdsCommandSQL);
+                List<Values> deleteLinkIds = getExecutor().query(selectDeleteLinkIdsCommandSQL);
                 for (Values deleteLinkId: deleteLinkIds) {
                     DataItem dataItem = getBuilder().delete(deleteLink.getKey(), deleteLinkId.getString("id"));
                     if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
@@ -408,7 +407,7 @@ public class OperationEngine extends Data {
                     + " WHERE 1 = 1"
                     + " AND id = " + dataValues.getString("id")
                     + " AND " + updateLink.getValue() + " = " + recordID;
-            final List<Values> dbID = getManager().query(getIdQuerySQL);
+            final List<Values> dbID = getExecutor().query(getIdQuerySQL);
             String id = !dbID.isEmpty() ? dbID.getFirst().getString("id") : "0";
             DataItem dataItem = getBuilder().update(updateLink.getKey(), id, validDataValues(dataValues));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
@@ -422,7 +421,7 @@ public class OperationEngine extends Data {
                     + " WHERE 1 = 1"
                     + " AND uid = " + "'" + dataValues.getString("uid")+ "'"
                     + " AND " + updateLink.getValue() + " = " + recordID;
-            final List<Values> dbUID = getManager().query(getIdQuerySQL);
+            final List<Values> dbUID = getExecutor().query(getIdQuerySQL);
             String uid = !dbUID.isEmpty() ? dbUID.getFirst().getString("id") : "0";
             DataItem dataItem = getBuilder().update(updateLink.getKey(), uid, validDataValues(dataValues));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
@@ -445,7 +444,7 @@ public class OperationEngine extends Data {
         affectedValues.set(query.getFormName(), (result.getStatusType() == DataItem.StatusType.Ok) ? 1 : 0);
         for (Map.Entry<String, Object> updateLink : updateLinks.entrySet()) {
             List<String> updatedRecords = new ArrayList<String>();
-            List<String> recordsLinkID = getManager().query(
+            List<String> recordsLinkID = getExecutor().query(
                 "SELECT " + updateLink.getKey()+".id FROM " + updateLink.getKey() + " WHERE " + updateLink.getValue() + " = " + recordID
             ).stream().map(values -> values.getString("id")).collect(Collectors.toList());
             if (data.get(updateLink.getKey()) instanceof Values && !((Values) data.get(updateLink.getKey())).isEmpty()) {

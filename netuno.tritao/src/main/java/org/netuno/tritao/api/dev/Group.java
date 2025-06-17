@@ -53,7 +53,7 @@ public class Group extends WebMaster {
         
         Values list = new Values();
         
-        for (Values group : Config.getDataBaseBuilder(getProteu()).selectGroupSearch("")) {
+        for (Values group : Config.getDBBuilder(getProteu()).selectGroupSearch("")) {
             list.add(
                     new Values()
                             .set("uid", group.getString("uid"))

@@ -134,7 +134,7 @@ public class SelectPath extends ComponentBase {
     }
     
     public static void _main(Proteu proteu, Hili hili) throws IOException, JSONException {
-    	List<Values> dsDesigns = Config.getDataBaseBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
+    	List<Values> dsDesigns = Config.getDBBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
     	if (dsDesigns.size() < 1) {
             return;
     	}

@@ -35,13 +35,13 @@ import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
-import org.netuno.tritao.db.manager.Base;
+import org.netuno.tritao.db.manager.ManagerBase;
 
 /**
  * Link - Forms Relations
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Link extends Base {
+public class Link extends ManagerBase {
     private String link = "";
     private String filter = "";
     private int deep = 0;
@@ -192,7 +192,7 @@ public class Link extends Base {
     }
 
     private String queryBuilder(String link, String filter, String separator, int deep, int level) {
-        Builder builder = Config.getDataBaseBuilder(getProteu(), getKey());
+        Builder builder = Config.getDBBuilder(getProteu(), getKey());
         StringBuilder select = new StringBuilder();
         StringBuilder from = new StringBuilder();
         StringBuilder where = new StringBuilder();
@@ -227,7 +227,7 @@ public class Link extends Base {
 		} catch (PsamataException e) {
 			throw new Error(e);
 		}
-		Builder builder = Config.getDataBaseBuilder(getProteu(), getKey());
+		Builder builder = Config.getDBBuilder(getProteu(), getKey());
 		String tableNameAlias = tableName +"_"+ deep +"_"+ level;
         String[] fieldsNames = link.substring(link.indexOf(":") + 1).split("\\,");
         for (int i = 0; i < fieldsNames.length; i++) {
@@ -397,7 +397,7 @@ public class Link extends Base {
     }
     
     public static List<LinkDataShow> getDataShowList(Proteu proteu, Hili hili, String key, String ids, String link, String separator, int maxLengthPerField, boolean allowHtml) {
-        Builder builder = Config.getDataBaseBuilder(proteu, key);
+        Builder builder = Config.getDBBuilder(proteu, key);
         String _tableName = getTableName(link);
         String[] fieldNames = null;
         List<LinkDataShow> datas = new ArrayList<LinkDataShow>();

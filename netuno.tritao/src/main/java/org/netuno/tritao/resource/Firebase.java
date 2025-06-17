@@ -125,7 +125,7 @@ public class Firebase extends ResourceBase {
                     getProteu().getConfig().set("_firebase:app", app);
                     getProteu().getConfig().set("_firebase:auth", auth);
                     getProteu().getConfig().set("_firebase:database", database);
-                    Builder builder = Config.getDataBaseBuilder(getProteu());
+                    Builder builder = Config.getDBBuilder(getProteu());
                     Header _header = new Header(getProteu(), getHili());
                     for (Values _table : builder.selectTable()) {
                         final Values table = _table;

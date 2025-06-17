@@ -62,14 +62,14 @@ public class Group extends ComponentBase {
     	super.setValues(prefix, values);
         value = getDataStructure().get(0).getValue();
         if (value.indexOf("-") > 0 && value.length() >= 32) {
-            Values relationItem = Config.getDataBaseBuilder(getProteu()).getGroupByUId(value);
+            Values relationItem = Config.getDBBuilder(getProteu()).getGroupByUId(value);
             if (relationItem == null) {
                 logger.fatal("The group with uid " + value + " was not found!");
             }
             valueId = relationItem.getString("id");
         } else if (!value.isEmpty() && !value.equals("0")) {
             valueId = value;
-            Values item = Config.getDataBaseBuilder(getProteu()).getGroupById(value);
+            Values item = Config.getDBBuilder(getProteu()).getGroupById(value);
             if (item != null) {
                 value = item.getString("uid");
             } else {
@@ -101,7 +101,7 @@ public class Group extends ComponentBase {
     
     public String getTextValue() {
     	String dataShow = "";
-        Values tritaoGroup = Config.getDataBaseBuilder(getProteu()).getGroupByUId(value);
+        Values tritaoGroup = Config.getDBBuilder(getProteu()).getGroupByUId(value);
     	if (tritaoGroup != null) {
             dataShow = tritaoGroup.getHTMLEncode("name");
     	}
@@ -113,7 +113,7 @@ public class Group extends ComponentBase {
             try {
                 getDesignData().set("com.select.value", value);
                 String dataShow = "";
-                Values tritaoGroup = Config.getDataBaseBuilder(getProteu()).getGroupByUId(value);
+                Values tritaoGroup = Config.getDBBuilder(getProteu()).getGroupByUId(value);
                 if (tritaoGroup != null) {
                     dataShow = tritaoGroup.getHTMLEncode("name");
                 }

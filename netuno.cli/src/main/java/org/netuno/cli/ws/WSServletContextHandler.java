@@ -93,6 +93,10 @@ public class WSServletContextHandler extends ServletContextHandler {
                             endpointConfig.getUserProperties().put("app", app);
                             endpointConfig.getUserProperties().put("url", config.getString("public"));
                             endpointConfig.getUserProperties().put("config", config);
+                            List<String> cookie = request.getHeaders().get("Cookie");
+                            if (cookie != null && cookie.size() > 0) {
+                                endpointConfig.getUserProperties().put("cookie", cookie.get(0));
+                            }
                             List<String> authorization = request.getHeaders().get("Authorization");
                             if (authorization != null && authorization.size() > 0) {
                                 endpointConfig.getUserProperties().put("authorization", authorization.get(0));

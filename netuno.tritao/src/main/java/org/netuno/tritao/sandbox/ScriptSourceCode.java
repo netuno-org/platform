@@ -36,4 +36,8 @@ public record ScriptSourceCode(
     public String fullPath() {
         return path + "/" + fileName + "." + extension;
     }
+
+    public ScriptSourceCode clone(String fileName, String content) {
+        return new ScriptSourceCode(null, extension, path, fileName, content, error);
+    }
 }

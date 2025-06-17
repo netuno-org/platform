@@ -33,9 +33,9 @@ public class Path {
     private static String queryBuilder(Proteu proteu, Hili hili, String key, Link linkPath, String ids) {
         String parentField = linkPath.getRootFieldNames().get(0);
         String query = "WITH RECURSIVE LINK(ID, IDS, LEVEL, ACTIVE) AS (";
-        query = query.concat("  SELECT ID, ").concat(Config.getDataBaseBuilder(proteu, key).concatenation("ID", "''")).concat(", 0, ACTIVE FROM ").concat(linkPath.getTableName()).concat(" WHERE ").concat(parentField).concat(" IS NULL OR ").concat(parentField).concat(" = 0");
+        query = query.concat("  SELECT ID, ").concat(Config.getDBBuilder(proteu, key).concatenation("ID", "''")).concat(", 0, ACTIVE FROM ").concat(linkPath.getTableName()).concat(" WHERE ").concat(parentField).concat(" IS NULL OR ").concat(parentField).concat(" = 0");
         query = query.concat("    UNION ALL");
-        query = query.concat("      SELECT ").concat(linkPath.getTableName()).concat(".ID, ").concat(Config.getDataBaseBuilder(proteu, key).concatenation(Config.getDataBaseBuilder(proteu, key).coalesce(Config.getDataBaseBuilder(proteu, key).concatenation("LINK.IDS", "','"), "''"), linkPath.getTableName().concat(".ID")));
+        query = query.concat("      SELECT ").concat(linkPath.getTableName()).concat(".ID, ").concat(Config.getDBBuilder(proteu, key).concatenation(Config.getDBBuilder(proteu, key).coalesce(Config.getDBBuilder(proteu, key).concatenation("LINK.IDS", "','"), "''"), linkPath.getTableName().concat(".ID")));
         query = query.concat("        , LEVEL + 1");
         query = query.concat("	      , ").concat(linkPath.getTableName()).concat(".ACTIVE");
         query = query.concat("	    FROM LINK INNER JOIN ").concat(linkPath.getTableName()).concat(" ON LINK.ID = ").concat(linkPath.getTableName()).concat(".").concat(parentField);
@@ -46,7 +46,7 @@ public class Path {
 
     public static List<PathDataShow> getDataShowList(Proteu proteu, Hili hili, String key, String ids, String linkPath, String separatorPath, String linkNode, String separatorNode, int maxLengthPerField, boolean allowHtml) {
         List<PathDataShow> pathDataShowNodes = new ArrayList<>();
-        List<Values> pathRows = Config.getDataBaseManager(proteu, key).query(queryBuilder(proteu, hili, key, new Link(proteu, hili, key, linkPath), ids));
+        List<Values> pathRows = Config.getDBExecutor(proteu, key).query(queryBuilder(proteu, hili, key, new Link(proteu, hili, key, linkPath), ids));
         for (Values pathRow : pathRows) {
             String[] nodesIds = pathRow.getString("ids").split("\\,");
             String content = "";

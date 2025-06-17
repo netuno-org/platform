@@ -82,6 +82,11 @@ public abstract class JSR223GenericSandbox implements Scriptable {
             executor.get();
         } catch (CancellationException e) { }
     }
+
+    @Override
+    public Object get(ScriptSourceCode script, String name) {
+        return engine.get(name);
+    }
     
     @Override
     public void stop() throws Exception {

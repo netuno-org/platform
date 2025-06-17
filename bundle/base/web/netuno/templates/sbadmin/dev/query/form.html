@@ -68,11 +68,11 @@
         <h4 class="modal-title">_{&lang=netuno.dev.query.modal.save.title}</h4>
       </div>
       <div class="modal-body">
-        <form id="managementQueryModalSaveForm" name="managementQueryModalSaveForm" method="post" action="Query_{netuno-config=extension}" data-success="The query was been saved.">
+        <form id="managementQueryModalSaveForm" name="managementQueryModalSaveForm" method="post" action="Query_{netuno-config=extension}" data-success="_{&lang=netuno.dev.query.modal.save.success}">
           <input type="hidden" name="action" id="managementQueryModalSaveForm_action" value="save"/>
           <input type="hidden" name="command" id="managementQueryModalSaveForm_command" value="" data-required="_{&lang=netuno.dev.query.modal.save.command.required}"/>
           <div class="form-group">
-            <label for="managementQueryModalSaveForm_name">* _{&lang=netuno.dev.formdesign.label.name}</label>
+            <label for="managementQueryModalSaveForm_name">* _{&lang=netuno.dev.query.modal.save.name}</label>
             <input class="form-control" type="text" id="managementQueryModalSaveForm_name" name="name" value="" size="40" validation="required" data-required="_{&lang=netuno.dev.query.modal.save.name.required}">
           </div>
         </form>

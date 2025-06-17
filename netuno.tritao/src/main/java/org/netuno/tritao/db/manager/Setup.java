@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DBError;
 
@@ -32,10 +33,10 @@ import java.util.List;
  * Database Setup
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Setup extends Base {
+public class Setup extends ManagerBase {
     private static Logger logger = LogManager.getLogger(Setup.class);
 
-    public Setup(Base base) {
+    public Setup(BuilderBase base) {
         super(base);
     }
 
@@ -249,6 +250,21 @@ public class Setup extends Base {
             );
             index.create("netuno_user", "group_id");
             sequence.create("netuno_user_id");
+
+            table.create("netuno_auth_history",
+                    table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
+                    table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
+                    table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(),
+                    table.newColumn().setName("ip").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
+                    table.newColumn().setName("success").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
+                    table.newColumn().setName("lock").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
+                    table.newColumn().setName("unlock").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false)
+            );
+            sequence.create("netuno_auth_history_id");
+            index.create("netuno_auth_history", "user_id");
+            index.create("netuno_auth_history", "moment");
+            index.create("netuno_auth_history", "ip");
 
             table.create("netuno_auth_provider_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
@@ -468,7 +484,7 @@ public class Setup extends Base {
                 getBuilder().insertUser("Administrator", "admin", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "admin", "admin"), getBuilder().booleanFalse(), "", ""+ groupAdmin.getString("id"), getBuilder().booleanTrue());
             }
             if (checkExists.column("netuno_design", "search")) {
-                getManager().execute(
+                getExecutor().execute(
                         "alter table netuno_design add column whenresult boolean default true;" +
                         "alter table netuno_design add column whenfilter boolean default true;" +
                         "alter table netuno_design add column whenedit boolean default true;" +
@@ -477,8 +493,8 @@ public class Setup extends Base {
                         "update netuno_design set whenresult = false, whenfilter = false where search = false;" +
                         "alter table netuno_design drop column search;");
             }
-            getManager().execute("update netuno_design set type = 'user' where type = 'tritaouser'");
-            getManager().execute("update netuno_design set type = 'group' where type = 'tritaogroup'");
+            getExecutor().execute("update netuno_design set type = 'user' where type = 'tritaouser'");
+            getExecutor().execute("update netuno_design set type = 'group' where type = 'tritaogroup'");
             if (!checkExists.column("netuno_table", "show_id")) {
                 table.create(
                         "netuno_table",
@@ -509,7 +525,7 @@ public class Setup extends Base {
                         table.newColumn().setName("login_allowed").setType(Column.Type.BOOLEAN).setDefault(true)
                 );
             }
-            List<Values> formTables = getManager().query("select * from netuno_table where report = "+ getBuilder().booleanFalse());
+            List<Values> formTables = getExecutor().query("select * from netuno_table where report = "+ getBuilder().booleanFalse());
             for (Values formTable : formTables) {
                 if (!checkExists.column(formTable.getString("name"), "uid")) {
                     table.create(
@@ -521,12 +537,12 @@ public class Setup extends Base {
         } catch (Throwable e) {
             if (isPostgreSQL() && e.getMessage() != null && e.getMessage().contains("ERROR: function uuid_generate_v4() does not exist")) {
                 throw new DBError("\n"
-                        + "# "+ EmojiParser.parseToUnicode(":skull_crossbones:") +" Setting up " + Config.getDabaBase(getProteu(), getKey()) +" fails because the uuid_generate_v4() does not exists!\n\n"
+                        + "# "+ EmojiParser.parseToUnicode(":skull_crossbones:") +" Setting up " + Config.getDBKey(getProteu(), getKey()) +" fails because the uuid_generate_v4() does not exists!\n\n"
                         +"\tPlease execute this command below in your database before start the Netuno Server:\n\n"
                         +"\tCREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\n")
                         .setLogFatal(true);
             } else {
-                throw new DBError(e).setLogFatal("Setting up " + Config.getDabaBase(getProteu(), getKey()));
+                throw new DBError(e).setLogFatal("Setting up " + Config.getDBKey(getProteu(), getKey()));
             }
         }
     }

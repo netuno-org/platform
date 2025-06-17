@@ -33,12 +33,12 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Database Manager
+ * Database Executor
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Manager {
+public class DBExecutor {
 
-    private static Logger logger = LogManager.getLogger(Manager.class);
+    private static Logger logger = LogManager.getLogger(DBExecutor.class);
 
     private List<DBConnection> dbConnections = new ArrayList<DBConnection>();
     private Proteu proteu = null;
@@ -46,15 +46,15 @@ public class Manager {
     private String key = null;
     private String dbName = null;
 
-    public Manager(Proteu proteu, Hili hili, String key) {
+    public DBExecutor(Proteu proteu, Hili hili, String key) {
         this.proteu = proteu;
         this.hili = hili;
         this.key = key;
     }
 
     public Connection getConnection() throws SQLException {
-        String dbName = Config.getDabaBaseNamingBase(proteu, key)
-                + Config.getDabaBase(proteu, key);
+        String dbName = Config.getDBNamingBase(proteu, key)
+                + Config.getDBKey(proteu, key);
         DBConnection dbConnectionClosed = null;
         for (DBConnection dbConnection : dbConnections) {
             if (dbConnection.getDb().equals(dbName)) {
@@ -81,10 +81,10 @@ public class Manager {
             }
         } catch (Exception e) {
             logger.trace(e);
-            throw new DBError(e).setLogError("Connection to " + Config.getDabaBase(proteu, key));
+            throw new DBError(e).setLogError("Connection to " + Config.getDBKey(proteu, key));
         }
         try {
-            logger.info(Config.getDabaBase(proteu, key) + " new connection");
+            logger.info(Config.getDBKey(proteu, key) + " new connection");
             javax.naming.InitialContext ctx = new javax.naming.InitialContext();
             Object ds = ctx.lookup(dbName);
             java.lang.reflect.Method method = ds.getClass().getMethod(
@@ -97,7 +97,7 @@ public class Manager {
             }
             return con;
         } catch (Exception e) {
-            throw new DBError(e).setLogError("Connection to " + Config.getDabaBase(proteu, key));
+            throw new DBError(e).setLogError("Connection to " + Config.getDBKey(proteu, key));
         }
     }
 
@@ -110,11 +110,11 @@ public class Manager {
             } else {
                 result = DB.executeQuery(con, sql);
             }
-            logger.info(Config.getDabaBase(proteu, key) + " query executed: " + sql);
+            logger.info(Config.getDBKey(proteu, key) + " query executed: " + sql);
             return result;
         } catch (Exception e) {
-            logger.trace("Query executing on " + Config.getDabaBase(proteu, key), e);
-            throw new DBError(e).setLogError("Query executing on " + Config.getDabaBase(proteu, key) + ": " + sql);
+            logger.trace("Query executing on " + Config.getDBKey(proteu, key), e);
+            throw new DBError(e).setLogError("Query executing on " + Config.getDBKey(proteu, key) + ": " + sql);
         }
     }
 
@@ -126,11 +126,11 @@ public class Manager {
         try {
             Connection con = getConnection();
             int result = DB.execute(con, sql, params);
-            logger.info(Config.getDabaBase(proteu, key) + " query executed: " + sql);
+            logger.info(Config.getDBKey(proteu, key) + " query executed: " + sql);
             return result;
         } catch (Exception e) {
-            logger.trace("Query executing on " + Config.getDabaBase(proteu, key), e);
-            throw new DBError(e).setLogError("Query executing on " + Config.getDabaBase(proteu, key) + ": " + sql);
+            logger.trace("Query executing on " + Config.getDBKey(proteu, key), e);
+            throw new DBError(e).setLogError("Query executing on " + Config.getDBKey(proteu, key) + ": " + sql);
         }
     }
 
@@ -142,10 +142,10 @@ public class Manager {
         try {
             Connection con = getConnection();
             int result = DB.insert(con, sql, params);
-            logger.info(Config.getDabaBase(proteu, key) + " query inserted: " + sql);
+            logger.info(Config.getDBKey(proteu, key) + " query inserted: " + sql);
             return result;
         } catch (Exception e) {
-            throw new DBError(e).setLogError("Query inserting on " + Config.getDabaBase(proteu, key) + ": " + sql);
+            throw new DBError(e).setLogError("Query inserting on " + Config.getDBKey(proteu, key) + ": " + sql);
         }
     }
 

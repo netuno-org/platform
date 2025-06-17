@@ -42,9 +42,9 @@ public class Report {
 
         List<Values> rsTable = null;
         if (!proteu.getRequestAll().getString("id").equals("")) {
-            rsTable = Config.getDataBaseBuilder(proteu).selectTable(proteu.getRequestAll().getString("id"));
+            rsTable = Config.getDBBuilder(proteu).selectTable(proteu.getRequestAll().getString("id"));
         } else if (!proteu.getRequestAll().getString("uid").isEmpty()) {
-            rsTable = Config.getDataBaseBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("uid"));
+            rsTable = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("uid"));
         }
         if (rsTable != null && rsTable.size() == 1) {
             table = rsTable.get(0);
@@ -64,31 +64,31 @@ public class Report {
             	return;
             } else {
                 if (table != null) {
-                    if (Config.getDataBaseBuilder(proteu).updateTable()) {
+                    if (Config.getDBBuilder(proteu).updateTable()) {
                         TemplateBuilder.output(proteu, hili, "dev/notification/report_saved", data);
                     } else {
                         TemplateBuilder.output(proteu, hili, "dev/notification/report_exists", data);
                     }
                 } else {
-                    if (Config.getDataBaseBuilder(proteu).createTable()) {
+                    if (Config.getDBBuilder(proteu).createTable()) {
                         TemplateBuilder.output(proteu, hili, "dev/notification/report_created", data);
                     } else {
                         TemplateBuilder.output(proteu, hili, "dev/notification/report_exists", data);
                     }
                 }
-                rsTable = Config.getDataBaseBuilder(proteu).selectTable("", proteu.getRequestAll().getString("name"));
+                rsTable = Config.getDBBuilder(proteu).selectTable("", proteu.getRequestAll().getString("name"));
                 if (rsTable.size() == 1) {
                     table = rsTable.get(0);
                 }
             }
         } else if (proteu.getRequestAll().getString("execute").equals("delete")) {
-            if (Config.getDataBaseBuilder(proteu).deleteTable()) {
+            if (Config.getDBBuilder(proteu).deleteTable()) {
                 TemplateBuilder.output(proteu, hili, "dev/notification/report_deleted", data);
                 table = null;
             }
         }
 
-        List<Values> tables = Config.getDataBaseBuilder(proteu).selectTable();
+        List<Values> tables = Config.getDBBuilder(proteu).selectTable();
         String formItems = "";
         for (Values t : tables) {
         	data.set("table.item.id", t.getString("id"));
@@ -111,7 +111,7 @@ public class Report {
 
         data.set("reorder.value", table != null ? table.getInt("reorder") : "0");
 
-        List<Values> parentTables = Config.getDataBaseBuilder(proteu).selectTable();
+        List<Values> parentTables = Config.getDBBuilder(proteu).selectTable();
         String parentItems = "";
         for (Values t : parentTables) {
         	data.set("table.item.id", t.getString("id"));
@@ -123,7 +123,7 @@ public class Report {
     	data.set("parent.items", parentItems);
 
         String optionsUser = "";
-        for (Values user : Config.getDataBaseBuilder(proteu).selectUserSearch("")) {
+        for (Values user : Config.getDBBuilder(proteu).selectUserSearch("")) {
             data.set("option.value", user.getString("uid"));
             data.set("option.text", user.getString("name"));
             data.set("option.selected", table != null && table.getInt("user_id") == user.getInt("id") ? " selected" : "");
@@ -135,7 +135,7 @@ public class Report {
         data.set("user.options", optionsUser);
 
         String optionsGroup = "";
-        for (Values group : Config.getDataBaseBuilder(proteu).selectGroupSearch("")) {
+        for (Values group : Config.getDBBuilder(proteu).selectGroupSearch("")) {
             data.set("option.value", group.getString("uid"));
             data.set("option.text", group.getString("name"));
             data.set("option.selected", table != null && table.getInt("group_id") == group.getInt("id") ? " selected" : "");

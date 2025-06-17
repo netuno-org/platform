@@ -65,7 +65,7 @@ public class ComponentConfiguration extends WebMaster {
         List<Values> fields = null;
         
         if (!_req.getString("field_uid").isEmpty()) {
-            fields = Config.getDataBaseBuilder(getProteu()).selectTableDesign("", "", "", _req.getString("field_uid"));
+            fields = Config.getDBBuilder(getProteu()).selectTableDesign("", "", "", _req.getString("field_uid"));
         }
         
         String type = "";
@@ -114,7 +114,7 @@ public class ComponentConfiguration extends WebMaster {
                 String tableName = param.getValue().substring(0, param.getValue().indexOf(":"));
                 Values table = new Values();
                 table.set("name", tableName);
-                Values dbTable = Config.getDataBaseBuilder(getProteu()).selectTableByName(tableName);
+                Values dbTable = Config.getDBBuilder(getProteu()).selectTableByName(tableName);
                 if (dbTable != null) {
                     table.set("uid", dbTable.getString("uid"));
                 }

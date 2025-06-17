@@ -1113,6 +1113,12 @@ public class Operation {
         return this;
     }
 
+    public Operation link(Link link) {
+        link.setForm(this.formName);
+        this.join.put(link.getRelationLink().getFormLink(), linkEngine.buildJoin(link));
+        return this;
+    }
+
     public Operation get(String column) {
         this.fieldsToGet.add(new Field(column));
         return this;

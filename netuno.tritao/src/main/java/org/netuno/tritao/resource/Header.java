@@ -108,6 +108,7 @@ import org.netuno.tritao.hili.Hili;
                         + "- [host](#host)\n"
                         + "- [port](#port)\n"
                         + "- [scheme](#scheme)\n"
+                        + "- [clientIP](#clientip)\n"
                         + "- [contentType](#contenttype)\n"
                         + "- [contentTypePDF](#contenttypepdf)\n"
                         + "- [contentTypeJSON](#contenttypejson)\n"
@@ -222,6 +223,10 @@ public class Header extends ResourceBaseValues {
 
     public String scheme() {
         return getProteu().getRequestHeader().getString("Scheme");
+    }
+
+    public String clientIP() {
+        return getProteu().getClientIP();
     }
 
     public String contentType() {

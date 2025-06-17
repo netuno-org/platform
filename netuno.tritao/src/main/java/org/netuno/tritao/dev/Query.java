@@ -41,7 +41,7 @@ public class Query {
         }
     	proteu.getResponseHeader().set("X-Frame-Options", "SAMEORIGIN");
         if (proteu.getRequestPost().getString("action").equalsIgnoreCase("history")) {
-            List<Values> items = Config.getDataBaseBuilder(proteu).queryHistoryList(proteu.getRequestPost().getInt("page", 0));
+            List<Values> items = Config.getDBBuilder(proteu).queryHistoryList(proteu.getRequestPost().getInt("page", 0));
             Values data = new Values();
             data.set("items", items);
             TemplateBuilder.output(proteu, hili, "dev/query/history", data);
@@ -49,7 +49,7 @@ public class Query {
         } else if (proteu.getRequestPost().getString("action").equalsIgnoreCase("save")) {
             if (!proteu.getRequestPost().getString("name").isEmpty()
                 && !proteu.getRequestPost().getString("command").isEmpty()) {
-                Config.getDataBaseBuilder(proteu).querySave(
+                Config.getDBBuilder(proteu).querySave(
                         Values.newMap()
                                 .set("name", proteu.getRequestPost().getString("name"))
                                 .set("command", proteu.getRequestPost().getString("command"))
@@ -59,14 +59,14 @@ public class Query {
             return;
         } else if (proteu.getRequestPost().getString("action").equalsIgnoreCase("delete")) {
             if (!proteu.getRequestPost().getString("uid").isEmpty()) {
-                Config.getDataBaseBuilder(proteu).queryDelete(
+                Config.getDBBuilder(proteu).queryDelete(
                         proteu.getRequestPost().getString("uid")
                 );
             }
             proteu.getOutput().println();
             return;
         } else if (proteu.getRequestPost().getString("action").equalsIgnoreCase("stored")) {
-            List<Values> items = Config.getDataBaseBuilder(proteu).queryStoredList(proteu.getRequestPost().getInt("page", 0));
+            List<Values> items = Config.getDBBuilder(proteu).queryStoredList(proteu.getRequestPost().getInt("page", 0));
             Values data = new Values();
             data.set("items", items);
             TemplateBuilder.output(proteu, hili, "dev/query/stored", data);
@@ -87,7 +87,7 @@ public class Query {
                         long time = java.lang.System.currentTimeMillis();
                         boolean hadError = false;
                         try {
-                            stat = Config.getDataBaseManager(proteu).getConnection().createStatement();
+                            stat = Config.getDBExecutor(proteu).getConnection().createStatement();
                             rs = stat.executeQuery(line);
                             selectResultTable = selectResultTable.concat("<tr>");
                             for (int x = 1; x <= rs.getMetaData().getColumnCount(); x++) {
@@ -135,7 +135,7 @@ public class Query {
                         data.set("command.count", count);
                         data.set("command.time", time);
                         if (!hadError) {
-                            Config.getDataBaseBuilder(proteu).queryHistoryInsert(
+                            Config.getDBBuilder(proteu).queryHistoryInsert(
                                     Values.newMap()
                                             .set("command", line)
                                             .set("count", count)
@@ -148,7 +148,7 @@ public class Query {
                         long time = java.lang.System.currentTimeMillis();
                         try {
                         	data.set("command.line", line.trim());
-                        	stat = Config.getDataBaseManager(proteu).getConnection().createStatement();
+                        	stat = Config.getDBExecutor(proteu).getConnection().createStatement();
                             int count = stat.executeUpdate(line);
                             data.set("command.result", "");
                             data.set("command.total", count);

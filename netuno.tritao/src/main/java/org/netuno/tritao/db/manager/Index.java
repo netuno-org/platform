@@ -27,6 +27,7 @@ import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.PsamataException;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DBError;
 
@@ -52,10 +53,10 @@ import org.netuno.tritao.db.DBError;
                 }
         )
 })
-public class Index extends Base {
+public class Index extends ManagerBase {
     private static Logger logger = LogManager.getLogger(Index.class);
 
-    public Index(Base base) {
+    public Index(BuilderBase base) {
         super(base);
     }
 
@@ -68,7 +69,7 @@ public class Index extends Base {
             String indexName = DB.sqlInjectionRawName(table + "_" + column + "_idx");
             if ((isH2() || isPostgreSQL())
                     && !new CheckExists(this).index(indexName)) {
-                getManager().execute("create index "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(indexName) + " on " + getBuilder().escape(DB.sqlInjectionRawName(table)) + "(" + getBuilder().escape(DB.sqlInjectionRawName(column)) + ")");
+                getExecutor().execute("create index "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(indexName) + " on " + getBuilder().escape(DB.sqlInjectionRawName(table)) + "(" + getBuilder().escape(DB.sqlInjectionRawName(column)) + ")");
             }
         } catch (PsamataException e) {
             logger.fatal(e);

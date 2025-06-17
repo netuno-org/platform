@@ -34,7 +34,7 @@ public class HandlerProviders extends WebMaster {
         this.service = service;
         this.proteu = proteu;
         this.hili = hili;
-        this.dbManager = Config.getDataBaseBuilder(proteu);
+        this.dbManager = Config.getDBBuilder(proteu);
     }
 
     public void run() throws Exception {

@@ -1,5 +1,6 @@
 package org.netuno.tritao.db.form.link;
 
+import org.netuno.tritao.db.form.join.JoinType;
 import org.netuno.tritao.db.form.where.Where;
 
 import org.netuno.library.doc.LanguageDoc;
@@ -26,6 +27,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 public class Link {
     private String form;
     private RelationshipLink relationLink;
+    private JoinType joinType = JoinType.INNER_JOIN;
     private Where where;
 
     public Link(String form, RelationshipLink relationLink) {
@@ -256,6 +258,15 @@ public class Link {
         return this;
     }
 
+    public JoinType getJoinType() {
+        return joinType;
+    }
+
+    public Link setJoinType(JoinType joinType) {
+        this.joinType = joinType;
+        return this;
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
@@ -293,10 +304,35 @@ public class Link {
             )
         }
     )
+
     public Link link(String formLink) {
         Link link = new Link(new RelationshipLink(formLink));
         link.setForm(this.form);
         this.relationLink.getSubLinks().put(formLink, link);
         return this;
+    }
+
+    public Link link(Link link) {
+        link.setForm(this.getForm());
+        this.relationLink.getSubLinks().put(link.getRelationLink().getFormLink(), link);
+        return this;
+    }
+
+    public Link where(Where where) {
+        where.setTable(this.getForm());
+        setWhere(where);
+        return this;
+    }
+
+    public Link withLeft() {
+        return this.setJoinType(JoinType.LEFT_JOIN);
+    }
+
+    public Link withRight() {
+        return this.setJoinType(JoinType.RIGHT_JOIN);
+    }
+
+    public Link withInner() {
+        return this.setJoinType(JoinType.INNER_JOIN);
     }
 }

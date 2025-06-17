@@ -26,11 +26,13 @@ public class H2Importation {
         if (Config.getAppConfig().isEmpty()) {
             Config.loadAppConfigs();
         }
+        boolean notFound = true;
         for (String key : Config.getAppConfig().keys()) {
             var appConfig = Config.getAppConfig().getValues(key);
             if (!app.equals("*") && !key.equalsIgnoreCase(app)) {
                 continue;
             }
+            notFound = false;
             H2ProcessInfo.create(
                     H2MigrationType.IMPORTATION,
                     ids.get()[ids.get().length - 1],
@@ -62,6 +64,9 @@ public class H2Importation {
                 }
                 H2Process.run(pi, version);
             });
+        }
+        if (!app.equals("*") && notFound) {
+            logger.warn("Cannot import to application "+ app +" because the configuration was not found.");
         }
     }
 }

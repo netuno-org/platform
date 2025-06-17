@@ -25,7 +25,7 @@ import org.netuno.tritao.hili.Hili;
  * Resource Base Values
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class ResourceBaseValues extends Values {
+public abstract class ResourceBaseValues extends Values {
     private Proteu proteu = null;
     private Hili hili = null;
 

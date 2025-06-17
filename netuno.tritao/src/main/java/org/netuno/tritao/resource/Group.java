@@ -235,7 +235,7 @@ public class Group extends ResourceBase {
         )
     })
     public List<Values> all() {
-        List<Values> groups = Config.getDataBaseBuilder(getProteu()).selectGroup("");
+        List<Values> groups = Config.getDBBuilder(getProteu()).selectGroup("");
         return groups;
     }
 
@@ -300,7 +300,7 @@ public class Group extends ResourceBase {
         )
     })
     public List<Values> search(String term) {
-        List<Values> groups = Config.getDataBaseBuilder(getProteu()).selectGroupSearch(
+        List<Values> groups = Config.getDBBuilder(getProteu()).selectGroupSearch(
                 term
         );
         return groups;
@@ -332,7 +332,7 @@ public class Group extends ResourceBase {
         )
     })
     public Values get(int id) {
-        List<Values> groups = Config.getDataBaseBuilder(getProteu()).selectGroup(
+        List<Values> groups = Config.getDBBuilder(getProteu()).selectGroup(
                 Integer.toString(id)
         );
         if (groups.size() == 1) {
@@ -370,7 +370,7 @@ public class Group extends ResourceBase {
         if (!idOrUid.matches("^\\d+$")) {
             return get(Integer.parseInt(idOrUid));
         }
-        Values group = Config.getDataBaseBuilder(getProteu()).getGroupByUId(
+        Values group = Config.getDBBuilder(getProteu()).getGroupByUId(
                 idOrUid
         );
         return group;
@@ -529,7 +529,7 @@ public class Group extends ResourceBase {
         )
     })
     public int create(Values groupData) {
-        return Config.getDataBaseBuilder(getProteu()).insertGroup(
+        return Config.getDBBuilder(getProteu()).insertGroup(
                 groupData
         );
     }
@@ -577,7 +577,7 @@ public class Group extends ResourceBase {
                 return false;
             }
         }
-        Config.getDataBaseBuilder(getProteu()).insertGroup(
+        Config.getDBBuilder(getProteu()).insertGroup(
                 groupData
         );
         return true;
@@ -661,7 +661,7 @@ public class Group extends ResourceBase {
     })
     public boolean update(int id, Values groupData) {
         String group_id = Integer.toString(id);
-        return Config.getDataBaseBuilder(getProteu()).updateGroup(
+        return Config.getDBBuilder(getProteu()).updateGroup(
                 group_id,
                 groupData
         );
@@ -700,7 +700,7 @@ public class Group extends ResourceBase {
     })
     public boolean remove(int id) {
         String group_id = Integer.toString(id);
-        return Config.getDataBaseBuilder(getProteu()).deleteUser(
+        return Config.getDBBuilder(getProteu()).deleteUser(
                 group_id
         );
     }

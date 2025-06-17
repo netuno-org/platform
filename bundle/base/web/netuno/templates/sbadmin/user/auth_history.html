@@ -1,0 +1,37 @@
+#set( $formatDateStart = $_time.simpleDateFormat("yyyy-MM-dd HH:mm:ss") )
+#set( $first = true )
+#foreach($item in $data.get('items'))
+    <div style="margin: 10px 0; padding-top: 15px; #if(!$first) border-top: 1px solid #e1e1e1; #end">
+        <div class="row" style="padding: 0 10px; margin: 0;">
+            <div class="col-xs-8">
+                <div class="form-group" style="margin-bottom: 5px;">
+                    <label>IP:</label>
+                    <span>$item.getString('ip')</span>
+                </div>
+            </div>
+            <div class="col-xs-4">
+                <div class="form-group" style="margin-bottom: 5px;">
+                    <label>_{&lang=netuno.user.auth.history.access}:</label>
+                    #if ($item.getBoolean('success'))
+                    <span class="label label-success" title="_{&lang=netuno.user.auth.history.access.successful}"><i class="fa fa-check"></i></span>
+                    #if ($item.getBoolean('unlock'))
+                    <span class="label label-warning" title="_{&lang=netuno.user.auth.history.access.unlocked}"><i class="fa fa-unlock"></i></span>
+                    #end
+                    #else
+                    <span class="label label-warning" title="_{&lang=netuno.user.auth.history.access.denied}"><i class="fa fa-close"></i></span>
+                    #if ($item.getBoolean('lock'))
+                    <span class="label label-danger" title="_{&lang=netuno.user.auth.history.access.locked}"><i class="fa fa-lock"></i></span>
+                    #end
+                    #end
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>_{&lang=netuno.user.auth.history.moment}:</label>
+                    <span>$formatDateStart.format($item.getSQLTimestamp('moment'))</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    #set( $first = false )
+#end

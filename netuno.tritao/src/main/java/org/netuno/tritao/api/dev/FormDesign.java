@@ -60,7 +60,7 @@ public class FormDesign extends WebMaster {
         getProteu().getRequestAll().set("report", "false");
         
         if (!_req.getString("table_uid").isEmpty()) {
-            List<Values> rsTable = Config.getDataBaseBuilder(getProteu()).selectTable("", "", _req.getString("table_uid"));
+            List<Values> rsTable = Config.getDBBuilder(getProteu()).selectTable("", "", _req.getString("table_uid"));
             if (rsTable != null && rsTable.size() == 1) {
                 table = rsTable.get(0);
                 getProteu().getRequestAll().set("netuno_table_id", table.getString("id"));
@@ -77,7 +77,7 @@ public class FormDesign extends WebMaster {
         }
         
         if (_header.isGet() && _req.getString("uid").isEmpty()) {
-            List<Values> fields = Config.getDataBaseBuilder(getProteu()).selectTableDesign(table.getString("id"), "");
+            List<Values> fields = Config.getDBBuilder(getProteu()).selectTableDesign(table.getString("id"), "");
             fields.stream().map((Values f) -> {
                 return loadFieldData(f, new Values());
             }).forEachOrdered(item -> {
@@ -90,7 +90,7 @@ public class FormDesign extends WebMaster {
         Values field = null;
         
         if (!_req.getString("uid").isEmpty()) {
-            List<Values> rsField = rsField = Config.getDataBaseBuilder(getProteu()).selectTableDesign("", "", "", _req.getString("uid"));
+            List<Values> rsField = rsField = Config.getDBBuilder(getProteu()).selectTableDesign("", "", "", _req.getString("uid"));
             if (rsField != null && rsField.size() == 1) {
                 field = rsField.get(0);
                 getProteu().getRequestAll().set("id", field.getString("id"));
@@ -133,7 +133,7 @@ public class FormDesign extends WebMaster {
                 return;
             }
             if (field != null && _header.isPost()) {
-                if (Config.getDataBaseBuilder(getProteu()).updateTableField()) {
+                if (Config.getDBBuilder(getProteu()).updateTableField()) {
                     arrangeXY(getProteu(), getHili(), table, field);
                     _out.json(data.set("result", true).set("status", "saved"));
                     return;
@@ -142,7 +142,7 @@ public class FormDesign extends WebMaster {
                 return;
             }
             if (field == null && _header.isPut()) {
-                if (Config.getDataBaseBuilder(getProteu()).createTableField()) {
+                if (Config.getDBBuilder(getProteu()).createTableField()) {
                     arrangeXY(getProteu(), getHili(), table, field);
                     _out.json(data.set("result", true).set("status", "created"));
                     return;
@@ -154,7 +154,7 @@ public class FormDesign extends WebMaster {
             return;
         }
         if (field != null && _header.isDelete()) {
-            if (Config.getDataBaseBuilder(getProteu()).deleteTableField()) {
+            if (Config.getDBBuilder(getProteu()).deleteTableField()) {
                 _out.json(data.set("result", true));
                 return;
             }
@@ -356,25 +356,25 @@ public class FormDesign extends WebMaster {
         data.set("colspan", field.getString("colspan"));
         data.set("rowspan", field.getString("rowspan"));
         if (field.getInt("view_user_id") > 0) {
-            Values viewUser = Config.getDataBaseBuilder(getProteu()).getUserById(field.getString("view_user_id"));
+            Values viewUser = Config.getDBBuilder(getProteu()).getUserById(field.getString("view_user_id"));
             if (viewUser != null) {
                 data.set("view_user_uid", viewUser.getString("uid"));
             }
         }
         if (field.getInt("view_group_id") > 0) {
-            Values viewGroup = Config.getDataBaseBuilder(getProteu()).getGroupById(field.getString("view_group_id"));
+            Values viewGroup = Config.getDBBuilder(getProteu()).getGroupById(field.getString("view_group_id"));
             if (viewGroup != null) {
                 data.set("view_group_uid", viewGroup.getString("uid"));
             }
         }
         if (field.getInt("edit_user_id") > 0) {
-            Values viewUser = Config.getDataBaseBuilder(getProteu()).getUserById(field.getString("edit_user_id"));
+            Values viewUser = Config.getDBBuilder(getProteu()).getUserById(field.getString("edit_user_id"));
             if (viewUser != null) {
                 data.set("edit_user_uid", viewUser.getString("uid"));
             }
         }
         if (field.getInt("edit_group_id") > 0) {
-            Values viewGroup = Config.getDataBaseBuilder(getProteu()).getGroupById(field.getString("edit_group_id"));
+            Values viewGroup = Config.getDBBuilder(getProteu()).getGroupById(field.getString("edit_group_id"));
             if (viewGroup != null) {
                 data.set("edit_group_uid", viewGroup.getString("uid"));
             }
@@ -383,7 +383,7 @@ public class FormDesign extends WebMaster {
     }
 
     private void arrangeXY(Proteu proteu, Hili hili, Values table, Values field) {
-        List<Values> rsDesignXY = Config.getDataBaseBuilder(proteu).selectTableDesignXY(table.getString("id"));
+        List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(table.getString("id"));
         int addY = 0;
         for (int i = 0; i < rsDesignXY.size(); i++) {
             Values rowTritaoDesignXY = rsDesignXY.get(i);
@@ -395,7 +395,7 @@ public class FormDesign extends WebMaster {
                 addY += 1;
             }
             if (addY > 0) {
-                Config.getDataBaseBuilder(proteu).updateTableFieldXY(rowTritaoDesignXY.getString("id"),
+                Config.getDBBuilder(proteu).updateTableFieldXY(rowTritaoDesignXY.getString("id"),
                                 rowTritaoDesignXY.getInt("x"),
                                 rowTritaoDesignXY.getInt("y") + addY);
             }
@@ -405,7 +405,7 @@ public class FormDesign extends WebMaster {
 
     private void loadPermissions(Proteu proteu, Hili hili, Values field, Values data, String prefixUserData, String prefixUserDB, String prefixGroupData, String prefixGroupDB) throws Exception {
         String optionsUser = "";
-        for (Values user : Config.getDataBaseBuilder(proteu).selectUserSearch("")) {
+        for (Values user : Config.getDBBuilder(proteu).selectUserSearch("")) {
             data.set("option.value", user.getString("uid"));
             data.set("option.text", user.getString("name"));
             data.set("option.selected", field != null && field.getInt(prefixUserDB +"_id") == user.getInt("id") ? " selected" : "");
@@ -415,7 +415,7 @@ public class FormDesign extends WebMaster {
         data.set(prefixUserData +".options", optionsUser);
 
         String optionsGroup = "";
-        for (Values group : Config.getDataBaseBuilder(proteu).selectGroupSearch("")) {
+        for (Values group : Config.getDBBuilder(proteu).selectGroupSearch("")) {
             data.set("option.value", group.getString("uid"));
             data.set("option.text", group.getString("name"));
             data.set("option.selected", field != null && field.getInt(prefixGroupDB +"_id") == group.getInt("id") ? " selected" : "");

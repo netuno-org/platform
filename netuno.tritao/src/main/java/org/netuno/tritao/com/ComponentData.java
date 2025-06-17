@@ -20,7 +20,7 @@ package org.netuno.tritao.com;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
-import org.netuno.tritao.db.Manager;
+import org.netuno.tritao.db.DBExecutor;
 import org.netuno.tritao.util.Link;
 
 import java.util.List;
@@ -291,8 +291,8 @@ public class ComponentData {
         Object result = getValueAsObject();
         if (hasLink()) {
             String tableName = Link.getTableName(link);
-            Manager manager = Config.getDataBaseManager(proteu);
-            List<Values> foreignData = manager.query(
+            DBExecutor DBExecutor = Config.getDBExecutor(proteu);
+            List<Values> foreignData = DBExecutor.query(
                     "select * from "+ tableName +" where id = ?",
                     new Object[] { result });
             if (foreignData.size() == 1) {
@@ -308,8 +308,8 @@ public class ComponentData {
         Object result = valueToImport;
         if (hasLink()) {
             String tableName = Link.getTableName(link);
-            Manager manager = Config.getDataBaseManager(proteu);
-            List<Values> foreignData = manager.query(
+            DBExecutor DBExecutor = Config.getDBExecutor(proteu);
+            List<Values> foreignData = DBExecutor.query(
                 "select * from "+ tableName +" where uid = ?",
                 new Object[] {
                         !(result instanceof UUID) ? 

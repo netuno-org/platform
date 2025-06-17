@@ -288,6 +288,7 @@ public class Proteu {
             url = request.getRequestURL().toString();
             scheme = request.getScheme();
             uri = request.getRequestURI();
+            requestHeader.set("Client-IP", request.getRemoteAddr());
             String method = request.getMethod();
             if (requestHeader.has("X-HTTP-Method-Override") && !requestHeader.getString("X-HTTP-Method-Override").isEmpty()) {
                 method = requestHeader.getString("X-HTTP-Method-Override");
@@ -668,6 +669,35 @@ public class Proteu {
      */
     public String getScheme() {
         return scheme;
+    }
+
+    public String getClientIP() {
+        String ip = "";
+        if (getRequestHeader().has("X-Real-IP")) {
+            ip = getRequestHeader().getString("X-Real-IP");
+            if (!ip.isEmpty()) {
+                return getRequestHeader().getString("X-Real-IP");
+            }
+        }
+        if (getRequestHeader().has("True-Client-IP")) {
+            ip = getRequestHeader().getString("True-Client-IP");
+            if (!ip.isEmpty()) {
+                return getRequestHeader().getString("True-Client-IP");
+            }
+        }
+        if (getRequestHeader().has("X-Forwarded-For")) {
+            String xfor = getRequestHeader().getString("X-Forwarded-For");
+            int firstComma = xfor.indexOf(",");
+            if (firstComma > 8) {
+                ip = getRequestHeader().getString("X-Forwarded-For").substring(0, firstComma).trim();
+            } else if (firstComma < 0) {
+                ip = getRequestHeader().getString("X-Forwarded-For");
+            }
+            if (!ip.isEmpty()) {
+                return getRequestHeader().getString("X-Forwarded-For");
+            }
+        }
+        return getRequestHeader().getString("Client-IP");
     }
 
     /**

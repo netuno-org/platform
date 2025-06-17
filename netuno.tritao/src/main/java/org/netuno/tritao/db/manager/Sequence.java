@@ -27,6 +27,7 @@ import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.DBError;
 
@@ -54,10 +55,10 @@ import java.util.List;
                 }
         )
 })
-public class Sequence extends Base {
+public class Sequence extends ManagerBase {
     private static Logger logger = LogManager.getLogger(Sequence.class);
 
-    public Sequence(Base base) {
+    public Sequence(BuilderBase base) {
         super(base);
     }
 
@@ -79,7 +80,7 @@ public class Sequence extends Base {
             if ((isH2() || isPostgreSQL())
                 && !new CheckExists(this).sequence(rawSQLName)
             ) {
-                getManager().execute("create sequence "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(rawSQLName) + " start with " + startWith + ";");
+                getExecutor().execute("create sequence "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(rawSQLName) + " start with " + startWith + ";");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Creating sequence "+ name +".");
@@ -92,7 +93,7 @@ public class Sequence extends Base {
             if ((isH2() || isPostgreSQL())
                 && new CheckExists(this).sequence(name)
             ) {
-                getManager().execute("drop sequence "+ getBuilder().appendIfExists() +" "+ getBuilder().escape(DB.sqlInjectionRawName(name)) + "");
+                getExecutor().execute("drop sequence "+ getBuilder().appendIfExists() +" "+ getBuilder().escape(DB.sqlInjectionRawName(name)) + "");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Dropping sequence "+ name +".");
@@ -106,10 +107,10 @@ public class Sequence extends Base {
             String newRawSQLName = DB.sqlInjectionRawName(newName);
             if (!new CheckExists(this).sequence(newRawSQLName)) {
                 if (isH2()) {
-                    getManager().execute("create sequence "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(newRawSQLName) + " start with (next value for "+ getBuilder().escape(oldRawSQLName) +");");
+                    getExecutor().execute("create sequence "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(newRawSQLName) + " start with (next value for "+ getBuilder().escape(oldRawSQLName) +");");
                     drop(oldRawSQLName);
                 } else if (isPostgreSQL()) {
-                    getManager().execute("alter sequence " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
+                    getExecutor().execute("alter sequence " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
                 }
             }
         } catch (Exception e) {
@@ -134,9 +135,9 @@ public class Sequence extends Base {
         try {
             int value = 0;
             if (isH2()) {
-                value = getManager().query("select current_value from information_schema.sequences where sequence_name = " + getBuilder().escape(DB.sqlInjectionRawName(sequenceName)) + "").get(0).getInt("current_value");
+                value = getExecutor().query("select current_value from information_schema.sequences where sequence_name = " + getBuilder().escape(DB.sqlInjectionRawName(sequenceName)) + "").get(0).getInt("current_value");
             } else if (isPostgreSQL()) {
-                value = getManager().query("select last_value from " + getBuilder().escape(DB.sqlInjectionRawName(sequenceName)) + "").get(0).getInt("last_value");
+                value = getExecutor().query("select last_value from " + getBuilder().escape(DB.sqlInjectionRawName(sequenceName)) + "").get(0).getInt("last_value");
             }
             return value <= 0 ? 1 : value;
         } catch (Exception e) {
@@ -151,7 +152,7 @@ public class Sequence extends Base {
     public Sequence restart(String sequenceName, int nextValue) {
         try {
             if (isH2() || isPostgreSQL()) {
-                getManager().execute("alter sequence " + getBuilder().escape(sequenceName) + " restart with " + nextValue + ";");
+                getExecutor().execute("alter sequence " + getBuilder().escape(sequenceName) + " restart with " + nextValue + ";");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Restarting sequence "+ sequenceName +" with "+ nextValue +".");
@@ -163,7 +164,7 @@ public class Sequence extends Base {
     public Sequence restart(String sequenceName, String tableName, String column) {
         try {
             if (isH2() || isPostgreSQL()) {
-                List<Values> result = getManager().query("select max(" + getBuilder().escape(column) + ") from " + getBuilder().escape(tableName));
+                List<Values> result = getExecutor().query("select max(" + getBuilder().escape(column) + ") from " + getBuilder().escape(tableName));
                 if (result.size() == 1) {
                     int total = Integer.parseInt(result.get(0).values().iterator().next().toString());
                     restart(sequenceName, total + 1);

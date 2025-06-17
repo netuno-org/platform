@@ -26,6 +26,7 @@ import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
+import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 
 /**
@@ -51,10 +52,10 @@ import org.netuno.tritao.hili.Hili;
                 }
         )
 })
-public class CheckExists extends Base {
+public class CheckExists extends ManagerBase {
     private static Logger logger = LogManager.getLogger(CheckExists.class);
 
-    public CheckExists(Base base) {
+    public CheckExists(BuilderBase base) {
         super(base);
     }
 
@@ -68,35 +69,35 @@ public class CheckExists extends Base {
 
     public boolean sequence(String name) {
         if (isH2()) {
-            return getManager().query("select sequence_name from INFORMATION_SCHEMA.sequences where sequence_name = '"+ DB.sqlInjection(name) +"'").size() > 0;
+            return getExecutor().query("select sequence_name from INFORMATION_SCHEMA.sequences where sequence_name = '"+ DB.sqlInjection(name) +"'").size() > 0;
         } else if (isPostgreSQL()) {
-            return getManager().query("select * from pg_class where relname = '" + DB.sqlInjection(name) + "' and relkind = 'S'").size() == 1;
+            return getExecutor().query("select * from pg_class where relname = '" + DB.sqlInjection(name) + "' and relkind = 'S'").size() == 1;
         }
         return false;
     }
 
     public boolean table(String table) {
         if (isH2()) {
-            return getManager().query("select column_name from INFORMATION_SCHEMA.columns where table_name = '"+ DB.sqlInjection(table) +"'").size() > 0;
+            return getExecutor().query("select column_name from INFORMATION_SCHEMA.columns where table_name = '"+ DB.sqlInjection(table) +"'").size() > 0;
         } else if (isPostgreSQL()) {
-            return getManager().query("select * from pg_class where relname = '" + DB.sqlInjection(table) + "' and relkind = 'r'").size() == 1;
+            return getExecutor().query("select * from pg_class where relname = '" + DB.sqlInjection(table) + "' and relkind = 'r'").size() == 1;
         } else if (isMariaDB()) {
-            return getManager().query("select * from INFORMATION_SCHEMA.tables where table_schema = DATABASE() and table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
+            return getExecutor().query("select * from INFORMATION_SCHEMA.tables where table_schema = DATABASE() and table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
         } else if (isMSSQL()) {
-            return getManager().query("select * from INFORMATION_SCHEMA.tables where table_schema = 'dbo' and table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
+            return getExecutor().query("select * from INFORMATION_SCHEMA.tables where table_schema = 'dbo' and table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
         }
         return false;
     }
 
     public boolean column(String table, String column) {
         if (isH2()) {
-            return getManager().query("select column_name from INFORMATION_SCHEMA.columns where table_name = '"+ DB.sqlInjection(table) +"' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
+            return getExecutor().query("select column_name from INFORMATION_SCHEMA.columns where table_name = '"+ DB.sqlInjection(table) +"' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
         } else if (isPostgreSQL()) {
-            return getManager().query("select attname from pg_attribute where attrelid = (select oid from pg_class where relname = '" + DB.sqlInjection(table) + "') and attname = '" + DB.sqlInjection(column) + "'").size() == 1;
+            return getExecutor().query("select attname from pg_attribute where attrelid = (select oid from pg_class where relname = '" + DB.sqlInjection(table) + "') and attname = '" + DB.sqlInjection(column) + "'").size() == 1;
         } else if (isMariaDB()) {
-            return getManager().query("select * from INFORMATION_SCHEMA.columns where table_schema = DATABASE() and table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
+            return getExecutor().query("select * from INFORMATION_SCHEMA.columns where table_schema = DATABASE() and table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
         } else if (isMSSQL()) {
-            return getManager().query("select * from INFORMATION_SCHEMA.columns where table_schema = 'dbo' and table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
+            return getExecutor().query("select * from INFORMATION_SCHEMA.columns where table_schema = 'dbo' and table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
         }
         return false;
     }
@@ -107,13 +108,13 @@ public class CheckExists extends Base {
 
     public boolean index(String index) {
         if (isH2()) {
-            return getManager().query("select index_name from INFORMATION_SCHEMA.indexes where index_name = '"+ DB.sqlInjection(index) +"'").size() == 1;
+            return getExecutor().query("select index_name from INFORMATION_SCHEMA.indexes where index_name = '"+ DB.sqlInjection(index) +"'").size() == 1;
         } else if (isPostgreSQL()) {
-            return getManager().query("select * from pg_class where relname = '" + DB.sqlInjection(index) + "' and relkind = 'i'").size() == 1;
+            return getExecutor().query("select * from pg_class where relname = '" + DB.sqlInjection(index) + "' and relkind = 'i'").size() == 1;
         } else if (isMariaDB()) {
-            return getManager().query("select * from INFORMATION_SCHEMA.statistics where table_schema = DATABASE() and index_name = '"+ DB.sqlInjection(index) +"'").size() == 1;
+            return getExecutor().query("select * from INFORMATION_SCHEMA.statistics where table_schema = DATABASE() and index_name = '"+ DB.sqlInjection(index) +"'").size() == 1;
         } else if (isMSSQL()) {
-            return getManager().query("select * from sys.indexes where name = '"+ DB.sqlInjection(index) +"'").size() == 1;
+            return getExecutor().query("select * from sys.indexes where name = '"+ DB.sqlInjection(index) +"'").size() == 1;
         }
         return false;
     }

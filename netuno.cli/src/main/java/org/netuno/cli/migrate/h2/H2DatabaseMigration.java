@@ -42,39 +42,16 @@ public class H2DatabaseMigration {
 
     private static Logger logger = LogManager.getLogger(H2DatabaseMigration.class);
 
-    public static Path getV1jar() {
-        try {
-            return GlobFileVisitor.find(Path.of("web", "WEB-INF", "lib"), "glob:**/h2-1.4.*.jar");
-        } catch (IOException e) {
-            logger.debug("Finding the jar of the H2Database v1.4.+.", e);
-        }
-        return null;
-    }
-
-    public static Path getV2jar() {
-        try {
-            return GlobFileVisitor.find(Path.of("web", "WEB-INF", "lib"), "glob:**/h2-2.{0,1}.*.jar");
-        } catch (IOException e) {
-            logger.debug("Finding the jar of the H2Database v2.0.+ or v2.1.+.", e);
-        }
-        return null;
-    }
-
-    public static Path getV22jar() {
-        try {
-            return GlobFileVisitor.find(Path.of("web", "WEB-INF", "lib"), "glob:**/h2-2.2.*.jar");
-        } catch (IOException e) {
-            logger.debug("Finding the jar of the H2Database v2.2.+.", e);
-        }
-        return null;
-    }
-
     public static void exportationVersion_1(String app) {
         H2Exportation.exports(app, H2Version.V_1);
     }
 
     public static void exportationVersion_2(String app) {
         H2Exportation.exports(app, H2Version.V_2);
+    }
+
+    public static void exportationVersion_2_2(String app) {
+        H2Exportation.exports(app, H2Version.V_2_2);
     }
 
     public static void importationVersion_2(String app) {
