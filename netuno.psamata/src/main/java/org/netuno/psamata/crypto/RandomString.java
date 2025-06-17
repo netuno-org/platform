@@ -48,6 +48,8 @@ public class RandomString {
 
     public static final String ALPHANUMERIC = UPPERCASE + LOWERCASE + DIGITS;
 
+    public static final String SYMBOLS = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+
     private Random random;
 
     private char[] symbols;
@@ -62,6 +64,10 @@ public class RandomString {
         this.buf = new char[length];
     }
 
+    public RandomString(int length, Random random, boolean defaultSymbols) {
+        this(length, random, defaultSymbols ? SYMBOLS : "");
+    }
+
     /**
      * Create an alphanumeric string generator.
      */
@@ -74,6 +80,10 @@ public class RandomString {
      */
     public RandomString(int length, String symbols) {
         this(length, new SecureRandom(), symbols);
+    }
+
+    public RandomString(int length, boolean defaultSymbols) {
+        this(length, new SecureRandom(), defaultSymbols);
     }
 
     /**
@@ -101,6 +111,10 @@ public class RandomString {
     public RandomString setRandom(Random random) {
         this.random = random;
         return this;
+    }
+
+    public String getDefaultSymbols() {
+        return SYMBOLS;
     }
 
     public char[] symbols() {
