@@ -145,19 +145,19 @@ public class Random extends ResourceBase {
         return new RandomString(length, random);
     }
 
-    public RandomString initString(int length, boolean defaultSymbols) {
-        return new RandomString(length, defaultSymbols);
+    public RandomString initString(int length, boolean withSymbols) {
+        return new RandomString(length, withSymbols);
     }
 
-    public RandomString initString(int length, java.util.Random random, String symbols) {
-        return new RandomString(length, random, symbols);
+    public RandomString initString(int length, java.util.Random random, String chars) {
+        return new RandomString(length, random, chars);
     }
 
-    public RandomString initString(int length, java.util.Random random, boolean defaultSymbols) {
-        return new RandomString(length, random, defaultSymbols);
+    public RandomString initString(int length, java.util.Random random, boolean withSymbols) {
+        return new RandomString(length, random, withSymbols);
     }
     
-    public RandomString initString(int length, String symbols) {
-        return new RandomString(length, symbols);
+    public RandomString initString(int length, String chars) {
+        return new RandomString(length, chars);
     }
 }
