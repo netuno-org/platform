@@ -52,20 +52,20 @@ public class RandomString {
 
     private Random random;
 
-    private char[] symbols;
+    private char[] chars;
 
     private char[] buf;
 
-    public RandomString(int length, Random random, String symbols) {
+    public RandomString(int length, Random random, String chars) {
         if (length < 1) throw new IllegalArgumentException();
-        if (symbols.length() < 2) throw new IllegalArgumentException();
+        if (chars.length() < 2) throw new IllegalArgumentException();
         this.random = Objects.requireNonNull(random);
-        this.symbols = symbols.toCharArray();
+        this.chars = chars.toCharArray();
         this.buf = new char[length];
     }
 
-    public RandomString(int length, Random random, boolean defaultSymbols) {
-        this(length, random, defaultSymbols ? SYMBOLS : "");
+    public RandomString(int length, Random random, boolean withSymbols) {
+        this(length, random, withSymbols ? ALPHANUMERIC + SYMBOLS : "");
     }
 
     /**
@@ -78,12 +78,12 @@ public class RandomString {
     /**
      * Create an alphanumeric string generator.
      */
-    public RandomString(int length, String symbols) {
-        this(length, new SecureRandom(), symbols);
+    public RandomString(int length, String chars) {
+        this(length, new SecureRandom(), chars);
     }
 
-    public RandomString(int length, boolean defaultSymbols) {
-        this(length, new SecureRandom(), defaultSymbols);
+    public RandomString(int length, boolean withSymbols) {
+        this(length, new SecureRandom(), withSymbols);
     }
 
     /**
@@ -113,34 +113,34 @@ public class RandomString {
         return this;
     }
 
-    public String getDefaultSymbols() {
+    public String getSymbols() {
         return SYMBOLS;
     }
 
-    public char[] symbols() {
-        return symbols;
+    public char[] chars() {
+        return chars;
     }
 
-    public char[] getSymbols() {
-        return symbols;
+    public char[] getChars() {
+        return chars;
     }
 
-    public RandomString setSymbols(char[] symbols) {
-        this.symbols = symbols;
+    public RandomString setChars(char[] symbols) {
+        this.chars = chars;
         return this;
     }
 
-    public RandomString setSymbols(String symbols) {
-        this.symbols = symbols.toCharArray();
+    public RandomString setChars(String chars) {
+        this.chars = chars.toCharArray();
         return this;
     }
 
-    public String symbolsString() {
-        return new String(symbols);
+    public String charsString() {
+        return new String(chars);
     }
 
-    public String getSymbolsString() {
-        return new String(symbols);
+    public String getCharsString() {
+        return new String(chars);
     }
     
     public String next() {
@@ -152,7 +152,7 @@ public class RandomString {
      */
     public String nextString() {
         for (int idx = 0; idx < buf.length; ++idx)
-            buf[idx] = symbols[random.nextInt(symbols.length)];
+            buf[idx] = chars[random.nextInt(chars.length)];
         return new String(buf);
     }
 
