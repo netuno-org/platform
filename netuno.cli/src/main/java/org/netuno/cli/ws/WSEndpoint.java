@@ -59,9 +59,9 @@ public class WSEndpoint {
     private Values data;
     
     private Values config;
-    
-    private String authorization;
+
     private String cookie;
+    private String authorization;
 
     private Socket streamSocket = null;
     private OutputStream streamOutput = null;
@@ -374,6 +374,7 @@ public class WSEndpoint {
             }
         }
         this.data.clear();
+        this.config.clear();
     }
 
     @OnError
