@@ -36,6 +36,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.netuno.cli.Config;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.net.LocalHosts;
 
 /**
  * Configure and initialize the WebSocket endpoints.
@@ -46,18 +47,10 @@ public class WSServletContextHandler extends ServletContextHandler {
     
     private static Logger logger = LogManager.getLogger(WSServletContextHandler.class);
     
-    public WSServletContextHandler(String app, String defaultHost, Values config, int options) throws ServletException, DeploymentException {
+    public WSServletContextHandler(String app, List<String> hosts, Values config, int options) throws ServletException, DeploymentException {
         super(config.getString("public"), options);
 
-        List<String> virtualHosts = new ArrayList<>();
-        if (config.hasKey("host") && !config.getString("host").isEmpty()) {
-            virtualHosts.add(config.getString("host"));
-        } else if (!defaultHost.isEmpty()) {
-            virtualHosts.add(defaultHost);
-        }
-        if (virtualHosts != null) {
-            this.setVirtualHosts(virtualHosts);
-        }
+        this.setVirtualHosts(hosts);
 
         JakartaWebSocketServletContainerInitializer.configure(this, (servletContext, wsContainer) -> {
             // This lambda will be called at the appropriate place in the
@@ -129,10 +122,10 @@ public class WSServletContextHandler extends ServletContextHandler {
     }
     
     
-    public static List<Handler> loadHandlers(Values defaultAppConfig) {
+    public static List<Handler> loadHandlers(Values forceAppConfig) {
         List<Handler> handlers = new ArrayList<>();
         for (String app : Config.getAppConfig().keys()) {
-            if (defaultAppConfig != null && !defaultAppConfig.getString("name").equals(app)) {
+            if (forceAppConfig != null && !forceAppConfig.getString("name").equals(app)) {
                 continue;
             }
             Values appConfig = Config.getAppConfig(app);
@@ -141,7 +134,28 @@ public class WSServletContextHandler extends ServletContextHandler {
             if (!wsConfig.isMap() || wsConfig.isEmpty()) {
                 continue;
             }
+            List<String> hosts = new ArrayList<>();
+            hosts.add(app + ".local.netu.no");
             String defaultHost = wsConfig.getString("host");
+            if (!defaultHost.isEmpty()) {
+                hosts.add(defaultHost);
+            }
+            if (wsConfig.getValues("host") != null && wsConfig.getValues("host").isList()) {
+                for (String host : wsConfig.toList(String.class)) {
+                    if (!host.isEmpty()) {
+                        hosts.add(host);
+                    }
+                }
+            }
+            if (Config.getAppDefault().equals(app)
+                    || (forceAppConfig != null && forceAppConfig.getString("name").equals(app))
+            ) {
+                try {
+                    hosts.addAll(LocalHosts.getAll());
+                } catch (Exception ex) {
+                    logger.debug("Failed to load the network hosts.", ex);
+                }
+            }
             Values endpointsConfig = wsConfig.getValues("endpoints", new Values());
             if (!endpointsConfig.isList() || endpointsConfig.isEmpty()) {
                 continue;
@@ -154,8 +168,11 @@ public class WSServletContextHandler extends ServletContextHandler {
                     logger.warn("The "+ app +" app has an endpoint without a public URL.");
                     continue;
                 }
+                if (endpointConfig.getString("path").isEmpty()) {
+                    endpointConfig.set("path", "/");
+                }
                 try {
-                    handlers.add(new WSServletContextHandler(app, defaultHost, endpointConfig, ServletContextHandler.SESSIONS));
+                    handlers.add(new WSServletContextHandler(app, hosts, endpointConfig, ServletContextHandler.SESSIONS));
                 } catch (Exception ex) {
                     String message = "The "+ app +" app is not able to initialize the endpoint "+ endpointConfig.getString("public" +".");
                     logger.debug(message, ex);
