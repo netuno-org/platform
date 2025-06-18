@@ -462,6 +462,11 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             com.onDelete();
         }
 
+        getExecutor().scriptRemove(getProteu(), getHili(), tableName, dataItem);
+        if (dataItem.isStatusAsError()) {
+            return;
+        }
+
         Values itemLog = new Values();
         for (Values rowTritaoDesignXY : selectTableDesignXY("")) {
             org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
@@ -502,10 +507,6 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                 itemLog.set(data.getName(), data.getValue());
             }
         }
-        if (dataItem.isStatusAsError()) {
-            return;
-        }
-        getExecutor().scriptRemove(getProteu(), getHili(), tableName, dataItem);
         if (dataItem.isStatusAsError()) {
             return;
         }
