@@ -36,6 +36,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
+import org.netuno.cli.ws.DevServletContextHandler;
 import org.netuno.psamata.io.StreamGobbler;
 import org.netuno.psamata.Values;
 import picocli.CommandLine;
@@ -301,6 +302,7 @@ public class Server implements MainArg {
             List<Handler> handlers = new ArrayList<>();
 
             handlers.addAll(WSServletContextHandler.loadHandlers(forceApp ? appConfig : null));
+            handlers.addAll(DevServletContextHandler.loadHandlers(forceApp ? appConfig : null));
 
             handlers.add(webapp);
 
@@ -340,6 +342,7 @@ public class Server implements MainArg {
 
             // Start things up!
             try {
+                //server.setDumpAfterStart(true);
                 server.start();
             } catch (Exception e) {
                 e.printStackTrace();
