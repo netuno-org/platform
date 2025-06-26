@@ -374,7 +374,6 @@ public class WSEndpoint {
             }
         }
         this.data.clear();
-        this.config.clear();
     }
 
     @OnError
