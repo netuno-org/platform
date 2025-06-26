@@ -20,10 +20,13 @@ package org.netuno.tritao.sandbox.debug;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.psamata.Event;
+import org.netuno.psamata.Values;
 import org.netuno.tritao.sandbox.SandboxManager;
 import org.netuno.tritao.sandbox.ScriptSourceCode;
 import org.netuno.tritao.sandbox.Scriptable;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,14 +40,42 @@ public class Debugger {
 
     private static List<DebugContext> contexts = Collections.synchronizedList(new ArrayList<>());
 
-    private SandboxManager sandboxManager = null;
+    private static DateTimeFormatter momentFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private DebugContext context = null;
 
-    public Debugger(SandboxManager sandboxManager, ScriptSourceCode script, Scriptable scriptable) {
-        this.sandboxManager = sandboxManager;
-        context = new DebugContext(sandboxManager, script, scriptable);
+    static {
+        Event.add("tritao:sandbox:debug:contexts", (v) -> {
+            String app = v.getString("app");
+            Values result = Values.newList();
+            if (!app.isEmpty()) {
+                List<DebugContext> contexts = getContexts();
+                for (DebugContext context : contexts) {
+                    if (!context.getApp().equals(app)) {
+                        continue;
+                    }
+                    result.add(contextToValues(context));
+                }
+            }
+            return result;
+        });
+        Event.add("tritao:sandbox:debug:stepOver", (v) -> {
+            int id = v.getInt("id");
+            if (id > 0) {
+                stepOver(id);
+            }
+            return null;
+        });
+    }
+
+    public Debugger(String app, SandboxManager sandboxManager, ScriptSourceCode script, Scriptable scriptable) {
+        context = new DebugContext(app, sandboxManager, script, scriptable);
         contexts.add(context);
+        Event.run("tritao:sandbox:debug:"+ app +":new-context", contextToValues(context));
+        Event.add("tritao:sandbox:debug:"+ app +":step-over:" + context.getId(), (v) -> {
+            stepOver(context.getId());
+            return null;
+        });
     }
 
     public void pause() {
@@ -88,5 +119,19 @@ public class Debugger {
 
     public static List<DebugContext> getContexts() {
         return contexts;
+    }
+
+    private static Values contextToValues(DebugContext context) {
+        return Values.newMap()
+                .set("app", context.getApp())
+                .set("id", context.getId())
+                .set("threadId", context.getThreadId())
+                .set("moment", context.getMoment().format(momentFormatter))
+                .set(
+                        "script",
+                        Values.newMap()
+                                .set("file", context.getScript().fileName())
+                                .set("extension", context.getScript().extension())
+                );
     }
 }
