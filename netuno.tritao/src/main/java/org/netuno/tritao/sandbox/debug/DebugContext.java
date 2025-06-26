@@ -20,16 +20,18 @@ package org.netuno.tritao.sandbox.debug;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.psamata.Event;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.sandbox.SandboxManager;
 import org.netuno.tritao.sandbox.ScriptResult;
 import org.netuno.tritao.sandbox.ScriptSourceCode;
 import org.netuno.tritao.sandbox.Scriptable;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * DebugContext
@@ -39,14 +41,17 @@ public class DebugContext {
     private static Logger logger = LogManager.getLogger(DebugContext.class);
     private static int idCounter = 0;
     private long threadId = Thread.currentThread().threadId();
+    private String app = null;
     private int id = 1;
+    private LocalDateTime moment = LocalDateTime.now();
     private SandboxManager sandboxManager = null;
     private ScriptSourceCode script = null;
     private Scriptable scriptable = null;
     private final List<Watch> watchList = Collections.synchronizedList(new ArrayList<>());
     private final List<Execute> executeList = Collections.synchronizedList(new ArrayList<>());
 
-    protected DebugContext(SandboxManager sandboxManager, ScriptSourceCode script, Scriptable scriptable) {
+    protected DebugContext(String app, SandboxManager sandboxManager, ScriptSourceCode script, Scriptable scriptable) {
+        this.app = app;
         this.id = ++idCounter;
         this.sandboxManager = sandboxManager;
         this.script = script;
@@ -57,8 +62,16 @@ public class DebugContext {
         return threadId;
     }
 
+    public String getApp() {
+        return app;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public LocalDateTime getMoment() {
+        return moment;
     }
 
     public ScriptSourceCode getScript() {
