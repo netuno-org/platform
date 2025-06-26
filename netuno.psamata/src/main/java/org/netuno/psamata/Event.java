@@ -45,12 +45,56 @@ public interface Event extends Comparable<Event> {
         Manager.getInstance().add(key, order, event);
     }
 
+    static void setIfNotExists(String key, Event event) {
+        Manager.getInstance().setIfNotExists(key, event);
+    }
+
+    static void set(String key, Event event) {
+        Manager.getInstance().set(key, event);
+    }
+
+    static boolean containsKey(String key) {
+        return Manager.getInstance().containsKey(key);
+    }
+
+    static boolean isMany(String key) {
+        return Manager.getInstance().isMany(key);
+    }
+
+    static boolean isUnique(String key) {
+        return Manager.getInstance().isUnique(key);
+    }
+
+    static boolean removeUnique(String key) {
+        return Manager.getInstance().removeUnique(key);
+    }
+
+    static boolean removeAll(String key) {
+        return Manager.getInstance().removeAll(key);
+    }
+
+    static boolean removeAdded(String key, Event event) {
+        return Manager.getInstance().removeAdded(key, event);
+    }
+
+    static Values run(String key) {
+        return Manager.getInstance().run(key, null);
+    }
+
     static Values run(String key, Values data) {
         return Manager.getInstance().run(key, data);
     }
 
+    static void runAsync(String key) {
+        Manager.getInstance().runAsync(key, null);
+    }
+
     static void runAsync(String key, Values data) {
         Manager.getInstance().runAsync(key, data);
+    }
+
+    static void runAsync(String key, Callback callback) {
+        Manager.getInstance().runAsync(key, null, callback);
     }
 
     static void runAsync(String key, Values data, Callback callback) {
@@ -70,18 +114,28 @@ public interface Event extends Comparable<Event> {
 }
 
 class Manager {
-    private static final Map<String, Set<Event>> REGISTRIES = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, Set<Event>> MANY = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, Event> UNIQUE = Collections.synchronizedMap(new HashMap<>());
     private static final Manager MANAGER = new Manager();
 
     private Manager() {
 
     }
 
-    private void loadKey(String key) {
-        if (REGISTRIES.containsKey(key)) {
+    private void keyValidation(String key) {
+        if (key == null) {
+            throw new Event.InvalidKeyError("An event with a null key is not allowed.");
+        }
+        if (key.isBlank()) {
+            throw new Event.InvalidKeyError("An event with a blank key is not allowed.");
+        }
+    }
+
+    private void loadManyKey(String key) {
+        if (MANY.containsKey(key)) {
             return;
         }
-        REGISTRIES.put(key, Collections.synchronizedSet(new TreeSet<>()));
+        MANY.put(key, Collections.synchronizedSet(new TreeSet<>()));
     }
 
     public void add(String key, Event event) {
@@ -89,14 +143,12 @@ class Manager {
     }
 
     public void add(String key, int order, Event event) {
-        if (key == null) {
-            throw new Event.InvalidKeyError("An event with a null key is not allowed.");
+        keyValidation(key);
+        if (UNIQUE.containsKey(key)) {
+            throw new Event.InvalidKeyError("The event key already exists as unique.");
         }
-        if (key.isBlank()) {
-            throw new Event.InvalidKeyError("An event with a blank key is not allowed.");
-        }
-        loadKey(key);
-        REGISTRIES.get(key).add(new Event() {
+        loadManyKey(key);
+        MANY.get(key).add(new Event() {
             @Override
             public int order() {
                 return order;
@@ -109,15 +161,78 @@ class Manager {
         });
     }
 
-    public Values run(String key, Values data) {
-        Values global = new Values();
-        for (Event event : REGISTRIES.get(key)) {
-            Values result = event.run(data);
-            if (result != null) {
-                global.merge(result);
-            }
+    public void setIfNotExists(String key, Event event) {
+        if (containsKey(key)) {
+            return;
         }
-        return global;
+        set(key, event);
+    }
+
+    public void set(String key, Event event) {
+        keyValidation(key);
+        if (MANY.containsKey(key)) {
+            throw new Event.InvalidKeyError("The event key already exists as a list.");
+        }
+        UNIQUE.put(key, event);
+    }
+
+    public boolean containsKey(String key) {
+        keyValidation(key);
+        return UNIQUE.containsKey(key) || MANY.containsKey(key);
+    }
+
+    public boolean isMany(String key) {
+        keyValidation(key);
+        return MANY.containsKey(key);
+    }
+
+    public boolean isUnique(String key) {
+        keyValidation(key);
+        return UNIQUE.containsKey(key);
+    }
+
+    public boolean removeUnique(String key) {
+        keyValidation(key);
+        if (UNIQUE.containsKey(key)) {
+            UNIQUE.remove(key);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeAll(String key) {
+        keyValidation(key);
+        if (MANY.containsKey(key)) {
+            MANY.remove(key);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeAdded(String key, Event event) {
+        keyValidation(key);
+        if (MANY.containsKey(key)) {
+            return MANY.get(key).remove(event);
+        }
+        return false;
+    }
+
+    public Values run(String key, Values data) {
+        keyValidation(key);
+        if (UNIQUE.get(key) != null) {
+            return UNIQUE.get(key).run(data);
+        }
+        if (MANY.get(key) != null) {
+            Values global = new Values();
+            for (Event event : MANY.get(key)) {
+                Values result = event.run(data);
+                if (result != null) {
+                    global.merge(result);
+                }
+            }
+            return global;
+        }
+        return null;
     }
 
     public void runAsync(String key, Values data) {
@@ -125,16 +240,28 @@ class Manager {
     }
 
     public void runAsync(String key, Values data, Event.Callback callback) {
+        keyValidation(key);
         Thread thread = new Thread(() -> {
-            Values global = new Values();
-            for (Event event : REGISTRIES.get(key)) {
-                Values result = event.run(data);
-                if (result != null) {
-                    global.merge(result);
+            if (UNIQUE.get(key) != null) {
+                Values result = UNIQUE.get(key).run(data);
+                if (callback != null) {
+                    callback.done(result);
+                }
+            }
+            if (MANY.get(key) != null) {
+                Values global = new Values();
+                for (Event event : MANY.get(key)) {
+                    Values result = event.run(data);
+                    if (result != null) {
+                        global.merge(result);
+                    }
+                }
+                if (callback != null) {
+                    callback.done(global);
                 }
             }
             if (callback != null) {
-                callback.done(global);
+                callback.done(null);
             }
         });
         thread.start();
