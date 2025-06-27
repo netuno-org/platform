@@ -43,7 +43,7 @@ netuno.menuDev = (menu)->
         expand = " data-toggle"
       menuHtml += "<li netuno-menu-#{ type }-item>"
       menuHtml += "<a href=\"\#\" netuno-dev-#{ type }=\"#{ item.name }\"#{ expand }>"
-      menuHtml += "#{ item.text }"
+      menuHtml += "#{ item.label }"
       if item.items.length > 0
         menuHtml += "<i class=\"fa fa-fw fa-caret-down\"></i>"
       menuHtml += "</a>"
@@ -377,8 +377,10 @@ netuno.componentConfig = {
           itemSpan = item.find('span')
           itemSpan.css('font-weight', 'normal')
           icon = itemSpan.find('i')
+          icon.removeClass('fa')
           icon.removeClass('fa-circle')
-          icon.addClass('fa-circle-o')
+          icon.addClass('fa-regular')
+          icon.addClass('fa-circle')
           item.attr('active', 'false')
       )
       val = $("\#componentConfig#{ netunoTableUid }LinkField_#{ parameterKey }").val()
@@ -393,7 +395,9 @@ netuno.componentConfig = {
         itemSpan = item.find('span')
         itemSpan.css('font-weight', 'bold')
         icon = itemSpan.find('i')
-        icon.removeClass('fa-circle-o')
+        icon.removeClass('fa-regular')
+        icon.removeClass('fa-circle')
+        icon.addClass('fa')
         icon.addClass('fa-circle')
         item.attr('active', 'true')
         item.parent().prepend(item)
