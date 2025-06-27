@@ -86,7 +86,7 @@ public class DownloadTest {
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(String url, Exception e) {
 
             }
         });
