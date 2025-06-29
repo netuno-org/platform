@@ -197,6 +197,7 @@ public class SandboxManager implements AutoCloseable {
 
     public void debugger() {
         new Debugger(
+                Config.getApp(getProteu()),
                 this,
                 scriptSourceCodeStack.getLast(),
                 scriptablesRunning.getLast()
