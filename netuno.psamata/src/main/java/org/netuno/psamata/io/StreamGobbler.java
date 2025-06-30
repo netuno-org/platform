@@ -47,27 +47,26 @@ public class StreamGobbler implements Runnable {
 
     @Override
     public void run() {
-        if (consumer != null) {
+        if (inputStream != null && consumer != null) {
             new BufferedReader(new InputStreamReader(inputStream)).lines()
                 .forEach(consumer);
         }
-        if (outputStream != null) {
+        if (inputStream != null) {
             byte[] buffer = new byte[1024];
             while (true) {
                 try {
                     int available = inputStream.available();
                     if (available > 0) {
                         int length = inputStream.read(buffer, 0, Math.min(available, buffer.length));
-                        outputStream.write(buffer, 0, length);
+                        if (outputStream != null) {
+                            outputStream.write(buffer, 0, length);
+                        }
                     }
                 } catch (IOException ex) {
-                    try {
-                        byte[] message = ("Failed to read command stream: "+ ex.getMessage() +"\n").getBytes();
-                        outputStream.write(message, 0, message.length);
-                    } catch (IOException e) { }
+                    break;
                 }
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(25);
                 } catch (InterruptedException e) { }
             }
         }
