@@ -1,12 +1,29 @@
+/*
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.netuno.psamata.os;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
-import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.io.StreamGobbler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +40,10 @@ public class Process {
 
     public boolean readOutput = true;
     public boolean readErrorOutput = true;
+
+    public boolean inheritOutput = false;
+    public boolean inheritErrorOutput = false;
+
     public long waitFor = 100;
 
     public boolean redirectErrorStream = false;
@@ -58,6 +79,7 @@ public class Process {
 
     public Process setReadOutput(boolean readOutput) {
         this.readOutput = readOutput;
+        builder.redirectOutput(readOutput ? ProcessBuilder.Redirect.PIPE : ProcessBuilder.Redirect.DISCARD);
         return this;
     }
 
@@ -76,6 +98,45 @@ public class Process {
 
     public Process setReadErrorOutput(boolean readErrorOutput) {
         this.readErrorOutput = readErrorOutput;
+        builder.redirectError(readErrorOutput ? ProcessBuilder.Redirect.PIPE : ProcessBuilder.Redirect.DISCARD);
+        return this;
+    }
+
+    public boolean inheritOutput() {
+        return isInheritOutput();
+    }
+
+    public boolean isInheritOutput() {
+        return inheritOutput;
+    }
+
+    public Process inheritOutput(boolean inheritOutput) {
+        setInheritOutput(inheritOutput);
+        return this;
+    }
+
+    public Process setInheritOutput(boolean inheritOutput) {
+        this.inheritOutput = inheritOutput;
+        builder.redirectOutput(inheritOutput ? ProcessBuilder.Redirect.INHERIT : ProcessBuilder.Redirect.PIPE);
+        return this;
+    }
+
+    public boolean inheritErrorOutput() {
+        return isInheritErrorOutput();
+    }
+
+    public boolean isInheritErrorOutput() {
+        return inheritErrorOutput;
+    }
+
+    public Process inheritErrorOutput(boolean inheritErrorOutput) {
+        setInheritErrorOutput(inheritErrorOutput);
+        return this;
+    }
+
+    public Process setInheritErrorOutput(boolean inheritErrorOutput) {
+        this.inheritErrorOutput = inheritErrorOutput;
+        builder.redirectError(inheritErrorOutput ? ProcessBuilder.Redirect.INHERIT : ProcessBuilder.Redirect.PIPE);
         return this;
     }
 
@@ -352,48 +413,37 @@ public class Process {
         }
         builder.command(command);
         execRes.jProcess = builder.start();
-        String input = "";
-        String error = "";
         execRes.inputStream = null;
+        ByteArrayOutputStream baosOutput = null;
         if (isReadOutput()) {
             execRes.inputStream = execRes.jProcess.getInputStream();
             if (outputStream() != null) {
                 execRes.inputStreamGobbler = new StreamGobbler(execRes.inputStream, outputStream());
-                execRes.inputStreamGobbler.start();
+            } else {
+                baosOutput = new ByteArrayOutputStream();
+                execRes.inputStreamGobbler = new StreamGobbler(execRes.inputStream, baosOutput);
             }
+            execRes.inputStreamGobbler.start();
         }
         execRes.errorInputStream = null;
+        ByteArrayOutputStream baosOutputError = null;
         if (isReadErrorOutput()) {
             execRes.errorInputStream = execRes.jProcess.getErrorStream();
             if (errorOutputStream() != null) {
                 execRes.errorInputStreamGobbler = new StreamGobbler(execRes.errorInputStream, errorOutputStream());
-                execRes.errorInputStreamGobbler.start();
+            } else {
+                execRes.errorInputStreamGobbler = new StreamGobbler(execRes.errorInputStream, baosOutputError);
             }
+            execRes.errorInputStreamGobbler.start();
         }
         // Initialize a thread that manages the closing IO and the exit delay.
         execRes.start();
         if (getWaitFor() > 0) {
             while (execRes.jProcess.waitFor(getWaitFor(), TimeUnit.MILLISECONDS)) {
-                if (isReadOutput() && outputStream() == null && execRes.inputStream != null
-                        && execRes.inputStream.available() > 0) {
-                    input += InputStream.readAll(execRes.inputStream);
-                }
-                if (isReadErrorOutput() && errorOutputStream() == null && execRes.errorInputStream != null
-                        && execRes.errorInputStream.available() > 0) {
-                    error += InputStream.readAll(execRes.errorInputStream);
-                }
                 if (!execRes.jProcess.isAlive()) {
                     break;
                 }
             }
-        }
-        if (isReadOutput() && outputStream() == null && execRes.inputStream != null
-                && execRes.inputStream.available() > 0) {
-            input += InputStream.readAll(execRes.inputStream);
-        }
-        if (isReadErrorOutput() && errorOutputStream() == null && execRes.errorInputStream != null
-                && execRes.errorInputStream.available() > 0) {
-            error += InputStream.readAll(execRes.errorInputStream);
         }
         // IO graceful time
         try {
@@ -412,7 +462,11 @@ public class Process {
         } catch (InterruptedException e) { }
         // Destroy process and terminate stream threads
         execRes.terminate();
-        return new Result(input, error, exitCode);
+        return new Result(
+                baosOutput != null ? baosOutput.toString() : null,
+                baosOutputError != null ? baosOutputError.toString() : null,
+                exitCode
+        );
     }
 
     public boolean await() {
@@ -505,17 +559,17 @@ public class Process {
                 thread.interrupt();
                 thread = null;
             }
-            if (process.outputStream() != null) {
+            if (process.readOutput()) {
                 inputStreamGobbler.interrupt();
-                if (outputAutoClose()) {
+                if (process.outputStream() != null && outputAutoClose()) {
                     try {
                         process.outputStream().close();
                     } catch (IOException e) { }
                 }
             }
-            if (process.errorOutputStream() != null) {
+            if (process.readErrorOutput()) {
                 errorInputStreamGobbler.interrupt();
-                if (errorOutputAutoClose()) {
+                if (process.errorOutputStream() != null && errorOutputAutoClose()) {
                     try {
                         process.errorOutputStream().close();
                     } catch (IOException e) { }
@@ -544,11 +598,12 @@ public class Process {
 
     public class Result {
         public String output = "";
-        public String error = "";
+        public String outputError = "";
         public int exitCode = 0;
-        public Result(String output, String error, int exitCode) {
+
+        public Result(String output, String outputError, int exitCode) {
             this.output = output;
-            this.error = error;
+            this.outputError = outputError;
             this.exitCode = exitCode;
         }
 
@@ -560,12 +615,12 @@ public class Process {
             return output;
         }
 
-        public String error() {
-            return error;
+        public String outputError() {
+            return outputError;
         }
 
-        public String getError() {
-            return error;
+        public String getOutputError() {
+            return outputError;
         }
 
         public int exitCode() {
