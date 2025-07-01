@@ -24,6 +24,7 @@ import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
+import org.netuno.psamata.os.Process;
 import org.netuno.tritao.hili.Hili;
 
 import java.io.IOException;
@@ -421,6 +422,42 @@ public class OS extends ResourceBase {
             return this;
         }
 
+        public boolean inheritOutput() {
+            return super.inheritOutput();
+        }
+
+        public boolean isInheritOutput() {
+            return super.isInheritOutput();
+        }
+
+        public Process inheritOutput(boolean inheritOutput) {
+            super.inheritOutput(inheritOutput);
+            return this;
+        }
+
+        public Process setInheritOutput(boolean inheritOutput) {
+            super.setInheritOutput(inheritOutput);
+            return this;
+        }
+
+        public boolean inheritErrorOutput() {
+            return super.inheritErrorOutput();
+        }
+
+        public boolean isInheritErrorOutput() {
+            return super.isInheritErrorOutput();
+        }
+
+        public Process inheritErrorOutput(boolean inheritErrorOutput) {
+            super.inheritErrorOutput(inheritErrorOutput);
+            return this;
+        }
+
+        public Process setInheritErrorOutput(boolean inheritErrorOutput) {
+            super.setInheritErrorOutput(inheritErrorOutput);
+            return this;
+        }
+
         public boolean redirectErrorStream() {
             return super.redirectErrorStream();
         }
@@ -811,7 +848,7 @@ public class OS extends ResourceBase {
         public class ProcessResult extends org.netuno.psamata.os.Process.Result {
 
             private ProcessResult(Result result) {
-                super(result.output(), result.error(), result.exitCode());
+                super(result.output(), result.outputError(), result.exitCode());
             }
 
             @MethodDoc(translations = {
@@ -860,12 +897,12 @@ public class OS extends ResourceBase {
                             description = "The data obtained as a result of errors in the execution of the command."
                     )
             })
-            public String error() {
-                return super.error();
+            public String outputError() {
+                return super.outputError();
             }
 
-            public String getError() {
-                return super.getError();
+            public String getOutputError() {
+                return super.getOutputError();
             }
 
             @MethodDoc(translations = {
