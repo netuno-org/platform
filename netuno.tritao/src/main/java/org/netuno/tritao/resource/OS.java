@@ -17,23 +17,17 @@
 
 package org.netuno.tritao.resource;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
-import org.netuno.psamata.Event;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
-import org.netuno.psamata.os.Command;
 import org.netuno.tritao.hili.Hili;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
@@ -367,27 +361,27 @@ public class OS extends ResourceBase {
         return file.exists() && file.isDirectory();
     }
 
-    public Command initCommand() {
-        return new Command();
+    public Process initProcess() {
+        return new Process();
     }
 
     @LibraryDoc(translations = {
             @LibraryTranslationDoc(
                     language = LanguageDoc.PT,
-                    title = "Command",
-                    introduction = "Objeto que contém os detalhes da resposta obtida através da conexão remota, quando é utilizado o recurso Remote.",
+                    title = "Process",
+                    introduction = "Gerencia a execução de processos, permite executar programas externos e comandos de terminal.",
                     howToUse = {}
             ),
             @LibraryTranslationDoc(
                     language = LanguageDoc.EN,
-                    title = "Command",
-                    introduction = "Object that contains the details of the response obtained through the remote connection, when using the Remote resource.",
+                    title = "Process",
+                    introduction = "Gerenciar a execução de processos permite executar programas externos e comandos de terminal.",
                     howToUse = {}
             )
     })
-    public class Command extends org.netuno.psamata.os.Command {
+    public class Process extends org.netuno.psamata.os.Process {
 
-        private Command() {
+        private Process() {
             super();
         }
 
@@ -399,12 +393,12 @@ public class OS extends ResourceBase {
             return super.isReadOutput();
         }
 
-        public Command readOutput(boolean readOutput) {
+        public Process readOutput(boolean readOutput) {
             super.readOutput(readOutput);
             return this;
         }
 
-        public Command setReadOutput(boolean readOutput) {
+        public Process setReadOutput(boolean readOutput) {
             super.setReadOutput(readOutput);
             return this;
         }
@@ -417,12 +411,12 @@ public class OS extends ResourceBase {
             return super.isReadErrorOutput();
         }
 
-        public Command readErrorOutput(boolean readErrorOutput) {
+        public Process readErrorOutput(boolean readErrorOutput) {
             super.readErrorOutput(readErrorOutput);
             return this;
         }
 
-        public Command setReadErrorOutput(boolean readErrorOutput) {
+        public Process setReadErrorOutput(boolean readErrorOutput) {
             super.setReadErrorOutput(readErrorOutput);
             return this;
         }
@@ -435,12 +429,12 @@ public class OS extends ResourceBase {
             return super.isRedirectErrorStream();
         }
 
-        public Command redirectErrorStream(boolean redirectErrorStream) {
+        public Process redirectErrorStream(boolean redirectErrorStream) {
             super.redirectErrorStream(redirectErrorStream);
             return this;
         }
 
-        public Command setRedirectErrorStream(boolean redirectErrorStream) {
+        public Process setRedirectErrorStream(boolean redirectErrorStream) {
             super.setRedirectErrorStream(redirectErrorStream);
             return this;
         }
@@ -453,12 +447,12 @@ public class OS extends ResourceBase {
             return super.getWaitFor();
         }
 
-        public Command waitFor(long waitFor) {
+        public Process waitFor(long waitFor) {
             super.waitFor(waitFor);
             return this;
         }
 
-        public Command setWaitFor(long waitFor) {
+        public Process setWaitFor(long waitFor) {
             super.setWaitFor(waitFor);
             return this;
         }
@@ -520,28 +514,28 @@ public class OS extends ResourceBase {
                         description = "Instance of the operating system resource."
                 )
         })
-        public Command directory(String directory) {
+        public Process directory(String directory) {
             super.directory(directory);
             return this;
         }
-        public Command setDirectory(String directory) {
+        public Process setDirectory(String directory) {
             super.setDirectory(directory);
             return this;
         }
 
-        public Command directory(File file) {
+        public Process directory(File file) {
             super.directory(file.fullPath());
             return this;
         }
-        public Command setDirectory(File file) {
+        public Process setDirectory(File file) {
             super.setDirectory(file);
             return this;
         }
 
-        public Command directory(Storage storage) {
+        public Process directory(Storage storage) {
             return directory(storage.absolutePath());
         }
-        public Command setDirectory(Storage storage) {
+        public Process setDirectory(Storage storage) {
             return directory(storage);
         }
 
@@ -552,11 +546,11 @@ public class OS extends ResourceBase {
             return super.getShell();
         }
 
-        public Command shell(boolean shell) {
+        public Process shell(boolean shell) {
             super.shell(shell);
             return this;
         }
-        public Command setShell(boolean shell) {
+        public Process setShell(boolean shell) {
             super.setShell(shell);
             return this;
         }
@@ -568,11 +562,11 @@ public class OS extends ResourceBase {
             return super.getShellCommand();
         }
 
-        public Command shellCommand(String shellCommand) {
+        public Process shellCommand(String shellCommand) {
             super.shellCommand(shellCommand);
             return this;
         }
-        public Command setShellCommand(String shellCommand) {
+        public Process setShellCommand(String shellCommand) {
             super.setShellCommand(shellCommand);
             return this;
         }
@@ -584,12 +578,12 @@ public class OS extends ResourceBase {
             return super.getShellParameter();
         }
 
-        public org.netuno.psamata.os.Command shellParameter(String shellParameter) {
+        public org.netuno.psamata.os.Process shellParameter(String shellParameter) {
             super.shellParameter(shellParameter);
             return this;
         }
 
-        public Command setShellParameter(String shellParameter) {
+        public Process setShellParameter(String shellParameter) {
             super.setShellParameter(shellParameter);
             return this;
         }
@@ -601,12 +595,12 @@ public class OS extends ResourceBase {
             return super.getEnv();
         }
 
-        public Command env(Values env) {
+        public Process env(Values env) {
             super.env(env);
             return this;
         }
 
-        public Command setEnv(Values env) {
+        public Process setEnv(Values env) {
             super.setEnv(env);
             return this;
         }
@@ -619,22 +613,22 @@ public class OS extends ResourceBase {
             return super.outputStream();
         }
 
-        public Command outputStream(java.io.OutputStream out) {
+        public Process outputStream(java.io.OutputStream out) {
             super.outputStream(out);
             return this;
         }
 
-        public Command setOutputStream(java.io.OutputStream out) {
+        public Process setOutputStream(java.io.OutputStream out) {
             super.setOutputStream(out);
             return this;
         }
 
-        public Command output(OutputStream out) {
+        public Process output(OutputStream out) {
             super.output(out);
             return this;
         }
 
-        public Command setOutput(OutputStream out) {
+        public Process setOutput(OutputStream out) {
             super.setOutput(out);
             return this;
         }
@@ -647,22 +641,22 @@ public class OS extends ResourceBase {
             return super.getErrorOutputStream();
         }
 
-        public Command errorOutputStream(java.io.OutputStream err) {
+        public Process errorOutputStream(java.io.OutputStream err) {
             super.errorOutputStream(err);
             return this;
         }
 
-        public Command setErrorStream(java.io.OutputStream err) {
+        public Process setErrorStream(java.io.OutputStream err) {
             super.setErrorOutputStream(err);
             return this;
         }
 
-        public Command errorOutputStream(OutputStream err) {
+        public Process errorOutputStream(OutputStream err) {
             super.errorOutputStream(err);
             return this;
         }
 
-        public Command setErrorOutputStream(OutputStream err) {
+        public Process setErrorOutputStream(OutputStream err) {
             super.setErrorOutputStream(err);
             return this;
         }
@@ -675,12 +669,12 @@ public class OS extends ResourceBase {
             return super.outputAutoClose();
         }
 
-        public Command outputAutoClose(boolean outputAutoClose) {
+        public Process outputAutoClose(boolean outputAutoClose) {
             super.outputAutoClose(outputAutoClose);
             return this;
         }
 
-        public Command setOutputAutoClose(boolean outputAutoClose) {
+        public Process setOutputAutoClose(boolean outputAutoClose) {
             super.setOutputAutoClose(outputAutoClose);
             return this;
         }
@@ -693,31 +687,31 @@ public class OS extends ResourceBase {
             return super.isErrorOutputAutoClose();
         }
 
-        public Command errorOutputAutoClose(boolean errorOutputAutoClose) {
+        public Process errorOutputAutoClose(boolean errorOutputAutoClose) {
             super.errorOutputAutoClose(errorOutputAutoClose);
             return this;
         }
 
-        public Command setErrorOutputAutoClose(boolean errorOutputAutoClose) {
+        public Process setErrorOutputAutoClose(boolean errorOutputAutoClose) {
             super.setErrorOutputAutoClose(errorOutputAutoClose);
             return this;
         }
 
-        public long exitDelay() {
-            return super.exitDelay();
+        public long timeLimit() {
+            return super.timeLimit();
         }
 
-        public long getExitDelay() {
-            return super.getExitDelay();
+        public long getTimeLimit() {
+            return super.getTimeLimit();
         }
 
-        public Command exitDelay(long exitDelay) {
-            super.exitDelay(exitDelay);
+        public Process timeLimit(long timeLimit) {
+            super.timeLimit(timeLimit);
             return this;
         }
 
-        public Command setExitDelay(long exitDelay) {
-            super.setExitDelay(exitDelay);
+        public Process setExitDelay(long timeLimit) {
+            super.setTimeLimit(timeLimit);
             return this;
         }
 
@@ -752,19 +746,19 @@ public class OS extends ResourceBase {
                         description = "Result of executing the command in the operating system, including the output."
                 )
         })
-        public CommandResult execute(List<String> command) throws IOException, InterruptedException {
+        public ProcessResult execute(List<String> command) throws IOException, InterruptedException {
             Result result = super.execute(command);
-            return result == null ? null : new CommandResult(result);
+            return result == null ? null : new ProcessResult(result);
         }
 
-        public CommandResult execute(Values command) throws IOException, InterruptedException {
+        public ProcessResult execute(Values command) throws IOException, InterruptedException {
             Result result = super.execute(command);
-            return result == null ? null : new CommandResult(result);
+            return result == null ? null : new ProcessResult(result);
         }
 
-        public CommandResult execute(String... command) throws IOException, InterruptedException {
+        public ProcessResult execute(String... command) throws IOException, InterruptedException {
             Result result = super.execute(command);
-            return result == null ? null : new CommandResult(result);
+            return result == null ? null : new ProcessResult(result);
         }
 
         public boolean await() {
@@ -775,48 +769,48 @@ public class OS extends ResourceBase {
             return super.getAwait();
         }
 
-        public Command await(boolean wait) {
+        public Process await(boolean wait) {
             super.await(wait);
             return this;
         }
 
-        public Command setAwait(boolean wait) {
+        public Process setAwait(boolean wait) {
             super.setAwait(wait);
             return this;
         }
 
-        public Result executeAsync(List<String> command) throws IOException, InterruptedException {
+        public ProcessResult executeAsync(List<String> command) throws IOException {
             Result result = super.executeAsync(command);
-            return result == null ? null : new CommandResult(result);
+            return result == null ? null : new ProcessResult(result);
         }
 
-        public Result executeAsync(Values command) throws IOException, InterruptedException {
+        public ProcessResult executeAsync(Values command) throws IOException {
             Result result = super.executeAsync(command);
-            return result == null ? null : new CommandResult(result);
+            return result == null ? null : new ProcessResult(result);
         }
 
-        public Result executeAsync(String... command) throws IOException, InterruptedException {
+        public ProcessResult executeAsync(String... command) throws IOException {
             Result result = super.executeAsync(command);
-            return result == null ? null : new CommandResult(result);
+            return result == null ? null : new ProcessResult(result);
         }
 
         @LibraryDoc(translations = {
                 @LibraryTranslationDoc(
                         language = LanguageDoc.PT,
-                        title = "OSCommand",
-                        introduction = "Contém os detalhes do comando executado.",
+                        title = "ProcessResult",
+                        introduction = "Contém os detalhes do process ou comando executado.",
                         howToUse = {}
                 ),
                 @LibraryTranslationDoc(
                         language = LanguageDoc.EN,
-                        title = "OSCommand",
-                        introduction = "Contains the details of the executed command.",
+                        title = "ProcessResult",
+                        introduction = "Contains the details of the executed process or command.",
                         howToUse = {}
                 )
         })
-        public class CommandResult extends org.netuno.psamata.os.Command.Result {
+        public class ProcessResult extends org.netuno.psamata.os.Process.Result {
 
-            private CommandResult(Result result) {
+            private ProcessResult(Result result) {
                 super(result.output(), result.error(), result.exitCode());
             }
 
