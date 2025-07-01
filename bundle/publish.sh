@@ -120,7 +120,7 @@ echo
 
 echo
 
-PS3='Publish release: $PublishMode'
+PS3="Publish release $PublishMode: "
 PublishReleaseOptions=("Yes" "No")
 select optPublishRelease in "${PublishReleaseOptions[@]}"
 do
