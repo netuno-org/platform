@@ -1,6 +1,5 @@
 package org.netuno.psamata.os;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
@@ -11,14 +10,10 @@ import org.netuno.psamata.io.StreamGobbler;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Command {
+public class Process {
 
     public String directory = ".";
     public boolean shell = true;
@@ -38,13 +33,13 @@ public class Command {
     public boolean outputAutoClose = true;
     public boolean errorOutputAutoClose = true;
 
-    public long exitDelay = 0;
+    public long timeLimit = 0;
 
     public boolean await = true;
 
     private ProcessBuilder builder = new ProcessBuilder();
 
-    public Command() {
+    public Process() {
 
     }
 
@@ -56,12 +51,12 @@ public class Command {
         return readOutput;
     }
 
-    public Command readOutput(boolean readOutput) {
+    public Process readOutput(boolean readOutput) {
         setReadOutput(readOutput);
         return this;
     }
 
-    public Command setReadOutput(boolean readOutput) {
+    public Process setReadOutput(boolean readOutput) {
         this.readOutput = readOutput;
         return this;
     }
@@ -74,12 +69,12 @@ public class Command {
         return readErrorOutput;
     }
 
-    public Command readErrorOutput(boolean readErrorOutput) {
+    public Process readErrorOutput(boolean readErrorOutput) {
         setReadErrorOutput(readErrorOutput);
         return this;
     }
 
-    public Command setReadErrorOutput(boolean readErrorOutput) {
+    public Process setReadErrorOutput(boolean readErrorOutput) {
         this.readErrorOutput = readErrorOutput;
         return this;
     }
@@ -92,12 +87,13 @@ public class Command {
         return redirectErrorStream;
     }
 
-    public Command redirectErrorStream(boolean redirectErrorStream) {
+    public Process redirectErrorStream(boolean redirectErrorStream) {
+        readErrorOutput(false);
         setRedirectErrorStream(redirectErrorStream);
         return this;
     }
 
-    public Command setRedirectErrorStream(boolean redirectErrorStream) {
+    public Process setRedirectErrorStream(boolean redirectErrorStream) {
         this.redirectErrorStream = redirectErrorStream;
         builder.redirectErrorStream(redirectErrorStream);
         return this;
@@ -111,12 +107,12 @@ public class Command {
         return waitFor;
     }
 
-    public Command waitFor(long waitFor) {
+    public Process waitFor(long waitFor) {
         setWaitFor(waitFor);
         return this;
     }
 
-    public Command setWaitFor(long waitFor) {
+    public Process setWaitFor(long waitFor) {
         this.waitFor = waitFor;
         return this;
     }
@@ -128,19 +124,19 @@ public class Command {
         return this.directory;
     }
 
-    public Command directory(String directory) {
+    public Process directory(String directory) {
         this.directory = directory;
         builder.directory(new java.io.File(directory));
         return this;
     }
-    public Command setDirectory(String directory) {
+    public Process setDirectory(String directory) {
         return directory(directory);
     }
 
-    public Command directory(File file) {
+    public Process directory(File file) {
         return directory(file.fullPath());
     }
-    public Command setDirectory(File file) {
+    public Process setDirectory(File file) {
         return directory(file);
     }
 
@@ -151,11 +147,11 @@ public class Command {
         return shell();
     }
 
-    public Command shell(boolean shell) {
+    public Process shell(boolean shell) {
         this.shell = shell;
         return this;
     }
-    public Command setShell(boolean shell) {
+    public Process setShell(boolean shell) {
         return shell(shell);
     }
 
@@ -172,11 +168,11 @@ public class Command {
         return shellCommand();
     }
 
-    public Command shellCommand(String shellCommand) {
+    public Process shellCommand(String shellCommand) {
         this.shellCommand = shellCommand;
         return this;
     }
-    public Command setShellCommand(String shellCommand) {
+    public Process setShellCommand(String shellCommand) {
         return shellCommand(shellCommand);
     }
 
@@ -199,11 +195,11 @@ public class Command {
         return shellParameter();
     }
 
-    public Command shellParameter(String shellParameter) {
+    public Process shellParameter(String shellParameter) {
         this.shellParameter = shellParameter;
         return this;
     }
-    public Command setShellParameter(String shellParameter) {
+    public Process setShellParameter(String shellParameter) {
         return shellParameter(shellParameter);
     }
 
@@ -214,7 +210,7 @@ public class Command {
         return env();
     }
 
-    public Command env(Values env) {
+    public Process env(Values env) {
         this.env = env;
         Map<String, String> processEnv = builder.environment();
         for (String key : env.keys()) {
@@ -222,7 +218,7 @@ public class Command {
         }
         return this;
     }
-    public Command setEnv(Values env) {
+    public Process setEnv(Values env) {
         return env(env);
     }
 
@@ -234,21 +230,21 @@ public class Command {
         return this.outputStream();
     }
 
-    public Command outputStream(java.io.OutputStream out) {
+    public Process outputStream(java.io.OutputStream out) {
         outputStream = out;
         return this;
     }
 
-    public Command setOutputStream(java.io.OutputStream out) {
+    public Process setOutputStream(java.io.OutputStream out) {
         return outputStream(out);
     }
 
-    public Command output(OutputStream out) {
+    public Process output(OutputStream out) {
         outputStream = out;
         return this;
     }
 
-    public Command setOutput(OutputStream out) {
+    public Process setOutput(OutputStream out) {
         return this.outputStream(out);
     }
 
@@ -260,21 +256,21 @@ public class Command {
         return this.errorOutputStream();
     }
 
-    public Command errorOutputStream(java.io.OutputStream err) {
+    public Process errorOutputStream(java.io.OutputStream err) {
         errorOutputStream = err;
         return this;
     }
 
-    public Command setErrorOutputStream(java.io.OutputStream err) {
+    public Process setErrorOutputStream(java.io.OutputStream err) {
         return errorOutputStream(err);
     }
 
-    public Command errorOutput(OutputStream err) {
+    public Process errorOutput(OutputStream err) {
         errorOutputStream = err;
         return this;
     }
 
-    public Command setErrorOutput(OutputStream err) {
+    public Process setErrorOutput(OutputStream err) {
         return errorOutput(err);
     }
 
@@ -286,12 +282,12 @@ public class Command {
         return this.outputAutoClose();
     }
 
-    public Command outputAutoClose(boolean outputAutoClose) {
+    public Process outputAutoClose(boolean outputAutoClose) {
         this.outputAutoClose = outputAutoClose;
         return this;
     }
 
-    public Command setOutputAutoClose(boolean outputAutoClose) {
+    public Process setOutputAutoClose(boolean outputAutoClose) {
         this.outputAutoClose(outputAutoClose);
         return this;
     }
@@ -304,31 +300,31 @@ public class Command {
         return this.errorOutputAutoClose();
     }
 
-    public Command errorOutputAutoClose(boolean errorOutputAutoClose) {
+    public Process errorOutputAutoClose(boolean errorOutputAutoClose) {
         this.errorOutputAutoClose = errorOutputAutoClose;
         return this;
     }
 
-    public Command setErrorOutputAutoClose(boolean errorOutputAutoClose) {
+    public Process setErrorOutputAutoClose(boolean errorOutputAutoClose) {
         this.errorOutputAutoClose(errorOutputAutoClose);
         return this;
     }
 
-    public long exitDelay() {
-        return this.exitDelay;
+    public long timeLimit() {
+        return this.timeLimit;
     }
 
-    public long getExitDelay() {
-        return this.exitDelay();
+    public long getTimeLimit() {
+        return this.timeLimit();
     }
 
-    public Command exitDelay(long exitDelay) {
-        this.exitDelay = exitDelay;
+    public Process timeLimit(long timeLimit) {
+        this.timeLimit = timeLimit;
         return this;
     }
 
-    public Command setExitDelay(long exitDelay) {
-        this.exitDelay(exitDelay);
+    public Process setTimeLimit(long timeLimit) {
+        this.timeLimit(timeLimit);
         return this;
     }
 
@@ -355,57 +351,65 @@ public class Command {
             command = new String[] {shellCommand(), shellParameter(), String.join(" ", command)};
         }
         builder.command(command);
-        execRes.process = builder.start();
+        execRes.jProcess = builder.start();
         String input = "";
         String error = "";
         execRes.inputStream = null;
         if (isReadOutput()) {
-            execRes.inputStream = execRes.process.getInputStream();
+            execRes.inputStream = execRes.jProcess.getInputStream();
             if (outputStream() != null) {
-                execRes.inExecutorService = Executors.newSingleThreadExecutor();
-                execRes.inExecutorService.submit(new StreamGobbler(execRes.inputStream, outputStream()));
+                execRes.inputStreamGobbler = new StreamGobbler(execRes.inputStream, outputStream());
+                execRes.inputStreamGobbler.start();
             }
         }
         execRes.errorInputStream = null;
         if (isReadErrorOutput()) {
-            execRes.errorInputStream = execRes.process.getErrorStream();
+            execRes.errorInputStream = execRes.jProcess.getErrorStream();
             if (errorOutputStream() != null) {
-                execRes.errorExecutorService = Executors.newSingleThreadExecutor();
-                execRes.errorExecutorService.submit(new StreamGobbler(execRes.errorInputStream, errorOutputStream()));
+                execRes.errorInputStreamGobbler = new StreamGobbler(execRes.errorInputStream, errorOutputStream());
+                execRes.errorInputStreamGobbler.start();
             }
         }
         // Initialize a thread that manages the closing IO and the exit delay.
         execRes.start();
         if (getWaitFor() > 0) {
-            while (execRes.process.waitFor(getWaitFor(), TimeUnit.MILLISECONDS)) {
-                if (isReadOutput() && outputStream() == null) {
+            while (execRes.jProcess.waitFor(getWaitFor(), TimeUnit.MILLISECONDS)) {
+                if (isReadOutput() && outputStream() == null && execRes.inputStream != null
+                        && execRes.inputStream.available() > 0) {
                     input += InputStream.readAll(execRes.inputStream);
                 }
-                if (isReadErrorOutput() && errorOutputStream() == null) {
+                if (isReadErrorOutput() && errorOutputStream() == null && execRes.errorInputStream != null
+                        && execRes.errorInputStream.available() > 0) {
                     error += InputStream.readAll(execRes.errorInputStream);
                 }
-                if (!execRes.process.isAlive()) {
+                if (!execRes.jProcess.isAlive()) {
                     break;
                 }
             }
         }
-        if (isReadOutput() && outputStream() == null && execRes.inputStream.available() > 0) {
+        if (isReadOutput() && outputStream() == null && execRes.inputStream != null
+                && execRes.inputStream.available() > 0) {
             input += InputStream.readAll(execRes.inputStream);
         }
-        if (isReadErrorOutput() && errorOutputStream() == null && execRes.errorInputStream.available() > 0) {
+        if (isReadErrorOutput() && errorOutputStream() == null && execRes.errorInputStream != null
+                && execRes.errorInputStream.available() > 0) {
             error += InputStream.readAll(execRes.errorInputStream);
         }
         // IO graceful time
         try {
-            Thread.sleep(50);
+            Thread.sleep(100);
         } catch (InterruptedException e) { }
         // Exit Code
         int exitCode = 0;
-        if (waitFor() >= 0 && execRes.process.isAlive()) {
-            exitCode = execRes.process.waitFor();
+        if (waitFor() >= 0 && execRes.jProcess.isAlive()) {
+            exitCode = execRes.jProcess.waitFor();
         } else {
-            exitCode = execRes.process.exitValue();
+            exitCode = execRes.jProcess.exitValue();
         }
+        // IO graceful time
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) { }
         // Destroy process and terminate stream threads
         execRes.terminate();
         return new Result(input, error, exitCode);
@@ -419,111 +423,104 @@ public class Command {
         return this.await();
     }
 
-    public Command await(boolean await) {
+    public Process await(boolean await) {
         this.await = await;
         return this;
     }
 
-    public Command setAwait(boolean wait) {
+    public Process setAwait(boolean wait) {
         this.await(wait);
         return this;
     }
 
-    public Result executeAsync(List<String> command) throws IOException, InterruptedException {
+    public Result executeAsync(List<String> command) throws IOException {
         return executeAsync(command.toArray(new String[command.size()]));
     }
 
-    public Result executeAsync(Values command) throws IOException, InterruptedException {
+    public Result executeAsync(Values command) throws IOException {
         if (!command.isList()) {
             return null;
         }
         return executeAsync(command.toArray(new String[command.size()]));
     }
 
-    public Result executeAsync(String... command) throws IOException, InterruptedException {
+    public Result executeAsync(String... command) throws IOException {
         ExecutionResources execRes = new ExecutionResources(this);
         AtomicReference<Result> result = new AtomicReference<>();
         AtomicReference<IOException> ioException = new AtomicReference<>();
-        AtomicReference<InterruptedException> interruptedException = new AtomicReference<>();
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(() -> {
+        Thread thread = new Thread(() -> {
             try {
                 result.set(execute(execRes, command));
             } catch (IOException e) {
                 ioException.set(e);
-            } catch (InterruptedException e) {
-                interruptedException.set(e);
-            }
-        });
-        new Thread(() -> {
-            try {
-                if (exitDelay() > 0 && !executorService.awaitTermination(exitDelay(), TimeUnit.MILLISECONDS)) {
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) { }
-                    execRes.terminate();
-                    executorService.shutdownNow();
-                }
             } catch (InterruptedException e) { }
-        }).start();
+        });
+        thread.setName("Netuno Psamata: Process - Execute Async");
+        thread.start();
         if (await()) {
-            while (!execRes.started) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) { }
-            }
-            while (!execRes.started || execRes.process.isAlive()) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) { }
-            }
+            try {
+                thread.join();
+            } catch (InterruptedException e) { }
             execRes.terminate();
-            executorService.shutdownNow();
         }
         if (ioException.get() != null) {
             throw ioException.get();
-        }
-        if (interruptedException.get() != null) {
-            throw interruptedException.get();
         }
         return result.get();
     }
 
     private class ExecutionResources {
-        private Command command;
         private Process process;
-        private boolean started = false;
-        private java.io.InputStream inputStream;
-        private java.io.InputStream errorInputStream;
-        private ExecutorService inExecutorService;
-        private ExecutorService errorExecutorService = null;
+        private java.lang.Process jProcess;
+        private java.io.InputStream inputStream = null;
+        private java.io.InputStream errorInputStream = null;
+        private StreamGobbler inputStreamGobbler = null;
+        private StreamGobbler errorInputStreamGobbler = null;
+        private Thread thread = null;
 
-        private ExecutionResources(Command command) {
-            this.command = command;
+        private ExecutionResources(Process process) {
+            this.process = process;
         }
 
         private void start() {
-            started = true;
             long startedTime = System.currentTimeMillis();
-            new Thread(() -> {
+            thread = new Thread(() -> {
                 while (true) {
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException e) { }
-                    if (!process.isAlive()) {
-                        closeInputs();
-                        break;
-                    }
-                    if (command.exitDelay() > 0 && System.currentTimeMillis() - startedTime >= command.exitDelay()) {
-                        closeInputs();
+                    if (!jProcess.isAlive() || (process.timeLimit() > 0 && System.currentTimeMillis() - startedTime >= process.timeLimit())) {
+                        thread = null;
                         terminate();
                         break;
                     }
                 }
-            }).start();
+            });
+            thread.setName("Netuno Psamata: Process - Force Termination");
+            thread.start();
         }
 
-        private void closeInputs() {
+        private void terminate() {
+            if (thread != null) {
+                thread.interrupt();
+                thread = null;
+            }
+            if (process.outputStream() != null) {
+                inputStreamGobbler.interrupt();
+                if (outputAutoClose()) {
+                    try {
+                        process.outputStream().close();
+                    } catch (IOException e) { }
+                }
+            }
+            if (process.errorOutputStream() != null) {
+                errorInputStreamGobbler.interrupt();
+                if (errorOutputAutoClose()) {
+                    try {
+                        process.errorOutputStream().close();
+                    } catch (IOException e) { }
+                }
+            }
             if (inputStream != null) {
                 try {
                     inputStream.close();
@@ -536,30 +533,11 @@ public class Command {
                 } catch (IOException e) { }
                 errorInputStream = null;
             }
-        }
-
-        private void terminate() {
-            if (process.isAlive()) {
-                process.destroy();
+            if (jProcess.isAlive()) {
+                jProcess.destroy();
             }
-            if (process.isAlive()) {
-                process.destroyForcibly();
-            }
-            if (command.outputStream() != null) {
-                inExecutorService.shutdownNow();
-                if (outputAutoClose()) {
-                    try {
-                        command.outputStream().close();
-                    } catch (IOException e) { }
-                }
-            }
-            if (command.errorOutputStream() != null) {
-                errorExecutorService.shutdownNow();
-                if (errorOutputAutoClose()) {
-                    try {
-                        command.errorOutputStream().close();
-                    } catch (IOException e) { }
-                }
+            if (jProcess.isAlive()) {
+                jProcess.destroyForcibly();
             }
         }
     }
