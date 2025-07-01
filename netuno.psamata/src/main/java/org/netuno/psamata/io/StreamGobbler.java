@@ -17,6 +17,9 @@
 
 package org.netuno.psamata.io;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,17 +33,20 @@ import java.util.function.Consumer;
  * 
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class StreamGobbler implements Runnable {
+public class StreamGobbler extends Thread {
+    private static Logger logger = LogManager.getLogger(StreamGobbler.class);
     private InputStream inputStream = null;
     private OutputStream outputStream = null;
     private Consumer<String> consumer = null;
     
     public StreamGobbler(InputStream inputStream, OutputStream outputStream) {
+        this.setName("Netuno Psamata: Stream Gobbler");
         this.inputStream = inputStream;
         this.outputStream = outputStream;
     }
     
     public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
+        this.setName("Netuno Psamata: Stream Gobbler");
         this.inputStream = inputStream;
         this.consumer = consumer;
     }
@@ -53,7 +59,7 @@ public class StreamGobbler implements Runnable {
         }
         if (inputStream != null) {
             byte[] buffer = new byte[1024];
-            while (true) {
+            while (!Thread.interrupted()) {
                 try {
                     int available = inputStream.available();
                     if (available > 0) {
@@ -63,6 +69,9 @@ public class StreamGobbler implements Runnable {
                         }
                     }
                 } catch (IOException ex) {
+                    if (!ex.getMessage().equals("Stream closed")) {
+                        logger.fatal(ex.getMessage(), ex);
+                    }
                     break;
                 }
                 try {
