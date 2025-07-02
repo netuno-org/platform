@@ -66,8 +66,8 @@ public class ProcessLauncher {
 
     public boolean await = true;
 
-    public Runnable onParallel = null;
-    public Runnable onFinish = null;
+    public Consumer<ParallelThread> onParallel = null;
+    public Consumer<Result> onFinish = null;
 
     private ProcessBuilder builder = new ProcessBuilder();
 
@@ -434,38 +434,38 @@ public class ProcessLauncher {
         return this;
     }
 
-    public Runnable onParallel() {
+    public Consumer<ParallelThread> onParallel() {
         return this.onParallel;
     }
 
-    public Runnable getOnParallel() {
+    public Consumer<ParallelThread> getOnParallel() {
         return this.onParallel();
     }
 
-    public ProcessLauncher onParallel(Runnable onParallel) {
+    public ProcessLauncher onParallel(Consumer<ParallelThread> onParallel) {
         this.onParallel = onParallel;
         return this;
     }
 
-    public ProcessLauncher setOnParallel(Runnable onParallel) {
+    public ProcessLauncher setOnParallel(Consumer<ParallelThread> onParallel) {
         this.onParallel(onParallel);
         return this;
     }
 
-    public Runnable onFinish() {
+    public Consumer<Result> onFinish() {
         return this.onFinish;
     }
 
-    public Runnable getOnFinish() {
+    public Consumer<Result> getOnFinish() {
         return this.onFinish();
     }
 
-    public ProcessLauncher onFinish(Runnable onFinish) {
+    public ProcessLauncher onFinish(Consumer<Result> onFinish) {
         this.onFinish = onFinish;
         return this;
     }
 
-    public ProcessLauncher setOnFinish(Runnable onFinish) {
+    public ProcessLauncher setOnFinish(Consumer<Result> onFinish) {
         this.onFinish(onFinish);
         return this;
     }
@@ -541,17 +541,17 @@ public class ProcessLauncher {
         } else {
             exitCode = execRes.process.exitValue();
         }
-        // IO graceful time
+        // Threads & IOs graceful time
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) { }
         // Destroy process and terminate stream threads
-        execRes.finish();
-        return new Result(
+        execRes.result = new Result(
                 baosOutput != null ? baosOutput.toString() : null,
                 baosOutputError != null ? baosOutputError.toString() : null,
                 exitCode
         );
+        return execRes.result;
     }
 
     public boolean await() {
@@ -608,6 +608,34 @@ public class ProcessLauncher {
         return result.get();
     }
 
+    public class ParallelThread extends Thread {
+        private Consumer<ParallelThread> consumer = null;
+        private boolean running = false;
+
+        private ParallelThread(Consumer<ParallelThread> consumer) {
+            this.consumer = consumer;
+        }
+
+        public void pause(long millis) {
+            try {
+                sleep(millis);
+            } catch (InterruptedException e) { }
+        }
+
+        public void run() {
+            running = true;
+            consumer.accept(this);
+        }
+
+        public boolean isRunning() {
+            return running;
+        }
+
+        private void done() {
+            running = false;
+        }
+    }
+
     private class ExecutionResources {
         private ProcessLauncher processLauncher;
         private Process process;
@@ -616,7 +644,8 @@ public class ProcessLauncher {
         private StreamGobbler inputStreamGobbler = null;
         private StreamGobbler errorInputStreamGobbler = null;
         private Thread monitorThread = null;
-        private Thread parallelThread = null;
+        private ParallelThread parallelThread = null;
+        private Result result = null;
 
         private ExecutionResources(ProcessLauncher processLauncher) {
             this.processLauncher = processLauncher;
@@ -625,7 +654,7 @@ public class ProcessLauncher {
         private void start() {
             long startedTime = System.currentTimeMillis();
             if (processLauncher.onParallel() != null) {
-                parallelThread = new Thread(processLauncher.onParallel);
+                parallelThread = new ParallelThread(processLauncher.onParallel);
                 parallelThread.setName("Netuno Psamata: Process Parallel");
                 parallelThread.start();
             }
@@ -635,6 +664,10 @@ public class ProcessLauncher {
                         Thread.sleep(50);
                     } catch (InterruptedException e) { }
                     if (!process.isAlive() || (processLauncher.timeLimit() > 0 && System.currentTimeMillis() - startedTime >= processLauncher.timeLimit())) {
+                        // IO graceful time
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) { }
                         monitorThread = null;
                         finish();
                         break;
@@ -647,13 +680,14 @@ public class ProcessLauncher {
 
         private void finish() {
             if (monitorThread != null) {
+                if (processLauncher.onFinish() != null) {
+                    processLauncher.onFinish().accept(this.result);
+                }
                 monitorThread.interrupt();
                 monitorThread = null;
-                if (processLauncher.onFinish() != null) {
-                    processLauncher.onFinish().run();
-                }
             }
             if (parallelThread != null) {
+                parallelThread.done();
                 parallelThread.interrupt();
                 parallelThread = null;
             }
