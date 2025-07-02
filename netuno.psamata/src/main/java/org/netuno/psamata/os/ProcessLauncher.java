@@ -59,8 +59,7 @@ public class ProcessLauncher {
     public Consumer<String> outputLineConsumer = null;
     public Consumer<String> errorOutputLineConsumer = null;
 
-    public boolean outputAutoClose = true;
-    public boolean errorOutputAutoClose = true;
+    public boolean autoCloseOutputStreams = false;
 
     public long timeLimit = 0;
 
@@ -209,6 +208,16 @@ public class ProcessLauncher {
         return directory(file.fullPath());
     }
     public ProcessLauncher setDirectory(File file) {
+        return directory(file);
+    }
+
+    public ProcessLauncher directory(java.io.File file) {
+        this.directory = file.toString();
+        builder.directory(file);
+        return this;
+    }
+
+    public ProcessLauncher setDirectory(java.io.File file) {
         return directory(file);
     }
 
@@ -380,39 +389,21 @@ public class ProcessLauncher {
         return errorOutputLineConsumer(consumer);
     }
 
-    public boolean outputAutoClose() {
-        return this.outputAutoClose;
+    public boolean autoCloseOutputStreams() {
+        return this.autoCloseOutputStreams;
     }
 
-    public boolean isOutputAutoClose() {
-        return this.outputAutoClose();
+    public boolean isAutoCloseOutputStreams() {
+        return this.autoCloseOutputStreams();
     }
 
-    public ProcessLauncher outputAutoClose(boolean outputAutoClose) {
-        this.outputAutoClose = outputAutoClose;
+    public ProcessLauncher autoCloseOutputStreams(boolean autoCloseOutputStreams) {
+        this.autoCloseOutputStreams = autoCloseOutputStreams;
         return this;
     }
 
-    public ProcessLauncher setOutputAutoClose(boolean outputAutoClose) {
-        this.outputAutoClose(outputAutoClose);
-        return this;
-    }
-
-    public boolean errorOutputAutoClose() {
-        return this.errorOutputAutoClose;
-    }
-
-    public boolean isErrorOutputAutoClose() {
-        return this.errorOutputAutoClose();
-    }
-
-    public ProcessLauncher errorOutputAutoClose(boolean errorOutputAutoClose) {
-        this.errorOutputAutoClose = errorOutputAutoClose;
-        return this;
-    }
-
-    public ProcessLauncher setErrorOutputAutoClose(boolean errorOutputAutoClose) {
-        this.errorOutputAutoClose(errorOutputAutoClose);
+    public ProcessLauncher setAutoCloseOutputStreams(boolean autoCloseOutputStreams) {
+        this.autoCloseOutputStreams(autoCloseOutputStreams);
         return this;
     }
 
@@ -693,7 +684,7 @@ public class ProcessLauncher {
             }
             if (processLauncher.readOutput()) {
                 inputStreamGobbler.interrupt();
-                if (processLauncher.outputStream() != null && outputAutoClose()) {
+                if (processLauncher.outputStream() != null && autoCloseOutputStreams()) {
                     try {
                         processLauncher.outputStream().close();
                     } catch (IOException e) { }
@@ -701,7 +692,7 @@ public class ProcessLauncher {
             }
             if (processLauncher.readErrorOutput()) {
                 errorInputStreamGobbler.interrupt();
-                if (processLauncher.errorOutputStream() != null && errorOutputAutoClose()) {
+                if (processLauncher.errorOutputStream() != null && autoCloseOutputStreams()) {
                     try {
                         processLauncher.errorOutputStream().close();
                     } catch (IOException e) { }
