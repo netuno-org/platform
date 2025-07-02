@@ -30,7 +30,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Process {
+/**
+ * Process Launcher
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
+public class ProcessLauncher {
 
     public String directory = ".";
     public boolean shell = true;
@@ -58,9 +62,12 @@ public class Process {
 
     public boolean await = true;
 
+    public Runnable onParallel = null;
+    public Runnable onFinish = null;
+
     private ProcessBuilder builder = new ProcessBuilder();
 
-    public Process() {
+    public ProcessLauncher() {
 
     }
 
@@ -72,12 +79,12 @@ public class Process {
         return readOutput;
     }
 
-    public Process readOutput(boolean readOutput) {
+    public ProcessLauncher readOutput(boolean readOutput) {
         setReadOutput(readOutput);
         return this;
     }
 
-    public Process setReadOutput(boolean readOutput) {
+    public ProcessLauncher setReadOutput(boolean readOutput) {
         this.readOutput = readOutput;
         builder.redirectOutput(readOutput ? ProcessBuilder.Redirect.PIPE : ProcessBuilder.Redirect.DISCARD);
         return this;
@@ -91,12 +98,12 @@ public class Process {
         return readErrorOutput;
     }
 
-    public Process readErrorOutput(boolean readErrorOutput) {
+    public ProcessLauncher readErrorOutput(boolean readErrorOutput) {
         setReadErrorOutput(readErrorOutput);
         return this;
     }
 
-    public Process setReadErrorOutput(boolean readErrorOutput) {
+    public ProcessLauncher setReadErrorOutput(boolean readErrorOutput) {
         this.readErrorOutput = readErrorOutput;
         builder.redirectError(readErrorOutput ? ProcessBuilder.Redirect.PIPE : ProcessBuilder.Redirect.DISCARD);
         return this;
@@ -110,12 +117,12 @@ public class Process {
         return inheritOutput;
     }
 
-    public Process inheritOutput(boolean inheritOutput) {
+    public ProcessLauncher inheritOutput(boolean inheritOutput) {
         setInheritOutput(inheritOutput);
         return this;
     }
 
-    public Process setInheritOutput(boolean inheritOutput) {
+    public ProcessLauncher setInheritOutput(boolean inheritOutput) {
         this.inheritOutput = inheritOutput;
         builder.redirectOutput(inheritOutput ? ProcessBuilder.Redirect.INHERIT : ProcessBuilder.Redirect.PIPE);
         return this;
@@ -129,12 +136,12 @@ public class Process {
         return inheritErrorOutput;
     }
 
-    public Process inheritErrorOutput(boolean inheritErrorOutput) {
+    public ProcessLauncher inheritErrorOutput(boolean inheritErrorOutput) {
         setInheritErrorOutput(inheritErrorOutput);
         return this;
     }
 
-    public Process setInheritErrorOutput(boolean inheritErrorOutput) {
+    public ProcessLauncher setInheritErrorOutput(boolean inheritErrorOutput) {
         this.inheritErrorOutput = inheritErrorOutput;
         builder.redirectError(inheritErrorOutput ? ProcessBuilder.Redirect.INHERIT : ProcessBuilder.Redirect.PIPE);
         return this;
@@ -148,13 +155,13 @@ public class Process {
         return redirectErrorStream;
     }
 
-    public Process redirectErrorStream(boolean redirectErrorStream) {
+    public ProcessLauncher redirectErrorStream(boolean redirectErrorStream) {
         readErrorOutput(false);
         setRedirectErrorStream(redirectErrorStream);
         return this;
     }
 
-    public Process setRedirectErrorStream(boolean redirectErrorStream) {
+    public ProcessLauncher setRedirectErrorStream(boolean redirectErrorStream) {
         this.redirectErrorStream = redirectErrorStream;
         builder.redirectErrorStream(redirectErrorStream);
         return this;
@@ -168,12 +175,12 @@ public class Process {
         return waitFor;
     }
 
-    public Process waitFor(long waitFor) {
+    public ProcessLauncher waitFor(long waitFor) {
         setWaitFor(waitFor);
         return this;
     }
 
-    public Process setWaitFor(long waitFor) {
+    public ProcessLauncher setWaitFor(long waitFor) {
         this.waitFor = waitFor;
         return this;
     }
@@ -185,19 +192,19 @@ public class Process {
         return this.directory;
     }
 
-    public Process directory(String directory) {
+    public ProcessLauncher directory(String directory) {
         this.directory = directory;
         builder.directory(new java.io.File(directory));
         return this;
     }
-    public Process setDirectory(String directory) {
+    public ProcessLauncher setDirectory(String directory) {
         return directory(directory);
     }
 
-    public Process directory(File file) {
+    public ProcessLauncher directory(File file) {
         return directory(file.fullPath());
     }
-    public Process setDirectory(File file) {
+    public ProcessLauncher setDirectory(File file) {
         return directory(file);
     }
 
@@ -208,11 +215,11 @@ public class Process {
         return shell();
     }
 
-    public Process shell(boolean shell) {
+    public ProcessLauncher shell(boolean shell) {
         this.shell = shell;
         return this;
     }
-    public Process setShell(boolean shell) {
+    public ProcessLauncher setShell(boolean shell) {
         return shell(shell);
     }
 
@@ -229,11 +236,11 @@ public class Process {
         return shellCommand();
     }
 
-    public Process shellCommand(String shellCommand) {
+    public ProcessLauncher shellCommand(String shellCommand) {
         this.shellCommand = shellCommand;
         return this;
     }
-    public Process setShellCommand(String shellCommand) {
+    public ProcessLauncher setShellCommand(String shellCommand) {
         return shellCommand(shellCommand);
     }
 
@@ -256,11 +263,11 @@ public class Process {
         return shellParameter();
     }
 
-    public Process shellParameter(String shellParameter) {
+    public ProcessLauncher shellParameter(String shellParameter) {
         this.shellParameter = shellParameter;
         return this;
     }
-    public Process setShellParameter(String shellParameter) {
+    public ProcessLauncher setShellParameter(String shellParameter) {
         return shellParameter(shellParameter);
     }
 
@@ -271,7 +278,7 @@ public class Process {
         return env();
     }
 
-    public Process env(Values env) {
+    public ProcessLauncher env(Values env) {
         this.env = env;
         Map<String, String> processEnv = builder.environment();
         for (String key : env.keys()) {
@@ -279,7 +286,7 @@ public class Process {
         }
         return this;
     }
-    public Process setEnv(Values env) {
+    public ProcessLauncher setEnv(Values env) {
         return env(env);
     }
 
@@ -291,21 +298,21 @@ public class Process {
         return this.outputStream();
     }
 
-    public Process outputStream(java.io.OutputStream out) {
+    public ProcessLauncher outputStream(java.io.OutputStream out) {
         outputStream = out;
         return this;
     }
 
-    public Process setOutputStream(java.io.OutputStream out) {
+    public ProcessLauncher setOutputStream(java.io.OutputStream out) {
         return outputStream(out);
     }
 
-    public Process output(OutputStream out) {
+    public ProcessLauncher output(OutputStream out) {
         outputStream = out;
         return this;
     }
 
-    public Process setOutput(OutputStream out) {
+    public ProcessLauncher setOutput(OutputStream out) {
         return this.outputStream(out);
     }
 
@@ -317,21 +324,21 @@ public class Process {
         return this.errorOutputStream();
     }
 
-    public Process errorOutputStream(java.io.OutputStream err) {
+    public ProcessLauncher errorOutputStream(java.io.OutputStream err) {
         errorOutputStream = err;
         return this;
     }
 
-    public Process setErrorOutputStream(java.io.OutputStream err) {
+    public ProcessLauncher setErrorOutputStream(java.io.OutputStream err) {
         return errorOutputStream(err);
     }
 
-    public Process errorOutput(OutputStream err) {
+    public ProcessLauncher errorOutput(OutputStream err) {
         errorOutputStream = err;
         return this;
     }
 
-    public Process setErrorOutput(OutputStream err) {
+    public ProcessLauncher setErrorOutput(OutputStream err) {
         return errorOutput(err);
     }
 
@@ -343,12 +350,12 @@ public class Process {
         return this.outputAutoClose();
     }
 
-    public Process outputAutoClose(boolean outputAutoClose) {
+    public ProcessLauncher outputAutoClose(boolean outputAutoClose) {
         this.outputAutoClose = outputAutoClose;
         return this;
     }
 
-    public Process setOutputAutoClose(boolean outputAutoClose) {
+    public ProcessLauncher setOutputAutoClose(boolean outputAutoClose) {
         this.outputAutoClose(outputAutoClose);
         return this;
     }
@@ -361,12 +368,12 @@ public class Process {
         return this.errorOutputAutoClose();
     }
 
-    public Process errorOutputAutoClose(boolean errorOutputAutoClose) {
+    public ProcessLauncher errorOutputAutoClose(boolean errorOutputAutoClose) {
         this.errorOutputAutoClose = errorOutputAutoClose;
         return this;
     }
 
-    public Process setErrorOutputAutoClose(boolean errorOutputAutoClose) {
+    public ProcessLauncher setErrorOutputAutoClose(boolean errorOutputAutoClose) {
         this.errorOutputAutoClose(errorOutputAutoClose);
         return this;
     }
@@ -379,13 +386,49 @@ public class Process {
         return this.timeLimit();
     }
 
-    public Process timeLimit(long timeLimit) {
+    public ProcessLauncher timeLimit(long timeLimit) {
         this.timeLimit = timeLimit;
         return this;
     }
 
-    public Process setTimeLimit(long timeLimit) {
+    public ProcessLauncher setTimeLimit(long timeLimit) {
         this.timeLimit(timeLimit);
+        return this;
+    }
+
+    public Runnable onParallel() {
+        return this.onParallel;
+    }
+
+    public Runnable getOnParallel() {
+        return this.onParallel();
+    }
+
+    public ProcessLauncher onParallel(Runnable onParallel) {
+        this.onParallel = onParallel;
+        return this;
+    }
+
+    public ProcessLauncher setOnParallel(Runnable onParallel) {
+        this.onParallel(onParallel);
+        return this;
+    }
+
+    public Runnable onFinish() {
+        return this.onFinish;
+    }
+
+    public Runnable getOnFinish() {
+        return this.onFinish();
+    }
+
+    public ProcessLauncher onFinish(Runnable onFinish) {
+        this.onFinish = onFinish;
+        return this;
+    }
+
+    public ProcessLauncher setOnFinish(Runnable onFinish) {
+        this.onFinish(onFinish);
         return this;
     }
 
@@ -477,12 +520,12 @@ public class Process {
         return this.await();
     }
 
-    public Process await(boolean await) {
+    public ProcessLauncher await(boolean await) {
         this.await = await;
         return this;
     }
 
-    public Process setAwait(boolean wait) {
+    public ProcessLauncher setAwait(boolean wait) {
         this.await(wait);
         return this;
     }
@@ -524,7 +567,7 @@ public class Process {
     }
 
     private class ExecutionResources {
-        private Process process;
+        private ProcessLauncher processLauncher;
         private java.lang.Process jProcess;
         private java.io.InputStream inputStream = null;
         private java.io.InputStream errorInputStream = null;
@@ -532,8 +575,8 @@ public class Process {
         private StreamGobbler errorInputStreamGobbler = null;
         private Thread thread = null;
 
-        private ExecutionResources(Process process) {
-            this.process = process;
+        private ExecutionResources(ProcessLauncher processLauncher) {
+            this.processLauncher = processLauncher;
         }
 
         private void start() {
@@ -543,7 +586,7 @@ public class Process {
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException e) { }
-                    if (!jProcess.isAlive() || (process.timeLimit() > 0 && System.currentTimeMillis() - startedTime >= process.timeLimit())) {
+                    if (!jProcess.isAlive() || (processLauncher.timeLimit() > 0 && System.currentTimeMillis() - startedTime >= processLauncher.timeLimit())) {
                         thread = null;
                         terminate();
                         break;
@@ -559,19 +602,19 @@ public class Process {
                 thread.interrupt();
                 thread = null;
             }
-            if (process.readOutput()) {
+            if (processLauncher.readOutput()) {
                 inputStreamGobbler.interrupt();
-                if (process.outputStream() != null && outputAutoClose()) {
+                if (processLauncher.outputStream() != null && outputAutoClose()) {
                     try {
-                        process.outputStream().close();
+                        processLauncher.outputStream().close();
                     } catch (IOException e) { }
                 }
             }
-            if (process.readErrorOutput()) {
+            if (processLauncher.readErrorOutput()) {
                 errorInputStreamGobbler.interrupt();
-                if (process.errorOutputStream() != null && errorOutputAutoClose()) {
+                if (processLauncher.errorOutputStream() != null && errorOutputAutoClose()) {
                     try {
-                        process.errorOutputStream().close();
+                        processLauncher.errorOutputStream().close();
                     } catch (IOException e) { }
                 }
             }
