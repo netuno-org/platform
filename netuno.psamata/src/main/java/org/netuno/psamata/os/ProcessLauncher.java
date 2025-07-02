@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 /**
  * Process Launcher
@@ -54,6 +55,9 @@ public class ProcessLauncher {
 
     public java.io.OutputStream outputStream = null;
     public java.io.OutputStream errorOutputStream = null;
+
+    public Consumer<String> outputLineConsumer = null;
+    public Consumer<String> errorOutputLineConsumer = null;
 
     public boolean outputAutoClose = true;
     public boolean errorOutputAutoClose = true;
@@ -342,6 +346,40 @@ public class ProcessLauncher {
         return errorOutput(err);
     }
 
+    public Consumer<String> outputLineConsumer() {
+        return outputLineConsumer;
+    }
+
+    public Consumer<String> getOutputLineConsumer() {
+        return this.outputLineConsumer();
+    }
+
+    public ProcessLauncher outputLineConsumer(Consumer<String> consumer) {
+        outputLineConsumer = consumer;
+        return this;
+    }
+
+    public ProcessLauncher setOutputLineConsumer(Consumer<String> consumer) {
+        return outputLineConsumer(consumer);
+    }
+
+    public Consumer<String> errorOutputLineConsumer() {
+        return errorOutputLineConsumer;
+    }
+
+    public Consumer<String> getErrorOutputLineConsumer() {
+        return this.errorOutputLineConsumer();
+    }
+
+    public ProcessLauncher errorOutputLineConsumer(Consumer<String> consumer) {
+        errorOutputLineConsumer = consumer;
+        return this;
+    }
+
+    public ProcessLauncher setErrorOutputLineConsumer(Consumer<String> consumer) {
+        return errorOutputLineConsumer(consumer);
+    }
+
     public boolean outputAutoClose() {
         return this.outputAutoClose;
     }
@@ -446,7 +484,7 @@ public class ProcessLauncher {
     public Result execute(String... command) throws IOException, InterruptedException {
         ExecutionResources execRes = new ExecutionResources(this);
         Result result = execute(execRes, command);
-        execRes.terminate();
+        execRes.finish();
         return result;
     }
 
@@ -455,13 +493,15 @@ public class ProcessLauncher {
             command = new String[] {shellCommand(), shellParameter(), String.join(" ", command)};
         }
         builder.command(command);
-        execRes.jProcess = builder.start();
+        execRes.process = builder.start();
         execRes.inputStream = null;
         ByteArrayOutputStream baosOutput = null;
         if (isReadOutput()) {
-            execRes.inputStream = execRes.jProcess.getInputStream();
+            execRes.inputStream = execRes.process.getInputStream();
             if (outputStream() != null) {
                 execRes.inputStreamGobbler = new StreamGobbler(execRes.inputStream, outputStream());
+            } else if (outputLineConsumer() != null) {
+                execRes.inputStreamGobbler = new StreamGobbler(execRes.inputStream, outputLineConsumer());
             } else {
                 baosOutput = new ByteArrayOutputStream();
                 execRes.inputStreamGobbler = new StreamGobbler(execRes.inputStream, baosOutput);
@@ -471,9 +511,11 @@ public class ProcessLauncher {
         execRes.errorInputStream = null;
         ByteArrayOutputStream baosOutputError = null;
         if (isReadErrorOutput()) {
-            execRes.errorInputStream = execRes.jProcess.getErrorStream();
+            execRes.errorInputStream = execRes.process.getErrorStream();
             if (errorOutputStream() != null) {
                 execRes.errorInputStreamGobbler = new StreamGobbler(execRes.errorInputStream, errorOutputStream());
+            } else if (errorOutputLineConsumer() != null) {
+                execRes.errorInputStreamGobbler = new StreamGobbler(execRes.errorInputStream, errorOutputLineConsumer());
             } else {
                 execRes.errorInputStreamGobbler = new StreamGobbler(execRes.errorInputStream, baosOutputError);
             }
@@ -482,8 +524,8 @@ public class ProcessLauncher {
         // Initialize a thread that manages the closing IO and the exit delay.
         execRes.start();
         if (getWaitFor() > 0) {
-            while (execRes.jProcess.waitFor(getWaitFor(), TimeUnit.MILLISECONDS)) {
-                if (!execRes.jProcess.isAlive()) {
+            while (execRes.process.waitFor(getWaitFor(), TimeUnit.MILLISECONDS)) {
+                if (!execRes.process.isAlive()) {
                     break;
                 }
             }
@@ -494,17 +536,17 @@ public class ProcessLauncher {
         } catch (InterruptedException e) { }
         // Exit Code
         int exitCode = 0;
-        if (waitFor() >= 0 && execRes.jProcess.isAlive()) {
-            exitCode = execRes.jProcess.waitFor();
+        if (waitFor() >= 0 && execRes.process.isAlive()) {
+            exitCode = execRes.process.waitFor();
         } else {
-            exitCode = execRes.jProcess.exitValue();
+            exitCode = execRes.process.exitValue();
         }
         // IO graceful time
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) { }
         // Destroy process and terminate stream threads
-        execRes.terminate();
+        execRes.finish();
         return new Result(
                 baosOutput != null ? baosOutput.toString() : null,
                 baosOutputError != null ? baosOutputError.toString() : null,
@@ -558,7 +600,7 @@ public class ProcessLauncher {
             try {
                 thread.join();
             } catch (InterruptedException e) { }
-            execRes.terminate();
+            execRes.finish();
         }
         if (ioException.get() != null) {
             throw ioException.get();
@@ -568,12 +610,13 @@ public class ProcessLauncher {
 
     private class ExecutionResources {
         private ProcessLauncher processLauncher;
-        private java.lang.Process jProcess;
+        private Process process;
         private java.io.InputStream inputStream = null;
         private java.io.InputStream errorInputStream = null;
         private StreamGobbler inputStreamGobbler = null;
         private StreamGobbler errorInputStreamGobbler = null;
-        private Thread thread = null;
+        private Thread monitorThread = null;
+        private Thread parallelThread = null;
 
         private ExecutionResources(ProcessLauncher processLauncher) {
             this.processLauncher = processLauncher;
@@ -581,26 +624,38 @@ public class ProcessLauncher {
 
         private void start() {
             long startedTime = System.currentTimeMillis();
-            thread = new Thread(() -> {
+            if (processLauncher.onParallel() != null) {
+                parallelThread = new Thread(processLauncher.onParallel);
+                parallelThread.setName("Netuno Psamata: Process Parallel");
+                parallelThread.start();
+            }
+            monitorThread = new Thread(() -> {
                 while (true) {
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException e) { }
-                    if (!jProcess.isAlive() || (processLauncher.timeLimit() > 0 && System.currentTimeMillis() - startedTime >= processLauncher.timeLimit())) {
-                        thread = null;
-                        terminate();
+                    if (!process.isAlive() || (processLauncher.timeLimit() > 0 && System.currentTimeMillis() - startedTime >= processLauncher.timeLimit())) {
+                        monitorThread = null;
+                        finish();
                         break;
                     }
                 }
             });
-            thread.setName("Netuno Psamata: Process - Force Termination");
-            thread.start();
+            monitorThread.setName("Netuno Psamata: Process Monitor");
+            monitorThread.start();
         }
 
-        private void terminate() {
-            if (thread != null) {
-                thread.interrupt();
-                thread = null;
+        private void finish() {
+            if (monitorThread != null) {
+                monitorThread.interrupt();
+                monitorThread = null;
+                if (processLauncher.onFinish() != null) {
+                    processLauncher.onFinish().run();
+                }
+            }
+            if (parallelThread != null) {
+                parallelThread.interrupt();
+                parallelThread = null;
             }
             if (processLauncher.readOutput()) {
                 inputStreamGobbler.interrupt();
@@ -630,11 +685,11 @@ public class ProcessLauncher {
                 } catch (IOException e) { }
                 errorInputStream = null;
             }
-            if (jProcess.isAlive()) {
-                jProcess.destroy();
+            if (process.isAlive()) {
+                process.destroy();
             }
-            if (jProcess.isAlive()) {
-                jProcess.destroyForcibly();
+            if (process.isAlive()) {
+                process.destroyForcibly();
             }
         }
     }
