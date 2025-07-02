@@ -24,7 +24,6 @@ import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
-import org.netuno.psamata.os.Process;
 import org.netuno.tritao.hili.Hili;
 
 import java.io.IOException;
@@ -362,8 +361,8 @@ public class OS extends ResourceBase {
         return file.exists() && file.isDirectory();
     }
 
-    public Process initProcess() {
-        return new Process();
+    public ProcessLauncher initProcess() {
+        return new ProcessLauncher();
     }
 
     @LibraryDoc(translations = {
@@ -380,9 +379,9 @@ public class OS extends ResourceBase {
                     howToUse = {}
             )
     })
-    public class Process extends org.netuno.psamata.os.Process {
+    public class ProcessLauncher extends org.netuno.psamata.os.ProcessLauncher {
 
-        private Process() {
+        private ProcessLauncher() {
             super();
         }
 
@@ -394,12 +393,12 @@ public class OS extends ResourceBase {
             return super.isReadOutput();
         }
 
-        public Process readOutput(boolean readOutput) {
+        public ProcessLauncher readOutput(boolean readOutput) {
             super.readOutput(readOutput);
             return this;
         }
 
-        public Process setReadOutput(boolean readOutput) {
+        public ProcessLauncher setReadOutput(boolean readOutput) {
             super.setReadOutput(readOutput);
             return this;
         }
@@ -412,12 +411,12 @@ public class OS extends ResourceBase {
             return super.isReadErrorOutput();
         }
 
-        public Process readErrorOutput(boolean readErrorOutput) {
+        public ProcessLauncher readErrorOutput(boolean readErrorOutput) {
             super.readErrorOutput(readErrorOutput);
             return this;
         }
 
-        public Process setReadErrorOutput(boolean readErrorOutput) {
+        public ProcessLauncher setReadErrorOutput(boolean readErrorOutput) {
             super.setReadErrorOutput(readErrorOutput);
             return this;
         }
@@ -430,12 +429,12 @@ public class OS extends ResourceBase {
             return super.isInheritOutput();
         }
 
-        public Process inheritOutput(boolean inheritOutput) {
+        public ProcessLauncher inheritOutput(boolean inheritOutput) {
             super.inheritOutput(inheritOutput);
             return this;
         }
 
-        public Process setInheritOutput(boolean inheritOutput) {
+        public ProcessLauncher setInheritOutput(boolean inheritOutput) {
             super.setInheritOutput(inheritOutput);
             return this;
         }
@@ -448,12 +447,12 @@ public class OS extends ResourceBase {
             return super.isInheritErrorOutput();
         }
 
-        public Process inheritErrorOutput(boolean inheritErrorOutput) {
+        public ProcessLauncher inheritErrorOutput(boolean inheritErrorOutput) {
             super.inheritErrorOutput(inheritErrorOutput);
             return this;
         }
 
-        public Process setInheritErrorOutput(boolean inheritErrorOutput) {
+        public ProcessLauncher setInheritErrorOutput(boolean inheritErrorOutput) {
             super.setInheritErrorOutput(inheritErrorOutput);
             return this;
         }
@@ -466,12 +465,12 @@ public class OS extends ResourceBase {
             return super.isRedirectErrorStream();
         }
 
-        public Process redirectErrorStream(boolean redirectErrorStream) {
+        public ProcessLauncher redirectErrorStream(boolean redirectErrorStream) {
             super.redirectErrorStream(redirectErrorStream);
             return this;
         }
 
-        public Process setRedirectErrorStream(boolean redirectErrorStream) {
+        public ProcessLauncher setRedirectErrorStream(boolean redirectErrorStream) {
             super.setRedirectErrorStream(redirectErrorStream);
             return this;
         }
@@ -484,12 +483,12 @@ public class OS extends ResourceBase {
             return super.getWaitFor();
         }
 
-        public Process waitFor(long waitFor) {
+        public ProcessLauncher waitFor(long waitFor) {
             super.waitFor(waitFor);
             return this;
         }
 
-        public Process setWaitFor(long waitFor) {
+        public ProcessLauncher setWaitFor(long waitFor) {
             super.setWaitFor(waitFor);
             return this;
         }
@@ -551,28 +550,28 @@ public class OS extends ResourceBase {
                         description = "Instance of the operating system resource."
                 )
         })
-        public Process directory(String directory) {
+        public ProcessLauncher directory(String directory) {
             super.directory(directory);
             return this;
         }
-        public Process setDirectory(String directory) {
+        public ProcessLauncher setDirectory(String directory) {
             super.setDirectory(directory);
             return this;
         }
 
-        public Process directory(File file) {
+        public ProcessLauncher directory(File file) {
             super.directory(file.fullPath());
             return this;
         }
-        public Process setDirectory(File file) {
+        public ProcessLauncher setDirectory(File file) {
             super.setDirectory(file);
             return this;
         }
 
-        public Process directory(Storage storage) {
+        public ProcessLauncher directory(Storage storage) {
             return directory(storage.absolutePath());
         }
-        public Process setDirectory(Storage storage) {
+        public ProcessLauncher setDirectory(Storage storage) {
             return directory(storage);
         }
 
@@ -583,11 +582,11 @@ public class OS extends ResourceBase {
             return super.getShell();
         }
 
-        public Process shell(boolean shell) {
+        public ProcessLauncher shell(boolean shell) {
             super.shell(shell);
             return this;
         }
-        public Process setShell(boolean shell) {
+        public ProcessLauncher setShell(boolean shell) {
             super.setShell(shell);
             return this;
         }
@@ -599,11 +598,11 @@ public class OS extends ResourceBase {
             return super.getShellCommand();
         }
 
-        public Process shellCommand(String shellCommand) {
+        public ProcessLauncher shellCommand(String shellCommand) {
             super.shellCommand(shellCommand);
             return this;
         }
-        public Process setShellCommand(String shellCommand) {
+        public ProcessLauncher setShellCommand(String shellCommand) {
             super.setShellCommand(shellCommand);
             return this;
         }
@@ -615,12 +614,12 @@ public class OS extends ResourceBase {
             return super.getShellParameter();
         }
 
-        public org.netuno.psamata.os.Process shellParameter(String shellParameter) {
+        public ProcessLauncher shellParameter(String shellParameter) {
             super.shellParameter(shellParameter);
             return this;
         }
 
-        public Process setShellParameter(String shellParameter) {
+        public ProcessLauncher setShellParameter(String shellParameter) {
             super.setShellParameter(shellParameter);
             return this;
         }
@@ -632,12 +631,12 @@ public class OS extends ResourceBase {
             return super.getEnv();
         }
 
-        public Process env(Values env) {
+        public ProcessLauncher env(Values env) {
             super.env(env);
             return this;
         }
 
-        public Process setEnv(Values env) {
+        public ProcessLauncher setEnv(Values env) {
             super.setEnv(env);
             return this;
         }
@@ -650,22 +649,22 @@ public class OS extends ResourceBase {
             return super.outputStream();
         }
 
-        public Process outputStream(java.io.OutputStream out) {
+        public ProcessLauncher outputStream(java.io.OutputStream out) {
             super.outputStream(out);
             return this;
         }
 
-        public Process setOutputStream(java.io.OutputStream out) {
+        public ProcessLauncher setOutputStream(java.io.OutputStream out) {
             super.setOutputStream(out);
             return this;
         }
 
-        public Process output(OutputStream out) {
+        public ProcessLauncher output(OutputStream out) {
             super.output(out);
             return this;
         }
 
-        public Process setOutput(OutputStream out) {
+        public ProcessLauncher setOutput(OutputStream out) {
             super.setOutput(out);
             return this;
         }
@@ -678,22 +677,22 @@ public class OS extends ResourceBase {
             return super.getErrorOutputStream();
         }
 
-        public Process errorOutputStream(java.io.OutputStream err) {
+        public ProcessLauncher errorOutputStream(java.io.OutputStream err) {
             super.errorOutputStream(err);
             return this;
         }
 
-        public Process setErrorStream(java.io.OutputStream err) {
+        public ProcessLauncher setErrorStream(java.io.OutputStream err) {
             super.setErrorOutputStream(err);
             return this;
         }
 
-        public Process errorOutputStream(OutputStream err) {
+        public ProcessLauncher errorOutputStream(OutputStream err) {
             super.errorOutputStream(err);
             return this;
         }
 
-        public Process setErrorOutputStream(OutputStream err) {
+        public ProcessLauncher setErrorOutputStream(OutputStream err) {
             super.setErrorOutputStream(err);
             return this;
         }
@@ -706,12 +705,12 @@ public class OS extends ResourceBase {
             return super.outputAutoClose();
         }
 
-        public Process outputAutoClose(boolean outputAutoClose) {
+        public ProcessLauncher outputAutoClose(boolean outputAutoClose) {
             super.outputAutoClose(outputAutoClose);
             return this;
         }
 
-        public Process setOutputAutoClose(boolean outputAutoClose) {
+        public ProcessLauncher setOutputAutoClose(boolean outputAutoClose) {
             super.setOutputAutoClose(outputAutoClose);
             return this;
         }
@@ -724,12 +723,12 @@ public class OS extends ResourceBase {
             return super.isErrorOutputAutoClose();
         }
 
-        public Process errorOutputAutoClose(boolean errorOutputAutoClose) {
+        public ProcessLauncher errorOutputAutoClose(boolean errorOutputAutoClose) {
             super.errorOutputAutoClose(errorOutputAutoClose);
             return this;
         }
 
-        public Process setErrorOutputAutoClose(boolean errorOutputAutoClose) {
+        public ProcessLauncher setErrorOutputAutoClose(boolean errorOutputAutoClose) {
             super.setErrorOutputAutoClose(errorOutputAutoClose);
             return this;
         }
@@ -742,12 +741,12 @@ public class OS extends ResourceBase {
             return super.getTimeLimit();
         }
 
-        public Process timeLimit(long timeLimit) {
+        public ProcessLauncher timeLimit(long timeLimit) {
             super.timeLimit(timeLimit);
             return this;
         }
 
-        public Process setExitDelay(long timeLimit) {
+        public ProcessLauncher setExitDelay(long timeLimit) {
             super.setTimeLimit(timeLimit);
             return this;
         }
@@ -806,12 +805,12 @@ public class OS extends ResourceBase {
             return super.getAwait();
         }
 
-        public Process await(boolean wait) {
+        public ProcessLauncher await(boolean wait) {
             super.await(wait);
             return this;
         }
 
-        public Process setAwait(boolean wait) {
+        public ProcessLauncher setAwait(boolean wait) {
             super.setAwait(wait);
             return this;
         }
@@ -845,7 +844,7 @@ public class OS extends ResourceBase {
                         howToUse = {}
                 )
         })
-        public class ProcessResult extends org.netuno.psamata.os.Process.Result {
+        public class ProcessResult extends org.netuno.psamata.os.ProcessLauncher.Result {
 
             private ProcessResult(Result result) {
                 super(result.output(), result.outputError(), result.exitCode());
