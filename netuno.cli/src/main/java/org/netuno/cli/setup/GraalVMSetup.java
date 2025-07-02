@@ -224,17 +224,17 @@ public class GraalVMSetup {
                     new File(path, graalVMFolderName).mkdirs();
                     ProcessLauncher processLauncher = new ProcessLauncher();
                     processLauncher.directory(path);
-                    processLauncher.onParallel(()-> {
-                        try {
+                    processLauncher.onParallel((pt)-> {
+                        while(pt.isRunning()) {
                             System.out.print(". ");
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) { }
+                            pt.pause(500);
+                        }
                     });
                     processLauncher.outputLineConsumer(System.out::println);
                     processLauncher.errorOutputLineConsumer(System.err::println);
-                    ProcessLauncher.Result processResult = processLauncher.execute("tar -xzf " + graalVMFileName + " --strip " + strip + " -C " + graalVMFolderName);
+                    ProcessLauncher.Result result = processLauncher.execute("tar -xzf " + graalVMFileName + " --strip " + strip + " -C " + graalVMFolderName);
                     try {
-                        if (processResult.exitCode() != 0) {
+                        if (result.exitCode() != 0) {
                             if (new File(path, graalVMFileName).delete() && installGraalVM == 0) {
                                 System.out.println();
                                 System.out.println(OS.consoleOutput("@|red The GraalVM file has corrupted... will try download again!|@ . "));
