@@ -24,13 +24,11 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.utils.OS;
-import org.netuno.psamata.io.StreamGobbler;
-import org.netuno.psamata.Values;
 import org.netuno.psamata.net.Download;
+import org.netuno.psamata.os.ProcessLauncher;
 
 import java.io.*;
 import java.util.Enumeration;
-import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -80,23 +78,12 @@ public class GraalVMSetup {
             StringBuilder versionOutput = new StringBuilder();
             StringBuilder versionError = new StringBuilder();
             for (int i = 0; i < 2; i++) {
-                ProcessBuilder builder = new ProcessBuilder();
-                builder.command(new String[]{
-                        (i == 0 ? "./" : "")
-                                + "java",
-                        "-version"
-                });
-                builder.directory(new File(graalVMFolder, "bin"));
-                //int exitCode = 0;
                 try {
-                    Process process = builder.start();
-                    StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), versionOutput::append);
-                    Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-                    StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), versionError::append);
-                    Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-                    //exitCode = process.waitFor();
-                    process.waitFor();
-                    process.destroy();
+                    ProcessLauncher process = new ProcessLauncher();
+                    process.directory(new File(graalVMFolder, "bin").toString());
+                    process.outputLineConsumer(versionOutput::append);
+                    process.errorOutputLineConsumer(versionError::append);
+                    process.execute((i == 0 ? "./" : "") + "java", "-version");
                     break;
                 } catch (Exception e) {
                     if (i == 0 && SystemUtils.IS_OS_WINDOWS) {
@@ -235,30 +222,19 @@ public class GraalVMSetup {
                 if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
                     int strip = SystemUtils.IS_OS_MAC ? 3 : 1;
                     new File(path, graalVMFolderName).mkdirs();
-                    ProcessBuilder builder = new ProcessBuilder();
-                    builder.command(new String[]{"sh", "-c", "tar -xzf " + graalVMFileName + " --strip " + strip + " -C " + graalVMFolderName});
-                    builder.directory(new File(path));
-                    Process process = builder.start();
-                    Values executing = new Values();
-                    executing.set("run", true);
-                    new Thread(() -> {
-                        while (executing.getBoolean("run")) {
-                            try {
-                                System.out.print(". ");
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-
-                            }
-                        }
-                    }).start();
+                    ProcessLauncher processLauncher = new ProcessLauncher();
+                    processLauncher.directory(path);
+                    processLauncher.onParallel(()-> {
+                        try {
+                            System.out.print(". ");
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) { }
+                    });
+                    processLauncher.outputLineConsumer(System.out::println);
+                    processLauncher.errorOutputLineConsumer(System.err::println);
+                    ProcessLauncher.Result processResult = processLauncher.execute("tar -xzf " + graalVMFileName + " --strip " + strip + " -C " + graalVMFolderName);
                     try {
-                        StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
-                        Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-                        StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err::println);
-                        Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-                        int exitCode = process.waitFor();
-                        process.destroy();
-                        if (exitCode != 0) {
+                        if (processResult.exitCode() != 0) {
                             if (new File(path, graalVMFileName).delete() && installGraalVM == 0) {
                                 System.out.println();
                                 System.out.println(OS.consoleOutput("@|red The GraalVM file has corrupted... will try download again!|@ . "));
@@ -271,7 +247,6 @@ public class GraalVMSetup {
                         }
                         break;
                     } finally {
-                        executing.set("run", false);
                         installJS(path);
                     }
                 } else {
