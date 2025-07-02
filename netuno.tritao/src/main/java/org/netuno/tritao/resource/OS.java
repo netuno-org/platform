@@ -697,39 +697,21 @@ public class OS extends ResourceBase {
             return this;
         }
 
-        public boolean outputAutoClose() {
-            return super.outputAutoClose;
+        public boolean autoCloseOutputStreams() {
+            return super.autoCloseOutputStreams();
         }
 
-        public boolean isOutputAutoClose() {
-            return super.outputAutoClose();
+        public boolean isAutoCloseOutputStreams() {
+            return super.autoCloseOutputStreams();
         }
 
-        public ProcessLauncher outputAutoClose(boolean outputAutoClose) {
-            super.outputAutoClose(outputAutoClose);
+        public ProcessLauncher autoCloseOutputStreams(boolean autoCloseOutputStreams) {
+            super.autoCloseOutputStreams(autoCloseOutputStreams);
             return this;
         }
 
-        public ProcessLauncher setOutputAutoClose(boolean outputAutoClose) {
-            super.setOutputAutoClose(outputAutoClose);
-            return this;
-        }
-
-        public boolean errorOutputAutoClose() {
-            return super.errorOutputAutoClose;
-        }
-
-        public boolean isErrorOutputAutoClose() {
-            return super.isErrorOutputAutoClose();
-        }
-
-        public ProcessLauncher errorOutputAutoClose(boolean errorOutputAutoClose) {
-            super.errorOutputAutoClose(errorOutputAutoClose);
-            return this;
-        }
-
-        public ProcessLauncher setErrorOutputAutoClose(boolean errorOutputAutoClose) {
-            super.setErrorOutputAutoClose(errorOutputAutoClose);
+        public ProcessLauncher setAutoCloseOutputStreams(boolean autoCloseOutputStreams) {
+            super.setAutoCloseOutputStreams(autoCloseOutputStreams);
             return this;
         }
 
