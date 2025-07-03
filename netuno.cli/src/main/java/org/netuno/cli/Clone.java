@@ -20,6 +20,7 @@ package org.netuno.cli;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.netuno.cli.app.AppFS;
 import org.netuno.cli.setup.GraalVMSetup;
 import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
@@ -123,7 +124,7 @@ public class Clone implements MainArg {
                         .set("error", "true")
                         .set("code", "invalid_name").toJSON();
             }
-            String toPath = App.getPath(toAppName);
+            String toPath = AppFS.getPath(toAppName);
             File toFilePath = new File(toPath);
             if (!toFilePath.exists()) {
                 logger.info("Cloning "+ fromAppName +" to "+ toAppName +".");
@@ -131,13 +132,13 @@ public class Clone implements MainArg {
                 System.err.println(OS.consoleOutput("@|cyan Cloning "+ fromAppName +" to "+ toAppName +".|@"));
                 System.err.println();
                 FileUtils.copyDirectory(
-                    new File(App.getPath(fromAppName)),
+                    new File(AppFS.getPath(fromAppName)),
                     toFilePath,
                     FileFilterUtils.notFileFilter(FileFilterUtils.nameFileFilter("node_modules"))
                 );
 
                 List<Values> configsBase = new ArrayList<>();
-                for (File file : new File(App.getPathConfig(toAppName)).listFiles()) {
+                for (File file : new File(AppFS.getConfigFolder(toAppName)).listFiles()) {
                     if (FilenameUtils.getBaseName(file.getName()).startsWith("_")
                             && FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("json")) {
                         configsBase.add(new Values()
