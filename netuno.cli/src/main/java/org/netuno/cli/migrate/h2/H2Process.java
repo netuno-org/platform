@@ -21,12 +21,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.setup.Constants;
 import org.netuno.cli.utils.OS;
-import org.netuno.psamata.io.StreamGobbler;
+import org.netuno.psamata.os.ProcessLauncher;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,7 +36,7 @@ import java.util.stream.Stream;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 class H2Process {
-    private static Logger logger = LogManager.getLogger(H2DatabaseMigration.class);
+    private static final Logger logger = LogManager.getLogger(H2Process.class);
 
     protected static void run(H2ProcessInfo processInfo, H2Version version) {
         System.out.println();
@@ -76,12 +75,9 @@ class H2Process {
                     ""
                 )+";"
         };
-        ProcessBuilder builder = new ProcessBuilder();
-        builder.command(command);
-        builder.directory(directory.toFile());
-        StringBuilder processOutput = new StringBuilder();
+        ProcessLauncher processLauncher = new ProcessLauncher();
+        processLauncher.directory(directory.toFile());
         StringBuilder processError = new StringBuilder();
-        Process process = null;
         Consumer<Throwable> logError = (t) -> {
             logger.warn("\n#\n# Fail to "
                     + (processInfo.type() == H2MigrationType.EXPORTATION ?
@@ -111,12 +107,8 @@ class H2Process {
                     +"\n#", t);
         };
         try {
-            process = builder.start();
-            StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), processOutput::append);
-            Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-            StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), processError::append);
-            Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-            process.waitFor();
+            ProcessLauncher.Result processResult = processLauncher.execute(command);
+            processError.append(processResult.outputError());
             if (processInfo.type() == H2MigrationType.EXPORTATION && processError.length() == 0) {
                 Path exportedSQLFile = directory.resolve(processInfo.dbName() +"-"+ processInfo.id() +".sql");
                 Stream<String> lines = Files.lines(exportedSQLFile);
@@ -128,10 +120,6 @@ class H2Process {
             }
         } catch (Exception e) {
             logError.accept(e);
-        } finally {
-            if (process != null) {
-                process.destroy();
-            }
         }
         if (processError.length() > 0) {
             logError.accept(null);
