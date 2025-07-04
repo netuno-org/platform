@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -192,6 +193,9 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 case UUID uuidValue -> {
                     values.set(field.getColumn(), uuidValue);
+                }
+                case ArrayList arrayListValue -> {
+                    values.set(field.getColumn(), arrayListValue);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + value);
             }
