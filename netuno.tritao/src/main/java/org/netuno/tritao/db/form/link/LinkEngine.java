@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -188,6 +189,9 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 case File fileValue -> {
                     values.set(field.getColumn(), fileValue);
+                }
+                case UUID uuidValue -> {
+                    values.set(field.getColumn(), uuidValue);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + value);
             }
