@@ -298,6 +298,9 @@ public class GraalRunner implements AutoCloseable {
     }
 
     public static Object toObject(Value v) {
+        if (v == null) {
+            return null;
+        }
         if (v.isNull()) {
             return null;
         } else if (v.isHostObject()) {
