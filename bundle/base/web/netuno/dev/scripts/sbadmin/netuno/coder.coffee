@@ -38,7 +38,7 @@ class NetunoCoder
               $li
                 .find('.jqtree-element')
                 .append(
-                  """ &middot; <a href="#node-#{ node.id }" class="create" data-node-id="#{node.id }"><i class="fa fa-plus-circle" /></a>"""
+                  """ &middot; <a href="#node-#{ node.id }" class="create" data-node-id="#{node.id }"><i class="fa-regular fa-circle" /></a>"""
                 )
         })
         @containers.filesystem.tree.find('.create').on('click', (e) =>
