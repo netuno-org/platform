@@ -51,20 +51,19 @@ public class Main extends WebMaster {
             return;
         }
 
-        Values data = new Values();
-        Values jsonMenu = new Values();
+        Values data = Values.newMap();
+        Values jsonMenu = Values.newMap();
         
-        Values jsonArrayForms = new Values();
-        jsonArrayForms.toList();
-        jsonMenuTables(jsonArrayForms, "0");
-        jsonMenuTablesOrphans(jsonArrayForms);
+        Values jsonArrayForms = Values.newList();
+        jsonTables(jsonArrayForms, "0");
+        jsonTablesOrphans(jsonArrayForms);
         jsonMenu.put("forms", jsonArrayForms);
         
         getProteu().getRequestAll().set("report", "true");
-        Values jsonArrayReports = new Values();
+        Values jsonArrayReports = Values.newList();
         jsonArrayReports.toList();
-        jsonMenuTables(jsonArrayReports, "0");
-        jsonMenuTablesOrphans(jsonArrayReports);
+        jsonTables(jsonArrayReports, "0");
+        jsonTablesOrphans(jsonArrayReports);
         getProteu().getRequestAll().set("report", "false");
         jsonMenu.put("reports", jsonArrayReports);
 
@@ -83,29 +82,45 @@ public class Main extends WebMaster {
         template.out("dev/includes/foot");
     }
     
-    private void addTable(Values jsonArray, Values rowTable) throws IOException, JSONException {
-    	Values jsonArrayChilds = new Values();
-        jsonMenuTables(jsonArrayChilds, rowTable.getString("id"));
-        Values jsonObject = new Values();
-        jsonObject.put("id", rowTable.getString("id"));
-        jsonObject.put("uid", rowTable.getString("uid"));
-        jsonObject.put("name", rowTable.getString("name"));
-        jsonObject.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(rowTable.getString("displayname")));
-        jsonObject.put("items", jsonArrayChilds);
-        jsonArray.add(jsonObject);
+    private void addTable(Values tables, Values dbTable) throws IOException, JSONException {
+    	Values subtables = Values.newList();
+        jsonTables(subtables, dbTable.getString("id"));
+        Values table = Values.newMap();
+        table.put("id", dbTable.getString("id"));
+        table.put("uid", dbTable.getString("uid"));
+        table.put("name", dbTable.getString("name"));
+        table.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbTable.getString("displayname")));
+        table.put("label", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbTable.getString("displayname")));
+        table.put("description", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbTable.getString("description")));
+        table.put("items", subtables);
+        Values fields = Values.newList();
+        List<Values> dbFields = Config.getDBBuilder(getProteu()).selectTableDesignXY(dbTable.getString("id"));
+        for (Values dbField : dbFields) {
+            fields.add(
+                Values.newMap()
+                        .set("name", dbField.getString("name"))
+                        .set("type", dbField.getString("type"))
+                        .set("label", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbField.getString("displayname")))
+                        .set("description", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbField.getString("description")))
+                        .set("y", dbField.getInt("y"))
+                        .set("x", dbField.getInt("x"))
+            );
+        }
+        table.put("fields", fields);
+        tables.add(table);
     }
     
-    private void jsonMenuTablesOrphans(Values jsonArray) throws IOException, JSONException {
-    	List<Values> rsTableByOrphans = Config.getDBBuilder(getProteu()).selectTablesByOrphans();
-        for (Values rowTritaoTableByOrphans : rsTableByOrphans) {
-        	addTable(jsonArray, rowTritaoTableByOrphans);
+    private void jsonTablesOrphans(Values tables) throws IOException, JSONException {
+    	List<Values> dbTablesByOrphans = Config.getDBBuilder(getProteu()).selectTablesByOrphans();
+        for (Values dbTable : dbTablesByOrphans) {
+        	addTable(tables, dbTable);
         }
     }
     
-    private void jsonMenuTables(Values jsonArray, String id) throws IOException, JSONException {
-        List<Values> rsTableByParent = Config.getDBBuilder(getProteu()).selectTablesByParent(id);
-        for (Values rowTritaoTableByParent : rsTableByParent) {
-            addTable(jsonArray, rowTritaoTableByParent);
+    private void jsonTables(Values tables, String id) throws IOException, JSONException {
+        List<Values> dbTablesByParent = Config.getDBBuilder(getProteu()).selectTablesByParent(id);
+        for (Values dbTable : dbTablesByParent) {
+            addTable(tables, dbTable);
         }
     }
 
