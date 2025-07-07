@@ -302,7 +302,8 @@ body {
 .search-content .btn-filter,
 #netuno_user_form .btn-auth-history,
 #netuno_user_form .btn-auth-history-unlock {
-    padding: 3px;
+    padding: 5px;
+    color: #ffffff;
     background-color: #3f53bb;
     border: none;
     border-radius: 4px;
