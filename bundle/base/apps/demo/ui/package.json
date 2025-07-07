@@ -4,11 +4,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build ",
-    "watch": "vite build --watch",
+    "dev": "bunx --bun vite",
+    "build": "bunx --bun vite build ",
+    "watch": "bunx --bun vite build --watch",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "bunx --bun vite preview"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",

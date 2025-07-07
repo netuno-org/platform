@@ -22,6 +22,7 @@ import org.eclipse.jetty.session.DefaultSessionCacheFactory;
 import org.eclipse.jetty.session.FileSessionDataStoreFactory;
 import org.eclipse.jetty.session.SessionCache;
 import org.netuno.cli.monitoring.Monitor;
+import org.netuno.cli.app.AppCommand;
 import org.netuno.cli.setup.GraalVMSetup;
 
 import com.vdurmont.emoji.EmojiParser;
@@ -475,79 +476,7 @@ class CheckServerStartedRunnable implements Runnable {
 
                             for (Values command : commands.listOfValues()) {
                                 if (command.getBoolean("enabled")) {
-                                    String path = command.getString("path");
-                                    if (path.isEmpty()) {
-                                        logger.fatal("In "+ config.getString("name") +", configuration has commands without path:\n"+ command.toJSON());
-                                        return;
-                                    }
-                                    File folder = null;
-                                    if (path.startsWith(File.separator) || path.startsWith("/") || path.startsWith("\\")) {
-                                        folder = new File(path);
-                                    } else {
-                                        folder = new File(new File(Config.getAppsHome(), config.getString("home")), path);
-                                    }
-                                    String cmd = command.getString("command").trim();
-                                    if (cmd.isEmpty()) {
-                                        logger.fatal("In "+ config.getString("name") +", configuration has commands without command:\n"+ command.toJSON());
-                                        return;
-                                    }
-                                    if (folder.exists()) {
-                                        if (new File(folder, "package.json").exists()
-                                                && !new File(folder, "node_modules").exists()) {
-                                            String executable = "";
-                                            if (cmd.indexOf(" ") > 0) {
-                                                executable = cmd.substring(0, cmd.indexOf(" "));
-                                            }
-                                            if (executable.equals("npm") || executable.equals("yarn")) {
-                                                System.out.println(OS.consoleOutput("   @|green "+ config.getString("name") +"/"+ path +":|@ @|yellow Please wait... running NPM Install for the first time. |@"));
-                                                System.out.println();
-                                                ProcessBuilder builder = new ProcessBuilder();
-                                                // ../../../../graalvm/bin/npm
-                                                String installCommand = command.getString("install", executable +" install");
-                                                if (OS.isWindows()) {
-                                                    builder.command("cmd.exe", "/c", installCommand);
-                                                } else {
-                                                    builder.command("sh", "-c", installCommand);
-                                                }
-                                                builder.directory(folder);
-                                                Process process = builder.start();
-                                                StreamGobbler inGobbler = new StreamGobbler(process.getInputStream(), System.out);
-                                                StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), System.err);
-                                                ExecutorService inExecutorService = Executors.newSingleThreadExecutor();
-                                                inExecutorService.submit(inGobbler);
-                                                ExecutorService errorExecutorService = Executors.newSingleThreadExecutor();
-                                                errorExecutorService.submit(errorGobbler);
-                                                int exitCode = process.waitFor();
-                                                inExecutorService.shutdownNow();
-                                                errorExecutorService.shutdownNow();
-                                                if (exitCode != 0) {
-                                                    logger.fatal("NPM Install failed.");
-                                                }
-                                            }
-                                        }
-                                        Values env = command.getValues("env");
-                                        if (env != null && !env.isEmpty()) {
-                                            for (String var : env.list(String.class)) {
-                                                if (OS.isWindows()) {
-                                                    cmd = "set "+ var + " & " + cmd;
-                                                } else {
-                                                    cmd = var + " " + cmd;
-                                                }
-                                            }
-                                        }
-                                        ProcessBuilder builder = new ProcessBuilder();
-                                        if (OS.isWindows()) {
-                                            builder.command("cmd.exe", "/c", cmd);
-                                        } else {
-                                            builder.command("sh", "-c", cmd);
-                                        }
-                                        builder.directory(folder);
-                                        Process process = builder.start();
-                                        StreamGobbler inputStreamGobbler = new StreamGobbler(process.getInputStream(), System.out);
-                                        Executors.newSingleThreadExecutor().submit(inputStreamGobbler);
-                                        StreamGobbler errorStreamGobbler = new StreamGobbler(process.getErrorStream(), System.err);
-                                        Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
-                                    }
+                                    AppCommand.execute(appConfig, command);
                                 }
                             }
                         }

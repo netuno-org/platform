@@ -17,6 +17,9 @@
 
 package org.netuno.psamata.io;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,44 +33,49 @@ import java.util.function.Consumer;
  * 
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class StreamGobbler implements Runnable {
+public class StreamGobbler extends Thread {
+    private static Logger logger = LogManager.getLogger(StreamGobbler.class);
     private InputStream inputStream = null;
     private OutputStream outputStream = null;
     private Consumer<String> consumer = null;
     
     public StreamGobbler(InputStream inputStream, OutputStream outputStream) {
+        this.setName("Netuno Psamata: Stream Gobbler");
         this.inputStream = inputStream;
         this.outputStream = outputStream;
     }
     
     public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
+        this.setName("Netuno Psamata: Stream Gobbler");
         this.inputStream = inputStream;
         this.consumer = consumer;
     }
 
     @Override
     public void run() {
-        if (consumer != null) {
+        if (inputStream != null && consumer != null) {
             new BufferedReader(new InputStreamReader(inputStream)).lines()
                 .forEach(consumer);
         }
-        if (outputStream != null) {
+        if (inputStream != null) {
             byte[] buffer = new byte[1024];
-            while (true) {
+            while (!Thread.interrupted()) {
                 try {
                     int available = inputStream.available();
                     if (available > 0) {
                         int length = inputStream.read(buffer, 0, Math.min(available, buffer.length));
-                        outputStream.write(buffer, 0, length);
+                        if (outputStream != null) {
+                            outputStream.write(buffer, 0, length);
+                        }
                     }
                 } catch (IOException ex) {
-                    try {
-                        byte[] message = ("Failed to read command stream: "+ ex.getMessage() +"\n").getBytes();
-                        outputStream.write(message, 0, message.length);
-                    } catch (IOException e) { }
+                    if (!ex.getMessage().equals("Stream closed")) {
+                        logger.fatal(ex.getMessage(), ex);
+                    }
+                    break;
                 }
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(25);
                 } catch (InterruptedException e) { }
             }
         }

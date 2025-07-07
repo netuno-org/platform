@@ -59,6 +59,10 @@ public interface Event extends Comparable<Event> {
         Manager.getInstance().set(key, event);
     }
 
+    static void setQueueIfNotExists(String key, Event event) {
+        Manager.getInstance().setQueueIfNotExists(key, event);
+    }
+
     static void setQueue(String key, Event event) {
         Manager.getInstance().setQueue(key, event);
     }
@@ -190,6 +194,13 @@ class Manager {
         UNIQUE.put(key, event);
     }
 
+    public void setQueueIfNotExists(String key, Event event) {
+        if (containsKey(key)) {
+            return;
+        }
+        setQueue(key, event);
+    }
+
     public void setQueue(String key, Event event) {
         keyValidation(key);
         checkExists(key, QUEUE);
@@ -199,7 +210,6 @@ class Manager {
             QUEUE_VALUES.put(key, new ConcurrentLinkedQueue<>());
         }
         QUEUE.put(key, event);
-        System.out.println("Thread "+ key + " initialized...!");
         QUEUE_THREAD.put(key, new QueueThread(key, event, QUEUE_VALUES.get(key)));
         QUEUE_THREAD.get(key).start();
     }

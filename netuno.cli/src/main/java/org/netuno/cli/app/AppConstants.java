@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.netuno.cli.setup;
+package org.netuno.cli.app;
 
 /**
- * Default values.
- *
+ * App Constants
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Constants {
-    public static String GRAALVM_VERSION = "24.0.1";
-
-    public static String GRAALVM_FOLDER = "graalvm";
-
-    public static String ROOT_PATH = ".";
+public class AppConstants {
+    public static final String APP_NAME_REGEX = "[a-z0-9_]+";
 }

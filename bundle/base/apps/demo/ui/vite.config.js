@@ -1,14 +1,9 @@
+import { promises as fs } from 'fs';
 import { defineConfig } from 'vite'
-import vitePluginImp from 'vite-plugin-imp';
 import react from '@vitejs/plugin-react-swc'
 
-// https://vitejs.dev/config/
-
-
-/**
- * Library Mode
- * https://vitejs.dev/guide/build.html#library-mode
- */
+const outputBasePath = './../public';
+const outputFilePath = 'scripts/ui.js';
 
 export default defineConfig({
   plugins: [
