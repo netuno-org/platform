@@ -126,7 +126,53 @@ public class DevEndpoint {
                 );
             } else if (jsonMessage.getString("action").equals("step-over")) {
                 int id = jsonMessage.getInt("id");
-                Event.run("tritao:sandbox:debug:" + app + ":step-over:" + id);
+                Event.run("tritao:sandbox:debug:" + app + ":"+ id +":step-over");
+                session.getAsyncRemote().sendText(
+                        Values.newMap()
+                                .set("section", "debug")
+                                .set("action", "step-over")
+                                .set("id", id)
+                                .toJSON()
+                );
+            } else if (jsonMessage.getString("action").equals("watch")) {
+                int id = jsonMessage.getInt("id");
+                String watch = jsonMessage.getString("watch");
+                Values result = Event.run(
+                        "tritao:sandbox:debug:" + app + ":"+ id +":watch",
+                        Values.newMap()
+                                .set("watch", watch)
+                );
+                session.getAsyncRemote().sendText(
+                        Values.newMap()
+                                .set("section", "debug")
+                                .set("action", "watch")
+                                .set("id", id)
+                                .set("watch", watch)
+                                .set("value", result.getString("value"))
+                                .set("moment", result.getString("moment"))
+                                .set("script", result.getValues("script"))
+                                .toJSON()
+                );
+            } else if (jsonMessage.getString("action").equals("execute")) {
+                int id = jsonMessage.getInt("id");
+                String code = jsonMessage.getString("code");
+                Values result = Event.run(
+                        "tritao:sandbox:debug:" + app + ":"+ id +":execute",
+                        Values.newMap()
+                                .set("code", code)
+                );
+                session.getAsyncRemote().sendText(
+                        Values.newMap()
+                                .set("section", "debug")
+                                .set("action", "execute")
+                                .set("id", id)
+                                .set("code", code)
+                                .set("error", result.getBoolean("error"))
+                                .set("message", result.getString("message"))
+                                .set("moment", result.getString("moment"))
+                                .set("script", result.getValues("script"))
+                                .toJSON()
+                );
             }
         }
     }
