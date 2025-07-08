@@ -26,7 +26,6 @@ import org.netuno.tritao.sandbox.SandboxManager;
 import org.netuno.tritao.sandbox.ScriptSourceCode;
 import org.netuno.tritao.sandbox.Scriptable;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,8 +38,6 @@ public class Debugger {
     private static Logger logger = LogManager.getLogger(Debugger.class);
 
     private static List<DebugContext> contexts = Collections.synchronizedList(new ArrayList<>());
-
-    private static DateTimeFormatter momentFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private DebugContext context = null;
 
@@ -72,10 +69,6 @@ public class Debugger {
         context = new DebugContext(app, sandboxManager, script, scriptable);
         contexts.add(context);
         Event.run("tritao:sandbox:debug:"+ app +":new-context", contextToValues(context));
-        Event.add("tritao:sandbox:debug:"+ app +":step-over:" + context.getId(), (v) -> {
-            stepOver(context.getId());
-            return null;
-        });
     }
 
     public void pause() {
@@ -106,6 +99,7 @@ public class Debugger {
         for (int i = contexts.size() - 1; i >= 0; i--) {
             DebugContext dc = contexts.get(i);
             if (dc.getId() == id) {
+                dc.close();
                 contexts.remove(i);
             }
         }
@@ -125,13 +119,7 @@ public class Debugger {
         return Values.newMap()
                 .set("app", context.getApp())
                 .set("id", context.getId())
-                .set("threadId", context.getThreadId())
-                .set("moment", context.getMoment().format(momentFormatter))
-                .set(
-                        "script",
-                        Values.newMap()
-                                .set("file", context.getScript().fileName())
-                                .set("extension", context.getScript().extension())
-                );
+                .set("moment", context.getMomentFormatted())
+                .merge(context.getScriptDataInfo());
     }
 }
