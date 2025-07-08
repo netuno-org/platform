@@ -27,18 +27,20 @@ import org.netuno.tritao.sandbox.ScriptResult;
 import org.netuno.tritao.sandbox.ScriptSourceCode;
 import org.netuno.tritao.sandbox.Scriptable;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * DebugContext
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class DebugContext {
+public class DebugContext implements AutoCloseable {
     private static Logger logger = LogManager.getLogger(DebugContext.class);
+    private static final DateTimeFormatter momentFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static int idCounter = 0;
     private long threadId = Thread.currentThread().threadId();
     private String app = null;
@@ -56,6 +58,39 @@ public class DebugContext {
         this.sandboxManager = sandboxManager;
         this.script = script;
         this.scriptable = scriptable;
+
+        Event.add(getEventPrefix() +":step-over", (v) -> {
+            Debugger.stepOver(getId());
+            return null;
+        });
+        Event.add(getEventPrefix() +":watch", (v) ->
+            Values.newMap()
+                    .set("moment", getMomentFormatted())
+                    .set("value", watch(v.getString("watch")))
+                    .merge(getScriptDataInfo())
+        );
+        Event.add(getEventPrefix() +":execute", (v) -> {
+            AtomicReference<String> errorMessage = new AtomicReference<>();
+            ScriptResult result = execute(v.getString("code"))
+                    .whenError((t) -> {
+                        errorMessage.set(t.getMessage());
+                    });
+            return Values.newMap()
+                    .set("moment", getMomentFormatted())
+                    .set("error", result.isError())
+                    .set("message", errorMessage)
+                    .merge(getScriptDataInfo());
+        });
+    }
+
+    private String getEventPrefix() {
+        return "tritao:sandbox:debug:"+ this.app +":" + getId();
+    }
+
+    @Override
+    public void close() {
+        Event.remove(getEventPrefix() +":step-over");
+        Event.remove(getEventPrefix() +":watch");
     }
 
     public long getThreadId() {
@@ -72,6 +107,19 @@ public class DebugContext {
 
     public LocalDateTime getMoment() {
         return moment;
+    }
+
+    public String getMomentFormatted() {
+        return getMoment().format(momentFormatter);
+    }
+
+    protected Values getScriptDataInfo() {
+        return Values.newMap().set(
+                "script",
+                Values.newMap()
+                        .set("file", getScript().fileName())
+                        .set("extension", getScript().extension())
+        );
     }
 
     public ScriptSourceCode getScript() {
@@ -106,8 +154,8 @@ public class DebugContext {
                 .forEach((w) -> w.setValue(getScriptable().get(getScript(), w.getName())));
     }
 
-    public ScriptResult execute(String script) {
-        Execute execute = new Execute(script);
+    public ScriptResult execute(String code) {
+        Execute execute = new Execute(code);
         executeList.add(execute);
         while (!execute.isLoaded()) {
             try {
@@ -128,7 +176,7 @@ public class DebugContext {
         executeList.stream()
                 .filter((exec) -> !exec.isLoaded())
                 .forEach((exec) -> exec.setResult(sandboxManager.runScript(
-                        getScript().clone("debug-"+ getId(), exec.getScript()),
+                        getScript().clone("debug-"+ getId(), exec.getCode()),
                         scriptable
                 )));
     }
@@ -139,15 +187,15 @@ public class DebugContext {
     }
 
     protected static class Execute {
-        private String script = "";
+        private String code = "";
         private boolean loaded = false;
         private ScriptResult scriptResult;
-        public Execute(String script) {
-            this.script = script;
+        public Execute(String code) {
+            this.code = code;
         }
 
-        public String getScript() {
-            return script;
+        public String getCode() {
+            return code;
         }
 
         public boolean isLoaded() {
