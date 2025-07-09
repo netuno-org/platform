@@ -89,7 +89,7 @@
       script: (script) => {
         let name = script.file;
         if (name.indexOf('/') >= 0) {
-          name = name.substring(0, name.lastIndexOf('/'));
+          name = name.substring(name.lastIndexOf('/') + 1);
         }
         return { td: {
           _: { div: {
