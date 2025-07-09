@@ -1,0 +1,101 @@
+<style>
+    .debug__break-points > thead > tr > th,
+    .debug__watch-list > thead > tr > th,
+    .debug__code-execution-list > thead > tr > th {
+        padding: 0 10px 10px 10px;
+    }
+</style>
+<h1><i class="fa fa-fw fa-solid fa-bug"></i> Debug</h1>
+<hr/>
+<div style="height: 10px;"></div>
+<h2><i class="fa-solid fa-list"></i> Break Points</h2>
+<hr/>
+<table class="debug__break-points" style="width:100%">
+    <thead>
+        <tr>
+            <th style="width: 5%;">Id</th>
+            <th style="width: 20%; max-width: 20%;">Script</th>
+            <th style="width: 10%;">Moment</th>
+            <th style="width: 10%;">Action</th>
+            <th style="width: 55%;"></th>
+        </tr>
+    </thead>
+    <tbody id="debugContexts"></tbody>
+</table>
+<div style="height: 20px;"></div>
+<h2><i class="fa-solid fa-magnifying-glass"></i> Watch List</h2>
+<hr/>
+<table class="debug__watch-list" style="width:100%">
+    <thead>
+    <tr>
+        <th style="width: 5%;">Id</th>
+        <th style="width: 20%; max-width: 20%;">Script</th>
+        <th style="width: 10%;">Moment</th>
+        <th style="width: 30%;">Watch</th>
+        <th style="width: 30%;">Value</th>
+        <th style="width: 5%;">Action</th>
+    </tr>
+    </thead>
+    <tbody id="debugWatchList"></tbody>
+</table>
+
+<div class="modal fade" id="debugWatchModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><i class="fa-solid fa-magnifying-glass"></i> Watch</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="debugWatchModal_name">Name</label>
+                    <input class="form-control" type="text" id="debugWatchModal_name" name="name" value="" size="40">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"><i class="fa-solid fa-magnifying-glass"></i> Look</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="height: 20px;"></div>
+<h2><i class="fa-solid fa-terminal"></i> Code Execution List</h2>
+<hr/>
+<table class="debug__code-execution-list" style="width:100%">
+    <thead>
+    <tr>
+        <th style="width: 5%;">Id</th>
+        <th style="width: 20%;">Script</th>
+        <th style="width: 10%;">Moment</th>
+        <th style="width: 60%;">Code</th>
+        <th style="width: 5%;">Action</th>
+    </tr>
+    </thead>
+    <tbody id="debugCodeExecutionList"></tbody>
+</table>
+
+<div class="modal fade" id="debugCodeExecutionModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><i class="fa-solid fa-terminal"></i> Execute</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="debugCodeExecutionModal_editor">Code</label>
+                    <div id="debugCodeExecutionModal_editor" style="width: 100%; height: 100px;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"><i class="fa-solid fa-terminal"></i> Run</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (() => {
+        netuno.debug();
+    })();
+</script>
