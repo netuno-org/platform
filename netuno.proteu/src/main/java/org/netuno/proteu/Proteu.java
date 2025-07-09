@@ -938,9 +938,9 @@ public class Proteu {
     public void redirect(String href) {
         if (isEnterprise()) {
             try {
-                this.start();
                 this.getServletResponse().sendRedirect(href);
-            } catch (Exception e) {
+                this.close();
+            } catch (IOException e) {
                 logger.error("Redirect", e);
                 throw new Error(e);
             }
