@@ -108,7 +108,7 @@ public class DevServletContextHandler extends ServletContextHandler {
                 }
             });
             wsContainer.setAsyncSendTimeout(wsConfig.getLong("sendTimeout", 60000));
-            wsContainer.setDefaultMaxSessionIdleTimeout(wsConfig.getLong("idleTimeout", 300000));
+            wsContainer.setDefaultMaxSessionIdleTimeout(wsConfig.getLong("idleTimeout", 60000 * 1440));
             wsContainer.setDefaultMaxTextMessageBufferSize(wsConfig.getInt("maxText", 1048576));
             // Add WebSocket endpoint to javax.websocket layer
             wsContainer.addEndpoint(DevEndpoint.class);
