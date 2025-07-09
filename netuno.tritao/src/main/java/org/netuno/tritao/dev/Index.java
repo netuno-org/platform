@@ -37,8 +37,6 @@ public class Index extends WebMaster {
     public void run() throws Exception {
     	if (Auth.isDevAuthenticated(getProteu(), getHili(), Auth.Type.SESSION, true)) {
 			new Main(getProteu(), getHili()).run();
-        } else {
-			getProteu().redirect("../Index"+ org.netuno.proteu.Config.getExtension());
         }
     }
 }
