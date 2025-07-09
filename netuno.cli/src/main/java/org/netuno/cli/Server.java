@@ -433,7 +433,7 @@ class CheckServerStartedRunnable implements Runnable {
     }
 
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (true) {
             try {
                 if (server.isStarted()) {
                     synchronized(this) {
@@ -580,7 +580,7 @@ class CheckServerStartedRunnable implements Runnable {
                 }
             } catch (Exception ex) {
                 logger.trace("Problems to launch: "+ ex.getMessage(), ex);
-                Thread.currentThread().interrupt();
+                return;
             }
         }
     }
