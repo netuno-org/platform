@@ -143,7 +143,7 @@ public class Run implements AutoCloseable {
                     throw (ProteuError) e.getCause();
                 }
                 if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException().getClass().getName().endsWith("org.eclipse.jetty.io.EofException")) {
-                    logger.warn("EOF: " + file);
+                    logger.debug("EOF: " + file);
                 } else {
                     throw new ProteuError("Cannot execute: " + file, e)
                             .setLogFatal(true)
