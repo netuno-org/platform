@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -521,10 +522,6 @@ public class ProcessLauncher {
                 }
             }
         }
-        // IO graceful time
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) { }
         // Exit Code
         int exitCode = 0;
         if (waitFor() >= 0 && execRes.process.isAlive()) {
@@ -532,10 +529,7 @@ public class ProcessLauncher {
         } else {
             exitCode = execRes.process.exitValue();
         }
-        // Threads & IOs graceful time
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) { }
+        execRes.await();
         // Destroy process and terminate stream threads
         execRes.result = new Result(
                 baosOutput != null ? baosOutput.toString() : null,
@@ -637,12 +631,24 @@ public class ProcessLauncher {
         private Thread monitorThread = null;
         private ParallelThread parallelThread = null;
         private Result result = null;
+        private AtomicBoolean running = new AtomicBoolean(false);
 
         private ExecutionResources(ProcessLauncher processLauncher) {
             this.processLauncher = processLauncher;
         }
 
+        private void await() {
+            if (processLauncher.await()) {
+                while (running.get()) {
+                    try {
+                        Thread.sleep(25);
+                    } catch (InterruptedException e) { }
+                }
+            }
+        }
+
         private void start() {
+            running.set(true);
             long startedTime = System.currentTimeMillis();
             if (processLauncher.onParallel() != null) {
                 parallelThread = new ParallelThread(processLauncher.onParallel);
@@ -655,15 +661,23 @@ public class ProcessLauncher {
                         Thread.sleep(50);
                     } catch (InterruptedException e) { }
                     if (!process.isAlive() || (processLauncher.timeLimit() > 0 && System.currentTimeMillis() - startedTime >= processLauncher.timeLimit())) {
-                        // IO graceful time
                         try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) { }
+                            if (processLauncher.readOutput() && inputStream != null && inputStream.available() > 0) {
+                                continue;
+                            }
+                        } catch (IOException e) { }
+                        try {
+                            if (processLauncher.readErrorOutput() && errorInputStream != null && errorInputStream.available() > 0) {
+                                continue;
+                            }
+                        } catch (IOException e) { }
                         monitorThread = null;
                         finish();
                         break;
                     }
+
                 }
+                running.set(false);
             });
             monitorThread.setName("Netuno Psamata: Process Monitor");
             monitorThread.start();
