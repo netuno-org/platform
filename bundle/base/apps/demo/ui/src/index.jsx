@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from 'react-dom/client';
 import _service from '@netuno/service-client';
 
 import { ConfigProvider, theme } from "antd";
@@ -17,7 +17,7 @@ _service.config({
 
 const dashboardDiv = document.getElementById("app-dashboard");
 
-const dashboardContainer = dashboardDiv ? ReactDOM.createRoot(dashboardDiv) : false;
+const dashboardContainer = dashboardDiv ? createRoot(dashboardDiv) : false;
 
 if (dashboardContainer) {
   dashboardContainer.render(
