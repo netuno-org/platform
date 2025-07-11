@@ -24,6 +24,7 @@ export default defineConfig({
     rollupOptions: {
       input: 'src/index.jsx',
       output: {
+        format: 'iife',
         dir: './../public',
         entryFileNames: 'scripts/ui.js',
         assetFileNames: (assetInfo) => {
