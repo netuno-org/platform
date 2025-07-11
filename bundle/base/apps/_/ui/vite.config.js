@@ -23,6 +23,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
     rollupOptions: {
+      format: 'iife',
       input: 'src/index.jsx',
       output: {
         dir: outputBasePath,
