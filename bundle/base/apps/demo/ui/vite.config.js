@@ -25,8 +25,8 @@ export default defineConfig({
       input: 'src/index.jsx',
       output: {
         format: 'iife',
-        dir: './../public',
-        entryFileNames: 'scripts/ui.js',
+        dir: outputBasePath,
+        entryFileNames: outputFilePath,
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split(".");
           let extType = info[info.length - 1];
