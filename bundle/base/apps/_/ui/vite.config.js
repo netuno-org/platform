@@ -23,9 +23,9 @@ export default defineConfig({
   build: {
     sourcemap: true,
     rollupOptions: {
-      format: 'iife',
       input: 'src/index.jsx',
       output: {
+        format: 'iife',
         dir: outputBasePath,
         entryFileNames: outputFilePath,
         assetFileNames: (assetInfo) => {
