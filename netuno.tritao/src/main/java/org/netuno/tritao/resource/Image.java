@@ -55,12 +55,12 @@ public class Image extends ResourceBase implements AutoCloseable {
         this.imageTools = imageTools;
     }
 
-    public Image init(final InputStream in) throws ResourceException {
-        return init((java.io.InputStream)in);
-    }
-
     public Image init(int width, int height) throws ResourceException {
         return new Image(getProteu(), getHili(), new ImageTools(width, height));
+    }
+
+    public Image init(final InputStream in) throws ResourceException {
+        return init((java.io.InputStream)in);
     }
 
     public Image init(final java.io.InputStream in) throws ResourceException {
@@ -90,7 +90,15 @@ public class Image extends ResourceBase implements AutoCloseable {
 
     public Image init(final File file) {
         try {
-            return new Image(getProteu(), getHili(), new ImageTools(file.getInputStream()));
+            return new Image(getProteu(), getHili(), new ImageTools(file));
+        } catch (Exception e) {
+            throw new ResourceException("_image.init("+ file.getName() +")", e);
+        }
+    }
+
+    public Image init(final java.io.File file) throws ResourceException {
+        try {
+            return new Image(getProteu(), getHili(), new ImageTools(file));
         } catch (Exception e) {
             throw new ResourceException("_image.init("+ file.getName() +")", e);
         }
@@ -716,11 +724,19 @@ public class Image extends ResourceBase implements AutoCloseable {
     }
 
     public Image save(final File file, final String type) {
-        String path = file.getFullPath();
         try {
-            imageTools.save(path, type);
+            imageTools.save(file, type);
         } catch (Exception e) {
-            throw new ResourceException("_image.save("+ path +", "+ type +")", e);
+            throw new ResourceException("_image.save("+ file.getName() +", "+ type +")", e);
+        }
+        return this;
+    }
+
+    public Image save(final java.io.File file, final String type) {
+        try {
+            imageTools.save(file, type);
+        } catch (Exception e) {
+            throw new ResourceException("_image.save("+ file.getName() +", "+ type +")", e);
         }
         return this;
     }
