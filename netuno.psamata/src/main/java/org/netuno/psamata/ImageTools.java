@@ -28,7 +28,6 @@ import java.awt.Panel;
 import java.awt.geom.AffineTransform;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.AttributedString;
@@ -70,7 +69,7 @@ public class ImageTools implements AutoCloseable {
     }
     /**
      * Image Tools.
-     * @param in InputStream of a image
+     * @param in InputStream of an image
      * @throws IOException Read Exception
      */
     public ImageTools(final InputStream in) throws IOException {
@@ -79,7 +78,7 @@ public class ImageTools implements AutoCloseable {
     }
     /**
      * Image Tools.
-     * @param in InputStream of a image
+     * @param in InputStream of an image
      * @throws IOException Read Exception
      */
     public ImageTools(final ImageInputStream in) throws IOException {
@@ -88,13 +87,29 @@ public class ImageTools implements AutoCloseable {
     }
     /**
      * Image Tools.
-     * @param path Path of a image
+     * @param path Path of an image
      * @throws IOException Read Exception
      */
     public ImageTools(final String path) throws IOException {
+        this(new java.io.File(path));
+    }
+    /**
+     * Image Tools.
+     * @param path Path of an image
+     * @throws IOException Read Exception
+     */
+    public ImageTools(final org.netuno.psamata.io.File path) throws IOException {
+        this(path.toString());
+    }
+    /**
+     * Image Tools.
+     * @param path Path of an image
+     * @throws IOException Read Exception
+     */
+    public ImageTools(final java.io.File path) throws IOException {
     	FileImageInputStream in = null;
         try {
-            in = new FileImageInputStream(new File(path));
+            in = new FileImageInputStream(path);
             image = ImageIO.read(in);
             resetGraphics();
         } catch (IOException ioe) {
@@ -183,8 +198,8 @@ public class ImageTools implements AutoCloseable {
      * Crop.
      * @param x X
      * @param y Y
-     * @param w Width
-     * @param h Height
+     * @param width Width
+     * @param height Height
      */
     public final ImageTools crop(final int x, final int y, final int width, final int height) {
         BufferedImage imgNew = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -548,9 +563,27 @@ public class ImageTools implements AutoCloseable {
      * @throws IOException Write file exception.
      */
     public final ImageTools save(final String path, final String type) throws IOException {
+        return save(new java.io.File(path), type);
+    }
+    /**
+     * Save.
+     * @param path Path to save
+     * @param type Output type: "png", "jpg", "gif"
+     * @throws IOException Write file exception.
+     */
+    public final ImageTools save(final org.netuno.psamata.io.File path, final String type) throws IOException {
+        return save(path.toString(), type);
+    }
+    /**
+     * Save.
+     * @param path Path to save
+     * @param type Output type: "png", "jpg", "gif"
+     * @throws IOException Write file exception.
+     */
+    public final ImageTools save(final java.io.File path, final String type) throws IOException {
     	FileImageOutputStream out = null;
         try {
-            out = new FileImageOutputStream(new File(path));
+            out = new FileImageOutputStream(path);
             save(out, type);
         } catch (IOException ioe) {
             throw ioe;
