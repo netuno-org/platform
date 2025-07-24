@@ -28,6 +28,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
+import org.netuno.psamata.ImageTools;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
@@ -114,10 +115,18 @@ public class Image extends ComponentBase {
                     String file = FilenameUtils.getName(databasePath);
                     String fileName = FilenameUtils.getBaseName(databasePath);
                     getDesignData().set("com.image.name", file);
-                    getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "___form." + fileExt + "\" height=\"200\"/>");
-                    getDesignData().set("com.image.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "." + fileExt);
                     Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath);
                     if (Files.exists(filePath)) {
+                        String path = FilenameUtils.getPath(databasePath);
+                        try (org.netuno.psamata.ImageTools imgToolsForm = new org.netuno.psamata.ImageTools(Config.getPathAppStorageDatabase(getProteu()) + "/" + path + fileName + "___form." + fileExt)) {
+                            getDesignData().set("com.image.form.width", imgToolsForm.getWidth() / 2);
+                            getDesignData().set("com.image.form.height", imgToolsForm.getHeight() / 2);
+                        }
+                        try (org.netuno.psamata.ImageTools imgTools = new org.netuno.psamata.ImageTools(Config.getPathAppStorageDatabase(getProteu()) + "/" + path + fileName + "." + fileExt)) {
+                            getDesignData().set("com.image.width", imgTools.getWidth());
+                            getDesignData().set("com.image.height", imgTools.getHeight());
+                        }
+                        getDesignData().set("com.image.extension", fileExt);
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
                         long size = Files.size(filePath);
                         getDesignData().set("com.file.size", size);
@@ -130,6 +139,8 @@ public class Image extends ComponentBase {
                         getDesignData().set("com.file.size.mb", 0);
                         getDesignData().set("com.file.size.gb", 0);
                     }
+                    getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "___form." + fileExt + "\" width=\"" + getDesignData().getInt("com.image.form.width") + "\" height=\"" + getDesignData().getInt("com.image.form.height") + "\"/>");
+                    getDesignData().set("com.image.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "." + fileExt);
                 }
             }
             TemplateBuilder.output(getProteu(), getHili(), "com/render/image", getDesignData());
@@ -161,10 +172,33 @@ public class Image extends ComponentBase {
                             .replace("/", "%2F");
                     String file = FilenameUtils.getName(databasePath);
                     String fileName = FilenameUtils.getBaseName(file);
-                    File fileImage = new File(Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + File.separator + fileName + "___search." + fileExt);
-                    if (fileImage.exists()) {
-                        org.netuno.psamata.ImageTools imgTools = new org.netuno.psamata.ImageTools(Config.getPathAppStorageDatabase(getProteu()) + "/" + path + fileName + "___search." + fileExt);
-                        getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "___search." + fileExt + "\" width=\"" + (imgTools.getWidth() / 2) + "\" height=\"" + (imgTools.getHeight() / 2) + "\"/>");
+                    File fileImageSearch = new File(Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + File.separator + fileName + "___search." + fileExt);
+                    File fileImageForm = new File(Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + File.separator + fileName + "___form." + fileExt);
+                    File fileImage = new File(Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + File.separator + fileName + "." + fileExt);
+                    if (fileImageSearch.exists() && fileImageForm.exists() && fileImage.exists()) {
+                        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+                        long size = Files.size(fileImage.toPath());
+                        getDesignData().set("com.file.size", size);
+                        getDesignData().set("com.file.size.kb", decimalFormat.format(size / 1024.0d));
+                        getDesignData().set("com.file.size.mb", decimalFormat.format(size / 1024.0d / 1024.0d));
+                        getDesignData().set("com.file.size.gb", decimalFormat.format(size / 1024.0d / 1024.0d / 1024.0d));
+                        try (ImageTools imgToolsSearch = new ImageTools(fileImageSearch)) {
+                            getDesignData().set("com.image.search.width", imgToolsSearch.getWidth() / 2);
+                            getDesignData().set("com.image.search.height", imgToolsSearch.getHeight() / 2);
+                        }
+                        try (ImageTools imgToolsForm = new ImageTools(fileImageForm)) {
+                            getDesignData().set("com.image.form.width", imgToolsForm.getWidth() / 2);
+                            getDesignData().set("com.image.form.height", imgToolsForm.getHeight() / 2);
+                        }
+                        try (ImageTools imgTools = new ImageTools(fileImage)) {
+                            getDesignData().set("com.image.width", imgTools.getWidth());
+                            getDesignData().set("com.image.height", imgTools.getHeight());
+                        }
+                        getDesignData().set("com.image.uid", getValues().getString(getValuesPrefix() + "uid"));
+                        getDesignData().set("com.image.extension", fileExt);
+                        getDesignData().set("com.image.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "." + fileExt);
+                        getDesignData().set("com.image.preview", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "___search." + fileExt + "\" width=\"" + getDesignData().getInt("com.image.search.width") + "\" height=\"" + getDesignData().getInt("com.image.search.height") + "\"/>");
+                        getDesignData().set("com.image.large", "<img src=\"Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + urlPath + fileName + "___form." + fileExt + "\" width=\"" + getDesignData().getInt("com.image.form.width") + "\" height=\"" + getDesignData().getInt("com.image.form.height") + "\"/>");
                         return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/image", getDesignData());
                     }
                 } catch (Exception e) {
