@@ -9,12 +9,20 @@
         </label>
         <input type="text" class="form-control" value="_{&lang=netuno.com.image.defaulttext}" readonly>
     </div>
-    <button type="button" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-btView" class="btn btn-info" onclick="netuno.com.image.view('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}', '_{data=com.image.url}');">_{lang=netuno.form.button.view}: <strong style="font-size: 8px;">_{data=com.image.name}</strong> <em style="font-size: 8px;">(_{data=com.file.size.mb} MB)</em></button>
+    <button type="button" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-btView" class="btn btn-info" onclick="netuno.com.image.view('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}', '_{data=com.image.url}');">_{lang=netuno.form.button.view}: <strong style="font-size: 10px;">_{data=com.image.name}</strong></button>
     <button type="button" class="btn btn-warning" onclick="netuno.com.image.clear('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}');">_{lang=netuno.form.button.clear}</button>
 </div>
-<div id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-preview" style="margin-top: 10px;">
+<div id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-preview" style="margin-top: 10px; background-size: 10px 10px; background-image: conic-gradient(#fff 90deg, #fff 90deg 180deg, #ccc 180deg 270deg, #fff 270deg); border: 1px solid #ccc; width: fit-content;">
     _{data=com.image.preview}
 </div>
+<span style="font-size: 10px;">
+    <span style="text-transform: uppercase">_{data=com.image.extension}</span>:
+    _{data=com.image.width} x _{data=com.image.height}
+    &nbsp;
+    _{data=com.file.size.kb} KB
+    ~
+    _{data=com.file.size.mb} MB
+</span>
 <script>
     (function () {
         if (typeof $ !== 'undefined') {
