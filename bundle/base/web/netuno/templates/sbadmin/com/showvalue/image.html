@@ -1,1 +1,27 @@
-_{data=com.image.preview}
+<div id="netuno-form-search-result__com-image___{data=com.image.uid}-_{util=requestuuid}"
+     data-search-width="_{data=com.image.search.width}"
+     data-search-height="_{data=com.image.search.height}"
+     data-form-width="_{data=com.image.form.width}"
+     data-form-height="_{data=com.image.form.height}"
+     data-width="_{data=com.image.width}"
+     data-height="_{data=com.image.height}"
+     data-extension="_{data=com.image.extension}"
+>
+    _{data=com.image.preview}
+    <div style="display: none;">
+        _{data=com.image.large}
+        <div style="display: flex; padding: 2px; background: #000; color: #fff; font-size: 10px">
+            <span style="flex-grow: 1; padding-right: 10px;">
+                _{data=com.image.width} x _{data=com.image.height}
+                &nbsp;
+                <span style="text-transform: uppercase">_{data=com.image.extension}</span>
+                &nbsp;
+                _{data=com.file.size.mb} MB
+            </span>
+            <a href="_{data=com.image.url}" target="_blank"><i class="fa-solid fa-maximize"></i></a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    netuno.com.image.searchResult("netuno-form-search-result__com-image___{data=com.image.uid}-_{util=requestuuid}");
+</script>
