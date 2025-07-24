@@ -1091,6 +1091,40 @@ netuno.com['image'] =
     $("\##{ id }-null").val('true')
     $("\##{ id }-preview").hide()
     $("\##{ id }-btView").hide()
+  searchResult: (id)->
+    container = $("\##{ id }")
+    container.css 'position', 'relative'
+    preview = container.children('img')
+    largeContainer = container.children('div')
+    large = largeContainer.children('img')
+    label = largeContainer.children('div')
+    expand = label.children('a')
+    largeContainer.css {
+        position: 'absolute'
+        zIndex: '100'
+        backgroundSize: '10px 10px'
+        backgroundImage: 'conic-gradient(#fff 90deg, #fff 90deg 180deg, #ccc 180deg 270deg, #fff 270deg)'
+        boxShadow: '0 0 10px #000000, 0 0 5px #000000'
+        top: "-#{(container.data().formHeight / 2) - (container.data().searchHeight / 2)}px"
+        left: "-#{(container.data().formWidth / 2) - (container.data().searchWidth / 2)}px"
+    }
+    expand.css {
+        color: '#ffd400'
+    }
+    preview.on 'mouseenter', ()->
+      largeContainer.fadeIn 'fast'
+    largeContainer.on 'mouseleave', ()->
+      largeContainer.fadeOut 'fast'
+    expand.on 'mouseenter', ()->
+      expand.css {
+        color: '#fff192'
+      }
+    expand.on 'mouseleave', ()->
+      expand.css {
+        color: '#ffd400'
+      }
+    expand.on 'click', (e)->
+      e.stopImmediatePropagation()
 
 netuno.com['file'] =
   load: (id)->

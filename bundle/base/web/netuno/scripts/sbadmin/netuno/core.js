@@ -1380,6 +1380,47 @@
       $(`\#${id}-null`).val('true');
       $(`\#${id}-preview`).hide();
       return $(`\#${id}-btView`).hide();
+    },
+    searchResult: function(id) {
+      var container, expand, label, large, largeContainer, preview;
+      container = $(`\#${id}`);
+      container.css('position', 'relative');
+      preview = container.children('img');
+      largeContainer = container.children('div');
+      large = largeContainer.children('img');
+      label = largeContainer.children('div');
+      expand = label.children('a');
+      largeContainer.css({
+        position: 'absolute',
+        zIndex: '100',
+        backgroundSize: '10px 10px',
+        backgroundImage: 'conic-gradient(#fff 90deg, #fff 90deg 180deg, #ccc 180deg 270deg, #fff 270deg)',
+        boxShadow: '0 0 10px #000000, 0 0 5px #000000',
+        top: `-${(container.data().formHeight / 2) - (container.data().searchHeight / 2)}px`,
+        left: `-${(container.data().formWidth / 2) - (container.data().searchWidth / 2)}px`
+      });
+      expand.css({
+        color: '#ffd400'
+      });
+      preview.on('mouseenter', function() {
+        return largeContainer.fadeIn('fast');
+      });
+      largeContainer.on('mouseleave', function() {
+        return largeContainer.fadeOut('fast');
+      });
+      expand.on('mouseenter', function() {
+        return expand.css({
+          color: '#fff192'
+        });
+      });
+      expand.on('mouseleave', function() {
+        return expand.css({
+          color: '#ffd400'
+        });
+      });
+      return expand.on('click', function(e) {
+        return e.stopImmediatePropagation();
+      });
     }
   };
 
