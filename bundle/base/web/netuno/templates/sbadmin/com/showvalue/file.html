@@ -1,1 +1,8 @@
-<span onclick="if (event.stopPropagation) { event.stopPropagation(); } event.cancelBubble=true; window.open('_{data=com.file.url}');"><i class="fa fa-download"></i></span>
+<div style="padding-right: 10px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 250px;">
+    _{data=com.file.name}
+</div>
+<span onclick="event.stopPropagation(); window.open('_{data=com.file.url}');"><i class="fa fa-download"></i></span>
+&nbsp;
+<span style="text-transform: uppercase">_{data=com.file.extension}</span>
+&nbsp;
+_{data=com.file.size.mb} MB
