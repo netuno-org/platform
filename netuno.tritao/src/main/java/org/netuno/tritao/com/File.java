@@ -18,16 +18,18 @@
 package org.netuno.tritao.com;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.crypto.RandomString;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -38,7 +40,7 @@ import org.netuno.tritao.util.TemplateBuilder;
  */
 public class File extends ComponentBase {
 
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(File.class);
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(File.class);
 
     private String value = "";
 
@@ -50,6 +52,13 @@ public class File extends ComponentBase {
         super(proteu, hili, com);
     }
 
+    private void setDesignDataWithEmptyInfoValues() {
+        getDesignData().set("com.file.size", 0);
+        getDesignData().set("com.file.size.kb", 0);
+        getDesignData().set("com.file.size.mb", 0);
+        getDesignData().set("com.file.size.gb", 0);
+    }
+
     public Component setDesignData(Values designData) {
         super.setDesignData(designData);
         getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Text, 0));
@@ -58,7 +67,7 @@ public class File extends ComponentBase {
 
     public Component setValues(String prefix, Values values) {
         super.setValues(prefix, values);
-        value = getDataStructure().get(0).getValue();
+        value = getDataStructure().getFirst().getValue();
         String fieldName = getValuesPrefix().concat(getDesignData().getString("name"));
         if (getValues().hasKey(fieldName + ":value")) {
             if (getValues().getString(fieldName + ":null").equals("true")) {
@@ -76,7 +85,7 @@ public class File extends ComponentBase {
                         Files.deleteIfExists(filePath);
                     } catch (Exception e) {
                         logger.trace(e);
-                        logger.error("File not deleted " + filePath.toAbsolutePath() + " because: " + e.getMessage());
+                        logger.error("File not deleted {} because: {}", filePath.toAbsolutePath(), e.getMessage());
                     }
                 }
                 value = "";
@@ -85,7 +94,7 @@ public class File extends ComponentBase {
             } else {
                 value = getValues().getString(fieldName + ":value");
             }
-            getDataStructure().get(0).setValue(value);
+            getDataStructure().getFirst().setValue(value);
         }
         return this;
     }
@@ -94,16 +103,15 @@ public class File extends ComponentBase {
         try {
             new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.file.value", value == null ? "" : value);
-            if (value != null) {
+            if (value != null && !value.isEmpty()) {
                 String tableName = getTableData().getString("name");
                 String fieldName = getDesignData().getString("name");
-                String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator + value;
-                String databaseURLPath = tableName + "%2F" + fieldName + "%2F" + value;
-                getDesignData().set("com.file.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + databaseURLPath);
-                String file = FilenameUtils.getName(databasePath);
-                getDesignData().set("com.file.name", file);
-                Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath);
-                if (Files.exists(filePath)) {
+                String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator;
+                getDesignData().set("com.file.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&download=true&path=" + URLEncoder.encode(databasePath, StandardCharsets.UTF_8));
+                getDesignData().set("com.file.name", FilenameUtils.getBaseName(value));
+                getDesignData().set("com.file.extension", FilenameUtils.getExtension(value));
+                Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath + value);
+                if (!Files.isDirectory(filePath) && Files.exists(filePath)) {
                     DecimalFormat decimalFormat = new DecimalFormat("0.00");
                     long size = Files.size(filePath);
                     getDesignData().set("com.file.size", size);
@@ -111,11 +119,10 @@ public class File extends ComponentBase {
                     getDesignData().set("com.file.size.mb", decimalFormat.format(size / 1024.0d / 1024.0d));
                     getDesignData().set("com.file.size.gb", decimalFormat.format(size / 1024.0d / 1024.0d / 1024.0d));
                 } else {
-                    getDesignData().set("com.file.size", 0);
-                    getDesignData().set("com.file.size.kb", 0);
-                    getDesignData().set("com.file.size.mb", 0);
-                    getDesignData().set("com.file.size.gb", 0);
+                    setDesignDataWithEmptyInfoValues();
                 }
+            } else {
+                setDesignDataWithEmptyInfoValues();
             }
             TemplateBuilder.output(getProteu(), getHili(), "com/render/file", getDesignData());
             new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
@@ -126,18 +133,35 @@ public class File extends ComponentBase {
     }
 
     public String getTextValue() {
-        if (value != null && value.length() > 0) {
+        if (value != null && !value.isEmpty()) {
             return value;
         }
         return "";
     }
 
     public String getHtmlValue() {
-        if (value != null && value.length() > 0) {
+        if (value != null && !value.isEmpty()) {
             String tableName = getTableData().getString("name");
             String fieldName = getDesignData().getString("name");
-            String databasePath = tableName + "%2F" + fieldName + "%2F" + value;
-            getDesignData().set("com.file.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&path=" + databasePath);
+            String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator + value;
+            getDesignData().set("com.file.name", FilenameUtils.getBaseName(value));
+            Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath);
+            try {
+                getDesignData().set("com.file.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&download=true&path=" + URLEncoder.encode(databasePath, StandardCharsets.UTF_8));
+                if (!Files.isDirectory(filePath) && Files.exists(filePath)) {
+                    getDesignData().set("com.file.extension", FilenameUtils.getExtension(value));
+                    DecimalFormat decimalFormat = new DecimalFormat("0.00");
+                    long size = Files.size(filePath);
+                    getDesignData().set("com.file.size", size);
+                    getDesignData().set("com.file.size.kb", decimalFormat.format(size / 1024.0d));
+                    getDesignData().set("com.file.size.mb", decimalFormat.format(size / 1024.0d / 1024.0d));
+                    getDesignData().set("com.file.size.gb", decimalFormat.format(size / 1024.0d / 1024.0d / 1024.0d));
+                } else {
+                    setDesignDataWithEmptyInfoValues();
+                }
+            } catch (IOException e) {
+                throw new Error(e);
+            }
             try {
                 return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/file", getDesignData());
             } catch (Exception e) {
@@ -179,10 +203,11 @@ public class File extends ComponentBase {
                     }
                     String fileBaseName = FilenameUtils.getBaseName(file.getName());
                     String fileExt = FilenameUtils.getExtension(file.getName()).toLowerCase();
-                    String fileName = "";
-                    String fileFullName = "";
+                    String fileName;
+                    String fileFullName;
+                    RandomString randomString = new RandomString(8);
                     while (true) {
-                        fileName = fileBaseName + "-" + RandomStringUtils.randomAlphanumeric(8) + "." + fileExt;
+                        fileName = fileBaseName + "-" + randomString.next() + "." + fileExt;
                         fileFullName = path + fileName;
                         Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), fileFullName);
                         Files.createDirectories(filePath.getParent());
