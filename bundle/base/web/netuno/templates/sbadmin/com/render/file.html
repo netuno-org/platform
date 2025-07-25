@@ -8,8 +8,15 @@
     </label>
     <input type="text" class="form-control" value="_{&lang=netuno.com.file.defaulttext}" readonly>
 </div>
-<button type="button" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-btView" class="btn btn-info" onclick="netuno.com.file.view('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}');">_{lang=netuno.form.button.view}: <strong style="font-size: 8px;">_{data=com.file.name}</strong> <em style="font-size: 8px;">(_{data=com.file.size.mb} MB)</em></button>
+<button type="button" id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}-btView" class="btn btn-info" onclick="netuno.com.file.view('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}');"><i class="fa fa-download"></i> <strong style="font-size: 10px;">_{data=com.file.name}</strong></button>
 <button type="button" class="btn btn-warning" onclick="netuno.com.file.clear('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}');">_{lang=netuno.form.button.clear}</button>
+<div style="font-size: 10px;">
+    <span style="text-transform: uppercase">_{data=com.file.extension}</span>
+    &nbsp;
+    _{data=com.file.size.kb} KB
+    ~
+    _{data=com.file.size.mb} MB
+</div>
 <script>
     (function () {
         if (typeof $ !== 'undefined') {
