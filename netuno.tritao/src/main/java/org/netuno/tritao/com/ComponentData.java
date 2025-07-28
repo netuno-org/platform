@@ -37,6 +37,8 @@ public class ComponentData {
         Uid("UID"),
         Boolean("BOOLEAN"),
         Integer("INTEGER"),
+        BigInteger("BIGINT"),
+        Float("FLOAT"),
         Decimal("DECIMAL"),
         Date("DATE"),
         DateTime("DATETIME"),
@@ -244,11 +246,23 @@ public class ComponentData {
                 } catch (Exception e) {
                     return 0;
                 }
-            case Decimal:
+            case BigInteger:
+                try {
+                    return Long.valueOf(value).longValue();
+                } catch (Exception e) {
+                    return 0l;
+                }
+            case Float:
                 try {
                     return Float.valueOf(value).floatValue();
                 } catch (Exception e) {
                     return 0.0f;
+                }
+            case Decimal:
+                try {
+                    return Double.valueOf(value).doubleValue();
+                } catch (Exception e) {
+                    return 0.0d;
                 }
             case Text:
                 return getValue();
@@ -346,13 +360,29 @@ public class ComponentData {
                         value = "0";
                         return 0;
                     }
-                case Decimal:
+                case BigInteger:
+                    try {
+                        value = valueToImport.toString();
+                        return Long.valueOf(valueToImport.toString()).longValue();
+                    } catch (Exception e) {
+                        value = "0";
+                        return 0l;
+                    }
+                case Float:
                     try {
                         value = valueToImport.toString();
                         return Float.valueOf(value).floatValue();
                     } catch (Exception e) {
                         value = "0";
                         return 0.0f;
+                    }
+                case Decimal:
+                    try {
+                        value = valueToImport.toString();
+                        return Double.valueOf(value).doubleValue();
+                    } catch (Exception e) {
+                        value = "0";
+                        return 0.0d;
                     }
                 case Text:
                     value = valueToImport.toString();
