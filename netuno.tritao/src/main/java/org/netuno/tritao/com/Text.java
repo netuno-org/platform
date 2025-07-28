@@ -43,7 +43,13 @@ public class Text extends ComponentBase {
     private void init() {
         if (getName().equals("email")) {
             super.getConfiguration().getParameters().clear();
+        } else if (getName().equals("textnum")) {
+            super.getConfiguration().putParameter("SIGN", ParameterType.BOOLEAN, "false");
+            super.getConfiguration().putParameter("MASK", ParameterType.STRING, "#.##0");
+            super.getConfiguration().putParameter("MASK_REVERSE", ParameterType.BOOLEAN, "true");
+            super.getConfiguration().putParameter("MASK_SELECTONFOCUS", ParameterType.BOOLEAN, "false");
         } else if (getName().equals("textfloat")) {
+            super.getConfiguration().putParameter("SIGN", ParameterType.BOOLEAN, "false");
             super.getConfiguration().putParameter("MASK", ParameterType.STRING, "#.##0,00");
             super.getConfiguration().putParameter("MASK_REVERSE", ParameterType.BOOLEAN, "true");
             super.getConfiguration().putParameter("MASK_SELECTONFOCUS", ParameterType.BOOLEAN, "false");
@@ -74,7 +80,16 @@ public class Text extends ComponentBase {
 
     public Component setValues(String prefix, Values values) {
         super.setValues(prefix, values);
-        value = getDataStructure().get(0).getValue();
+        value = getDataStructure().getFirst().getValue();
+        String fieldName = getValuesPrefix().concat(getDesignData().getString("name"));
+        if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
+            if (getValues().hasKey(fieldName + ":sign") && getConfiguration().getParameter("SIGN").getValue().equalsIgnoreCase("true")) {
+                if (getValues().getString(fieldName + ":sign").equals("-")) {
+                    value = "-" + value;
+                }
+            }
+        }
+        getDataStructure().getFirst().setValue(value);
         return this;
     }
 
@@ -86,6 +101,9 @@ public class Text extends ComponentBase {
             getDesignData().set("com.text.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             getDesignData().set("com.text.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
             getDesignData().set("com.text.validation", getValidation(getDesignData()));
+            if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
+                getDesignData().set("com.text.sign", getConfiguration().getParameter("SIGN").getValue());
+            }
             if (!getDesignData().getString("type").equals("email")) {
                 getDesignData().set("com.text.mask", getConfiguration().getParameter("MASK").getValue());
                 getDesignData().set("com.text.mask.reverse", getConfiguration().getParameter("MASK_REVERSE").getValue());
@@ -111,6 +129,9 @@ public class Text extends ComponentBase {
             try {
                 getDesignData().set("com.text.type", getDesignData().getString("type"));
                 getDesignData().set("com.text.value", value);
+                if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
+                    getDesignData().set("com.text.sign", getConfiguration().getParameter("SIGN").getValue());
+                }
                 if (!getDesignData().getString("type").equals("email")) {
                     getDesignData().set("com.text.mask", getConfiguration().getParameter("MASK").getValue());
                     getDesignData().set("com.text.mask.reverse", getConfiguration().getParameter("MASK_REVERSE").getValue());
