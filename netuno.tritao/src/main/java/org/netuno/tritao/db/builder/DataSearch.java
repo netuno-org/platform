@@ -159,6 +159,8 @@ public interface DataSearch extends BuilderBase, TableSelect, TableDesignSelect 
                                 }
                             }
                             if (componentData.getType() == ComponentData.Type.Integer
+                                    || componentData.getType() == ComponentData.Type.BigInteger
+                                    || componentData.getType() == ComponentData.Type.Float
                                     || componentData.getType() == ComponentData.Type.Decimal) {
                                 if (rowTritaoDesignXY.getBoolean("whenfilter")) {
                                     if (!valueFrom.equalsIgnoreCase("0")) {
