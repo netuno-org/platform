@@ -133,8 +133,12 @@ public interface BuilderBase {
         switch (data.getType()) {
             case Integer:
                 return column.setType(Column.Type.INT).setDefault();
+            case BigInteger:
+                return column.setType(Column.Type.BIGINT).setDefault();
             case Boolean:
                 return column.setType(Column.Type.BOOLEAN).setDefault();
+            case Float:
+                return column.setType(Column.Type.FLOAT).setDefault();
             case Decimal:
                 return column.setType(Column.Type.DECIMAL).setDefault();
             case Text:
@@ -169,8 +173,12 @@ public interface BuilderBase {
                 return getBuilder().booleanFalse();
             case Integer:
                 return DB.sqlInjectionInt(value);
-            case Decimal:
+            case BigInteger:
+                return DB.sqlInjectionLong(value);
+            case Float:
                 return DB.sqlInjectionFloat(value);
+            case Decimal:
+                return DB.sqlInjectionDouble(value);
             case Text:
                 return "'".concat(DB.sqlInjection(value)).concat("'");
             case Varchar:
