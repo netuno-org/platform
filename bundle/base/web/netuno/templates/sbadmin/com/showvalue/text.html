@@ -1,1 +1,12 @@
-<span data-type="_{data=com.text.type}" data-mask="_{data=com.text.mask}" data-mask-reverse="_{data=com.text.mask.reverse}">_{&data=com.text.value}</span>
+#set($v=$data.getHTMLEncode("com.text.value"))
+#set($sign='')
+#if ($data.getBoolean('com.text.sign'))
+    #if ($v.startsWith('-'))
+        #set($v=$v.substring(1))
+        #set($sign='&minus;')
+    #else
+        #set($sign='&plus;')
+    #end
+#end
+$sign
+<span data-type="_{data=com.text.type}" data-mask="_{data=com.text.mask}" data-mask-reverse="_{data=com.text.mask.reverse}">$v</span>
