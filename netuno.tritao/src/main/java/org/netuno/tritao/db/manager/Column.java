@@ -56,6 +56,8 @@ public class Column extends ManagerBase {
 
     public enum Type {
         INT,
+        BIGINT,
+        FLOAT,
         DECIMAL,
         UUID,
         VARCHAR,
@@ -88,14 +90,16 @@ public class Column extends ManagerBase {
         @Override
         public String toString() {
             if (isH2(builder)) {
-                if (this == Type.DECIMAL) {
-                    return "double";
+                if (this == Type.FLOAT) {
+                    return "real";
+                } else if (this == Type.DECIMAL) {
+                    return "numeric";
                 } else if (this == Type.VARCHAR) {
                     return "varchar";
                 }
             } else if (isPostgreSQL(builder)) {
-                if (this == Type.DECIMAL) {
-                    return "double precision";
+                if (this == Type.FLOAT) {
+                    return "real";
                 }
             } else if (isMSSQL(builder)) {
                 if (this == Type.UUID) {
@@ -107,11 +111,12 @@ public class Column extends ManagerBase {
                 if (this == Type.TIMESTAMP) {
                     return "datetime";
                 }
+                if (this == Type.FLOAT) {
+                    return "real";
+                }
             } else if (isMariaDB(builder)) {
                 if (this == Type.UUID) {
                     return "char";
-                } else if (this == Type.DECIMAL) {
-                    return "double";
                 }
             }
             return super.toString().toLowerCase();
@@ -200,8 +205,12 @@ public class Column extends ManagerBase {
     public Column setDefault() {
         if (getType() == Type.INT) {
             this.setDefault(0);
+        } else if (getType() == Type.BIGINT) {
+            this.setDefault(0L);
+        } else if (getType() == Type.FLOAT) {
+            this.setDefault(0F);
         } else if (getType() == Type.DECIMAL) {
-            this.setDefault(0);
+            this.setDefault(0D);
         } else if (getType() == Type.VARCHAR || getType() == Type.TEXT) {
             this.setDefault("");
         } else if (getType() == Type.BOOLEAN) {
@@ -232,9 +241,43 @@ public class Column extends ManagerBase {
         return this;
     }
 
+    public Column setDefault(long _default) {
+        if (getType() == Type.INT) {
+            this._default = Integer.toString((int)_default);
+        } else if (getType() == Type.BIGINT) {
+            this._default = Long.toString(_default);
+        } else if (getType() == Type.FLOAT) {
+            this._default = Float.toString(_default);
+        } else if (getType() == Type.DECIMAL) {
+            this._default = Double.toString(_default);
+        } else {
+            throw new DBError("Invalid type.").setLogFatal("Setting column default.");
+        }
+        return this;
+    }
+
     public Column setDefault(float _default) {
         if (getType() == Type.INT) {
             this._default = Integer.toString((int)_default);
+        } else if (getType() == Type.BIGINT) {
+            this._default = Long.toString((long)_default);
+        } else if (getType() == Type.FLOAT) {
+            this._default = Float.toString(_default);
+        } else if (getType() == Type.DECIMAL) {
+            this._default = Double.toString(_default);
+        } else {
+            throw new DBError("Invalid type.").setLogFatal("Setting column default.");
+        }
+        return this;
+    }
+
+    public Column setDefault(double _default) {
+        if (getType() == Type.INT) {
+            this._default = Integer.toString((int)_default);
+        } else if (getType() == Type.BIGINT) {
+            this._default = Long.toString((long)_default);
+        } else if (getType() == Type.FLOAT) {
+            this._default = Float.toString((float)_default);
         } else if (getType() == Type.DECIMAL) {
             this._default = Double.toString(_default);
         } else {
