@@ -121,8 +121,12 @@ public class DataExport extends WebMaster {
                             sb.append("        .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getString(key)) + ")\n");
                         } else if (componentData.getType() == ComponentData.Type.Integer) {
                             sb.append("        .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getInt(key)) + ")\n");
-                        } else if (componentData.getType() == ComponentData.Type.Decimal) {
+                        } else if (componentData.getType() == ComponentData.Type.BigInteger) {
+                            sb.append("        .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getLong(key)) + ")\n");
+                        } else if (componentData.getType() == ComponentData.Type.Float) {
                             sb.append("        .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getFloat(key)) + ")\n");
+                        } else if (componentData.getType() == ComponentData.Type.Decimal) {
+                            sb.append("        .set(\"" + key + "\", " + (value == null ? "null" : databaseItem.getDouble(key)) + ")\n");
                         } else if (componentData.getType() == ComponentData.Type.Uid) {
                             sb.append("        .set(\"" + key + "\", \"" + (value == null ? "null" : databaseItem.getString(key)) + "\")\n");
                         } else if (componentData.getType() == ComponentData.Type.Varchar) {
