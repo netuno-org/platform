@@ -179,6 +179,10 @@ public class Search {
                                 jsonRow.put(data.getName(), Boolean.parseBoolean(data.getValue()));
                             } else if (data.getType() == Type.Integer) {
                                 jsonRow.put(data.getName(), Integer.parseInt(data.getValue()));
+                            } else if (data.getType() == Type.BigInteger) {
+                                jsonRow.put(data.getName(), Long.parseLong(data.getValue()));
+                            } else if (data.getType() == Type.Float) {
+                                jsonRow.put(data.getName(), Float.parseFloat(data.getValue()));
                             } else if (data.getType() == Type.Decimal) {
                                 jsonRow.put(data.getName(), Double.parseDouble(data.getValue()));
                             } else {
