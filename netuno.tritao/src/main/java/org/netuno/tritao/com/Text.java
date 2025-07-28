@@ -45,11 +45,13 @@ public class Text extends ComponentBase {
             super.getConfiguration().getParameters().clear();
         } else if (getName().equals("textnum")) {
             super.getConfiguration().putParameter("SIGN", ParameterType.BOOLEAN, "false");
+            super.getConfiguration().putParameter("LARGE_NUMBERS", ParameterType.BOOLEAN, "false");
             super.getConfiguration().putParameter("MASK", ParameterType.STRING, "#.##0");
             super.getConfiguration().putParameter("MASK_REVERSE", ParameterType.BOOLEAN, "true");
             super.getConfiguration().putParameter("MASK_SELECTONFOCUS", ParameterType.BOOLEAN, "false");
         } else if (getName().equals("textfloat")) {
             super.getConfiguration().putParameter("SIGN", ParameterType.BOOLEAN, "false");
+            super.getConfiguration().putParameter("LARGE_NUMBERS", ParameterType.BOOLEAN, "false");
             super.getConfiguration().putParameter("MASK", ParameterType.STRING, "#.##0,00");
             super.getConfiguration().putParameter("MASK_REVERSE", ParameterType.BOOLEAN, "true");
             super.getConfiguration().putParameter("MASK_SELECTONFOCUS", ParameterType.BOOLEAN, "false");
@@ -66,12 +68,20 @@ public class Text extends ComponentBase {
             if (value.length() == 0) {
                 value = "0";
             }
-            getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Integer, 0));
+            if (getConfiguration().getParameter("LARGE_NUMBERS").getValue().equalsIgnoreCase("true")) {
+                getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.BigInteger, 0));
+            } else {
+                getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Integer, 0));
+            }
         } else if (designData.getString("type").equals("textfloat")) {
             if (value.length() == 0) {
                 value = "0";
             }
-            getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Decimal, 0));
+            if (getConfiguration().getParameter("LARGE_NUMBERS").getValue().equalsIgnoreCase("true")) {
+                getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Decimal, 0));
+            } else {
+                getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Float, 0));
+            }
         } else {
             getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Varchar, designData.getInt("max") > 0 ? designData.getInt("max") : 0));
         }
