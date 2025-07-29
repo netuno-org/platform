@@ -76,18 +76,8 @@ public class File extends ComponentBase {
                 if (getDatabaseValues() != null) {
                     oldValue = databaseValues.getString(fieldName);
                 }
-                if (!oldValue.isEmpty()) {
-                    getValues().set(fieldName + ":old", oldValue);
-                    String tableName = getTableData().getString("name");
-                    String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator + oldValue;
-                    Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath);
-                    try {
-                        Files.deleteIfExists(filePath);
-                    } catch (Exception e) {
-                        logger.trace(e);
-                        logger.error("File not deleted {} because: {}", filePath.toAbsolutePath(), e.getMessage());
-                    }
-                }
+                getValues().set(fieldName + ":old", oldValue);
+                deleteFile(oldValue);
                 value = "";
             } else if (getValues().get(fieldName) instanceof String && !getValues().getString(fieldName).isEmpty()) {
                 value = getValues().getString(fieldName);
@@ -106,11 +96,11 @@ public class File extends ComponentBase {
             if (value != null && !value.isEmpty()) {
                 String tableName = getTableData().getString("name");
                 String fieldName = getDesignData().getString("name");
-                String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator;
+                String databasePath = tableName + java.io.File.separator + fieldName + java.io.File.separator + value;
                 getDesignData().set("com.file.url", "Download" + org.netuno.proteu.Config.getExtension() + "?type=storage-database&download=true&path=" + URLEncoder.encode(databasePath, StandardCharsets.UTF_8));
                 getDesignData().set("com.file.name", FilenameUtils.getBaseName(value));
                 getDesignData().set("com.file.extension", FilenameUtils.getExtension(value));
-                Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath + value);
+                Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath);
                 if (!Files.isDirectory(filePath) && Files.exists(filePath)) {
                     DecimalFormat decimalFormat = new DecimalFormat("0.00");
                     long size = Files.size(filePath);
@@ -199,7 +189,7 @@ public class File extends ComponentBase {
                     }
                     if (!oldValue.isEmpty()) {
                         getValues().set(fieldName + ":old", oldValue);
-                        Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, oldValue));
+                        deleteFile(oldValue);
                     }
                     String fileBaseName = FilenameUtils.getBaseName(file.getName());
                     String fileExt = FilenameUtils.getExtension(file.getName()).toLowerCase();
@@ -230,5 +220,28 @@ public class File extends ComponentBase {
             }
         }
         return this;
+    }
+
+    public Component onDeleted() {
+        deleteFile(value);
+        return this;
+    }
+
+    private void deleteFile(String value) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        Path filePath = Paths.get(
+                Config.getPathAppStorageDatabase(getProteu()),
+                getTableData().getString("name"),
+                getDesignData().getString("name"),
+                value
+        );
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            logger.trace(e);
+            logger.error("File not deleted {} because: {}", filePath.toAbsolutePath(), e.getMessage());
+        }
     }
 }
