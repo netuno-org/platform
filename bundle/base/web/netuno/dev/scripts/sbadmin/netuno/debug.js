@@ -110,7 +110,7 @@
       }
     }
 
-    const ContextItem = com(function ContextItem({context, onRemove}) {
+    const ContextItem = com(function ContextItem({lang, context, onRemove}) {
       this.view(() => {
         return [
           getColumn.id(context.id),
@@ -119,7 +119,7 @@
           { td: { $: [
             { a: {
               class: 'hint--top '+ css(style.iconButton.stepOver),
-              'aria-label': 'Step Over',
+              'aria-label': lang.actions.stepOver,
               onClick: ()=> {
                 trigger('ws:debug:send:step-over', context.id);
                 onRemove(context.id);
@@ -129,7 +129,7 @@
             ' &nbsp; ',
             { a: {
               class: 'hint--top '+ css(style.iconButton.watch),
-              'aria-label': 'Watch',
+              'aria-label': lang.actions.watch,
               onClick: ()=> {
                 const modal = $('#debugWatchModal');
                 modal.modal('show');
@@ -140,7 +140,7 @@
             ' &nbsp; ',
             { a: {
               class: 'hint--top '+ css(style.iconButton.code),
-              'aria-label': 'Execute Code',
+              'aria-label': lang.actions.executeCode,
               onClick: ()=> {
                 const modal = $('#debugCodeExecutionModal');
                 modal.modal('show');
@@ -153,7 +153,7 @@
       });
     });
 
-    const ContextList = com(function ContextList() {
+    const ContextList = com(function ContextList({lang}) {
       const contexts = this.state([]);
       this.mount(()=> {
         trigger.add('ws:debug:receive:contexts', (_contexts)=> {
@@ -173,14 +173,14 @@
           return { td: {
             class: css(style.table.empty),
             colspan: '4',
-            _: 'This list is empty and has no data.'
+            _: lang.empty
           } };
         }
         const trs = [];
         for (const context of contexts.val) {
           trs.push({ tr: {
               class: css(style.table.tr),
-              _: { [ContextItem]: { context, onRemove } }
+              _: { [ContextItem]: { lang, context, onRemove } }
             } });
         }
         return trs;
@@ -198,7 +198,8 @@
       });
     })();
 
-    const WatchItem = com(function WatchItem({item, onRemove}) {
+    const WatchItem = com(function WatchItem({lang, item, onRemove}) {
+      console.log('watch list', lang)
       this.view(() => {
         return [
           getColumn.id(item.id),
@@ -212,7 +213,7 @@
           { td: { $: [
             { a: {
               class: 'hint--top '+ css(style.iconButton.trash),
-              'aria-label': 'Remove',
+              'aria-label': lang.actions.remove,
               onClick: ()=> {
                 onRemove(item);
               },
@@ -223,7 +224,7 @@
       });
     });
 
-    const WatchList = com(function WatchList() {
+    const WatchList = com(function WatchList({lang}) {
       const list = this.state([]);
       this.mount(()=> {
         trigger.add('ws:debug:receive:watch', (data)=> {
@@ -242,14 +243,14 @@
           return { td: {
               class: css(style.table.empty),
               colspan: '6',
-              _: 'This list is empty and has no data.'
+              _: lang.empty
             } };
         }
         const trs = [];
         for (const item of list.val) {
           trs.push({ tr: {
               class: css(style.table.tr),
-              _: { [WatchItem]: { item, onRemove } }
+              _: { [WatchItem]: { lang, item, onRemove } }
             } });
         }
         return trs;
@@ -267,7 +268,8 @@
       });
     })();
 
-    const CodeExecutionItem = com(function CodeExecutionItem({item, onRemove}) {
+    const CodeExecutionItem = com(function CodeExecutionItem({lang, item, onRemove}) {
+      console.log('code execution', lang)
       const editor = this.ref();
       let aceEditor = null;
       this.changes([editor], () => {
@@ -304,7 +306,7 @@
           { td: { $: [
             { a: {
               class: 'hint--top '+ css(style.iconButton.trash),
-              'aria-label': 'Remove',
+              'aria-label': lang.actions.remove,
               onClick: ()=> {
                 onRemove(item);
               },
@@ -315,7 +317,7 @@
       });
     });
 
-    const CodeExecutionList = com(function CodeExecutionList() {
+    const CodeExecutionList = com(function CodeExecutionList({lang}) {
       const list = this.state([]);
       this.mount(()=> {
         trigger.add('ws:debug:receive:execute', (data)=> {
@@ -334,36 +336,62 @@
           return { td: {
               class: css(style.table.empty),
               colspan: '5',
-              _: 'This list is empty and has no data.'
+              _: lang.empty
             } };
         }
         const trs = [];
         for (const item of list.val) {
           trs.push({ tr: {
               class: css(style.table.tr),
-              _: { [CodeExecutionItem]: { item, onRemove } }
+              _: { [CodeExecutionItem]: { lang, item, onRemove } }
             } });
         }
         return trs;
       });
     });
 
+    const elemContextsList = document.getElementById('debugContexts');
     com.create(
-        document.getElementById('debugContexts'),
+        elemContextsList,
         ContextList,
-        {}
+        {
+          lang: {
+            empty: elemContextsList.getAttribute('data-lang-empty'),
+            actions: {
+              stepOver: elemContextsList.getAttribute('data-lang-actions-step_over'),
+              watch: elemContextsList.getAttribute('data-lang-actions-watch'),
+              executeCode: elemContextsList.getAttribute('data-lang-actions-execute_code'),
+            }
+          }
+        }
     );
 
+    const elemWatchList = document.getElementById('debugWatchList');
     com.create(
-        document.getElementById('debugWatchList'),
+        elemWatchList,
         WatchList,
-        {}
+        {
+          lang: {
+            empty: elemWatchList.getAttribute('data-lang-empty'),
+            actions: {
+              remove: elemWatchList.getAttribute('data-lang-actions-remove'),
+            }
+          }
+        }
     );
 
+    const elemCodeExecutionList = document.getElementById('debugCodeExecutionList');
     com.create(
-        document.getElementById('debugCodeExecutionList'),
+        elemCodeExecutionList,
         CodeExecutionList,
-        {}
+        {
+          lang: {
+            empty: elemCodeExecutionList.getAttribute('data-lang-empty'),
+            actions: {
+              remove: elemCodeExecutionList.getAttribute('data-lang-actions-remove'),
+            }
+          }
+        }
     );
 
     let prefixURL = netuno.config.urlAdmin;
