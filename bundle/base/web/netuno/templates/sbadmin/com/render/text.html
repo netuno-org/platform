@@ -61,7 +61,7 @@
              document.getElementById('_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}'),
              com(Text),
              {
-                 value: '_{&data=com.text.value}',
+                 value: $(document.createElement('div')).html('_{&data=com.text.value}').text(),
                  useSign: '_{data=com.text.sign}' === 'true'
              }
          );
