@@ -84,23 +84,8 @@ public class Image extends ComponentBase {
                 if (getDatabaseValues() != null) {
                     oldValue = databaseValues.getString(fieldName);
                 }
-                if (!oldValue.isEmpty()) {
-                    getValues().set(fieldName + ":old", oldValue);
-                    Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), oldValue);
-                    try {
-                        Files.deleteIfExists(filePath);
-                        String path = FilenameUtils.getPath(oldValue);
-                        String fileExt = FilenameUtils.getExtension(oldValue);
-                        String fileName = FilenameUtils.getBaseName(oldValue);
-                        Path fileForm = Paths.get(Config.getPathAppStorageDatabase(getProteu()), path + fileName + "___form." + fileExt);
-                        Path fileSearch = Paths.get(Config.getPathAppStorageDatabase(getProteu()), path + fileName + "___search." + fileExt);
-                        Files.deleteIfExists(fileForm);
-                        Files.deleteIfExists(fileSearch);
-                    } catch (Exception e) {
-                        logger.trace(e);
-                        logger.error("Image file not deleted {} because: {}", filePath.toAbsolutePath(), e.getMessage());
-                    }
-                }
+                getValues().set(fieldName + ":old", oldValue);
+                deleteImageFile(oldValue);
                 value = "";
             } else if (getValues().get(fieldName) instanceof String && !getValues().getString(fieldName).isEmpty()) {
                 value = getValues().getString(fieldName);
@@ -253,12 +238,7 @@ public class Image extends ComponentBase {
                 getValues().getString(fieldName + ":value");
                 if (!oldValue.isEmpty()) {
                     getValues().set(fieldName + ":old", oldValue);
-                    String subPath = FilenameUtils.getPath(oldValue);
-                    String fileBaseName = FilenameUtils.getBaseName(oldValue);
-                    String fileExt = FilenameUtils.getExtension(oldValue);
-                    Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, oldValue));
-                    Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, subPath, fileBaseName + "___form." + fileExt));
-                    Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), path, subPath, fileBaseName + "___search." + fileExt));
+                    deleteImageFile(oldValue);
                 }
                 if (file != null && file.available() > 0) {
                     String fileBaseName = FilenameUtils.getBaseName(file.getName());
@@ -313,5 +293,34 @@ public class Image extends ComponentBase {
             }
         }
         return this;
+    }
+
+    public Component onDeleted() {
+        deleteImageFile(value);
+        return this;
+    }
+
+    private void deleteImageFile(String value) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()),
+                getTableData().getString("name"),
+                getDesignData().getString("name"),
+                value
+        );
+        try {
+            Files.deleteIfExists(filePath);
+            Path basePath = filePath.getParent();
+            String fileExt = FilenameUtils.getExtension(filePath.toString());
+            String fileName = FilenameUtils.getBaseName(filePath.toString());
+            Path fileForm = Paths.get(basePath.toString(), fileName + "___form." + fileExt);
+            Path fileSearch = Paths.get(basePath.toString(), fileName + "___search." + fileExt);
+            Files.deleteIfExists(fileForm);
+            Files.deleteIfExists(fileSearch);
+        } catch (IOException e) {
+            logger.trace(e);
+            logger.error("Image file not deleted {} because: {}", filePath.toAbsolutePath(), e.getMessage());
+        }
     }
 }
