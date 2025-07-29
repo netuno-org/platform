@@ -128,6 +128,8 @@ public class Column extends ManagerBase {
     protected boolean primaryKey;
     protected boolean notNull;
     protected int maxLength = 0;
+    protected int precision = 0;
+    protected int scale = 0;
     protected String _default;
 
     public Column(BuilderBase base) {
@@ -168,6 +170,20 @@ public class Column extends ManagerBase {
         if (isMariaDB() && getType() == Type.UUID) {
             maxLength = 36;
         }
+        if (getType() == Type.INT) {
+            precision = 9;
+        }
+        if (getType() == Type.BIGINT) {
+            precision = 18;
+        }
+        if (getType() == Type.FLOAT) {
+            precision = 15;
+            scale = 6;
+        }
+        if (getType() == Type.DECIMAL) {
+            precision = 30;
+            scale = 14;
+        }
         return this;
     }
 
@@ -195,6 +211,24 @@ public class Column extends ManagerBase {
 
     public Column setMaxLength(int maxLength) {
         this.maxLength = maxLength;
+        return this;
+    }
+
+    public int getScale() {
+        return scale;
+    }
+
+    public Column setScale(int scale) {
+        this.scale = scale;
+        return this;
+    }
+
+    public int getPrecision() {
+        return precision;
+    }
+
+    public Column setPrecision(int precision) {
+        this.precision = precision;
         return this;
     }
 
@@ -374,18 +408,15 @@ public class Column extends ManagerBase {
     public String toTypeDefinition() {
     	String defaultLength = "";
     	String extraLength = "";
-    	if (getType() == Type.DECIMAL) {
-    		//defaultLength = "(10)"; // , 2
-    		//extraLength = ""; // , 2
+    	if (getType() == Type.DECIMAL || getType() == Type.FLOAT) {
+            return getType() + (getPrecision() > 0 ? "("+ getPrecision() +
+                    (getScale() > 0 ? ", "+ getScale() : "")
+                    +")" : "");
     	}
-        if (isH2() || isPostgreSQL() || isMSSQL()) {
-            return getType()
-                    + (getMaxLength() > 0 ? "("+ getMaxLength() + extraLength +")" : defaultLength);
-        } else if (isMariaDB()) {
-            return getType()
-                    + (getMaxLength() > 0 ? "("+ getMaxLength() + extraLength +")" : defaultLength);
-        }
-        return "";
+        return getType() + (
+                getMaxLength() > 0 ? "("+ getMaxLength() + extraLength +")"
+                        : defaultLength
+        );
     }
 
     public String toDefaultDefinition() {
@@ -444,8 +475,6 @@ public class Column extends ManagerBase {
         }
         return this;
     }
-
-
 
     public Column drop(String table, String column) {
         try {
