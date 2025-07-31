@@ -22,8 +22,8 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.DataItem;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -39,12 +39,14 @@ public interface AuthHistory extends BuilderBase {
         String where = "WHERE 1 = 1";
         where += " AND user_id = "+ DB.sqlInjectionInt(userId);
         where += " AND ip = '" + DB.sqlInjection(ip) + "'";
-        where += " AND moment >= '" + Timestamp.valueOf(LocalDateTime.now().minusMinutes(authAttemptsInterval)) + "'";
+        where += " AND moment >= '" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now().minusMinutes(authAttemptsInterval)) + "'";
         String order = " ORDER BY moment DESC";
-        String sql = "SELECT " + select + " FROM " + from + where + order;
+        String sql = "SELECT ";
         if (isMSSQL()) {
-            sql += " FETCH NEXT "+ authAttemptsMaxFails +" ROWS ONLY";
-        } else {
+            sql += " TOP "+ authAttemptsMaxFails;
+        }
+        sql += select + " FROM " + from + where + order;
+        if (!isMSSQL()) {
             sql += " LIMIT "+ authAttemptsMaxFails;
         }
         List<Values> rows = getExecutor().query(sql);
