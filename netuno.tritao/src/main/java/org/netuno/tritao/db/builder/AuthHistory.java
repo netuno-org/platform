@@ -117,7 +117,14 @@ public interface AuthHistory extends BuilderBase {
         String from = " netuno_auth_history ";
         String where = "WHERE user_id = " + DB.sqlInjectionInt(userId);
         String order = " ORDER BY moment DESC";
-        String sql = "SELECT " + select + " FROM " + from + where + order + " LIMIT 1";
+        String sql = "SELECT ";
+        if (isMSSQL()) {
+            sql += " TOP 1";
+        }
+        sql += select + " FROM " + from + where + order;
+        if (!isMSSQL()) {
+            sql += " LIMIT 1";
+        }
         List<Values> results = getExecutor().query(sql);
         if (results.size() == 1) {
             return results.getFirst();
@@ -133,12 +140,17 @@ public interface AuthHistory extends BuilderBase {
         String from = " netuno_auth_history ";
         String where = "WHERE user_id = " + DB.sqlInjectionInt(userId);
         String order = " ORDER BY moment DESC";
-        String sql = "SELECT " + select + " FROM " + from + where + order;
         int pageSize = 10;
+        String sql = "SELECT ";
         if (isMSSQL()) {
-            if (page > 0) {
-                sql += " OFFSET "+ (page * pageSize) +" ROWS";
-            }
+            sql += " TOP 1";
+        }
+        sql += select + " FROM " + from + where + order;
+        if (!isMSSQL()) {
+            sql += " LIMIT 1";
+        }
+        if (isMSSQL()) {
+            sql += " OFFSET "+ (page * pageSize) +" ROWS";
             sql += " FETCH NEXT "+ pageSize +" ROWS ONLY";
         } else {
             sql += " LIMIT "+ pageSize;
