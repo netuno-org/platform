@@ -177,8 +177,10 @@ public class Column extends ManagerBase {
             precision = 18;
         }
         if (getType() == Type.FLOAT) {
-            precision = 15;
-            scale = 6;
+            if (!isPostgreSQL()) {
+                precision = 15;
+                scale = 6;
+            }
         }
         if (getType() == Type.DECIMAL) {
             precision = 30;
