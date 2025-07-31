@@ -393,32 +393,28 @@ public class Column extends ManagerBase {
     }
 
     public String toString() {
-        if (isH2() || isPostgreSQL() || isMSSQL()) {
-            return ""+ getBuilder().escape(getName()) +" "+ getType()
-                    + (getMaxLength() > 0 ? "("+ getMaxLength() +")" : "")
-                    + (isPrimaryKey() ? " primary key"+ (isMSSQL() && getType() == Type.INT ? " identity" : "") : "")
-                    + (getDefault() != null && !getDefault().isEmpty() ? " default "+ getDefault() : "");
-        } else if (isMariaDB()) {
-            return ""+ getBuilder().escape(getName()) +" "+ getType()
-                    + (getMaxLength() > 0 ? "("+ getMaxLength() +")" : "")
-                    + (isPrimaryKey() && getType() == Type.INT ? " auto_increment" : "")
-                    + (getDefault() != null && !getDefault().isEmpty() ? " default "+ getDefault() : "");
-        }
-        return "";
+        return getBuilder().escape(getName())
+                +" "+ toTypeDefinition()
+                +" "+ toPrimaryKeyDefinition()
+                +" "+ toDefaultDefinition();
     }
 
     public String toTypeDefinition() {
-    	String defaultLength = "";
-    	String extraLength = "";
     	if (getType() == Type.DECIMAL || getType() == Type.FLOAT) {
             return getType() + (getPrecision() > 0 ? "("+ getPrecision() +
                     (getScale() > 0 ? ", "+ getScale() : "")
                     +")" : "");
     	}
         return getType() + (
-                getMaxLength() > 0 ? "("+ getMaxLength() + extraLength +")"
-                        : defaultLength
+                getMaxLength() > 0 ? "("+ getMaxLength() +")" : ""
         );
+    }
+
+    public String toPrimaryKeyDefinition() {
+        if (isMariaDB()) {
+            return isPrimaryKey() && getType() == Type.INT ? "auto_increment" : "";
+        }
+        return isPrimaryKey() ? "primary key"+ (isMSSQL() && getType() == Type.INT ? " identity" : "") : "";
     }
 
     public String toDefaultDefinition() {
