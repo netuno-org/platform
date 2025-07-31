@@ -141,14 +141,7 @@ public interface AuthHistory extends BuilderBase {
         String where = "WHERE user_id = " + DB.sqlInjectionInt(userId);
         String order = " ORDER BY moment DESC";
         int pageSize = 10;
-        String sql = "SELECT ";
-        if (isMSSQL()) {
-            sql += " TOP 1";
-        }
-        sql += select + " FROM " + from + where + order;
-        if (!isMSSQL()) {
-            sql += " LIMIT 1";
-        }
+        String sql = "SELECT "+ select + " FROM " + from + where + order;
         if (isMSSQL()) {
             sql += " OFFSET "+ (page * pageSize) +" ROWS";
             sql += " FETCH NEXT "+ pageSize +" ROWS ONLY";
