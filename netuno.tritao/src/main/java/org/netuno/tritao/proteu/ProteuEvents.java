@@ -290,9 +290,17 @@ public class ProteuEvents implements Events {
                             } else if (db.hasKey("path")) {
                                 config.setJdbcUrl("jdbc:h2:./" + db.getString("path") + dbURLConfigs);
                             } else if (db.hasKey("home")) {
-                                config.setJdbcUrl("jdbc:h2:./" + db.getString("home") + "/" + db.getString("name") + dbURLConfigs);
+                                if (db.getString("home").startsWith("/") || db.getString("home").startsWith("~")) {
+                                    config.setJdbcUrl("jdbc:h2:" + db.getString("home") + "/" + db.getString("name") + dbURLConfigs);
+                                } else {
+                                    config.setJdbcUrl("jdbc:h2:./" + db.getString("home") + "/" + db.getString("name") + dbURLConfigs);
+                                }
                             } else {
-                                config.setJdbcUrl("jdbc:h2:./" + Config.getAppsHome() +"/"+ appConfig.getString("home") + "/dbs/" + db.getString("name") + dbURLConfigs);
+                                if (appConfig.getString("home").startsWith("/")) {
+                                    config.setJdbcUrl("jdbc:h2:" + appConfig.getString("home") + "/dbs/" + db.getString("name") + dbURLConfigs);
+                                } else {
+                                    config.setJdbcUrl("jdbc:h2:./" + appConfig.getString("home") + "/dbs/" + db.getString("name") + dbURLConfigs);
+                                }
                             }
                         } catch (Exception e) {
                             throw new DBError("App "+ app +" with invalid H2Database configuration.", e).setLogFatal(true);
