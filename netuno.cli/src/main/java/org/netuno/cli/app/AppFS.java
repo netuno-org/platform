@@ -106,7 +106,7 @@ public class AppFS {
     public static String getPath(String appName) {
         Values appConfig = Config.getAppConfig(appName);
         if (appConfig != null && appConfig.hasKey("home")) {
-            return Config.getAppsHome() + File.separator + Config.getAppConfig(appName).getString("home");
+            return Config.getAppConfig(appName).getString("home");
         } else {
             return Config.getAppsHome() + File.separator + appName;
         }
