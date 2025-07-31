@@ -939,14 +939,32 @@ public final class Config {
                     home = config.getString("home");
                     long lastModified = homeConfigFile.lastModified();
                     if (!home.isEmpty()) {
+                        File appHomeFolder = null;
+                        if (home.startsWith("~")) {
+                            appHomeFolder = new File(System.getProperty("user.home"), home.substring(1));
+                            home = appHomeFolder.getPath();
+                        }
                         if (home.startsWith("/")) {
-                            appHomeConfigFile = new File(new File(home), "config" + File.separator +"_"+ Config.getEnv() + ".json");
+                            appHomeFolder = new File(home);
                         } else {
-                            appHomeConfigFile = new File(new File(Config.getAppsHome(), home), "config" + File.separator +"_"+ Config.getEnv() + ".json");
+                            appHomeFolder = new File(Config.getAppsHome(), home);
+                        }
+                        if (appHomeFolder.exists() && appHomeFolder.isDirectory()) {
+                            appHomeConfigFile = new File(appHomeFolder, "config" + File.separator + "_" + Config.getEnv() + ".json");
+                            home = appHomeFolder.getPath();
+                            config.set("home", home);
+                        } else {
+                            String message = EmojiParser.parseToUnicode(":rotating_light:") + " Application home not found: "+ appHomeFolder.getPath();
+                            logger.error(message);
+                            return null;
                         }
                         if (appHomeConfigFile.exists()) {
                             lastModified = appHomeConfigFile.lastModified();
                             config = Values.fromJSON(InputStream.readFromFile(appHomeConfigFile)).merge(config);
+                        } else {
+                            String message = EmojiParser.parseToUnicode(":rotating_light:") +" Configuration not found: "+ appHomeConfigFile.getPath();
+                            logger.error(message);
+                            return null;
                         }
                     }
                     config.set("name", appName);
@@ -960,7 +978,8 @@ public final class Config {
             }
             return config;
     	}
-        File configFolder = new File(new File(Config.getAppsHome(), appName), "config");
+        File appHomeFolder = new File(Config.getAppsHome(), appName);
+        File configFolder = new File(appHomeFolder, "config");
         if (configFolder.exists()) {
             File configFile = new File(configFolder, "_"+ Config.getEnv() +".json");
             if (configFile.exists()) {
@@ -977,7 +996,7 @@ public final class Config {
                     try {
                         config = Values.fromJSON(InputStream.readFromFile(configFile));
                         config.set("name", appName);
-                        config.set("home", appName);
+                        config.set("home", appHomeFolder.getPath());
                         config.set("lastModified", configFile.lastModified());
                         Config.setAppConfig(appName, config);
                     } catch (IOException | JSONException e) {
