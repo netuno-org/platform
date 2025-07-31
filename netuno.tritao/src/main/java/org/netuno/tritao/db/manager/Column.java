@@ -177,7 +177,7 @@ public class Column extends ManagerBase {
             precision = 18;
         }
         if (getType() == Type.FLOAT) {
-            if (!isPostgreSQL()) {
+            if (isMariaDB()) {
                 precision = 15;
                 scale = 6;
             }
