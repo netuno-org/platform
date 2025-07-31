@@ -131,6 +131,7 @@ public class Enterprise extends HttpServlet {
         Config.BUILD_NUMBER = org.netuno.cli.utils.Build.getNumber();
 
         System.out.println();
+        System.out.println();
         System.out.println("    PROTEU "+ Config.BUILD_NUMBER + " IN ORBIT");
         System.out.println();
 
