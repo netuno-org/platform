@@ -152,6 +152,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     getProteu().getRequestAll().set("link", "netuno_group:name");
                 }
                 DB db = new DB(getExecutor().getConnection());
+                getProteu().getRequestAll().set("properties", getComponentPropertiesFromRequestAll());
                 if (!getProteu().getRequestAll().getBoolean("report")) {
                     org.netuno.tritao.com.Component comNew = Config.getNewComponent(getProteu(), getHili(),
                             getProteu().getRequestAll().getString("type"));
