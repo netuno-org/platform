@@ -112,7 +112,7 @@ public class Config {
     public static String getAppHome(Proteu proteu) {
     	try {
             String path = "";
-            File file = new File(getAppsHome(), getAppConfig(proteu).getString("home"));
+            File file = new File(getAppConfig(proteu).getString("home"));
             if (!file.exists()) {
                 throw new ConfigError("App "+ getApp(proteu) +" home path not found: "+ getAppConfig(proteu).getString("home"));
             } else {
