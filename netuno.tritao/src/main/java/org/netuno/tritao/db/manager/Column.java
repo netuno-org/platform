@@ -436,7 +436,8 @@ public class Column extends ManagerBase {
                     getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " set " + toDefaultDefinition() + ";");
                 }
             } else {
-                getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
+                getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition() + ";");
+                getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " set default " + toDefaultDefinition() + ";");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Changing column type on "+ table +"."+ getName());
