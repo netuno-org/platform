@@ -3051,9 +3051,21 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         array.forEach(action);
     }
 
+    public <T> void typedForEach(Consumer<T> action) {
+        array.forEach((o) -> {
+            action.accept((T)o);
+        });
+    }
+
     @Override
     public void forEach(BiConsumer<? super String, ? super Object> action) {
         objects.forEach(action);
+    }
+
+    public <T> void typedForEach(BiConsumer<? super String, T> action) {
+        objects.forEach((String k, Object o) -> {
+            action.accept(k, (T)o);
+        });
     }
     
     public void forEach(Value function) {
