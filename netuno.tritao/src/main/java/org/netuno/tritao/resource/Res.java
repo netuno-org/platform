@@ -35,7 +35,13 @@ import org.netuno.tritao.hili.Hili;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Res",
-                introduction = "Recurso de manipulação da resposta HTTP.",
+                introduction = "Permite realizar a manipulação da resposta HTTP.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Res",
+                introduction = "Allows you to manipulate the HTTP response.",
                 howToUse = { }
         )
 })

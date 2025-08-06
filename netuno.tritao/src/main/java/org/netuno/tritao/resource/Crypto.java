@@ -52,6 +52,12 @@ import org.netuno.psamata.crypto.HMAC;
                 title = "Crypto",
                 introduction = "Algoritmos de encriptação de dados.",
                 howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Crypto",
+                introduction = "Data encryption algorithms.",
+                howToUse = { }
         )
 })
 public class Crypto extends ResourceBase {

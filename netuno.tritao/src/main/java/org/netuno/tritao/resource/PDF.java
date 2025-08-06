@@ -71,8 +71,15 @@ import java.net.MalformedURLException;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "PDF",
-                introduction = "Recurso de exportação de ficheiros PDF.\n" +
-                        "Este recurso permite criar e exportar um ficheiro PDF, utiliza a biblioteca iText para gerar os PDFs",
+                introduction = "Permite ler, criar e alterar arquivos PDF.\n\n" +
+                        "É utilizado a biblioteca [iText](https://itextpdf.com/) para gerar os PDFs.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "PDF",
+                introduction = "Allows you to read, create and modify PDF files.\n\n" +
+                        "The [iText](https://itextpdf.com/) library is used to generate PDFs.",
                 howToUse = { }
         )
 })

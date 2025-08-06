@@ -37,8 +37,15 @@ import java.util.Map;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Template",
-                introduction = "Recurso de gestão de templates. \n" +
-                        "Este recurso permite a manipulação de templates com base no motor de templates do Apache Velocity",
+                introduction = "Recurso de gestão de templates.\n\n" +
+                        "Este recurso permite a manipulação de templates com base no motor de templates do [Apache Velocity](https://velocity.apache.org/engine/2.4.1/user-guide.html).",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Template",
+                introduction = "Template management resource.\n\n" +
+                        "This resource allows manipulation of templates based on the [Apache Velocity](https://velocity.apache.org/engine/2.4.1/user-guide.html) templating engine.",
                 howToUse = { }
         )
 })

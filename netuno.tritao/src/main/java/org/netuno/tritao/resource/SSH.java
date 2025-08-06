@@ -38,7 +38,7 @@ import org.netuno.tritao.resource.util.ResourceException;
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "SSH",
-                introduction = "Feature to connect, transfer files and execute commands via SSH.",
+                introduction = "Resource to connect, transfer files and execute commands via SSH.",
                 howToUse = { }
         )
 })

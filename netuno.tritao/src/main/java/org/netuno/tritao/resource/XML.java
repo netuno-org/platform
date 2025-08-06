@@ -65,7 +65,7 @@ import org.netuno.tritao.resource.util.ResourceException;
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,
-                                code = "//Criar ficheiro XML\n"
+                                code = "// Criar ficheiro XML\n"
                                         + "const xml = _xml.create();\n"+
                                         "const document = xml.builder().newDocument();\n"+
                                         "const root = document.createElement(\"root\");\n"+
@@ -79,7 +79,29 @@ import org.netuno.tritao.resource.util.ResourceException;
                                         "xml.output(document);"
                         )
                 }
-        )
+        ),
+        @LibraryTranslationDoc(
+                language= LanguageDoc.EN,
+                title = "XML",
+                introduction = "This feature uses Java's native engine for creating and interpreting _XML_, based on `javax.xml` and `org.w3c.dom`.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "// Create XML file\n"
+                                        + "const xml = _xml.create();\n"+
+                                        "const document = xml.builder().newDocument();\n"+
+                                        "const root = document.createElement(\"root\");\n"+
+                                        "const item = document.createElement(\"item\");\n"+
+                                        "const attItemId = document.createAttribute(\"id\");\n"+
+                                        "attItemId.setValue(\"1\");\n"+
+                                        "item.setAttributeNode(attItemId);\n"+
+                                        "item.appendChild(document.createTextNode(\"Text...\"))\n"+
+                                        "root.appendChild(item);\n"+
+                                        "document.appendChild(root);\n"+
+                                        "xml.output(document);"
+                        )
+                }
+        ),
 })
 public class XML extends ResourceBase {
 	

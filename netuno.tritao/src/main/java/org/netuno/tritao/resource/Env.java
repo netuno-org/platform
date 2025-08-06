@@ -32,7 +32,7 @@ import org.netuno.tritao.hili.Hili;
                 language = LanguageDoc.PT,
                 title = "Env",
                 introduction = "Permite consultar o ambiente de desenvolvimento que é configurado no " +
-                        "ficheiro `config.js` que encontra-se na raíz do Netuno.\n" +
+                        "ficheiro `config.js` que encontra-se na raíz do Netuno.\n\n" +
                         "É utilizada a configuração da aplicação que tem o respectivo nome do ambiente.",
                 howToUse = {
                         @SourceCodeDoc(
@@ -46,7 +46,7 @@ import org.netuno.tritao.hili.Hili;
                 language = LanguageDoc.EN,
                 title = "Env",
                 introduction = "Allows you to consult the development environment that is configured " +
-                        "in the `config.js` file which is found in the root of Netuno.\n" +
+                        "in the `config.js` file which is found in the root of Netuno.\n\n" +
                         "The configuration of the application that has its environment name is used.",
                 howToUse = {
                         @SourceCodeDoc(

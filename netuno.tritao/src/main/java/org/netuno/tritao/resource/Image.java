@@ -38,7 +38,13 @@ import javax.imageio.stream.ImageOutputStream;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Image",
-                introduction = "Recurso manipulação de imagens.",
+                introduction = "Recurso para a manipulação de imagens programaticamente.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Image",
+                introduction = "Resource for manipulating images programmatically.",
                 howToUse = { }
         )
 })

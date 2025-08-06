@@ -41,14 +41,14 @@ import java.nio.file.Paths;
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
             title = "CSV",
-            introduction = "Processa ficheiros do tipo CSV.\n"+
+            introduction = "Processa ficheiros do tipo CSV.\n\n"+
             "Este recurso utiliza a biblioteca [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/ \"Apache Commons CSV\").",
             howToUse = {}
     ),
     @LibraryTranslationDoc(
             language = LanguageDoc.EN,
             title = "CSV",
-            introduction = "Processes CSV type files.\n"+
+            introduction = "Processes CSV type files.\n\n"+
             "This feature uses the [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/ \"Apache Commons CSV\") library.",
             howToUse = {}
     )

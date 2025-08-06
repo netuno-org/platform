@@ -31,7 +31,13 @@ import org.netuno.tritao.hili.Hili;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Random",
-                introduction = "Geração de valores aleatórios.",
+                introduction = "Geração de dados aleatórios, como chaves, identificadores, passwords, etc.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Random",
+                introduction = "Generation of random data, such as keys, identifiers, passwords, etc.",
                 howToUse = { }
         )
 })

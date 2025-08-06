@@ -54,7 +54,13 @@ import org.netuno.library.doc.ReturnTranslationDoc;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Storage",
-                introduction = "Recursos de gestão de ficheiros da aplicação.",
+                introduction = "Recursos de gestão de ficheiros da aplicação que ficam na pasta `storage`.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Storage",
+                introduction = "Application file management resources that are located in the `storage` folder.",
                 howToUse = { }
         )
 })

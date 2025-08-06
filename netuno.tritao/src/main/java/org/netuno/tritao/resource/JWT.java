@@ -48,8 +48,14 @@ import org.netuno.tritao.resource.event.AppEventType;
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
-                title = "Jwt",
-                introduction = "Recurso de geração de JSON Web Tokens.",
+                title = "JWT",
+                introduction = "Manipulação de JSON Web Tokens.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "JWT",
+                introduction = "Handling JSON Web Tokens.",
                 howToUse = { }
         )
 })

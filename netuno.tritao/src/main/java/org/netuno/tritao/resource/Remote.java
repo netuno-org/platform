@@ -48,9 +48,17 @@ import org.netuno.tritao.resource.event.AppEventType;
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
             title = "Remote",
-            introduction = "Recurso de invocação remota de APIs.\n"
-            + "O Remote facilita esta integração e torna simples "
-            + "a integração com web services externos via REST e SOAP.",
+            introduction = "Recurso de invocação remota de APIs.\n\n"
+                    + "O Remote facilita esta integração e torna simples "
+                    + "a integração com web services externos via REST e SOAP.",
+            howToUse = {}
+    ),
+    @LibraryTranslationDoc(
+            language = LanguageDoc.EN,
+            title = "Remote",
+            introduction = "Remote API invocation capability.\n\n"
+                    + "Remote facilitates this integration and makes it simple to integrate"
+                    + "with external web services via REST, JSON, and SOAP.",
             howToUse = {}
     )
 })

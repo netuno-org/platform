@@ -45,14 +45,14 @@ import java.io.IOException;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "CORS",
-                introduction = "Controla o Cross-Origin Resource Sharing (CORS).<br/>\n" +
+                introduction = "Controla o Cross-Origin Resource Sharing (CORS).\n\n" +
                         "Permite gerir as múltiplas origens e os respectivos cabeçalhos.",
                 howToUse = { }
         ),
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "CORS",
-                introduction = "Controls the Cross-Origin Resource Sharing (CORS).<br/>\n" +
+                introduction = "Controls the Cross-Origin Resource Sharing (CORS).\n\n" +
                         "Allows you to manage multiple origins and their headers.",
                 howToUse = { }
         )

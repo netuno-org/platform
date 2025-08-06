@@ -51,7 +51,7 @@ import org.netuno.tritao.resource.util.ResourceException;
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "SMTP",
-                introduction = "Feature of sending e-mail by SMTP.",
+                introduction = "Resource of sending e-mail by SMTP.",
                 howToUse = { }
         )
 })

@@ -52,7 +52,13 @@ import org.netuno.tritao.sandbox.ScriptResult;
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
             title = "Setup",
-            introduction = "Recurso de configuração dos componentes da aplicação.",
+            introduction = "Gestão da configuração e definição da estrutura de base de dados.",
+            howToUse = {}
+    ),
+    @LibraryTranslationDoc(
+            language = LanguageDoc.EN,
+            title = "Setup",
+            introduction = "Configuration management and definition of the database structure.",
             howToUse = {}
     )
 })

@@ -89,8 +89,15 @@ CONFIGURATION SAMPLE
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "RabbitMQ",
-                introduction = "Integração com o RabbitMQ.\n" +
+                introduction = "Integração com o RabbitMQ.\n\n" +
                         "Permite enviar e receber mensagens.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "RabbitMQ",
+                introduction = "Integration with RabbitMQ.\n\n" +
+                        "Allows you to send and receive messages.",
                 howToUse = { }
         )
 })

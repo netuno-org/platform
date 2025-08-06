@@ -17,6 +17,9 @@
 
 package org.netuno.tritao.resource;
 
+import org.netuno.library.doc.LanguageDoc;
+import org.netuno.library.doc.LibraryDoc;
+import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.OutputStream;
@@ -32,6 +35,20 @@ import java.nio.charset.Charset;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Resource(name = "in")
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "In",
+                introduction = "Recurso de entrada de dados dos pedidos HTTP.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "In",
+                introduction = "HTTP request data input resource.",
+                howToUse = { }
+        )
+})
 public class In extends ResourceBase {
     public In(Proteu proteu, Hili hili) {
         super(proteu, hili);

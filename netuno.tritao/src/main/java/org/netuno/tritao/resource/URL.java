@@ -32,8 +32,14 @@ import org.netuno.tritao.hili.Hili;
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
-                title = "Url",
+                title = "URL",
                 introduction = "Recurso de gestão de URLs da aplicação.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "URL",
+                introduction = "Application URL management resource.",
                 howToUse = { }
         )
 })

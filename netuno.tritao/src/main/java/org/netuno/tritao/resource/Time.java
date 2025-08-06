@@ -46,7 +46,13 @@ import org.netuno.tritao.resource.util.ResourceException;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Time",
-                introduction = "Gestão de dados temporal baseada no **java.time**.",
+                introduction = "Gestão de dados temporais baseada no **java.time**.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Time",
+                introduction = "Temporal data management based on **java.time**.",
                 howToUse = { }
         )
 })

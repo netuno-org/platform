@@ -35,9 +35,9 @@ import java.util.Map;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Val",
-                introduction = "Recurso para interagir com listas ou mapas com chaves e valores (dicionários). \n" +
-                        "O valores é um objeto de armazenamento dados que pode ser representado como uma lista ou como um mapa de dados (dicionário). " +
-                        "Uma vez inicializado como uma dessas estruturas, lista ou mapa, não poderá mais ser alterado para a outra.",
+                introduction = "Recurso para interagir com listas ou mapas com chaves e valores (dicionários).\n\n" +
+                        "Permite o armazenamento de dados que pode ser representado como uma lista ou como um mapa de dados (dicionário).\n\n" +
+                        "Uma vez inicializado como uma dessas estruturas, ou seja, como uma lista ou como um mapa, então não poderá mais ser utilizada como outra.",
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,
@@ -64,9 +64,9 @@ import java.util.Map;
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "Val",
-                introduction = "Resource to interact with lists or maps with keys and values (dictionaries). \n" +
-                        "Values is a data storage object that can be represented as a list or as a data map (dictionary). " +
-                        "Once initialized as one of these structures, list or map, it can no longer be changed to the other.",
+                introduction = "Resource to interact with lists or maps with keys and values (dictionaries).\n\n" +
+                        "Allows the storage of data that can be represented as a list or as a data map (dictionary).\n\n" +
+                        "Once initialized as one of these structures, that is, as a list or as a map, it can no longer be used as another.",
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,

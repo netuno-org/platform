@@ -40,13 +40,13 @@ import org.netuno.tritao.resource.util.TableBuilderResourceBase;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Form",
-                introduction = "Gerador do formulário da aplicação programaticamente.",
+                introduction = "Responsável por realizar a gestão dos formulários da aplicação programaticamente.",
                 howToUse = { }
         ),
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "Form",
-                introduction = "Application form generator programmatically.",
+                introduction = "Responsible for managing application forms programmatically.",
                 howToUse = { }
         )
 })

@@ -42,7 +42,13 @@ import java.io.OutputStream;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Jasper",
-                introduction = "Recurso de geração de rápida de relatórios.",
+                introduction = "Integração com relatórios do [Jasper](https://www.jaspersoft.com/).",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Jasper",
+                introduction = "Integration with [Jasper](https://www.jaspersoft.com/) reports.",
                 howToUse = { }
         )
 })

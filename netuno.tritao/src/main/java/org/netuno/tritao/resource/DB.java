@@ -60,7 +60,7 @@ import java.util.UUID;
     @LibraryTranslationDoc(
             language = LanguageDoc.PT,
             title = "DB",
-            introduction = "Recurso de carregamento de datasources.\n"
+            introduction = "Recurso de carregamento de datasources.\n\n"
             + "Este recurso permite o carregamento do datasource que mais lhe for conveniente, suporta "
             + "conexão com MariaDB, MSSQLServer, PostgreSQL, H2 e Oracle.",
             howToUse = {
@@ -87,7 +87,7 @@ import java.util.UUID;
     @LibraryTranslationDoc(
             language = LanguageDoc.EN,
             title = "DB",
-            introduction = "Datasource loading resource.\n"
+            introduction = "Datasource loading resource.\n\n"
             + "This resource allows you to load the datasource that suits you best, supports connection to MariaDB, MSSQLServer, PostgreSQL, H2 and Oracle.",
             howToUse = {
                 @SourceCodeDoc(

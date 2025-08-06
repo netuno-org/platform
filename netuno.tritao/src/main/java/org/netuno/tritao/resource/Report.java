@@ -34,13 +34,13 @@ import org.netuno.tritao.resource.util.TableBuilderResourceBase;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Report",
-                introduction = "Gerador de Reports da aplicação programaticamente.",
+                introduction = "Responsável por realizar a gestão dos relatórios da aplicação programaticamente.",
                 howToUse = { }
         ),
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "Form",
-                introduction = "Application reports generator programmatically.",
+                introduction = "Responsible for managing application reports programmatically.",
                 howToUse = { }
         )
 })

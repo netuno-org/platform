@@ -33,7 +33,13 @@ import org.netuno.tritao.hili.Hili;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Req",
-                introduction = "Recurso de obtenção de dados dos pedidos HTTP.",
+                introduction = "Permite realizar a obtenção de dados dos pedidos HTTP, ou seja da requisição.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Req",
+                introduction = "Allows you to obtain data from HTTP requests.",
                 howToUse = { }
         )
 })

@@ -43,7 +43,13 @@ import java.util.stream.Stream;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Lang",
-                introduction = "Recurso de atribuição de linguagem.",
+                introduction = "Faz a gestão de textos com tradução para os diversos idiomas.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Lang",
+                introduction = "Manages texts translated into different languages.",
                 howToUse = { }
         )
 })

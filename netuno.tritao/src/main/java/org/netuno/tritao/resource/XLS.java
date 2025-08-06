@@ -49,7 +49,7 @@ import java.util.*;
         @LibraryTranslationDoc(
                 language= LanguageDoc.PT,
                 title = "XLS",
-                introduction = "Criar e ler ficheiros _Excel_, suporta para ficheiros _XLS_ como ficheiros _XLSX_.\n"+
+                introduction = "Criar e ler ficheiros _Excel_, suporta para ficheiros _XLS_ como ficheiros _XLSX_.\n\n"+
                         "Este recurso utiliza a biblioteca [Apache POI](https://poi.apache.org/ \"Apache POI\").",
                 howToUse = {
                         @SourceCodeDoc(
@@ -92,7 +92,7 @@ import java.util.*;
         @LibraryTranslationDoc(
                 language= LanguageDoc.EN,
                 title = "XLS",
-                introduction = "Create and read _Excel_ files, support for _XLS_ files as _XLSX_ files.\n"+
+                introduction = "Create and read _Excel_ files, support for _XLS_ files as _XLSX_ files.\n\n"+
                         "This feature uses the [Apache POI](https://poi.apache.org/ \"Apache POI\") library.",
                 howToUse = {
                         @SourceCodeDoc(

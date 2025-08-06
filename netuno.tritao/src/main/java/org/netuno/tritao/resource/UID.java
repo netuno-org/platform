@@ -33,8 +33,14 @@ import java.util.UUID;
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
-                title = "Uid",
-                introduction = "Gerador de _unique identifier descriptor_ (uid).",
+                title = "UID",
+                introduction = "Gera identificadores únicos universais (uuid/guid).",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "UID",
+                introduction = "Generates universally unique identifiers (uuid/guid).",
                 howToUse = { }
         )
 })

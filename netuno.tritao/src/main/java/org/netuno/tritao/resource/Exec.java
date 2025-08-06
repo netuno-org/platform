@@ -43,9 +43,9 @@ import org.netuno.tritao.sandbox.ScriptResult;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Exec",
-                introduction = "Funcionalidades para auxiliar à execução do código.\n"
-                        + "Realiza a execução de outros scripts, suporta também executar scripts em outras linguagens de programação.\n"
-                        + "Executa o script indicado, retornando o seu output.\n"
+                introduction = "Funcionalidades para auxiliar à execução do código.\n\n"
+                        + "Realiza a execução de outros scripts, suporta também executar scripts em outras linguagens de programação.\n\n"
+                        + "Executa o script indicado, retornando o seu output.\n\n"
                         + "Principais funções:\n"
                         + "- [bind](#bind)\n"
                         + "- [core](#core)\n"
@@ -73,9 +73,9 @@ import org.netuno.tritao.sandbox.ScriptResult;
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "Exec",
-                introduction = "Functionalities to aid code execution.\n"
-                        + "It performs the execution of other scripts, it also supports the execution of scripts in other programming languages.\n"
-                        + "Executes the indicated script, returning its output.\n"
+                introduction = "Functionalities to aid code execution.\n\n"
+                        + "It performs the execution of other scripts, it also supports the execution of scripts in other programming languages.\n\n"
+                        + "Executes the indicated script, returning its output.\n\n"
                         + "Main functions:\n"
                         + "- [bind](#bind)\n"
                         + "- [core](#core)\n"

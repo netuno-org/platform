@@ -50,7 +50,13 @@ import org.netuno.tritao.resource.event.AppEventType;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Firebase",
-                introduction = "Recurso de comunicação com o Firebase.",
+                introduction = "Recurso de integração com o Firebase.",
+                howToUse = { }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "Firebase",
+                introduction = "Firebase integration feature.",
                 howToUse = { }
         )
 })
