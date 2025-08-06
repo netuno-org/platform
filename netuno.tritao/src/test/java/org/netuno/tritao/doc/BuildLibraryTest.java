@@ -31,13 +31,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 public class BuildLibraryTest {
-    
+
     private String debugResource = ""; //"remote";
     private String debugObject = ""; //"RemoteResponse";
 
@@ -49,6 +46,7 @@ public class BuildLibraryTest {
     public void generate() throws Exception {
         Values menuResources = new Values();
         Values menuObjects = new Values();
+        Values linksResources = new Values();
         for (LanguageDoc lang : LanguageDoc.values()) {
             var langFolder = new org.netuno.psamata.io.File("docs/"+ lang.name());
             if (langFolder.exists()) {
@@ -97,7 +95,7 @@ public class BuildLibraryTest {
                     if (!name.equals("Values")) {
                         //continue;
                     }
-                    String pathMenu = "library/objects/" + name;
+                    String pathMenu = "/docs/library/objects/" + name;
                     if (!menuObjects.contains(pathMenu)) {
                         menuObjects.add(pathMenu);
                     }
@@ -123,7 +121,7 @@ public class BuildLibraryTest {
                     if (!resource.name().equals("header")) {
                         //continue;
                     }
-                    String pathMenu = "library/resources/" + resource.name();
+                    String pathMenu = "/docs/library/resources/" + resource.name();
                     if (!menuResources.contains(pathMenu)) {
                         menuResources.add(pathMenu);
                     }
@@ -132,6 +130,12 @@ public class BuildLibraryTest {
                     if (contents.getMarkdown().isEmpty()) {
                         continue;
                     }
+                    linksResources.add(
+                            Values.newMap()
+                                    .set("name", resource.name())
+                                    .set("path", pathMenu)
+                                    .set("title", contents.getTitle())
+                    );
                     loadTypeScriptNamespaces(typeScriptNamespaces, contents);
                     OutputStream.writeToFile(contents.getMarkdown().toString(), pathResources.resolve(resource.name() + ".md"), false);
                     Path typeScriptFile = pathTSdResources.resolve(resource.name() + ".d.ts");
@@ -162,7 +166,7 @@ public class BuildLibraryTest {
 
         System.out.println("MENU RESOURCES:");
         System.out.println();
-        menuResources.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+        menuResources.sort(Comparator.comparing(Object::toString));
         System.out.println(menuResources.toJSON(4));
 
         System.out.println();
@@ -170,9 +174,22 @@ public class BuildLibraryTest {
 
         System.out.println("MENU OBJECTS:");
         System.out.println();
-        menuObjects.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+        menuObjects.sort(Comparator.comparing(Object::toString));
         System.out.println(menuObjects.toJSON(4));
 
+        System.out.println();
+        System.out.println();
+
+        System.out.println("Library > Introduction: Links:");
+        System.out.println();
+        System.out.println("EN:");
+        linksResources.typedForEach((Values resource) -> {
+            System.out.println("* ["+ resource.getString("title") +"]("+ resource.getString("path") +")");
+        });
+        System.out.println("PT:");
+        linksResources.typedForEach((Values resource) -> {
+            System.out.println("* ["+ resource.getString("title") +"]("+ resource.getString("path") +")");
+        });
     }
 
     private void loadTypeScriptNamespaces(Values typeScriptNamespaces, LibraryContent.GeneratedContents contents) {
