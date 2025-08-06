@@ -59,6 +59,7 @@ public class LibraryContent {
         private Values typeScriptNamespaces = new Values();
         private Values typeScriptImportObjects = new Values();
         private Values typeScriptImportResources = new Values();
+        private String title = "";
         private GeneratedContents(Class cls, boolean resource) {
             this.cls = cls;
             this.resource = resource;
@@ -70,6 +71,14 @@ public class LibraryContent {
 
         public boolean isResource() {
             return resource;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getTitle() {
+            return title;
         }
 
         public StringBuilder getMarkdown() {
@@ -185,6 +194,7 @@ public class LibraryContent {
                 fail(name + " | Class > More than 1 translations to language " + lang.name());
             }
         }
+        contents.setTitle(translationDoc.title());
         contents.getMarkdown().append("---\n"
                 + "id: " + name + "\n"
                 + "title: " + translationDoc.title() + "\n"
@@ -764,7 +774,7 @@ public class LibraryContent {
                     }
                     Resource resource = (Resource) _class.getAnnotation(Resource.class);
                     if (type == Type.Markdown) {
-                        content += "[" + _class.getSimpleName() + "](../resources/" + resource.name() + ")";
+                        content += "[" + _class.getSimpleName() + "](/docs/library/resources/" + resource.name() + ")";
                         if (objectTypeArray) {
                             content += "[]";
                         }
@@ -788,7 +798,7 @@ public class LibraryContent {
                         };
                     }
                     if (type == Type.Markdown) {
-                        content += "[" + _class.getSimpleName() + "](../objects/" + _class.getSimpleName() + ")";
+                        content += "[" + _class.getSimpleName() + "](/docs/library/objects/" + _class.getSimpleName() + ")";
                         if (objectTypeArray) {
                             content += "[]";
                         }
