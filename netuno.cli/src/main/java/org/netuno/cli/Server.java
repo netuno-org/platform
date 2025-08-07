@@ -393,10 +393,11 @@ public class Server implements MainArg {
     
     public URI getURI() {
         try {
-            return server.getURI();
-        } catch (Throwable t) {
-            return URI.create("http://localhost:"+ port +"/");
-        }
+            if (server.getURI() != null) {
+                return server.getURI();
+            }
+        } catch (Throwable t) { }
+        return URI.create("http://localhost:"+ port +"/");
     }
     
     public boolean isStarting() {
@@ -444,7 +445,6 @@ class CheckServerStartedRunnable implements Runnable {
                         host = "localhost";
                     }
                     boolean isDev = Config.getEnv().toLowerCase().startsWith("dev");
-                    System.out.println();
                     System.out.println();
                     System.out.println(OS.consoleOutput("    @|yellow Applications available:|@"));
                     for (String app : Config.getAppConfig().keys()) {
