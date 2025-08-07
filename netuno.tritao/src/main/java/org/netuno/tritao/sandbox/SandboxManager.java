@@ -26,7 +26,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.graalvm.polyglot.PolyglotException;
-import org.graalvm.polyglot.SourceSection;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuError;
 import org.netuno.psamata.Values;
@@ -41,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -261,7 +261,7 @@ public class SandboxManager implements AutoCloseable {
                 if (!preserveContext) {
                     scriptablesRunning.forEach((s) -> s.resetContext());
                 }
-                java.nio.file.Path scriptPathFileSystem = Paths.get(path);
+                Path scriptPathFileSystem = Paths.get(path);
                 path = scriptPathFileSystem.getParent().toAbsolutePath().toString();
                 file = scriptPathFileSystem.getFileName().toString() +"/"+ file;
                 String sourceCode = "";
@@ -434,15 +434,43 @@ public class SandboxManager implements AutoCloseable {
             }
             int errorLineNumber = -1;
             int errorColumnNumber = -1;
-            if (throwable instanceof PolyglotException) {
-                PolyglotException scriptException = (PolyglotException)throwable;
-                SourceSection sourceSection = scriptException.getSourceLocation();
-                if (sourceSection != null) {
-                    errorLineNumber = sourceSection.getStartLine();
-                    errorColumnNumber = sourceSection.getStartColumn();
-                }
-                if (scriptException.isHostException()) {
-                    throwable = scriptException.asHostException();
+            if (throwable.getClass().getName().equals(PolyglotException.class.getName())) {
+                try {
+                    /*
+                    PolyglotException scriptException = (PolyglotException)throwable;
+                    SourceSection sourceSection = scriptException.getSourceLocation();
+                    if (sourceSection != null) {
+                        errorLineNumber = sourceSection.getStartLine();
+                        errorColumnNumber = sourceSection.getStartColumn();
+                    }
+                    if (scriptException.isHostException()) {
+                        throwable = scriptException.asHostException();
+                    }
+                    */
+                    Object sourceSection = throwable.getClass().getMethod("getSourceLocation", null).invoke(throwable);
+                    if (sourceSection != null) {
+                        errorLineNumber = (int)sourceSection.getClass().getMethod("getStartLine", null).invoke(sourceSection);
+                        errorColumnNumber = (int)sourceSection.getClass().getMethod("getStartColumn", null).invoke(sourceSection);
+                    } else {
+                        for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
+                            try {
+                                Class.forName(stackTraceElement.getClassName());
+                            } catch (Exception e) {
+                                if (Path.of(stackTraceElement.getFileName()).toAbsolutePath().startsWith(
+                                        Path.of(Config.getPathAppBase(getProteu())).toAbsolutePath()
+                                )) {
+                                    errorLineNumber = stackTraceElement.getLineNumber();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    boolean isHostException = (boolean)throwable.getClass().getMethod("isHostException", null).invoke(throwable);
+                    if (isHostException) {
+                        throwable = (Throwable) throwable.getClass().getMethod("asHostException", null).invoke(throwable);
+                    }
+                } catch (Exception e) {
+                    logger.trace("Fail to process the GraalVM exception.", e);
                 }
             } else if (throwable instanceof ScriptException) {
                 ScriptException scriptException = (ScriptException)throwable;
@@ -456,7 +484,7 @@ public class SandboxManager implements AutoCloseable {
                     "\n# "+ EmojiParser.parseToUnicode(":boom:") +" SCRIPT EXECUTION" +
                     "\n#" +
                     "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") +" "+ script.path() +
-                    "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ script.fileName() + " > " + errorLineNumber + ":" + errorColumnNumber +
+                    "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ script.fileName() +"."+ script.extension() + (errorLineNumber > -1 ? ":" + errorLineNumber + (errorColumnNumber > -1 ? ":" + errorColumnNumber : "") : "" ) +
                     "\n# " + getErrorMessage(throwable) +
                     "\n# " + getErrorInnerMessages(throwable) +
                     "\n"
