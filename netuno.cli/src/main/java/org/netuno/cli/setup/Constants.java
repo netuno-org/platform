@@ -23,7 +23,7 @@ package org.netuno.cli.setup;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class Constants {
-    public static String GRAALVM_VERSION = "24.0.1";
+    public static String GRAALVM_VERSION = "24.0.2";
 
     public static String GRAALVM_FOLDER = "graalvm";
 
