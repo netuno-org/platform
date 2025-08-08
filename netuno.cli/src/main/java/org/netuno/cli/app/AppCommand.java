@@ -45,7 +45,7 @@ public class AppCommand {
             if (path.startsWith(File.separator) || path.startsWith("/") || path.startsWith("\\")) {
                 folder = new File(path);
             } else {
-                folder = new File(new File(Config.getAppsHome(), appConfig.getString("home")), path);
+                folder = new File(appConfig.getString("home"), path);
             }
             String cmd = command.getString("command").trim();
             if (cmd.isEmpty()) {
