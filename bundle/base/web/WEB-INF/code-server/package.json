@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "code-server": "^3.9.3"
+    "code-server": "^4.102.3"
   }
 }
