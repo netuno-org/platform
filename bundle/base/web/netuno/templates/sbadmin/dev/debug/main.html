@@ -8,98 +8,113 @@
 <h1><i class="fa fa-fw fa-solid fa-bug"></i> _{lang=netuno.dev.debug.title}</h1>
 <hr/>
 <div style="height: 10px;"></div>
-<h2><i class="fa-solid fa-list"></i> _{lang=netuno.dev.debug.contexts.title}</h2>
-<hr/>
-<table class="debug__break-points" style="width:100%">
-    <thead>
+<div id="debugErrorConnectionFailed" style="display: none;">
+    <div class="alert alert-danger" role="alert">
+        <h2>_{lang=netuno.dev.debug.error.connection_failed.title}</h2>
+        <p>_{lang=netuno.dev.debug.error.connection_failed.message_1}</p>
+        <p>_{lang=netuno.dev.debug.error.connection_failed.message_2}</p>
+    </div>
+</div>
+<div id="debugErrorConnectionClosed" style="display: none;">
+    <div class="alert alert-danger" role="alert">
+        <h2>_{lang=netuno.dev.debug.error.connection_closed.title}</h2>
+        <p>_{lang=netuno.dev.debug.error.connection_closed.message}</p>
+    </div>
+</div>
+<div id="debugContainer" style="display: none;">
+    <h2><i class="fa-solid fa-list"></i> _{lang=netuno.dev.debug.contexts.title}</h2>
+    <hr/>
+    <table class="debug__break-points" style="width:100%">
+        <thead>
+            <tr>
+                <th style="width: 5%;">_{lang=netuno.dev.debug.contexts.id}</th>
+                <th style="width: 20%; max-width: 20%;">_{lang=netuno.dev.debug.contexts.script}</th>
+                <th style="width: 10%;">_{lang=netuno.dev.debug.contexts.moment}</th>
+                <th style="width: 10%;">_{lang=netuno.dev.debug.contexts.actions}</th>
+                <th style="width: 55%;"></th>
+            </tr>
+        </thead>
+        <tbody id="debugContexts"
+               data-lang-empty="_{lang=netuno.dev.debug.contexts.empty}"
+               data-lang-actions-step_over="_{lang=netuno.dev.debug.contexts.actions.step_over}"
+               data-lang-actions-watch="_{lang=netuno.dev.debug.contexts.actions.watch}"
+               data-lang-actions-execute_code="_{lang=netuno.dev.debug.contexts.actions.execute_code}"
+        ></tbody>
+    </table>
+    <div style="height: 20px;"></div>
+    <h2><i class="fa-solid fa-magnifying-glass"></i> _{lang=netuno.dev.debug.watch_list.title}</h2>
+    <hr/>
+    <table class="debug__watch-list" style="width:100%">
+        <thead>
         <tr>
-            <th style="width: 5%;">_{lang=netuno.dev.debug.contexts.id}</th>
-            <th style="width: 20%; max-width: 20%;">_{lang=netuno.dev.debug.contexts.script}</th>
-            <th style="width: 10%;">_{lang=netuno.dev.debug.contexts.moment}</th>
-            <th style="width: 10%;">_{lang=netuno.dev.debug.contexts.actions}</th>
-            <th style="width: 55%;"></th>
+            <th style="width: 5%;">_{lang=netuno.dev.debug.watch_list.id}</th>
+            <th style="width: 20%; max-width: 20%;">_{lang=netuno.dev.debug.watch_list.script}</th>
+            <th style="width: 10%;">_{lang=netuno.dev.debug.watch_list.moment}</th>
+            <th style="width: 30%;">_{lang=netuno.dev.debug.watch_list.name}</th>
+            <th style="width: 30%;">_{lang=netuno.dev.debug.watch_list.value}</th>
+            <th style="width: 5%;">_{lang=netuno.dev.debug.watch_list.actions}</th>
         </tr>
-    </thead>
-    <tbody id="debugContexts"
-           data-lang-empty="_{lang=netuno.dev.debug.contexts.empty}"
-           data-lang-actions-step_over="_{lang=netuno.dev.debug.contexts.actions.step_over}"
-           data-lang-actions-watch="_{lang=netuno.dev.debug.contexts.actions.watch}"
-           data-lang-actions-execute_code="_{lang=netuno.dev.debug.contexts.actions.execute_code}"
-    ></tbody>
-</table>
-<div style="height: 20px;"></div>
-<h2><i class="fa-solid fa-magnifying-glass"></i> _{lang=netuno.dev.debug.watch_list.title}</h2>
-<hr/>
-<table class="debug__watch-list" style="width:100%">
-    <thead>
-    <tr>
-        <th style="width: 5%;">_{lang=netuno.dev.debug.watch_list.id}</th>
-        <th style="width: 20%; max-width: 20%;">_{lang=netuno.dev.debug.watch_list.script}</th>
-        <th style="width: 10%;">_{lang=netuno.dev.debug.watch_list.moment}</th>
-        <th style="width: 30%;">_{lang=netuno.dev.debug.watch_list.name}</th>
-        <th style="width: 30%;">_{lang=netuno.dev.debug.watch_list.value}</th>
-        <th style="width: 5%;">_{lang=netuno.dev.debug.watch_list.actions}</th>
-    </tr>
-    </thead>
-    <tbody id="debugWatchList"
-           data-lang-empty="_{lang=netuno.dev.debug.watch_list.empty}"
-           data-lang-actions-remove="_{lang=netuno.dev.debug.watch_list.actions.remove}"
-    ></tbody>
-</table>
+        </thead>
+        <tbody id="debugWatchList"
+               data-lang-empty="_{lang=netuno.dev.debug.watch_list.empty}"
+               data-lang-actions-remove="_{lang=netuno.dev.debug.watch_list.actions.remove}"
+        ></tbody>
+    </table>
 
-<div class="modal fade" id="debugWatchModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><i class="fa-solid fa-magnifying-glass"></i> _{lang=netuno.dev.debug.watch_modal.title}</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="debugWatchModal_name">_{lang=netuno.dev.debug.watch_modal.name}</label>
-                    <input class="form-control" type="text" id="debugWatchModal_name" name="name" value="" size="40">
+    <div class="modal fade" id="debugWatchModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa-solid fa-magnifying-glass"></i> _{lang=netuno.dev.debug.watch_modal.title}</h4>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"><i class="fa-solid fa-magnifying-glass"></i> _{lang=netuno.dev.debug.watch_modal.look}</button>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="debugWatchModal_name">_{lang=netuno.dev.debug.watch_modal.name}</label>
+                        <input class="form-control" type="text" id="debugWatchModal_name" name="name" value="" size="40">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"><i class="fa-solid fa-magnifying-glass"></i> _{lang=netuno.dev.debug.watch_modal.look}</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div style="height: 20px;"></div>
-<h2><i class="fa-solid fa-terminal"></i> _{lang=netuno.dev.debug.code_execution_list.title}</h2>
-<hr/>
-<table class="debug__code-execution-list" style="width:100%">
-    <thead>
-    <tr>
-        <th style="width: 5%;">_{lang=netuno.dev.debug.code_execution_list.id}</th>
-        <th style="width: 20%;">_{lang=netuno.dev.debug.code_execution_list.script}</th>
-        <th style="width: 10%;">_{lang=netuno.dev.debug.code_execution_list.moment}</th>
-        <th style="width: 60%;">_{lang=netuno.dev.debug.code_execution_list.code}</th>
-        <th style="width: 5%;">_{lang=netuno.dev.debug.code_execution_list.actions}</th>
-    </tr>
-    </thead>
-    <tbody id="debugCodeExecutionList"
-           data-lang-empty="_{lang=netuno.dev.debug.code_execution_list.empty}"
-           data-lang-actions-remove="_{lang=netuno.dev.debug.code_execution_list.actions.remove}"
-    ></tbody>
-</table>
+    <div style="height: 20px;"></div>
+    <h2><i class="fa-solid fa-terminal"></i> _{lang=netuno.dev.debug.code_execution_list.title}</h2>
+    <hr/>
+    <table class="debug__code-execution-list" style="width:100%">
+        <thead>
+        <tr>
+            <th style="width: 5%;">_{lang=netuno.dev.debug.code_execution_list.id}</th>
+            <th style="width: 20%;">_{lang=netuno.dev.debug.code_execution_list.script}</th>
+            <th style="width: 10%;">_{lang=netuno.dev.debug.code_execution_list.moment}</th>
+            <th style="width: 60%;">_{lang=netuno.dev.debug.code_execution_list.code}</th>
+            <th style="width: 5%;">_{lang=netuno.dev.debug.code_execution_list.actions}</th>
+        </tr>
+        </thead>
+        <tbody id="debugCodeExecutionList"
+               data-lang-empty="_{lang=netuno.dev.debug.code_execution_list.empty}"
+               data-lang-actions-remove="_{lang=netuno.dev.debug.code_execution_list.actions.remove}"
+        ></tbody>
+    </table>
 
-<div class="modal fade" id="debugCodeExecutionModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><i class="fa-solid fa-terminal"></i> _{lang=netuno.dev.debug.code_execution_modal.title}</h4>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="debugCodeExecutionModal_editor">_{lang=netuno.dev.debug.code_execution_modal.code}</label>
-                    <div id="debugCodeExecutionModal_editor" style="width: 100%; height: 100px;"></div>
+    <div class="modal fade" id="debugCodeExecutionModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="fa-solid fa-terminal"></i> _{lang=netuno.dev.debug.code_execution_modal.title}</h4>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"><i class="fa-solid fa-terminal"></i> _{lang=netuno.dev.debug.code_execution_modal.run}</button>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="debugCodeExecutionModal_editor">_{lang=netuno.dev.debug.code_execution_modal.code}</label>
+                        <div id="debugCodeExecutionModal_editor" style="width: 100%; height: 100px;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"><i class="fa-solid fa-terminal"></i> _{lang=netuno.dev.debug.code_execution_modal.run}</button>
+                </div>
             </div>
         </div>
     </div>
