@@ -400,9 +400,28 @@
     }
 
     const socket = new WebSocket((location.protocol === "https:" ? "wss:" : "ws:") + "//" + location.host + prefixURL + "/dev/ws/");
-
+    let connectionStarted = false;
     socket.addEventListener("open", (event) => {
+      connectionStarted = true;
+      $('#debugErrorConnectionFailed').hide();
+      $('#debugErrorConnectionClosed').hide();
+      $('#debugContainer').fadeIn();
       trigger('ws:debug:send:contexts');
+    });
+    socket.addEventListener("error", (event) => {
+      console.error('Debug WebSocket error:', event)
+    });
+    socket.addEventListener("close", (event) => {
+      console.error('Debug WebSocket closed:', event)
+      if (!connectionStarted) {
+        $('#debugContainer').hide();
+        $('#debugErrorConnectionClosed').hide();
+        $('#debugErrorConnectionFailed').fadeIn();
+      } else {
+        $('#debugContainer').hide();
+        $('#debugErrorConnectionFailed').hide();
+        $('#debugErrorConnectionClosed').fadeIn();
+      }
     });
 
     socket.addEventListener("message", (event) => {
