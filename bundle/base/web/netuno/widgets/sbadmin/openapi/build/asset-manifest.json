@@ -1,15 +1,13 @@
 {
   "files": {
-    "main.js": "_{netuno-config=url-widgets}/openapi/build/static/js/main.66043e4a.chunk.js",
-    "main.js.map": "_{netuno-config=url-widgets}/openapi/build/static/js/main.66043e4a.chunk.js.map",
-    "runtime~main.js": "_{netuno-config=url-widgets}/openapi/build/static/js/runtime~main.51d437b1.js",
-    "runtime~main.js.map": "_{netuno-config=url-widgets}/openapi/build/static/js/runtime~main.51d437b1.js.map",
-    "static/css/2.26d31ab5.chunk.css": "_{netuno-config=url-widgets}/openapi/build/static/css/2.26d31ab5.chunk.css",
-    "static/js/2.81281107.chunk.js": "_{netuno-config=url-widgets}/openapi/build/static/js/2.81281107.chunk.js",
-    "static/js/2.81281107.chunk.js.map": "_{netuno-config=url-widgets}/openapi/build/static/js/2.81281107.chunk.js.map",
+    "main.css": "_{netuno-config=url-widgets}/openapi/build/static/css/main.8574423f.css",
+    "main.js": "_{netuno-config=url-widgets}/openapi/build/static/js/main.66178a17.js",
     "index.html": "_{netuno-config=url-widgets}/openapi/build/index.html",
-    "precache-manifest.afcc753ac64ba1b3a09c3938c3f4081f.js": "_{netuno-config=url-widgets}/openapi/build/precache-manifest.afcc753ac64ba1b3a09c3938c3f4081f.js",
-    "service-worker.js": "_{netuno-config=url-widgets}/openapi/build/service-worker.js",
-    "static/css/2.26d31ab5.chunk.css.map": "_{netuno-config=url-widgets}/openapi/build/static/css/2.26d31ab5.chunk.css.map"
-  }
+    "main.8574423f.css.map": "_{netuno-config=url-widgets}/openapi/build/static/css/main.8574423f.css.map",
+    "main.66178a17.js.map": "_{netuno-config=url-widgets}/openapi/build/static/js/main.66178a17.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8574423f.css",
+    "static/js/main.66178a17.js"
+  ]
 }
