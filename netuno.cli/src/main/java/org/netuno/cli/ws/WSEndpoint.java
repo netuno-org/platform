@@ -60,6 +60,7 @@ public class WSEndpoint {
     
     private Values config;
 
+    private String host;
     private String cookie;
     private String authorization;
 
@@ -74,6 +75,7 @@ public class WSEndpoint {
         
         this.app = userProperties.get("app").toString();
         this.config = (Values)userProperties.get("config");
+        this.host = userProperties.get("host").toString();
         this.cookie = (String)userProperties.get("cookie");
         this.authorization = (String)userProperties.get("authorization");
         
@@ -136,7 +138,7 @@ public class WSEndpoint {
                 streamSocket = new Socket("127.0.0.1", Config.getPort());
                 streamOutput = new OutputStream(streamSocket.getOutputStream());
                 streamOutput.println("GET "+ this.config.getString("service") +" HTTP/1.1");
-                streamOutput.println("Host: "+ this.app);
+                streamOutput.println("Host: "+ this.app.replace("_", "-"));
                 streamOutput.println("WS-App: "+ this.app);
                 streamOutput.println("WS-Session-Id: "+ session.getId());
                 if (this.config.getValues("config") != null) {
