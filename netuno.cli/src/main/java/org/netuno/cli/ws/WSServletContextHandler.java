@@ -86,6 +86,10 @@ public class WSServletContextHandler extends ServletContextHandler {
                             endpointConfig.getUserProperties().put("app", app);
                             endpointConfig.getUserProperties().put("url", config.getString("public"));
                             endpointConfig.getUserProperties().put("config", config);
+                            List<String> host = request.getHeaders().get("Host");
+                            if (host != null && host.size() > 0) {
+                                endpointConfig.getUserProperties().put("host", host.get(0));
+                            }
                             List<String> cookie = request.getHeaders().get("Cookie");
                             if (cookie != null && cookie.size() > 0) {
                                 endpointConfig.getUserProperties().put("cookie", cookie.get(0));
@@ -135,7 +139,7 @@ public class WSServletContextHandler extends ServletContextHandler {
                 continue;
             }
             List<String> hosts = new ArrayList<>();
-            hosts.add(app + ".local.netu.no");
+            hosts.add(app.replace("_", "-") + ".local.netu.no");
             String defaultHost = wsConfig.getString("host");
             if (!defaultHost.isEmpty()) {
                 hosts.add(defaultHost);
