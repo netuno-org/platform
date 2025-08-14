@@ -19,7 +19,7 @@
     {
       "enabled": false,
       "path": "ui",
-      "command": "npm run watch"
+      "command": "pnpm run watch"
     }
   ],
   "cron": {
