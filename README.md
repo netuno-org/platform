@@ -80,10 +80,6 @@ Run the setup script:
 
 ## Windows
 
-
-
-
-
 You need to run PowerShell as an administrator, then follow the steps.
 
 ```ps1
@@ -99,6 +95,24 @@ Depending on the dependencies, it will ask if you allow restarting the computer,
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/win-install/menu.png" width="300" style="border-radius: 10px;"/>
 
 After installation and following the steps indicated by the script, run option 1 to configure the project and option 2 to generate a bundle.
+
+
+## Fix ClassGraph Error
+If you see the error:
+```java.lang.NoClassDefFoundError: io/github/classgraph/ClassGraph```
+it means the **ClassGraph** library is missing.
+
+---
+
+### Solution
+
+1. **Download the library**  
+   Get the `.jar` file from:  
+   👉 [ClassGraph on Maven Repository](https://mvnrepository.com/artifact/io.github.classgraph/classgraph)
+
+2. **Install the library**  
+   Place the downloaded `.jar` in:  
+	```.\bundle\base\web\WEB-INF\lib```
 
 ## Bundle
 
