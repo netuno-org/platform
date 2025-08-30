@@ -16,7 +16,7 @@ $isChocoInstalled = Get-Command choco -ErrorAction SilentlyContinue
 
 $javaVersion = Get-Command java | Select-Object -ExpandProperty Version | Select-Object -ExpandProperty Major
 $javaVersion = [Convert]::ToInt32($javaVersion)
-$javaVersion = ($javaVersion -ge 11)
+$javaVersion = ($javaVersion -ge 21)
 
 $mvnInstalled = Get-Command mvn -ErrorAction SilentlyContinue
 $nodejsInstalled = Get-Command node.exe -ErrorAction SilentlyContinue
@@ -72,7 +72,7 @@ if (!$javaVersion -or !$mvnInstalled -or !$nodejsInstalled -or !$proguardIsInsta
         }
 
         if(!$javaVersion) {
-            choco install adoptopenjdk11 --force -y
+            choco install temurin21 --force -y
         }
 
         if(!$nodejsInstalled) {
