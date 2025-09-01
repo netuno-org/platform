@@ -49,7 +49,7 @@
         <itext.version>8.0.5</itext.version>
         <pdfbox.version>3.0.5</pdfbox.version>
         <log4j.version>2.25.1</log4j.version>
-        <oshi.version>6.6.4</oshi.version>
+        <oshi.version>6.8.3</oshi.version>
     </properties>
 
     <dependencyManagement>
