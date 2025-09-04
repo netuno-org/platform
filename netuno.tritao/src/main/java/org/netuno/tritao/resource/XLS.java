@@ -33,6 +33,7 @@ import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.io.File;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.util.ErrorException;
 import org.netuno.tritao.resource.util.FileSystemPath;
 
 import java.io.FileInputStream;
@@ -2612,18 +2613,24 @@ public class XLS extends ResourceBase {
     public Object color(String color) {
         switch (workbook) {
             case null -> {
-                return null;
+                throw new ErrorException(getProteu(), getHili(), "Color cannot be defined without a workbook.\n" +
+                        "If your code is like this:\n" +
+                        "\t_xls.color(\""+ color +"\")\n"+
+                        "Instead, the code should look like this:\n" +
+                        "\texcel = _xls.create()\n"+
+                        "\texcel.color(\""+ color +"\")"
+                );
             }
-            case XSSFWorkbook sheets -> {
+            case XSSFWorkbook s -> {
                 if (color.startsWith("#")) {
                     return new XSSFColor(java.awt.Color.decode(color), null);
                 }
                 return IndexedColors.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
             }
-            case HSSFWorkbook sheets -> {
+            case HSSFWorkbook s -> {
                 if (color.startsWith("#")) {
                     java.awt.Color c = java.awt.Color.decode(color);
-                    HSSFPalette palette = sheets.getCustomPalette();
+                    HSSFPalette palette = s.getCustomPalette();
                     return palette.findSimilarColor(c.getRed(), c.getGreen(), c.getBlue());
                 }
                 return HSSFColor.HSSFColorPredefined.valueOf(color.toUpperCase().replace("-", "_")).getIndex();
