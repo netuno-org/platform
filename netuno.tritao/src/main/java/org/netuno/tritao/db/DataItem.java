@@ -84,7 +84,9 @@ public class DataItem {
     public Status status = Status.None;
     public StatusType statusType = StatusType.None;
     public String table = "";
+    public String tableDisplayName = "";
     public String field = "";
+    public String fieldDisplayName = "";
     public String errorTitle = "";
     public String errorMessage = "";
     public Values record = new Values();
@@ -130,6 +132,15 @@ public class DataItem {
         return this;
     }
 
+    public String getTableDisplayName() {
+        return tableDisplayName;
+    }
+
+    public DataItem setTableDisplayName(String tableDisplayName) {
+        this.tableDisplayName = tableDisplayName;
+        return this;
+    }
+
     public String getField() {
         return field;
     }
@@ -138,7 +149,16 @@ public class DataItem {
         this.field = field;
         return this;
     }
-    
+
+    public String getFieldDisplayName() {
+        return fieldDisplayName;
+    }
+
+    public DataItem setFieldDisplayName(String fieldDisplayName) {
+        this.fieldDisplayName = fieldDisplayName;
+        return this;
+    }
+
     public boolean isProgrammatically() {
         return programmatically;
     }
