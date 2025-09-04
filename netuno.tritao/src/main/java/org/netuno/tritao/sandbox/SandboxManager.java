@@ -477,6 +477,8 @@ public class SandboxManager implements AutoCloseable {
                 errorLineNumber = scriptException.getLineNumber();
                 errorColumnNumber = scriptException.getColumnNumber();
             }
+            String errorMessage = getErrorMessage(throwable);
+            String errorInnerMessages = getErrorInnerMessages(throwable.getCause());
             logger.fatal("\n" +
                     "\n#" +
                     "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu) +
@@ -485,8 +487,9 @@ public class SandboxManager implements AutoCloseable {
                     "\n#" +
                     "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") +" "+ script.path() +
                     "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ script.fileName() +"."+ script.extension() + (errorLineNumber > -1 ? ":" + errorLineNumber + (errorColumnNumber > -1 ? ":" + errorColumnNumber : "") : "" ) +
-                    "\n# " + getErrorMessage(throwable) +
-                    "\n# " + getErrorInnerMessages(throwable) +
+                    "\n#" +
+                    "\n# " + errorMessage +
+                    (errorInnerMessages.isEmpty() ? "" : "\n# " + errorInnerMessages) +
                     "\n"
             );
             logger.debug(throwable.getMessage(), throwable);
@@ -509,10 +512,32 @@ public class SandboxManager implements AutoCloseable {
         } else {
             tMessage = t.toString();
         }
+        if (tMessage.startsWith("\n#"
+                + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
+                + "\n#")) {
+            tMessage = tMessage.substring(("\n#"
+                    + "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu)
+                    + "\n#"
+            ).length());
+        }
+        int countEmptyLines = 0;
         for (String line : tMessage.split("\\n")) {
+            if (line.startsWith("# ")) {
+                line = line.substring(2);
+            } else if (line.trim().equals("#")) {
+                line = "";
+            }
+            if (line.trim().isEmpty()) {
+                countEmptyLines++;
+                if (countEmptyLines > 1) {
+                    continue;
+                }
+            } else {
+                countEmptyLines = 0;
+            }
             message += line + "\n#   ";
         }
-        return message;
+        return message.trim();
     }
 
     public String getErrorInnerMessages(Throwable t) {
@@ -523,7 +548,8 @@ public class SandboxManager implements AutoCloseable {
         for (Throwable throwable : t.getSuppressed()) {
             errorMessages += "\n#    "+ t.getClass().getSimpleName() +": "+ throwable.getMessage();
         }
-        return errorMessages += getErrorInnerMessages(t.getCause());
+        errorMessages += getErrorInnerMessages(t.getCause());
+        return errorMessages;
     }
 
     public void onError(ScriptSourceCode script, String errorMessage, int errorLine, int errorColumn, Throwable t) {
