@@ -522,9 +522,9 @@ public class OperationEngine extends Data {
 
     public void checkDataItemErrors(DataItem dataItem, String action) {
         switch (dataItem.getStatus()) {
-            case NotFound -> throw new ResourceException("No records found for form " + dataItem.getTable());
-            case Error -> throw new ResourceException("Impossible to " + action + " record of the form " + dataItem.getTable());
-            case Exists -> throw new ResourceException("Already exists a record in " + dataItem.getTable() + " form with data.");
+            case NotFound -> throw new ResourceException("No records found in the form " + dataItem.getTable());
+            case Error -> throw new ResourceException("Impossible to " + action + " record in the form " + dataItem.getTable());
+            case Exists -> throw new ResourceException("Already exists a record in the " + dataItem.getTable() + "."+ dataItem.getField() +" with this data.");
         }
     }
 }
