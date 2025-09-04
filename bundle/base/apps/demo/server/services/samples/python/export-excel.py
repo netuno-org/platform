@@ -11,41 +11,41 @@
 
 excel = _xls.create()
 
-fontTitle = excel.workbook().createFont()
+fontTitle = excel.workbook.createFont()
 fontTitle.setBold(True)
 fontTitle.setFontHeightInPoints(14)
-fontTitle.setColor(_xls.color('yellow'))
+fontTitle.setColor(excel.color('yellow'))
 
-fontTotal = excel.workbook().createFont()
+fontTotal = excel.workbook.createFont()
 fontTotal.setBold(True)
 fontTotal.setFontHeightInPoints(12)
-fontTotal.setColor(_xls.color('grey-50-percent'))
+fontTotal.setColor(excel.color('grey-50-percent'))
 
-styleHeader = excel.workbook().createCellStyle()
+styleHeader = excel.workbook.createCellStyle()
 
 styleHeader.setFillPattern(_xls.fillPattern('solid-foreground'))
-styleHeader.setFillBackgroundColor(_xls.color('black'))
+styleHeader.setFillBackgroundColor(excel.color('black'))
 styleHeader.setAlignment(_xls.horizontalAlignment('center'))
 
-styleHeader.setFont(fontTitle);
+styleHeader.setFont(fontTitle)
 
-styleData = excel.workbook().createCellStyle()
+styleData = excel.workbook.createCellStyle()
 styleData.setBorderBottom(_xls.borderStyle('thin'))
 styleData.setBorderTop(_xls.borderStyle('thin'))
 styleData.setBorderLeft(_xls.borderStyle('thin'))
 styleData.setBorderRight(_xls.borderStyle('thin'))
 
-styleTotal = excel.workbook().createCellStyle()
+styleTotal = excel.workbook.createCellStyle()
 
 styleTotal.setBorderBottom(_xls.borderStyle('thin'))
 styleTotal.setBorderTop(_xls.borderStyle('thin'))
 styleTotal.setBorderLeft(_xls.borderStyle('thin'))
 styleTotal.setBorderRight(_xls.borderStyle('thin'))
 
-styleTotal.setTopBorderColor(_xls.color('red'))
-styleTotal.setBottomBorderColor(_xls.color('blue'))
-styleTotal.setLeftBorderColor(_xls.color('pink'))
-styleTotal.setRightBorderColor(_xls.color('orange'))
+styleTotal.setTopBorderColor(excel.color('red'))
+styleTotal.setBottomBorderColor(excel.color('blue'))
+styleTotal.setLeftBorderColor(excel.color('pink'))
+styleTotal.setRightBorderColor(excel.color('orange'))
 
 styleTotal.setAlignment(_xls.horizontalAlignment('center'))
 
@@ -128,14 +128,14 @@ dataResult = [
 
 endPosition = excel.addDataTable(6, 1, dataTitle)
 
-endPosition = excel.addDataTable(endPosition.row(), 1, data)
+endPosition = excel.addDataTable(endPosition.row, 1, data)
 
-endPosition = excel.addDataTable(endPosition.row(), 1, dataResult)
+endPosition = excel.addDataTable(endPosition.row, 1, dataResult)
 
-endPosition = excel.addDataTable(6, endPosition.col() + 2, dataTitle, True)
+endPosition = excel.addDataTable(6, endPosition.col + 2, dataTitle, True)
 
-endPosition = excel.addDataTable(6, endPosition.col(), data, True)
+endPosition = excel.addDataTable(6, endPosition.col, data, True)
 
-endPosition = excel.addDataTable(6, endPosition.col(), dataResult, True)
+endPosition = excel.addDataTable(6, endPosition.col, dataResult, True)
 
 excel.output('test.xls')

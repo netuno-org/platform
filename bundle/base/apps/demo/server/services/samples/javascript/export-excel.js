@@ -16,17 +16,17 @@ const excel = _xls.create()
 const fontTitle = excel.workbook.createFont()
 fontTitle.setBold(true)
 fontTitle.setFontHeightInPoints(14)
-fontTitle.setColor(_xls.color("yellow"))
+fontTitle.setColor(excel.color("yellow"))
 
 const fontTotal = excel.workbook.createFont()
 fontTotal.setBold(true)
 fontTotal.setFontHeightInPoints(12)
-fontTotal.setColor(_xls.color("grey-50-percent"))
+fontTotal.setColor(excel.color("grey-50-percent"))
 
 const styleHeader = excel.workbook.createCellStyle()
 
 styleHeader.setFillPattern(_xls.fillPattern("solid-foreground"))
-styleHeader.setFillBackgroundColor(_xls.color("black"))
+styleHeader.setFillBackgroundColor(excel.color("black"))
 styleHeader.setAlignment(_xls.horizontalAlignment("center"))
 
 styleHeader.setFont(fontTitle);
@@ -44,14 +44,14 @@ styleTotal.setBorderTop(_xls.borderStyle("thin"))
 styleTotal.setBorderLeft(_xls.borderStyle("thin"))
 styleTotal.setBorderRight(_xls.borderStyle("thin"))
 
-styleTotal.setTopBorderColor(_xls.color("red"))
-styleTotal.setBottomBorderColor(_xls.color("blue"))
-styleTotal.setLeftBorderColor(_xls.color("pink"))
-styleTotal.setRightBorderColor(_xls.color("orange"))
+styleTotal.setTopBorderColor(excel.color("red"))
+styleTotal.setBottomBorderColor(excel.color("blue"))
+styleTotal.setLeftBorderColor(excel.color("pink"))
+styleTotal.setRightBorderColor(excel.color("orange"))
 
 styleTotal.setAlignment(_xls.horizontalAlignment("center"))
 
-styleTotal.setFont(fontTotal);
+styleTotal.setFont(fontTotal)
 
 excel.insertPicture(
     _storage.filesystem("server", "samples/export-excel", "logo.png"),
@@ -169,4 +169,4 @@ endPosition = excel.addDataTable(6, endPosition.col, data, true)
 
 endPosition = excel.addDataTable(6, endPosition.col, dataResult, true)
 
-excel.output("test.xls")
+excel.output("test.xlsx")
