@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration monitorInterval="10">
+    <Properties>
+        <Property name="logPath">logs</Property>
+        <Property name="netunoFileName">netuno</Property>
+    </Properties>
     <Appenders>
-        <File name="file" fileName="logs/netuno.log" append="true">
-            <PatternLayout pattern="%d %-5p [%t] %C{2} - %m%n"/>
-        </File>
+        <RollingFile name="netuno" fileName="${logPath}/${netunoFileName}.log" filePattern="${logPath}/${netunoFileName}-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%style{%date{DEFAULT}}{yellow} [%t] %highlight{%-5level}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green} %logger{36} - %message\n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" />
+            </Policies>
+        </RollingFile>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d %-5p [%t] %C{2} - %m%n"/>
+            <PatternLayout pattern="%style{%date{DEFAULT}}{yellow} [%t] %highlight{%-5level}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green} %logger{36} - %message\n"/>
         </Console>
     </Appenders>
     <Loggers>
         <Root level="error">
-            <AppenderRef ref="file"/>
+            <AppenderRef ref="netuno"/>
             <AppenderRef ref="STDOUT"/>
         </Root>
         <Logger name="org.netuno" level="warn"></Logger>
