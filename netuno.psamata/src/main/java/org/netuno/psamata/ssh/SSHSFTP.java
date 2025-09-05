@@ -52,7 +52,7 @@ import static net.schmizz.sshj.sftp.OpenMode.*;
 public class SSHSFTP implements AutoCloseable {
     private net.schmizz.sshj.sftp.SFTPClient sftp = null;
 
-    private boolean closed = false;
+    public boolean closed = false;
     
     protected SSHSFTP(net.schmizz.sshj.sftp.SFTPClient sftp) {
         this.sftp = sftp;

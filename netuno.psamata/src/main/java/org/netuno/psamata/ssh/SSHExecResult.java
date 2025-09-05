@@ -32,11 +32,11 @@ import org.netuno.library.doc.*;
     )
 })
 public class SSHExecResult {
-    int id = 0;
-    String output = "";
-    String error = "";
-    int exitStatus = 0;
-    String exitErrorMessage = "";
+    public int id = 0;
+    public String output = "";
+    public String error = "";
+    public int exitStatus = 0;
+    public String exitErrorMessage = "";
 
     protected SSHExecResult() {
 

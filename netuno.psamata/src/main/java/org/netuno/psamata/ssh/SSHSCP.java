@@ -48,8 +48,8 @@ import net.schmizz.sshj.xfer.InMemorySourceFile;
 })
 public class SSHSCP implements AutoCloseable {
     private net.schmizz.sshj.xfer.scp.SCPFileTransfer scp = null;
-    
-    private boolean closed = false;
+
+    public boolean closed = false;
     
     protected SSHSCP(net.schmizz.sshj.xfer.scp.SCPFileTransfer scp) {
         this.scp = scp;

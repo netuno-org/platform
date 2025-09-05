@@ -41,11 +41,11 @@ import net.schmizz.sshj.sftp.RemoteResourceInfo;
         )
 })
 public class SSHFile {
-    private String name;
-    private String parent;
-    private String path;
-    private boolean directory = false;
-    private boolean regularFile = false;
+    public String name;
+    public String parent;
+    public String path;
+    public boolean directory = false;
+    public boolean regularFile = false;
 
     protected SSHFile(RemoteResourceInfo remoteInfo) {
         this.name = remoteInfo.getName();

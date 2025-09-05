@@ -47,7 +47,7 @@ import net.schmizz.sshj.connection.channel.direct.Session.Command;
 })
 public class SSHSession implements AutoCloseable {
     private Session session = null;
-    private boolean closed = false;
+    public boolean closed = false;
 
     protected SSHSession(net.schmizz.sshj.SSHClient sshClient) throws Exception {
         session = sshClient.startSession();
