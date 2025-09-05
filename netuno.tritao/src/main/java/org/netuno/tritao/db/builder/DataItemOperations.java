@@ -6,9 +6,11 @@ import org.netuno.psamata.DB;
 import org.netuno.psamata.PsamataException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
+import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.LogAction;
 import org.netuno.tritao.resource.Firebase;
 import org.netuno.tritao.util.Link;
@@ -21,16 +23,16 @@ import java.util.UUID;
 public interface DataItemOperations extends BuilderBase, DataItemGet, TableOperations, DataLog {
     Logger logger = LogManager.getLogger(DataItemOperations.class);
 
-    default org.netuno.tritao.db.DataItem insert() {
-        org.netuno.tritao.db.DataItem dataItem = null;
+    default DataItem insert() {
+        DataItem dataItem = null;
         Values table = selectTableById(getProteu().getRequestAll().getString("netuno_table_id"));
         if (table == null) {
             return dataItem;
         }
-        dataItem = new org.netuno.tritao.db.DataItem(getProteu(), "0", "");
-        dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Insert);
+        dataItem = new DataItem(getProteu(), "0", "");
+        dataItem.setStatus(DataItem.Status.Insert);
         insertByTableIdWithDataItem(getProteu().getRequestAll().getString("netuno_table_id"), dataItem);
-        if (dataItem.getStatusType() == org.netuno.tritao.db.DataItem.StatusType.Error || dataItem.getId().isEmpty()) {
+        if (dataItem.getStatusType() == DataItem.StatusType.Error || dataItem.getId().isEmpty()) {
             return dataItem;
         }
         getProteu().getRequestAll().set("netuno_item_id", dataItem.getId());
@@ -38,49 +40,57 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         getProteu().getRequestAll().set("netuno_item_uid", dataItem.getUid());
         getProteu().getRequestPost().set("netuno_item_uid", dataItem.getUid());
         update(table, getProteu().getRequestAll(), dataItem);
-        if (dataItem.getStatusType() == org.netuno.tritao.db.DataItem.StatusType.Error) {
+        if (dataItem.getStatusType() == DataItem.StatusType.Error) {
             getExecutor().execute("delete from ".concat(getBuilder().escape(table.getString("name"))).concat(" where id = ")
                     .concat(DB.sqlInjectionInt(dataItem.getId())).concat(""));
         }
         return dataItem;
     }
 
-    default org.netuno.tritao.db.DataItem insert(String tableName, Values data) {
-        org.netuno.tritao.db.DataItem dataItem = new org.netuno.tritao.db.DataItem(getProteu(), "0", "");
-        dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Insert);
+    default DataItem insert(String tableName, Values data) {
+        DataItem dataItem = new DataItem(getProteu(), "0", "");
+        dataItem.setStatus(DataItem.Status.Insert);
         insertByTableNameWithDataItem(tableName, dataItem);
-        if (dataItem.getStatusType() == org.netuno.tritao.db.DataItem.StatusType.Error || dataItem.getId().isEmpty()) {
+        if (dataItem.getStatusType() == DataItem.StatusType.Error || dataItem.getId().isEmpty()) {
             return dataItem;
         }
         Values table = selectTableByName(tableName);
         if (table == null) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+            dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
         dataItem.setTable(tableName);
+        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
         dataItem.setProgrammatically(true);
         update(table, data, dataItem);
-        if (dataItem.getStatusType() == org.netuno.tritao.db.DataItem.StatusType.Error) {
+        if (dataItem.getStatusType() == DataItem.StatusType.Error) {
             getExecutor().execute("delete from ".concat(getBuilder().escape(tableName)).concat(" where id = ")
                     .concat(DB.sqlInjectionInt(dataItem.getId())).concat(""));
         }
         return dataItem;
     }
 
-    default void insertByTableIdWithDataItem(String tableId, org.netuno.tritao.db.DataItem dataItem) {
+    default void insertByTableIdWithDataItem(String tableId, DataItem dataItem) {
         List<Values> rsTable = selectTable(tableId, "", "");
         if (rsTable.size() == 0) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+            dataItem.setStatus(DataItem.Status.NotFound);
             return;
         }
         Values rowTable = rsTable.get(0);
         String tableName = rowTable.getString("name");
         dataItem.setTable(tableName);
+        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), rowTable));
         insertByTableNameWithDataItem(tableName, dataItem);
     }
 
-    default void insertByTableNameWithDataItem(String tableName, org.netuno.tritao.db.DataItem dataItem) {
+    default void insertByTableNameWithDataItem(String tableName, DataItem dataItem) {
+        Values table = selectTableByName(tableName);
+        if (table == null) {
+            dataItem.setStatus(DataItem.Status.NotFound);
+            return;
+        }
         dataItem.setTable(tableName);
+        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
         Values insertData = new Values().set("uid", "'" + UUID.randomUUID() + "'").set("lock", false).set("active",
                 true);
         Values userData = Auth.getUser(getProteu(), getHili());
@@ -101,40 +111,42 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         dataItem.setRecord(record);
     }
 
-    default org.netuno.tritao.db.DataItem update() {
+    default DataItem update() {
         Values table = selectTableById(getProteu().getRequestAll().getString("netuno_table_id"));
-        org.netuno.tritao.db.DataItem dataItem = new org.netuno.tritao.db.DataItem(
+        DataItem dataItem = new DataItem(
                 getProteu(),
                 getProteu().getRequestAll().getString("netuno_item_id"),
                 getProteu().getRequestAll().getString("netuno_item_uid")
         );
         if (table == null) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+            dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
         String tableName = table.getString("name");
         dataItem.setTable(tableName);
+        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
         Values item = getItemByUId(table.getString("name"), getProteu().getRequestAll().getString("netuno_item_uid"));
         if (item == null) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+            dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
         update(table, getProteu().getRequestAll(), dataItem);
         return dataItem;
     }
 
-    default org.netuno.tritao.db.DataItem update(String tableName, String id, Values data) {
+    default DataItem update(String tableName, String id, Values data) {
         Values table = selectTableByName(tableName);
-        org.netuno.tritao.db.DataItem dataItem = new org.netuno.tritao.db.DataItem(getProteu(), id, "");
+        DataItem dataItem = new DataItem(getProteu(), id, "");
         dataItem.setProgrammatically(true);
         if (table == null) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+            dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
         dataItem.setTable(tableName);
+        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
         Values item = getItemById(tableName, id);
         if (item == null) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+            dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
         dataItem.setUid(item.getString("uid"));
@@ -144,20 +156,21 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         return dataItem;
     }
 
-    default void update(Values table, Values values, org.netuno.tritao.db.DataItem dataItem) {
+    default void update(Values table, Values values, DataItem dataItem) {
         dataItem.setTable(table.getString("name"));
+        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
         if (dataItem.getRecord() == null || dataItem.getRecord().isEmpty()) {
             Values item = getItemById(table.getString("name"), dataItem.getId());
             if (item == null) {
-                dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+                dataItem.setStatus(DataItem.Status.NotFound);
                 return;
             }
             dataItem.setRecord(item);
         }
         dataItem.setValues(values);
-        boolean insert = dataItem.getStatus() == org.netuno.tritao.db.DataItem.Status.Insert;
+        boolean insert = dataItem.getStatus() == DataItem.Status.Insert;
         if (!insert) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Update);
+            dataItem.setStatus(DataItem.Status.Update);
         }
         boolean controlActive = table.getBoolean("control_active");
         boolean userIdLoaded = false;
@@ -167,14 +180,14 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         dataItem.setFirebase(!table.getString("firebase").isEmpty());
 
         for (Values rowTritaoDesignXY : rsDesignXY) {
-            org.netuno.tritao.com.Component com = Config.getNewComponent(
+            Component com = Config.getNewComponent(
                     getProteu(), getHili(),
                     rowTritaoDesignXY.getString("type")
             );
             com.setProteu(getProteu());
             com.setDesignData(rowTritaoDesignXY);
             com.setTableData(table);
-            com.setMode(org.netuno.tritao.com.Component.Mode.Save);
+            com.setMode(Component.Mode.Save);
             com.setValues(values);
             com.onSave();
         }
@@ -221,12 +234,12 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                     continue;
                 }
             }
-            org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
+            Component com = Config.getNewComponent(getProteu(), getHili(),
                     rowTritaoDesignXY.getString("type"));
             com.setProteu(getProteu());
             com.setDesignData(rowTritaoDesignXY);
             com.setTableData(table);
-            com.setMode(org.netuno.tritao.com.Component.Mode.SaveCommand);
+            com.setMode(Component.Mode.SaveCommand);
             com.setValues(values);
             for (ComponentData data : com.getDataStructure()) {
                 if (dataItem.isProgrammatically() == false) {
@@ -289,8 +302,9 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                                 .concat(getBuilder().escape(table.getString("name"))).concat(" where 1 = 1 ")
                                 .concat(where).concat(" and "+ getBuilder().escape("id") +" <> ").concat(DB.sqlInjectionInt(dataItem.getId())));
                 if (rsCheckPrimary.size() > 0) {
-                    dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Exists);
-                    dataItem.setField(Translation.formFieldLabel(getProteu(), getHili(), table, rowTritaoDesignXY));
+                    dataItem.setStatus(DataItem.Status.Exists);
+                    dataItem.setField(rowTritaoDesignXY.getString("name"));
+                    dataItem.setFieldDisplayName(Translation.formFieldLabel(getProteu(), getHili(), table, rowTritaoDesignXY));
                 }
             }
         }
@@ -338,10 +352,10 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         } else {
             update = update.concat(" active = " + getBuilder().booleanValue(values.getBoolean("active")));
         }
-        if (dataItem.getStatusType() == org.netuno.tritao.db.DataItem.StatusType.Error) {
+        if (dataItem.getStatusType() == DataItem.StatusType.Error) {
             return;
         }
-        dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Updated);
+        dataItem.setStatus(DataItem.Status.Updated);
         dataItem.setCounter(getExecutor().execute("update "
                 .concat(getBuilder().escape(table.getString("name")))
                 .concat(" set ").concat(update).concat(" where id = ").concat(DB.sqlInjectionInt(dataItem.getId()))));
@@ -357,14 +371,14 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         getExecutor().scriptSaved(getProteu(), getHili(), table.getString("name"), dataItem);
 
         for (Values rowTritaoDesignXY : rsDesignXY) {
-            org.netuno.tritao.com.Component com = Config.getNewComponent(
+            Component com = Config.getNewComponent(
                     getProteu(), getHili(),
                     rowTritaoDesignXY.getString("type")
             );
             com.setProteu(getProteu());
             com.setDesignData(rowTritaoDesignXY);
             com.setTableData(table);
-            com.setMode(org.netuno.tritao.com.Component.Mode.Saved);
+            com.setMode(Component.Mode.Saved);
             com.setValues(values);
             com.onSaved();
         }
@@ -383,21 +397,21 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         }
     }
 
-    default org.netuno.tritao.db.DataItem delete() {
-        org.netuno.tritao.db.DataItem dataItem = new org.netuno.tritao.db.DataItem(getProteu(), getProteu().getRequestAll().getString("netuno_item_id"),
+    default DataItem delete() {
+        DataItem dataItem = new DataItem(getProteu(), getProteu().getRequestAll().getString("netuno_item_id"),
                 getProteu().getRequestAll().getString("netuno_item_uid"));
-        dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Delete);
+        dataItem.setStatus(DataItem.Status.Delete);
 
         List<Values> rsTable = selectTable(getProteu().getRequestAll().getString("netuno_table_id"), "", "");
         if (rsTable.size() == 0) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+            dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
         Values table = rsTable.get(0);
 
         delete(table, getProteu().getRequestAll(), dataItem);
 
-        if (dataItem.getStatus() == org.netuno.tritao.db.DataItem.Status.Deleted) {
+        if (dataItem.getStatus() == DataItem.Status.Deleted) {
             getProteu().getRequestAll().set("netuno_item_id_deleted",
                     getProteu().getRequestAll().get("netuno_item_id"));
             getProteu().getRequestPost().set("netuno_item_id_deleted",
@@ -416,33 +430,35 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         return dataItem;
     }
 
-    default org.netuno.tritao.db.DataItem delete(String tableName, String id) {
+    default DataItem delete(String tableName, String id) {
         Values item = getItemById(tableName, id);
         if (item == null) {
-            org.netuno.tritao.db.DataItem dataItem = new org.netuno.tritao.db.DataItem(getProteu(), id, null);
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+            DataItem dataItem = new DataItem(getProteu(), id, null);
+            dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
         Values table = selectTableByName(tableName);
-        org.netuno.tritao.db.DataItem dataItem = new org.netuno.tritao.db.DataItem(getProteu(), id, item.getString("uid"));
-        dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Delete);
+        DataItem dataItem = new DataItem(getProteu(), id, item.getString("uid"));
+        dataItem.setStatus(DataItem.Status.Delete);
         dataItem.setProgrammatically(true);
         List<Values> rsTable = selectTable(table.getString("id"), "", "");
-        if (rsTable.size() == 0) {
-            dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+        if (rsTable.isEmpty()) {
+            dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
         dataItem.setTable(tableName);
+        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
         delete(table, item, dataItem);
         return dataItem;
     }
 
-    default void delete(Values table, Values item, org.netuno.tritao.db.DataItem dataItem) {
+    default void delete(Values table, Values item, DataItem dataItem) {
         dataItem.setTable(table.getString("name"));
+        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
         if (dataItem.getRecord() == null || dataItem.getRecord().isEmpty()) {
             Values record = getItemById(table.getString("name"), dataItem.getId());
             if (record == null) {
-                dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.NotFound);
+                dataItem.setStatus(DataItem.Status.NotFound);
                 return;
             }
             dataItem.setRecord(record);
@@ -452,12 +468,12 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         List<Values> rsTritaoDesignXY = selectTableDesignXY(table.getString("id"));
 
         for (Values rowTritaoDesignXY : rsTritaoDesignXY) {
-            org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
+            Component com = Config.getNewComponent(getProteu(), getHili(),
                     rowTritaoDesignXY.getString("type"));
             com.setProteu(getProteu());
             com.setDesignData(rowTritaoDesignXY);
             com.setTableData(table);
-            com.setMode(org.netuno.tritao.com.Component.Mode.Delete);
+            com.setMode(Component.Mode.Delete);
             com.setValues(item);
             com.onDelete();
         }
@@ -469,12 +485,12 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
 
         Values itemLog = new Values();
         for (Values rowTritaoDesignXY : selectTableDesignXY("")) {
-            org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
+            Component com = Config.getNewComponent(getProteu(), getHili(),
                     rowTritaoDesignXY.getString("type"));
             com.setProteu(getProteu());
             com.setDesignData(rowTritaoDesignXY);
             com.setTableData(table);
-            com.setMode(org.netuno.tritao.com.Component.Mode.DeleteCommand);
+            com.setMode(Component.Mode.DeleteCommand);
             com.setValues(item);
             for (String paramKey : com.getConfiguration().getParameters().keySet()) {
                 if (com.getConfiguration().getParameter(paramKey).getType() == ParameterType.LINK
@@ -496,7 +512,7 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                             if (rsVerify.size() > 0) {
                                 dataItem.setRelationTable(rowLinkedTable);
                                 dataItem.setRelationItem(rsVerify.get(0));
-                                dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Relations);
+                                dataItem.setStatus(DataItem.Status.Relations);
                                 return;
                             }
                         }
@@ -512,16 +528,16 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         }
         dataItem.setCounter(getExecutor().execute("delete from ".concat(getBuilder().escape(tableName))
                 .concat(" where id = ").concat(DB.sqlInjectionInt(dataItem.getId())).concat("")));
-        dataItem.setStatus(org.netuno.tritao.db.DataItem.Status.Deleted);
+        dataItem.setStatus(DataItem.Status.Deleted);
         saveLog(LogAction.Delete, table, dataItem, itemLog);
         getExecutor().scriptRemoved(getProteu(), getHili(), tableName, dataItem);
         for (Values rowTritaoDesignXY : rsTritaoDesignXY) {
-            org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
+            Component com = Config.getNewComponent(getProteu(), getHili(),
                     rowTritaoDesignXY.getString("type"));
             com.setProteu(getProteu());
             com.setDesignData(rowTritaoDesignXY);
             com.setTableData(table);
-            com.setMode(org.netuno.tritao.com.Component.Mode.Deleted);
+            com.setMode(Component.Mode.Deleted);
             com.setValues(item);
             com.onDeleted();
         }
