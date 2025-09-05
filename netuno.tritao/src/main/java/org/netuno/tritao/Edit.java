@@ -152,7 +152,7 @@ public class Edit {
                         }
                         itemId = proteu.getRequestAll().getString("netuno_item_id");
                     } else if (dataItem.getStatus() == DataItem.Status.Exists) {
-                        rowTable.set("save.error.exists.field.name", dataItem.getField());
+                        rowTable.set("save.error.exists.field.name", dataItem.getFieldDisplayName());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error_exists", rowTable);
                         restore = true;
                     } else if (dataItem.getStatus() == DataItem.Status.Error) {
@@ -181,7 +181,7 @@ public class Edit {
                             return;
                         }
                     } else if (dataItem.getStatus() == DataItem.Status.Exists) {
-                        rowTable.set("save.error.exists.field.name", dataItem.getField());
+                        rowTable.set("save.error.exists.field.name", dataItem.getFieldDisplayName());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error_exists", rowTable);
                         restore = true;
                     } else if (dataItem.getStatus() == DataItem.Status.Error) {
