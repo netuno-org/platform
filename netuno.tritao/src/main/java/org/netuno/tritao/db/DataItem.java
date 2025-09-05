@@ -68,6 +68,7 @@ public class DataItem {
         Delete,
         Deleted,
         Exists,
+        Mandatory,
         NotFound,
         Relations,
         Error
@@ -178,32 +179,17 @@ public class DataItem {
             statusType = StatusType.None;
             break;
         case Inserted:
-            statusType = StatusType.Ok;
-            break;
         case Insert:
-            statusType = StatusType.Ok;
-            break;
         case Update:
-            statusType = StatusType.Ok;
-            break;
         case Updated:
-            statusType = StatusType.Ok;
-            break;
         case Delete:
-            statusType = StatusType.Ok;
-            break;
         case Deleted:
             statusType = StatusType.Ok;
             break;
         case Exists:
-            statusType = StatusType.Error;
-            break;
+        case Mandatory:
         case NotFound:
-            statusType = StatusType.Error;
-            break;
         case Relations:
-            statusType = StatusType.Error;
-            break;
         case Error:
             statusType = StatusType.Error;
             break;
@@ -244,6 +230,10 @@ public class DataItem {
 
     public boolean isStatusAsExists() {
         return getStatus() == Status.Exists;
+    }
+
+    public boolean isStatusAsMandatory() {
+        return getStatus() == Status.Mandatory;
     }
 
     public boolean isStatusAsNotFound() {
