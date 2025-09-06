@@ -115,7 +115,7 @@ public class User extends ComponentBase {
     }
     
     public String getHtmlValue() {
-    	if (value != null && value.length() > 0) {
+    	if (value != null && !value.isEmpty()) {
             try {
                 getDesignData().set("com.select.value", value);
                 String dataShow = "";
@@ -140,6 +140,14 @@ public class User extends ComponentBase {
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty() && !value.equals("0");
+        }
+        return true;
     }
     
     public Component getInstance(Proteu proteu, Hili hili) {
