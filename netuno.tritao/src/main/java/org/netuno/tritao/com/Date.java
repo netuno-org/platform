@@ -94,7 +94,7 @@ public class Date extends ComponentBase {
     }
     
     public String getHtmlValue() {
-    	if (value != null && value.length() > 0) {
+    	if (value != null && !value.isEmpty()) {
             try {
                 getDesignData().set("com.date.value", value);
                 return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/date", getDesignData());
@@ -105,11 +105,19 @@ public class Date extends ComponentBase {
     	return "";
     }
 
-    public static java.sql.Date parse(String value) {
-        return java.sql.Date.valueOf(value);
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
     }
-    
+
     public Component getInstance(Proteu proteu, Hili hili) {
         return new Date(proteu, hili, this);
+    }
+
+    public static java.sql.Date parse(String value) {
+        return java.sql.Date.valueOf(value);
     }
 }
