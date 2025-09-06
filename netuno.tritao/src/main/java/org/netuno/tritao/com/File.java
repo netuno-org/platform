@@ -165,6 +165,14 @@ public class File extends ComponentBase {
         return false;
     }
 
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
+    }
+
     public Component getInstance(Proteu proteu, Hili hili) {
         return new File(proteu, hili, this);
     }
