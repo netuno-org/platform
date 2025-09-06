@@ -65,7 +65,7 @@ public class Text extends ComponentBase {
     public Component setDesignData(Values designData) {
         super.setDesignData(designData);
         if (designData.getString("type").equals("textnum")) {
-            if (value.length() == 0) {
+            if (value.isEmpty()) {
                 value = "0";
             }
             if (getConfiguration().getParameter("LARGE_NUMBERS").getValue().equalsIgnoreCase("true")) {
@@ -74,7 +74,7 @@ public class Text extends ComponentBase {
                 getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Integer, 0));
             }
         } else if (designData.getString("type").equals("textfloat")) {
-            if (value.length() == 0) {
+            if (value.isEmpty()) {
                 value = "0";
             }
             if (getConfiguration().getParameter("LARGE_NUMBERS").getValue().equalsIgnoreCase("true")) {
@@ -83,7 +83,7 @@ public class Text extends ComponentBase {
                 getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Float, 0));
             }
         } else {
-            getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Varchar, designData.getInt("max") > 0 ? designData.getInt("max") : 0));
+            getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Varchar, Math.max(designData.getInt("max"), 0)));
         }
         return this;
     }
@@ -110,7 +110,7 @@ public class Text extends ComponentBase {
             getDesignData().set("com.text.value", getMode() == Component.Mode.SearchForm ? "" : value);
             getDesignData().set("com.text.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             getDesignData().set("com.text.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
-            getDesignData().set("com.text.validation", getValidation(getDesignData()));
+            getDesignData().set("com.text.validation", getValidation());
             if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
                 getDesignData().set("com.text.sign", getConfiguration().getParameter("SIGN").getValue());
             }
@@ -128,14 +128,14 @@ public class Text extends ComponentBase {
     }
 
     public String getTextValue() {
-        if (value != null && value.length() > 0) {
+        if (value != null && !value.isEmpty()) {
             return value;
         }
         return "";
     }
 
     public String getHtmlValue() {
-        if (value != null && value.length() > 0) {
+        if (value != null && !value.isEmpty()) {
             try {
                 getDesignData().set("com.text.type", getDesignData().getString("type"));
                 getDesignData().set("com.text.value", value);
@@ -154,20 +154,28 @@ public class Text extends ComponentBase {
         return "";
     }
 
-    private String getValidation(Values rowDesign) {
+    private String getValidation() {
         String result = "";
         if (isModeEdit() || getMode() == Component.Mode.ReportForm) {
-            if (rowDesign.getBoolean("notnull")) {
+            if (getDesignData().getBoolean("notnull")) {
                 result = "required ";
             }
-            if (rowDesign.getString("type").equals("email")) {
+            if (getDesignData().getString("type").equals("email")) {
                 result += "email ";
             }
-            if (rowDesign.getString("type").equals("textnum") || rowDesign.getString("type").equals("textfloat")) {
+            if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
                 result += "numeric ";
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
     }
 
     public Component getInstance(Proteu proteu, Hili hili) {
