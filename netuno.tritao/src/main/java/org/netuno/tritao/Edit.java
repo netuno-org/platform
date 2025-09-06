@@ -155,6 +155,10 @@ public class Edit {
                         rowTable.set("save.error.exists.field.name", dataItem.getFieldDisplayName());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error_exists", rowTable);
                         restore = true;
+                    } else if (dataItem.getStatus() == DataItem.Status.Mandatory) {
+                        rowTable.set("save.error.mandatory.field.name", dataItem.getFieldDisplayName());
+                        TemplateBuilder.output(proteu, hili, "edit/notification/save_error_mandatory", rowTable);
+                        restore = true;
                     } else if (dataItem.getStatus() == DataItem.Status.Error) {
                         rowTable.set("save.error.title", dataItem.getErrorTitle());
                         rowTable.set("save.error.message", dataItem.getErrorMessage());
@@ -183,6 +187,10 @@ public class Edit {
                     } else if (dataItem.getStatus() == DataItem.Status.Exists) {
                         rowTable.set("save.error.exists.field.name", dataItem.getFieldDisplayName());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error_exists", rowTable);
+                        restore = true;
+                    } else if (dataItem.getStatus() == DataItem.Status.Mandatory) {
+                        rowTable.set("save.error.mandatory.field.name", dataItem.getFieldDisplayName());
+                        TemplateBuilder.output(proteu, hili, "edit/notification/save_error_mandatory", rowTable);
                         restore = true;
                     } else if (dataItem.getStatus() == DataItem.Status.Error) {
                         rowTable.set("save.error.title", dataItem.getErrorTitle());
