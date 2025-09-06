@@ -101,6 +101,14 @@ public class Checkbox extends ComponentBase {
 	        throw new Error(e);
 	    }
     }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
+    }
     
     public Component getInstance(Proteu proteu, Hili hili) {
 		return new Checkbox(proteu, hili, this);
