@@ -406,16 +406,16 @@ public class MultiSelect extends ComponentBase {
         }
     }
 
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
+    }
+
     public Component getInstance(Proteu proteu, Hili hili) {
         return new MultiSelect(proteu, hili, this);
     }
 
-    protected final void finalize() throws Throwable {
-        /*
-        GC TEST
-        items.removeAll();
-        items = null;
-        super.finalize();
-        */
-    }
 }
