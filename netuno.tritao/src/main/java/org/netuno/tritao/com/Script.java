@@ -124,6 +124,12 @@ public class Script extends ComponentBase {
         return this;
     }
 
+    @Override
+    public boolean isMandatoryValueOk() {
+        runScript("is_mandatory_value_ok");
+        return data.getBoolean("component.value.ok");
+    }
+
     public Component getInstance(Proteu proteu, Hili hili) {
         return new Script(proteu, hili, type);
     }
