@@ -120,5 +120,7 @@ public interface Component {
 
     Component onDeleted();
 
+    boolean isMandatoryValueOk();
+
     Component getInstance(Proteu proteu, Hili hili);
 }
