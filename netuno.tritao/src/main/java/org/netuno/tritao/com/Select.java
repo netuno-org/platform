@@ -38,7 +38,7 @@ import org.netuno.tritao.util.TemplateBuilder;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class Select extends ComponentBase {
-    private static Logger logger = LogManager.getLogger(Select.class);
+    private static final Logger logger = LogManager.getLogger(Select.class);
     private final static String DEFAULT_COLUMN_SEPARATOR = " - ";
     private final static int DEFAULT_MAX_COLUMN_LENGTH = 0;
     private final String DEFAULT_SERVICE = "com/Select"+ org.netuno.proteu.Config.getExtension();
@@ -73,7 +73,7 @@ public class Select extends ComponentBase {
     
     public Component setValues(String prefix, Values values) {
     	super.setValues(prefix, values);
-        value = getDataStructure().get(0).getValue();
+        value = getDataStructure().getFirst().getValue();
         String tableName = Link.getTableName(getConfiguration().getParameter("LINK").getValue());
         if (value != null && value.contains("-")) {
             Values relationItem = Config.getDBBuilder(getProteu()).getItemByUId(tableName, value);
@@ -94,7 +94,7 @@ public class Select extends ComponentBase {
         } else {
             valueId = "0";
         }
-    	getDataStructure().get(0).setValue(valueId);
+    	getDataStructure().getFirst().setValue(valueId);
         return this;
     }
     
@@ -129,7 +129,7 @@ public class Select extends ComponentBase {
     }
     
     public String getHtmlValue() {
-    	if (value != null && value.length() > 0) {
+    	if (value != null && !value.isEmpty()) {
             try {
                 getDesignData().set("com.select.value", value);
                 getDesignData().set("com.select.datashow", Link.getDataShow(getProteu(), getHili(), "default", valueId, getConfiguration().getParameter("LINK").getValue(), getConfiguration().getParameter("COLUMN_SEPARATOR").getValue(), 0, true));
@@ -150,8 +150,7 @@ public class Select extends ComponentBase {
         }
         return result;
     }
-    
-    @SuppressWarnings("unchecked")
+
 	public static void _main(Proteu proteu, Hili hili) throws IOException, JSONException {
     	String valueLink = proteu.getRequestAll().getString("link");
     	String valueColumnSeparator = proteu.getRequestAll().getString("column_separator");
@@ -165,10 +164,10 @@ public class Select extends ComponentBase {
     	}
     	if (valueLink.isEmpty()) {
             List<Values> dsDesigns = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("com_uid"));
-            if (dsDesigns.size() < 1 ) {
+            if (dsDesigns.isEmpty()) {
                 return;
             }
-            Values rowDesign = dsDesigns.get(0);
+            Values rowDesign = dsDesigns.getFirst();
             Component com = Config.getNewComponent(proteu, hili, rowDesign.getString("type"));
             com.setProteu(proteu);
             com.setDesignData(rowDesign);
@@ -184,21 +183,24 @@ public class Select extends ComponentBase {
         if (proteu.getRequestAll().hasKey("data_uid")) {
             String dataUid = proteu.getRequestAll().getString("data_uid");
             if (dataUid.isEmpty() || dataUid.equals("0")) {
-                String callback = proteu.getRequestAll().getString("callback");
-                if (callback.length() > 0) {
-                    proteu.getOutput().print(callback);
-                    proteu.getOutput().print("(");
-                }
-                proteu.getOutput().print("[]");
-                if (callback.length() > 0) {
-                    proteu.getOutput().print(")");
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id", "");
+                jsonObject.put("label", "");
+                json = jsonObject.toString();
+            } else {
+                Values item = Config.getDBBuilder(proteu).getItemByUId(Link.getTableName(valueLink), dataUid);
+                if (item == null) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("id", "");
+                    jsonObject.put("label", "");
+                    json = jsonObject.toString();
+                } else {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("id", item.getString("uid"));
+                    jsonObject.put("label", Link.getDataShow(proteu, hili, "default", item.getString("id"), valueLink, valueColumnSeparator, valueMaxColumnLength, true));
+                    json = jsonObject.toString();
                 }
             }
-            Values item = Config.getDBBuilder(proteu).getItemByUId(Link.getTableName(valueLink), dataUid);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", item.getString("uid"));
-            jsonObject.put("label", Link.getDataShow(proteu, hili, "default", item.getString("id"), valueLink, valueColumnSeparator, valueMaxColumnLength, true));
-            json = jsonObject.toString();
         } else {
             Link link = new Link(proteu, hili, "default", valueLink, proteu.getRequestAll().getString("q"));
             link.setOnlyActives(valueOnlyActives);
@@ -217,7 +219,7 @@ public class Select extends ComponentBase {
                 jsonObject = new JSONObject();
                 jsonObject.put("id", uid);
                 jsonObject.put("label", label);
-                if (queryRow.getString("active").length() == 0
+                if (queryRow.getString("active").isEmpty()
                     || queryRow.getString("active").equals("false")
                     || queryRow.getString("active").equals("0")) {
                     jsonObject.put("disabled", false);
@@ -229,14 +231,22 @@ public class Select extends ComponentBase {
             json = jsonArray.toString();
         }
         String callback = proteu.getRequestAll().getString("callback");
-        if (callback.length() > 0) {
+        if (!callback.isEmpty()) {
             proteu.getOutput().print(callback);
             proteu.getOutput().print("(");
         }
         proteu.getOutput().print(json);
-        if (callback.length() > 0) {
+        if (!callback.isEmpty()) {
             proteu.getOutput().print(")");
         }
+    }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty() && !value.equals("0");
+        }
+        return true;
     }
     
     public Component getInstance(Proteu proteu, Hili hili) {
