@@ -55,7 +55,7 @@ public class Color extends ComponentBase {
             new Label(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
             getDesignData().set("com.color.value", getMode() == Component.Mode.SearchForm ? "" : value);
             getDesignData().set("com.color.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
-            getDesignData().set("com.color.validation", getValidation(getDesignData()));
+            getDesignData().set("com.color.validation", getValidation());
             TemplateBuilder.output(getProteu(), getHili(), "com/render/color", getDesignData());
             new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
@@ -65,14 +65,14 @@ public class Color extends ComponentBase {
     }
 
     public String getTextValue() {
-        if (value != null && value.length() > 0) {
+        if (value != null && !value.isEmpty()) {
             return value;
         }
         return "";
     }
 
     public String getHtmlValue() {
-        if (value != null && value.length() > 0) {
+        if (value != null && !value.isEmpty()) {
             try {
                 getDesignData().set("com.color.value", value);
                 return TemplateBuilder.getOutput(getProteu(), getHili(), "com/showvalue/color", getDesignData());
@@ -83,14 +83,22 @@ public class Color extends ComponentBase {
         return "";
     }
 
-    private String getValidation(Values rowDesign) {
+    private String getValidation() {
         String result = "";
         if (isModeEdit() || getMode() == Component.Mode.ReportForm) {
-            if (rowDesign.getBoolean("notnull")) {
+            if (getDesignData().getBoolean("notnull")) {
                 result = "required ";
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
     }
 
     public Component getInstance(Proteu proteu, Hili hili) {
