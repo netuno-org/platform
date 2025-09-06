@@ -107,6 +107,14 @@ public class TextVault extends ComponentBase {
         return result;
     }
 
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
+    }
+
     public Component getInstance(Proteu proteu, Hili hili) {
         return new TextVault(proteu, hili, this);
     }
