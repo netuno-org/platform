@@ -106,6 +106,14 @@ public class TextMD extends ComponentBase {
     	}
     	return "";
     }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
+    }
     
     public Component getInstance(Proteu proteu, Hili hili) {
         return new TextMD(proteu, hili, this);
