@@ -291,22 +291,9 @@ public abstract class ComponentBase implements Component {
                 || getMode() == Component.Mode.Deleted;
     }
 
-    public Component getInstance(Proteu proteu, Hili hili) {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
+    public abstract boolean isMandatoryValueOk();
 
-    protected void finalize() throws Throwable {
-        /*
-        GC TEST
-        proteu = null;
-        hili = null;
-        configuration = null;
-        dataStructure = null;
-        designData = null;
-        tableData = null;
-        values = null;
-        */
-    }
+    public abstract Component getInstance(Proteu proteu, Hili hili);
 
     public static Component getInstance(Proteu proteu, Hili hili, String tableName, String fieldName) throws ComponentNotFoundException {
         Builder dbBuilder = Config.getDBBuilder(proteu);
