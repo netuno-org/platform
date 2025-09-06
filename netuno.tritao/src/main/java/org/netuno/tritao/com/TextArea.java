@@ -57,7 +57,7 @@ public class TextArea extends ComponentBase {
             getDesignData().set("com.textarea.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
             getDesignData().set("com.textarea.cols", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "cols");
             getDesignData().set("com.textarea.rows", !getDesignData().getString("height").equals("0") ? getDesignData().getString("height") : "rows");
-            getDesignData().set("com.textarea.validation", getValidation(getDesignData()));
+            getDesignData().set("com.textarea.validation", getValidation());
             TemplateBuilder.output(getProteu(), getHili(), "com/render/textarea", getDesignData());
             new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
@@ -66,10 +66,10 @@ public class TextArea extends ComponentBase {
         return this;
     }
     
-    private String getValidation(Values rowDesign) {
+    private String getValidation() {
         String result = "";
         if (isModeEdit()) {
-            if (rowDesign.getBoolean("notnull")) {
+            if (getDesignData().getBoolean("notnull")) {
                 result = "required ";
             }
         }
@@ -93,6 +93,14 @@ public class TextArea extends ComponentBase {
             }
     	}
     	return "";
+    }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
     }
     
     public Component getInstance(Proteu proteu, Hili hili) {
