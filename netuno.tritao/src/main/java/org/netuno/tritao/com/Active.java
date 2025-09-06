@@ -98,7 +98,15 @@ public class Active extends ComponentBase {
     public void setOff() {
     	value = "false";
     }
-    
+
+	@Override
+	public boolean isMandatoryValueOk() {
+		if (isModeSave() && getDesignData().getBoolean("notnull")) {
+			return value != null && !value.isEmpty();
+		}
+		return true;
+	}
+
     public Component getInstance(Proteu proteu, Hili hili) {
 		return new Active(proteu, hili, this);
 	}
