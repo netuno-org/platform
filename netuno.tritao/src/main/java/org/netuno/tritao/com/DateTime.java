@@ -112,7 +112,15 @@ public class DateTime extends ComponentBase {
     	}
     	return "";
     }
-    
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
+    }
+
     public Component getInstance(Proteu proteu, Hili hili) {
         return new DateTime(proteu, hili, this);
     }
