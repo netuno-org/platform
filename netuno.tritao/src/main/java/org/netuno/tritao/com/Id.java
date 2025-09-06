@@ -84,6 +84,14 @@ public class Id extends ComponentBase {
         result += "numeric ";
         return result;
     }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty() && !value.equals("0");
+        }
+        return true;
+    }
     
     public Component getInstance(Proteu proteu, Hili hili) {
         return new Id(proteu, hili, this);
