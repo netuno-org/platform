@@ -148,6 +148,11 @@ public class LastChange extends ComponentBase {
             proteu.getOutput().print(")");
         }
     }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        return true;
+    }
     
     public Component getInstance(Proteu proteu, Hili hili) {
         return new LastChange(proteu, hili, this);
