@@ -75,7 +75,15 @@ public class AutoComplete extends ComponentBase {
     public String getHtmlValue() {
         return value;
     }
-    
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty() && !value.equals("0");
+        }
+        return true;
+    }
+
     public Component getInstance(Proteu proteu, Hili hili) {
 		return new AutoComplete(proteu, hili, this);
 	}
