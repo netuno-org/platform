@@ -124,6 +124,14 @@ public class Time extends ComponentBase {
         return java.sql.Time.valueOf(value);
     }
 
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty();
+        }
+        return true;
+    }
+
     public Component getInstance(Proteu proteu, Hili hili) {
         return new Time(proteu, hili, this);
     }
