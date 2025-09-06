@@ -184,6 +184,14 @@ public class SelectPath extends ComponentBase {
             proteu.getOutput().print(")");
         }
     }
+
+    @Override
+    public boolean isMandatoryValueOk() {
+        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+            return value != null && !value.isEmpty() && !value.equals("0");
+        }
+        return true;
+    }
     
     public Component getInstance(Proteu proteu, Hili hili) {
         return new SelectPath(proteu, hili, this);
