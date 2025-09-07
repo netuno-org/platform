@@ -5,16 +5,16 @@ import org.netuno.psamata.Values;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface TableNotNulls extends BuilderBase, TableSelect, TableDesignSelect {
+public interface TableMandatoryFields extends BuilderBase, TableSelect, TableDesignSelect {
     default List<String> notNulls(String tableName) {
         Values table = selectTableByName(tableName);
         List<Values> rsTritaoDesignXY = selectTableDesignXY(table.getString("id"));
-        List<String> notNulls = new ArrayList<>();
+        List<String> mandatoryFields = new ArrayList<>();
         for (Values rowTritaoDesignXY : rsTritaoDesignXY) {
-            if (rowTritaoDesignXY.getBoolean("notnull")) {
-                notNulls.add(rowTritaoDesignXY.getString("name"));
+            if (rowTritaoDesignXY.getBoolean("mandatory")) {
+                mandatoryFields.add(rowTritaoDesignXY.getString("name"));
             }
         }
-        return notNulls;
+        return mandatoryFields;
     }
 }
