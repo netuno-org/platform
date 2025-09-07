@@ -211,7 +211,7 @@ public class MultiSelect extends ComponentBase {
     private String getValidation(Values rowDesign) {
         String result = "";
         if (isModeEdit() || getMode() == Component.Mode.ReportForm) {
-            if (rowDesign.getBoolean("notnull")) {
+            if (rowDesign.getBoolean("mandatory")) {
                 result = "required notzero";
             }
         }
@@ -408,7 +408,7 @@ public class MultiSelect extends ComponentBase {
 
     @Override
     public boolean isMandatoryValueOk() {
-        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+        if (isModeSave() && getDesignData().getBoolean("mandatory")) {
             return value != null && !value.isEmpty();
         }
         return true;

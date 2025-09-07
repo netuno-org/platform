@@ -157,7 +157,7 @@ public class Text extends ComponentBase {
     private String getValidation() {
         String result = "";
         if (isModeEdit() || getMode() == Component.Mode.ReportForm) {
-            if (getDesignData().getBoolean("notnull")) {
+            if (getDesignData().getBoolean("mandatory")) {
                 result = "required ";
             }
             if (getDesignData().getString("type").equals("email")) {
@@ -172,7 +172,7 @@ public class Text extends ComponentBase {
 
     @Override
     public boolean isMandatoryValueOk() {
-        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+        if (isModeSave() && getDesignData().getBoolean("mandatory")) {
             return value != null && !value.isEmpty();
         }
         return true;

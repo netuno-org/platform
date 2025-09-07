@@ -100,7 +100,7 @@ public class TextVault extends ComponentBase {
     private String getValidation(Values rowDesign) {
         String result = "";
         if (isModeEdit() || getMode() == Component.Mode.ReportForm) {
-            if (rowDesign.getBoolean("notnull")) {
+            if (rowDesign.getBoolean("mandatory")) {
                 result = "required ";
             }
         }
@@ -109,7 +109,7 @@ public class TextVault extends ComponentBase {
 
     @Override
     public boolean isMandatoryValueOk() {
-        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+        if (isModeSave() && getDesignData().getBoolean("mandatory")) {
             return value != null && !value.isEmpty();
         }
         return true;

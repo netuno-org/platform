@@ -101,7 +101,7 @@ public class Active extends ComponentBase {
 
 	@Override
 	public boolean isMandatoryValueOk() {
-		if (isModeSave() && getDesignData().getBoolean("notnull")) {
+		if (isModeSave() && getDesignData().getBoolean("mandatory")) {
 			return value != null && !value.isEmpty();
 		}
 		return true;

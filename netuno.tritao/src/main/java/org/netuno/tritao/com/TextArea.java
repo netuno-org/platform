@@ -69,7 +69,7 @@ public class TextArea extends ComponentBase {
     private String getValidation() {
         String result = "";
         if (isModeEdit()) {
-            if (getDesignData().getBoolean("notnull")) {
+            if (getDesignData().getBoolean("mandatory")) {
                 result = "required ";
             }
         }
@@ -97,7 +97,7 @@ public class TextArea extends ComponentBase {
 
     @Override
     public boolean isMandatoryValueOk() {
-        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+        if (isModeSave() && getDesignData().getBoolean("mandatory")) {
             return value != null && !value.isEmpty();
         }
         return true;

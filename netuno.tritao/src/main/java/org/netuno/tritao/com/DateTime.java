@@ -83,7 +83,7 @@ public class DateTime extends ComponentBase {
                     getDesignData().set("com.time.seconds.value", datetimeParts[1]);
                 }
             }
-            getDesignData().set("com.datetime.validation", getDesignData().getBoolean("notnull") ? "required" : "");
+            getDesignData().set("com.datetime.validation", getDesignData().getBoolean("mandatory") ? "required" : "");
             TemplateBuilder.output(getProteu(), getHili(), "com/render/datetime", getDesignData());
             new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
@@ -115,7 +115,7 @@ public class DateTime extends ComponentBase {
 
     @Override
     public boolean isMandatoryValueOk() {
-        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+        if (isModeSave() && getDesignData().getBoolean("mandatory")) {
             return value != null && !value.isEmpty();
         }
         return true;

@@ -81,7 +81,7 @@ public class TextMD extends ComponentBase {
     private String getValidation(Values rowDesign) {
         String result = "";
         if (isModeEdit()) {
-            if (rowDesign.getBoolean("notnull")) {
+            if (rowDesign.getBoolean("mandatory")) {
                 result = "required ";
             }
         }
@@ -109,7 +109,7 @@ public class TextMD extends ComponentBase {
 
     @Override
     public boolean isMandatoryValueOk() {
-        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+        if (isModeSave() && getDesignData().getBoolean("mandatory")) {
             return value != null && !value.isEmpty();
         }
         return true;

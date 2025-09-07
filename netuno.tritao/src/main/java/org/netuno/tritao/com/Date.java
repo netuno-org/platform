@@ -80,7 +80,7 @@ public class Date extends ComponentBase {
                 value = dateFormat.format(new java.util.Date());
             }
             getDesignData().set("com.date.value", value);
-            getDesignData().set("com.date.validation", getDesignData().getBoolean("notnull") ? "required" : "");
+            getDesignData().set("com.date.validation", getDesignData().getBoolean("mandatory") ? "required" : "");
             TemplateBuilder.output(getProteu(), getHili(), "com/render/date", getDesignData());
             new Description(getProteu(), getHili(), getDesignData(), getTableData(), getMode()).render();
         } catch (Exception e) {
@@ -107,7 +107,7 @@ public class Date extends ComponentBase {
 
     @Override
     public boolean isMandatoryValueOk() {
-        if (isModeSave() && getDesignData().getBoolean("notnull")) {
+        if (isModeSave() && getDesignData().getBoolean("mandatory")) {
             return value != null && !value.isEmpty();
         }
         return true;

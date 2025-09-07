@@ -46,7 +46,7 @@ public class Label {
     public void render() {
         try {
             Values data = new Values().set("label", Translation.formFieldLabel(proteu, hili, tableData, designData));
-            if (this.mode != Mode.SearchForm && this.mode != Mode.SearchResult && designData.getBoolean("notnull")) {
+            if (this.mode != Mode.SearchForm && this.mode != Mode.SearchResult && designData.getBoolean("mandatory")) {
                 TemplateBuilder.output(proteu, hili, "com/render/label_required", data);
             } else {
                 TemplateBuilder.output(proteu, hili, "com/render/label", data);
