@@ -384,7 +384,7 @@ public class Setup extends ResourceBase {
     }
 
     private String valuesToCode(Values data) {
-        String code = "\t_val.init()\n";
+        String code = "\t_val.map()\n";
         for (String key : data.keys()) {
             Object value = data.get(key);
             code += "\t.set(\"" + StringEscapeUtils.escapeJava(key) + "\", " + escapeToCodeString(value) + ")\n";
