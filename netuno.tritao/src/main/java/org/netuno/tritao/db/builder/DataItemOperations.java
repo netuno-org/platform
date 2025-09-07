@@ -307,7 +307,7 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                     dataItem.setFieldDisplayName(Translation.formFieldLabel(getProteu(), getHili(), table, rowTritaoDesignXY));
                 }
             }
-            if (rowTritaoDesignXY.getBoolean("notnull") && !com.isMandatoryValueOk()) {
+            if (rowTritaoDesignXY.getBoolean("mandatory") && !com.isMandatoryValueOk()) {
                 dataItem.setStatus(DataItem.Status.Mandatory);
                 dataItem.setField(rowTritaoDesignXY.getString("name"));
                 dataItem.setFieldDisplayName(Translation.formFieldLabel(getProteu(), getHili(), table, rowTritaoDesignXY));
