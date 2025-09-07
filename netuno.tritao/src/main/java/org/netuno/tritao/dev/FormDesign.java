@@ -166,7 +166,7 @@ public class FormDesign {
         data.set("displayname.value", field != null ? field.getString("displayname") : "");
         data.set("description.value", field != null ? field.getString("description") : "");
         data.set("primarykey.checked", field != null && field.getBoolean("primarykey") ? " checked" : "");
-        data.set("notnull.checked", field != null && field.getBoolean("notnull") ? " checked" : "");
+        data.set("mandatory.checked", field != null && field.getBoolean("mandatory") ? " checked" : "");
         data.set("whenresult.checked", field == null || (field != null && field.getBoolean("whenresult")) ? " checked" : "");
         data.set("whenfilter.checked", field == null || (field != null && field.getBoolean("whenfilter")) ? " checked" : "");
         data.set("whenview.checked", field == null || (field != null && field.getBoolean("whenview")) ? " checked" : "");
