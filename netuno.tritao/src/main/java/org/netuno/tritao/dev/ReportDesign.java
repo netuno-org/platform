@@ -161,7 +161,7 @@ public class ReportDesign extends FormDesign {
         data.set("name.value", field != null ? field.getString("name") : "");
         data.set("displayname.value", field != null ? field.getString("displayname") : "");
         data.set("description.value", field != null ? field.getString("description") : "");
-        data.set("notnull.checked", field != null && field.getBoolean("notnull") ? " checked" : "");
+        data.set("mandatory.checked", field != null && field.getBoolean("mandatory") ? " checked" : "");
 
         String typeItems = "";
         for (String key : Config.getComponents(proteu, hili).keysSorted()) {
