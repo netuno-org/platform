@@ -145,6 +145,12 @@ public class Setup extends ManagerBase {
             //    dbManager.execute("alter table netuno_table add column show_lastchange boolean default false");
             //}
 
+
+            if (checkExists.column("netuno_design", "notnull")) {
+                new Column(this)
+                        .renameIfExists("netuno_design", "notnull", "mandatory");
+            }
+
             table.create("netuno_design",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
@@ -163,7 +169,7 @@ public class Setup extends ManagerBase {
                     table.newColumn().setName("rowspan").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("tdwidth").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("tdheight").setType(Column.Type.INT).setNotNull(true).setDefault(),
-                    table.newColumn().setName("notnull").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
+                    table.newColumn().setName("mandatory").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
                     table.newColumn().setName("primarykey").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
                     table.newColumn().setName("whenresult").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(true),
                     table.newColumn().setName("whenfilter").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(true),
