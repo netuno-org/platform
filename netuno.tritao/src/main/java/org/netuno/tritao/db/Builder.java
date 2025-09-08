@@ -30,7 +30,8 @@ public interface Builder extends AuthHistory, AuthProvider,
         DataItemGet, DataItemOperations, DataLog, DataSearch,
         DevQuery, Group, GroupRule, RelationsGet,
         TableDesignOperations, TableDesignSelect,
-        TableMandatoryFields, TableOperations, TablePrimaryKeys, TableSelect,
+        TableOperations, TableSelect,
+        TableMandatoryFields, TableUniqueFields,
         User, UserRule {
 	
     void setup();
