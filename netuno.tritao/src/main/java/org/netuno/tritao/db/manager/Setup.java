@@ -150,6 +150,10 @@ public class Setup extends ManagerBase {
                 new Column(this)
                         .renameIfExists("netuno_design", "notnull", "mandatory");
             }
+            if (checkExists.column("netuno_design", "primarykey")) {
+                new Column(this)
+                        .renameIfExists("netuno_design", "primarykey", "unique");
+            }
 
             table.create("netuno_design",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
@@ -161,6 +165,8 @@ public class Setup extends ManagerBase {
                     table.newColumn().setName("x").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("y").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("type").setType(Column.Type.VARCHAR).setMaxLength(50).setNotNull(true).setDefault(),
+                    table.newColumn().setName("unique").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
+                    table.newColumn().setName("mandatory").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
                     table.newColumn().setName("width").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("height").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("max").setType(Column.Type.INT).setNotNull(true).setDefault(),
@@ -169,8 +175,6 @@ public class Setup extends ManagerBase {
                     table.newColumn().setName("rowspan").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("tdwidth").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("tdheight").setType(Column.Type.INT).setNotNull(true).setDefault(),
-                    table.newColumn().setName("mandatory").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
-                    table.newColumn().setName("primarykey").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(false),
                     table.newColumn().setName("whenresult").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(true),
                     table.newColumn().setName("whenfilter").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(true),
                     table.newColumn().setName("whenedit").setType(Column.Type.BOOLEAN).setNotNull(true).setDefault(true),
