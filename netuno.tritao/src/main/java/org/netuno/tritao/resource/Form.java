@@ -60,20 +60,20 @@ public class Form extends TableBuilderResourceBase {
         setReport(false);
     }
     
-    public List<String> primaryKeys(int formId) {
+    public List<String> uniqueFields(int formId) {
         Values formData = get(formId);
         if (formData == null) {
             return null;
         }
-        return CoreData.primaryKeys(getProteu(), formData.getString("name"));
+        return CoreData.uniqueFields(getProteu(), formData.getString("name"));
     }
     
-    public List<String> primaryKeys(String formNameOrUid) {
+    public List<String> uniqueFields(String formNameOrUid) {
         Values formData = get(formNameOrUid);
         if (formData == null) {
             return null;
         }
-        return CoreData.primaryKeys(getProteu(), formData.getString("name"));
+        return CoreData.uniqueFields(getProteu(), formData.getString("name"));
     }
 
 }
