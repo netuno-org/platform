@@ -113,13 +113,13 @@ public class CoreData {
         return false;
     }
     
-    public static List<String> primaryKeys(Proteu proteu, String tableName) {
+    public static List<String> uniqueFields(Proteu proteu, String tableName) {
         Builder builder = Config.getDBBuilder(proteu);
-        return builder.primaryKeys(tableName);
+        return builder.uniqueFields(tableName);
     }
     
-    public static List<String> notNulls(Proteu proteu, String tableName) {
+    public static List<String> mandatoryFields(Proteu proteu, String tableName) {
         Builder builder = Config.getDBBuilder(proteu);
-        return builder.notNulls(tableName);
+        return builder.mandatoryFields(tableName);
     }
 }
