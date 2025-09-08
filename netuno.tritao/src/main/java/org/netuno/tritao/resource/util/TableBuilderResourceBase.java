@@ -143,20 +143,20 @@ public class TableBuilderResourceBase extends ResourceBase {
         }
         return createComponentIfNotExists(formData.getInt("id"), data);
     }
-    
-    public List<String> notNulls(int formId) {
+
+    public List<String> mandatoryFields(int formId) {
         Values formData = get(formId);
         if (formData == null) {
             return null;
         }
-        return CoreData.notNulls(getProteu(), formData.getString("name"));
+        return CoreData.mandatoryFields(getProteu(), formData.getString("name"));
     }
-    
-    public List<String> notNulls(String formNameOrUid) {
+
+    public List<String> mandatoryFields(String formNameOrUid) {
         Values formData = get(formNameOrUid);
         if (formData == null) {
             return null;
         }
-        return CoreData.notNulls(getProteu(), formData.getString("name"));
+        return CoreData.mandatoryFields(getProteu(), formData.getString("name"));
     }
 }
