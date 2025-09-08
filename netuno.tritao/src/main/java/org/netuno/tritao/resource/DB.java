@@ -2161,19 +2161,19 @@ public class DB extends ResourceBase {
         }
         Builder builder = Config.getDBBuilder(getProteu());
         Form form = resource(Form.class);
-        List<String> primaryKeys = form.primaryKeys(table);
-        if (primaryKeys == null) {
+        List<String> uniqueFields = form.uniqueFields(table);
+        if (uniqueFields == null) {
             throw new ResourceException("db.store(" + table + "):\nForm not found.");
         }
-        if (primaryKeys.size() == 0) {
-            throw new ResourceException("db.store(" + table + "):\nForm without any primary key.");
+        if (uniqueFields.size() == 0) {
+            throw new ResourceException("db.store(" + table + "):\nForm without any unique field to be used as a primary key.");
         }
         Values filters = new Values();
-        for (String primaryKey : primaryKeys) {
-            if (data.has(primaryKey)) {
-                filters.set(primaryKey, data.get(primaryKey));
+        for (String uniqueField : uniqueFields) {
+            if (data.has(uniqueField)) {
+                filters.set(uniqueField, data.get(uniqueField));
             } else {
-                throw new ResourceException("db.store(" + table + ", " + data.toJSON() + "):\nWithout primary key: " + primaryKey);
+                throw new ResourceException("db.store(" + table + ", " + data.toJSON() + "):\nWithout the unique key: " + uniqueField);
             }
         }
         DataSelected dataSelected = builder.selectSearch(table, filters, false);
