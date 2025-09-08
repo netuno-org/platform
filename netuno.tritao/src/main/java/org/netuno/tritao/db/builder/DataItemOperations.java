@@ -284,7 +284,7 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                     }
                 }
             }
-            if (rowTritaoDesignXY.getBoolean("primarykey")) {
+            if (rowTritaoDesignXY.getBoolean("unique")) {
                 String where = "";
                 for (ComponentData data : com.getDataStructure()) {
                     String value = getDataValue(data);
