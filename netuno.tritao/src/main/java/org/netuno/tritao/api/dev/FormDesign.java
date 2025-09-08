@@ -335,7 +335,7 @@ public class FormDesign extends WebMaster {
         data.set("uid", field.getString("uid"));
         data.set("name", field.getString("name"));
         data.set("displayname", field.getString("displayname"));
-        data.set("primarykey", field.getBoolean("primarykey"));
+        data.set("unique", field.getBoolean("unique"));
         data.set("mandatory", field.getBoolean("mandatory"));
         data.set("when", new Values()
                 .set("result", field.getBoolean("whenresult"))
