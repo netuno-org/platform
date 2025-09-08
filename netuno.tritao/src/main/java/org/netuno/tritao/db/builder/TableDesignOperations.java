@@ -69,6 +69,9 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     editGroup = getItemByUId("netuno_group", getProteu().getRequestAll().getString("edit_group_uid"));
                 }
 
+                if (data.hasKey("primarykey") && !data.hasKey("unique")) {
+                    data.set("unique", data.getBoolean("primarykey"));
+                }
                 if (data.hasKey("notnull") && !data.hasKey("mandatory")) {
                     data.set("mandatory", data.getBoolean("notnull"));
                 }
@@ -94,7 +97,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 values.set("tdwidth", DB.sqlInjectionInt(data.getString("tdwidth")));
                 values.set("tdheight", DB.sqlInjectionInt(data.getString("tdheight")));
                 values.set("mandatory", data.getBoolean("mandatory"));
-                values.set("primarykey", data.getBoolean("primarykey"));
+                values.set("unique", data.getBoolean("unique"));
                 values.set("whenresult", data.getBoolean("whenresult"));
                 values.set("whenfilter", data.getBoolean("whenfilter"));
                 values.set("whenedit", data.getBoolean("whenedit"));
@@ -258,6 +261,8 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 Values values = new Values();
                 values.set("name", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "'");
                 values.set("displayname", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("displayname")) + "'");
+                values.set(getBuilder().escape("unique"), getProteu().getRequestAll().getBoolean("unique"));
+                values.set(getBuilder().escape("mandatory"), getProteu().getRequestAll().getBoolean("mandatory"));
                 values.set("description", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("description")) + "'");
                 values.set("x", DB.sqlInjectionInt(getProteu().getRequestAll().getString("x")));
                 values.set("y", DB.sqlInjectionInt(getProteu().getRequestAll().getString("y")));
@@ -271,8 +276,6 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 values.set("rowspan", DB.sqlInjectionInt(getProteu().getRequestAll().getString("rowspan")));
                 values.set("tdwidth", DB.sqlInjectionInt(getProteu().getRequestAll().getString("tdwidth")));
                 values.set("tdheight", DB.sqlInjectionInt(getProteu().getRequestAll().getString("tdheight")));
-                values.set(getBuilder().escape("mandatory"), getProteu().getRequestAll().getBoolean("mandatory"));
-                values.set("primarykey", getProteu().getRequestAll().getBoolean("primarykey"));
                 values.set("whenresult", getProteu().getRequestAll().getBoolean("whenresult"));
                 values.set("whenfilter", getProteu().getRequestAll().getBoolean("whenfilter"));
                 values.set("whenedit", getProteu().getRequestAll().getBoolean("whenedit"));
@@ -371,6 +374,8 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     values.set("uid", "'" + UUID.randomUUID().toString() + "'");
                     values.set("table_id", DB.sqlInjectionInt(table.getString("id")));
                     values.set("name", "'" + DB.sqlInjection(field.getString("name")) + "'");
+                    values.set("unique", field.getBoolean("unique"));
+                    values.set("mandatory", field.getBoolean("mandatoryv"));
                     values.set("displayname", "'" + DB.sqlInjection(field.getString("displayname")) + "'");
                     values.set("x", DB.sqlInjectionInt(field.getString("x")));
                     values.set("y", DB.sqlInjectionInt(field.getString("y")));
@@ -383,8 +388,6 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     values.set("rowspan", DB.sqlInjectionInt(field.getString("rowspan")));
                     values.set("tdwidth", DB.sqlInjectionInt(field.getString("tdwidth")));
                     values.set("tdheight", DB.sqlInjectionInt(field.getString("tdheight")));
-                    values.set("mandatory", field.getBoolean("mandatoryv"));
-                    values.set("primarykey", field.getBoolean("primarykey"));
                     values.set("whenresult", field.getBoolean("whenresult"));
                     values.set("whenfilter", field.getBoolean("whenfilter"));
                     values.set("whenedit", field.getBoolean("whenedit"));
