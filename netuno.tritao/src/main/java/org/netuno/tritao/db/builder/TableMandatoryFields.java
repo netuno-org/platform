@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface TableMandatoryFields extends BuilderBase, TableSelect, TableDesignSelect {
-    default List<String> notNulls(String tableName) {
+    default List<String> mandatoryFields(String tableName) {
         Values table = selectTableByName(tableName);
         List<Values> rsTritaoDesignXY = selectTableDesignXY(table.getString("id"));
         List<String> mandatoryFields = new ArrayList<>();
