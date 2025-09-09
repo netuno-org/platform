@@ -608,7 +608,7 @@ public class Remote {
                     .version(HttpClient.Version.HTTP_1_1)
                     //.sslContext(sslContext)
                     .connectTimeout(Duration.ofMillis(connectTimeout))
-                    .followRedirects(isFollowRedirects() ? HttpClient.Redirect.ALWAYS : HttpClient.Redirect.NORMAL)
+                    .followRedirects(isFollowRedirects() ? HttpClient.Redirect.ALWAYS : HttpClient.Redirect.NEVER)
                     .build();
 
             HttpRequest.Builder builder = HttpRequest.newBuilder()
