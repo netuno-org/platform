@@ -245,12 +245,6 @@ netuno.loadCodeEditor = (container) ->
 netuno.addContentLoad (container)->
   netuno.loadDevLinks(container)
   netuno.loadCodeEditor(container)
-  container.find("select").select2(
-    theme: "bootstrap"
-    placeholder: ""
-    maximumSelectionSize: 6
-    allowClear: true
-  )
 
 netuno.addPageLoad ()->
   netuno.loadDevLinks($("body"))

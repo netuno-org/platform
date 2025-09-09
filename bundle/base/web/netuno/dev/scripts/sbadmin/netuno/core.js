@@ -317,13 +317,7 @@
 
   netuno.addContentLoad(function(container) {
     netuno.loadDevLinks(container);
-    netuno.loadCodeEditor(container);
-    return container.find("select").select2({
-      theme: "bootstrap",
-      placeholder: "",
-      maximumSelectionSize: 6,
-      allowClear: true
-    });
+    return netuno.loadCodeEditor(container);
   });
 
   netuno.addPageLoad(function() {
