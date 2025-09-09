@@ -11,10 +11,10 @@
     </div>
 </div>
 
-<form id="netuno_user_form" role="form">
+<form id="netuno_user_form" role="form" autocomplete="off">
     <div class="form-group">
         <h2>_{&lang=netuno.user.user}</h2>
-        <select name="uid" id="netuno_user_form_user_uid" value="_{data=user.uid.value}" netuno-select-service="User_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" style="width: 100%;">
+        <select name="uid" id="netuno_user_form_user_uid" value="_{data=user.uid.value}" netuno-select-service="User_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" placeholder="_{&lang=netuno.user.user.placeholder}" style="width: 100%;">
         </select>
     </div>
     <hr>
@@ -29,7 +29,7 @@
         <div class="col-xs-8">
             <div class="form-group">
                 <label for="netuno_user_form_user_username">_{&lang=netuno.user.username}</label>
-                <input type="text" name="username" id="netuno_user_form_user_username" value="_{&data=user.username.value}" size="25" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.username}" validation="required">
+                <input type="text" name="username" id="netuno_user_form_user_username" value="_{&data=user.username.value}" size="25" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.username}" validation="required" autocomplete="off">
             </div>
         </div>
     </div>
@@ -37,7 +37,7 @@
         <div class="col-xs-8">
             <div class="form-group">
                 <label for="netuno_user_form_user_password">_{&lang=netuno.user.password}</label>
-                <input type="password" name="password" id="netuno_user_form_user_password" value="" size="25" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.password}" validation="_{data=user.password.validation}" autocomplete="off">
+                <input type="password" name="password" id="netuno_user_form_user_password" value="" size="25" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.password}" validation="_{data=user.password.validation}" autocomplete="new-password">
             </div>
         </div>
         <div class="col-xs-4">
@@ -264,6 +264,7 @@
     </div>
     #end
 
+    #if ($data.getString("user.uid.value"))
     <h2>_{&lang=netuno.user.rules.title}</h2>
     <ul class="nav nav-tabs nav-justified">
         <li role="presentation"><a href="javascript: void(0);" id="netuno_user_form_rules_button">_{&lang=netuno.rules.forms}</a></li>
@@ -291,6 +292,7 @@
         <hr/>
         <div id="netuno_user_report_rules"></div>
     </div>
+    #end
     <div class="netuno-form-buttons">
         <button type="button" id="netuno_user_form_button_save" class="btn btn-primary"><i class="fa fa-check"></i> _{&lang=netuno.form.button.save}</button>
         <button type="button" id="netuno_user_form_button_new" class="btn btn-default">_{&lang=netuno.form.button.clear}</button>
