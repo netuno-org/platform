@@ -729,13 +729,17 @@
 
   netuno.addContentLoad(function(container) {
     return container.find("select").each(function() {
-      var that;
-      that = $(this);
-      return that.select2({
+      var placeholder, select;
+      select = $(this);
+      placeholder = select.attr("placeholder");
+      if (!placeholder) {
+        placeholder = netuno.config.com.lang.select["defaulttext"];
+      }
+      return select.select2({
         theme: "bootstrap",
-        placeholder: netuno.config.com.lang.select["defaulttext"],
+        placeholder: $("<div />").html(placeholder).text(),
         maximumSelectionSize: 6,
-        allowClear: that.is("[allow-clear]")
+        allowClear: select.is("[allow-clear]")
       });
     });
   });
@@ -1044,7 +1048,10 @@
       netuno.com.select.loadCallbacksForFieldId(fieldId);
       delayCallbacks = new Date().getTime();
       field = $(`\#${fieldId}`);
-      placeholder = netuno.config.com.lang.select["defaulttext"];
+      placeholder = field.attr("placeholder");
+      if (!placeholder) {
+        placeholder = netuno.config.com.lang.select["defaulttext"];
+      }
       if (field.attr("multiple")) {
         placeholder = $('<div />').html(placeholder).text();
       }

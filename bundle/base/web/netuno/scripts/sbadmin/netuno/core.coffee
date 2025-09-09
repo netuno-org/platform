@@ -551,12 +551,15 @@ netuno.addContentLoad (container)->
 
 netuno.addContentLoad (container)->
   container.find("select").each(()->
-    that = $(this)
-    that.select2(
+    select = $(this)
+    placeholder = select.attr("placeholder")
+    unless placeholder
+      placeholder = netuno.config.com.lang.select["defaulttext"]
+    select.select2(
       theme: "bootstrap"
-      placeholder: netuno.config.com.lang.select["defaulttext"]
+      placeholder: $("<div />").html(placeholder).text()
       maximumSelectionSize: 6
-      allowClear: that.is("[allow-clear]")
+      allowClear: select.is("[allow-clear]")
     )
   )
 
@@ -817,7 +820,9 @@ netuno.com['select'] =
     netuno.com.select.loadCallbacksForFieldId(fieldId)
     delayCallbacks = new Date().getTime()
     field = $("\##{ fieldId }")
-    placeholder = netuno.config.com.lang.select["defaulttext"]
+    placeholder = field.attr("placeholder")
+    unless placeholder
+      placeholder = netuno.config.com.lang.select["defaulttext"]
     if field.attr("multiple")
       placeholder = $('<div />').html(placeholder).text()
     # dropdownParent: field.parent()
