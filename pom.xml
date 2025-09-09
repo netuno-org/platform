@@ -40,7 +40,7 @@
         <jruby.version>9.4.8.0</jruby.version>
         <kotlin.version>2.2.0</kotlin.version>
         <arrow.version>1.2.3</arrow.version>
-        <jjwt.version>0.12.7</jjwt.version>
+        <jjwt.version>0.13.0</jjwt.version>
         <apache.poi.version>5.3.0</apache.poi.version>
         <apache.tika.version>3.2.2</apache.tika.version>
         <apache.velocity.version>2.3</apache.velocity.version>
