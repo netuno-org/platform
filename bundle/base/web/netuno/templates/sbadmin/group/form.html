@@ -14,7 +14,7 @@
 <form id="netuno_group_form" role="form">
     <div class="form-group">
         <h2>_{&lang=netuno.group.group}</h2>
-        <select name="uid" id="netuno_group_form_group_uid" value="_{data=group.uid.value}" netuno-select-service="Group_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" style="width: 100%;">
+        <select name="uid" id="netuno_group_form_group_uid" value="_{data=group.uid.value}" netuno-select-service="Group_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" placeholder="_{&lang=netuno.group.group.placeholder}" style="width: 100%;">
         </select>
     </div>
     <hr>
@@ -45,6 +45,7 @@
         <label for="netuno_group_form_group_active">_{&lang=netuno.form.field.active.label}</label>
         <input type="checkbox" name="active" id="netuno_group_form_group_active" value="1" _{data=group.active.checked}>
     </div>
+    #if ($data.getString("group.uid.value"))
     <br>
     <h2>_{&lang=netuno.group.rules.title}</h2>
     <ul class="nav nav-tabs nav-justified">
@@ -73,6 +74,7 @@
         <hr/>
         <div id="netuno_group_report_rules"></div>
     </div>
+    #end
     <div class="netuno-form-buttons">
         <button type="button" id="netuno_group_form_button_save" class="btn btn-primary"><i class="fa fa-check"></i> _{&lang=netuno.form.button.save}</button>
         <button type="button" id="netuno_group_form_button_new" class="btn btn-default">_{&lang=netuno.form.button.clear}</button>
