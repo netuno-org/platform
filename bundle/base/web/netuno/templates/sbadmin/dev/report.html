@@ -25,7 +25,7 @@
       <div class="form-group">
         <h2>_{&lang=netuno.dev.report.label.edit_existing}</h2>
         <p>
-          <select class="form-control" id="managementReport_uid" name="uid" onchange="netuno.submitDev('management_report', 'managementReport', false);" style="width: 100%;">
+          <select class="form-control" id="managementReport_uid" name="uid" onchange="netuno.submitDev('management_report', 'managementReport', false);" placeholder="_{&lang=netuno.dev.report.label.edit_placeholder}" allow-clear style="width: 100%;">
             <option value="">_{&lang=netuno.dev.report.label.creating_new}</option>
             _{data=report.items}
           </select>
@@ -103,7 +103,7 @@
           <div class="col-lg-8">
               <div class="form-group">
                   <label for="managementReport_parent">_{&lang=netuno.dev.report.label.parent}</label>
-                  <select class="form-control" name="parent_id" id="managementReport_parent" style="width: 100%;">
+                  <select class="form-control" name="parent_id" id="managementReport_parent" allow-clear style="width: 100%;">
                       <option value="0"></option>
                       _{data=parent.items}
                   </select>

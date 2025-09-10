@@ -25,7 +25,7 @@
       <div class="form-group">
         <h2> _{&lang=netuno.dev.form.label.edit_existing} </h2>
         <p>
-          <select class="form-control" id="managementForm_uid" name="uid" onchange="netuno.submitDev('management_form', 'managementForm', false);" style="width: 100%;">
+          <select class="form-control" id="managementForm_uid" name="uid" onchange="netuno.submitDev('management_form', 'managementForm', false);" placeholder="_{&lang=netuno.dev.form.label.edit_placeholder}" allow-clear style="width: 100%;">
             <option value="">_{&lang=netuno.dev.form.label.creating_new}</option>
             _{data=form.items}
           </select>
@@ -68,7 +68,7 @@
           </div>
           <div class="form-group">
             <label for="managementForm_parent">_{&lang=netuno.dev.form.label.parent}</label>
-            <select class="form-control" name="parent_uid" id="managementForm_parent" style="width: 100%;">
+            <select class="form-control" name="parent_uid" id="managementForm_parent" allow-clear style="width: 100%;">
               <option value=""></option>
               _{data=parent.items}
             </select>

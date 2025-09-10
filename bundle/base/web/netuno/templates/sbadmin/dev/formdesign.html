@@ -27,7 +27,7 @@
           <div class="form-group">
             <h2>_{&lang=netuno.dev.formdesign.label.edit_existing}</h2>
             <p>
-              <select class="form-control" id="fieldFormDesign__{data=table.name}_uid" name="uid" style="width: 100%;">
+              <select class="form-control" id="fieldFormDesign__{data=table.name}_uid" name="uid" placeholder="_{&lang=netuno.dev.formdesign.label.edit_placeholder}" allow-clear style="width: 100%;">
                 <option value="">_{&lang=netuno.dev.formdesign.label.creating_new}</option>
                 _{data=field.items}
               </select>
@@ -133,7 +133,7 @@
         <div class="col-md-6">
           <div class="form-group">
             <label for="fieldFormDesign__{data=table.name}_type">_{&lang=netuno.dev.formdesign.label.type}</label>
-            <select required class="form-control" id="fieldFormDesign__{data=table.name}_type" name="type" style="width: 100%;">
+            <select required class="form-control" id="fieldFormDesign__{data=table.name}_type" name="type" allow-clear style="width: 100%;">
               <option value=""></option>
               _{data=type.items}
             </select>
