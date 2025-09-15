@@ -17,7 +17,7 @@
         </div>
         <div class="col-sm-6">
             <div class="form-group">
-                <label>_{lang=netuno.log.item_id}</label>
+                <label>_{&lang=netuno.log.item_id}</label>
                 <input type="text" class="form-control" name="item_id" id="netuno_log_item_id" value="" maxlength="10" validation="numeric" />
             </div>
         </div>
@@ -25,14 +25,14 @@
     <div class="row">
         <div class="col-sm-6">
             <div class="form-group">
-                <label for="netuno_log_user_uid">_{lang=netuno.log.user}</label>
+                <label for="netuno_log_user_uid">_{&lang=netuno.log.user}</label>
                 <select name="user_uid" id="netuno_log_user_uid" value="" netuno-select-service="User_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" style="width: 100%;">
                 </select>
             </div>
         </div>
         <div class="col-sm-6">
             <div class="form-group">
-                <label for="netuno_log_group_uid">_{lang=netuno.log.group}</label>
+                <label for="netuno_log_group_uid">_{&lang=netuno.log.group}</label>
                 <select name="group_uid" id="netuno_log_group_uid" value="" netuno-select-service="Group_{netuno-config=extension}?service=json&allow_all=true&no_devs=true" style="width: 100%;">
                 </select>
             </div>
@@ -138,9 +138,9 @@
                 <label>_{&lang=netuno.log.action}</label>
                 <select name="action" id="netuno_log_action" allow-clear style="width: 100%;">
                     <option value="">&nbsp;</option>
-                    <option value="1">_{lang=netuno.log.action.insert}</option>
-                    <option value="2">_{lang=netuno.log.action.update}</option>
-                    <option value="3">_{lang=netuno.log.action.delete}</option>
+                    <option value="1">_{&lang=netuno.log.action.insert}</option>
+                    <option value="2">_{&lang=netuno.log.action.update}</option>
+                    <option value="3">_{&lang=netuno.log.action.delete}</option>
                 </select>
             </div>
         </div>
@@ -154,10 +154,10 @@
 <div id="netunoAdminLogResults" class="netuno-admin-log-results"></div>
 <div class="row" id="netunoAdminLogResultsNavigation" data-empty="">
     <div class="col-xs-6" style="text-align: left;">
-        <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{lang=netuno.form.button.previous}</button>
+        <button type="button" data-type="prev" class="btn btn-default"><span class="fa fa-arrow-left"></span> _{&lang=netuno.form.button.previous}</button>
     </div>
     <div class="col-xs-6" style="text-align: right;">
-        <button type="button" data-type="next" class="btn btn-default">_{lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
+        <button type="button" data-type="next" class="btn btn-default">_{&lang=netuno.form.button.next} <span class="fa fa-arrow-right"></span></button>
     </div>
 </div>
 <div class="modal fade netuno-admin-log-detail" id="netunoAdminLogDetail" tabindex="-1" role="dialog">
