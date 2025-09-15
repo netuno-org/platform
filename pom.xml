@@ -43,7 +43,7 @@
         <jjwt.version>0.13.0</jjwt.version>
         <apache.poi.version>5.3.0</apache.poi.version>
         <apache.tika.version>3.2.2</apache.tika.version>
-        <apache.velocity.version>2.3</apache.velocity.version>
+        <apache.velocity.version>2.4.1</apache.velocity.version>
         <classgraph.version>4.8.163</classgraph.version>
         <json.version>20240303</json.version>
         <itext.version>8.0.5</itext.version>
