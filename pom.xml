@@ -27,7 +27,7 @@
         <netuno.psamata.version>7.0.0</netuno.psamata.version>
         <netuno.tritao.version>7.0.0</netuno.tritao.version>
         <netuno.library.doc.version>7.0.0</netuno.library.doc.version>
-        <jetty.version>12.1.0</jetty.version>
+        <jetty.version>12.1.1</jetty.version>
         <picocli.version>4.7.6</picocli.version>
         <jansi.version>2.4.1</jansi.version>
         <progressbar.version>0.10.1</progressbar.version>
@@ -38,12 +38,12 @@
         <jython.version>2.7.4</jython.version>
         <groovy.version>4.0.23</groovy.version>
         <jruby.version>9.4.8.0</jruby.version>
-        <kotlin.version>2.2.10</kotlin.version>
+        <kotlin.version>2.2.20</kotlin.version>
         <arrow.version>2.1.2</arrow.version>
         <jjwt.version>0.13.0</jjwt.version>
         <apache.poi.version>5.3.0</apache.poi.version>
         <apache.tika.version>3.2.2</apache.tika.version>
-        <apache.velocity.version>2.3</apache.velocity.version>
+        <apache.velocity.version>2.4.1</apache.velocity.version>
         <classgraph.version>4.8.163</classgraph.version>
         <json.version>20240303</json.version>
         <itext.version>8.0.5</itext.version>
