@@ -17,7 +17,7 @@
             data-btn-cancel-label="_{&lang=netuno.form.button.no}"
             data-btn-cancel-class="btn-default"
             data-btn-cancel-icon="fa fa-check"
-            data-title="_{&data=displayname}"
+            data-title="_{&data=title}"
             data-content="_{&lang=netuno.search.bulk.confirmation.delete}"
             id="netuno-form-search-table-_{util=requestuuid}-bulk-delete">
             <span class="text-danger">
@@ -32,7 +32,7 @@
             data-btn-cancel-label="_{&lang=netuno.form.button.no}"
             data-btn-cancel-class="btn-default"
             data-btn-cancel-icon="fa fa-check"
-            data-title="_{&data=displayname}"
+            data-title="_{&data=title}"
             data-content="_{&lang=netuno.search.bulk.confirmation.inactive}"
             id="netuno-form-search-table-_{util=requestuuid}-bulk-inactive">
             _{&lang=netuno.search.bulk.button.inactive}
@@ -129,7 +129,7 @@
                         tableId: tableId,
                         callback: function (response) {
                             if (!response.result) {
-                                toastr["error"]("_{&lang=netuno.search.bulk.fail.inactive}".split("%s").join(''+ response.fails), "_{&data=displayname}");
+                                toastr["error"]("_{&lang=netuno.search.bulk.fail.inactive}".split("%s").join(''+ response.fails), "_{&data=title}");
                             }
                             netuno.formSearchDataTableBulkInactive(tableId)
                             bulk.checkbox.bootstrapSwitch('state', false);
@@ -151,7 +151,7 @@
                         tableId: tableId,
                         callback: function (response) {
                             if (!response.result) {
-                                toastr["error"]("_{&lang=netuno.search.bulk.fail.delete}".split("%s").join(''+ response.fails), "_{&data=displayname}");
+                                toastr["error"]("_{&lang=netuno.search.bulk.fail.delete}".split("%s").join(''+ response.fails), "_{&data=title}");
                             }
                             netuno.formSearchDataTableBulkInactive(tableId);
                             bulk.checkbox.bootstrapSwitch('state', false);
