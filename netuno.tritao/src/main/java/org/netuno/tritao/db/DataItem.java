@@ -84,16 +84,16 @@ public class DataItem {
     public String uid = "";
     public Status status = Status.None;
     public StatusType statusType = StatusType.None;
-    public String table = "";
-    public String tableDisplayName = "";
-    public String field = "";
-    public String fieldDisplayName = "";
+    public String formName = "";
+    public String formTitle = "";
+    public String fieldName = "";
+    public String fieldTitle = "";
     public String errorTitle = "";
     public String errorMessage = "";
     public Values record = new Values();
     public Values oldRecord = new Values();
     public Values values = new Values();
-    public Values relationTable = new Values();
+    public Values relationForm = new Values();
     public Values relationItem = new Values();
     public int counter = 0;
     public boolean programmatically = false;
@@ -124,39 +124,39 @@ public class DataItem {
         return this;
     }
 
-    public String getTable() {
-        return table;
+    public String getFormName() {
+        return formName;
     }
 
-    public DataItem setTable(String table) {
-        this.table = table;
+    public DataItem setFormName(String formName) {
+        this.formName = formName;
         return this;
     }
 
-    public String getTableDisplayName() {
-        return tableDisplayName;
+    public String getFormTitle() {
+        return formTitle;
     }
 
-    public DataItem setTableDisplayName(String tableDisplayName) {
-        this.tableDisplayName = tableDisplayName;
+    public DataItem setFormTitle(String formTitle) {
+        this.formTitle = formTitle;
         return this;
     }
 
-    public String getField() {
-        return field;
+    public String getFieldName() {
+        return fieldName;
     }
 
-    public DataItem setField(String field) {
-        this.field = field;
+    public DataItem setFieldName(String fieldName) {
+        this.fieldName = fieldName;
         return this;
     }
 
-    public String getFieldDisplayName() {
-        return fieldDisplayName;
+    public String getFieldTitle() {
+        return fieldTitle;
     }
 
-    public DataItem setFieldDisplayName(String fieldDisplayName) {
-        this.fieldDisplayName = fieldDisplayName;
+    public DataItem setFieldTitle(String fieldTitle) {
+        this.fieldTitle = fieldTitle;
         return this;
     }
 
@@ -337,12 +337,12 @@ public class DataItem {
         return this;
     }
 
-    public Values getRelationTable() {
-        return relationTable;
+    public Values getRelationForm() {
+        return relationForm;
     }
 
-    public DataItem setRelationTable(Values relationTable) {
-        this.relationTable = relationTable;
+    public DataItem setRelationForm(Values relationForm) {
+        this.relationForm = relationForm;
         return this;
     }
 
@@ -380,18 +380,5 @@ public class DataItem {
     public DataItem setFirebaseValues(Values firebaseValues) {
         this.firebaseValues = firebaseValues;
         return this;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        /*
-        GC TEST
-        this.record = null;
-        this.oldRecord = null;
-        this.values = null;
-        this.relationTable = null;
-        this.relationItem = null;
-        this.firebaseValues = null;
-        */
     }
 }
