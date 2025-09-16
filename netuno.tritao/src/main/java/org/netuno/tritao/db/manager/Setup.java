@@ -111,12 +111,17 @@ public class Setup extends ManagerBase {
                     table.newColumn().setName("value").setType(Column.Type.TEXT).setNotNull(false).setDefault()
             );
             sequence.create("netuno_app_meta_id");
-            
+
+            if (checkExists.column("netuno_table", "displayname")) {
+                new Column(this)
+                        .renameIfExists("netuno_table", "displayname", "title");
+            }
+
             table.create("netuno_table",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
-                    table.newColumn().setName("displayname").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
+                    table.newColumn().setName("title").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("description").setType(Column.Type.TEXT),
                     table.newColumn().setName("user_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("group_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
@@ -146,6 +151,10 @@ public class Setup extends ManagerBase {
             //}
 
 
+            if (checkExists.column("netuno_design", "displayname")) {
+                new Column(this)
+                        .renameIfExists("netuno_design", "displayname", "title");
+            }
             if (checkExists.column("netuno_design", "notnull")) {
                 new Column(this)
                         .renameIfExists("netuno_design", "notnull", "mandatory");
@@ -160,7 +169,7 @@ public class Setup extends ManagerBase {
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
                     table.newColumn().setName("table_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
-                    table.newColumn().setName("displayname").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
+                    table.newColumn().setName("title").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("description").setType(Column.Type.TEXT),
                     table.newColumn().setName("x").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     table.newColumn().setName("y").setType(Column.Type.INT).setNotNull(true).setDefault(),
