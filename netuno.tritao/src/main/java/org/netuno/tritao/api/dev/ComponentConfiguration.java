@@ -102,9 +102,9 @@ public class ComponentConfiguration extends WebMaster {
     	Configuration conf = com.getConfiguration();
     	for (String key : conf.getParameters().keySet()) {
             Parameter param = conf.getParameter(key);
-            String displayName = _lang.get("netuno.component.configuration."+ type.toLowerCase() +"."+ param.getKey().toLowerCase());
+            String title = _lang.get("netuno.component.configuration."+ type.toLowerCase() +"."+ param.getKey().toLowerCase());
             Values parameter = new Values();
-            parameter.set("displayname", displayName);
+            parameter.set("title", title);
             parameter.set("key", param.getKey());
             parameter.set("type", param.getType().toString());
             parameter.set("defaultvalue", param.getDefaultValue());

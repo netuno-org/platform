@@ -79,7 +79,7 @@ public class Navigation extends WebMaster {
         jsonObject.put("id", rowTable.getString("id"));
         jsonObject.put("uid", rowTable.getString("uid"));
         jsonObject.put("name", rowTable.getString("name"));
-        jsonObject.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(rowTable.getString("displayname")));
+        jsonObject.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(rowTable.getString("title")));
         jsonObject.put("items", jsonArrayChilds);
         jsonArray.add(jsonObject);
     }

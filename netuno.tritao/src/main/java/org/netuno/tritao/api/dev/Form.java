@@ -89,8 +89,8 @@ public class Form extends WebMaster {
                 _out.json(data.set("result", false).set("error", "name:required"));
                 return;
             }
-            if (_req.getString("displayname").equals("")) {
-                _out.json(data.set("result", false).set("error", "displayname:required"));
+            if (_req.getString("title").equals("")) {
+                _out.json(data.set("result", false).set("error", "title:required"));
                 return;
             }
             if (!org.netuno.tritao.util.Validate.isDBNameValid(_req.getString("name"))) {
@@ -154,7 +154,7 @@ public class Form extends WebMaster {
     public Values loadTableData(Values table, Values data) {
         data.set("uid", table.getString("uid"));
         data.set("name", table.getString("name"));
-        data.set("displayname", table.getString("displayname"));
+        data.set("title", table.getString("title"));
         data.set("show_id", table.getBoolean("show_id"));
         data.set("control", new Values()
                 .set("user", table.getBoolean("control_user"))
