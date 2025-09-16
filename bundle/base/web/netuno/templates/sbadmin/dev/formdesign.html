@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-lg-12">
     <h1 class="page-header">
-      <i class="fa fa-edit"></i> _{&lang=netuno.dev.formdesign.title} <span class="badge badge-warning">_{&data=table.displayname}</span>
+      <i class="fa fa-edit"></i> _{&lang=netuno.dev.formdesign.title} <span class="badge badge-warning">_{&data=table.title}</span>
       <!-- <button id="buttonFormDesign__{data=table.name}_new" type="button" class="btn btn-default btn-action">
          _{&lang=netuno.dev.formdesign.button.clear_fields}
       </button> -->
@@ -11,7 +11,7 @@
         <i class="fa fa-edit"></i> _{&lang=netuno.menu.forms}
       </li>
       <li>
-        _{&data=table.displayname}
+        _{&data=table.title}
       </li>
     </ol>
   </div>
@@ -61,8 +61,8 @@
         #end
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="fieldFormDesign__{data=table.name}_displayName">* _{&lang=netuno.dev.formdesign.label.displayname}</label>
-            <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_displayName" name="displayname" value="_{&data=displayname.value}" size="40" validation="required">
+            <label for="fieldFormDesign__{data=table.name}_title">* _{&lang=netuno.dev.formdesign.label.title}</label>
+            <input class="form-control" type="text" id="fieldFormDesign__{data=table.name}_title" name="title" value="_{&data=title.value}" size="40" validation="required">
           </div>
           <div class="row">
             <div class="col-xs-8">
@@ -306,7 +306,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">_{&data=displayname.value}</h4>
+        <h4 class="modal-title">_{&data=title.value}</h4>
       </div>
       <div class="modal-body">
         <p>_{&lang=netuno.dev.formdesign.confirm.delete.text}</p>
@@ -324,7 +324,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">_{data=parameter.displayname}</h4>
+        <h4 class="modal-title">_{data=parameter.title}</h4>
         <p data-link></p>
       </div>
       <div class="modal-body"></div>
