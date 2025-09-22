@@ -15,7 +15,7 @@ public class Translation {
         return lang.getOrDefault(
                 "app.form."+ table.getString("name")
                         + ".title",
-                table.getString("displayname")
+                table.getString("title")
         );
     }
 
@@ -31,16 +31,16 @@ public class Translation {
         );
     }
 
-    public static String formFieldLabel(Proteu proteu, Hili hili, Values table, Values field) {
-        return formFieldLabel(new Lang(proteu, hili), table, field);
+    public static String formFieldTitle(Proteu proteu, Hili hili, Values table, Values field) {
+        return formFieldTitle(new Lang(proteu, hili), table, field);
     }
 
-    public static String formFieldLabel(Lang lang, Values table, Values field) {
+    public static String formFieldTitle(Lang lang, Values table, Values field) {
         return lang.getOrDefault(
                 "app.form."+ table.getString("name")
                         + "." + field.getString("name")
-                        + ".label",
-                field.getString("displayname")
+                        + ".title",
+                field.getString("title")
         );
     }
 
