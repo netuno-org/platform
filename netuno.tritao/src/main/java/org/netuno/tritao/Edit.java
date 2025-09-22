@@ -152,17 +152,17 @@ public class Edit {
                         }
                         itemId = proteu.getRequestAll().getString("netuno_item_id");
                     } else if (dataItem.getStatus() == DataItem.Status.Exists) {
-                        rowTable.set("save.error.exists.field.name", dataItem.getFieldDisplayName());
+                        rowTable.set("save.error.exists.field.title", dataItem.getFieldTitle());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error_exists", rowTable);
                         restore = true;
                     } else if (dataItem.getStatus() == DataItem.Status.Mandatory) {
-                        rowTable.set("save.error.mandatory.field.name", dataItem.getFieldDisplayName());
+                        rowTable.set("save.error.mandatory.field.title", dataItem.getFieldTitle());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error_mandatory", rowTable);
                         restore = true;
                     } else if (dataItem.getStatus() == DataItem.Status.Error) {
                         rowTable.set("save.error.title", dataItem.getErrorTitle());
                         rowTable.set("save.error.message", dataItem.getErrorMessage());
-                        rowTable.set("save.error.field.name", dataItem.getField());
+                        rowTable.set("save.error.field.title", dataItem.getFieldTitle());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error", rowTable);
                         restore = true;
                     } else {
@@ -185,11 +185,11 @@ public class Edit {
                             return;
                         }
                     } else if (dataItem.getStatus() == DataItem.Status.Exists) {
-                        rowTable.set("save.error.exists.field.name", dataItem.getFieldDisplayName());
+                        rowTable.set("save.error.exists.field.title", dataItem.getFieldTitle());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error_exists", rowTable);
                         restore = true;
                     } else if (dataItem.getStatus() == DataItem.Status.Mandatory) {
-                        rowTable.set("save.error.mandatory.field.name", dataItem.getFieldDisplayName());
+                        rowTable.set("save.error.mandatory.field.title", dataItem.getFieldTitle());
                         TemplateBuilder.output(proteu, hili, "edit/notification/save_error_mandatory", rowTable);
                         restore = true;
                     } else if (dataItem.getStatus() == DataItem.Status.Error) {
@@ -223,7 +223,7 @@ public class Edit {
                     restore = true;
                 } else if (dataItem.getStatus() == DataItem.Status.Relations) {
                     restore = true;
-                    rowTable.set("relation.table.displayname", Translation.formTitle(proteu, hili, dataItem.getRelationTable()));
+                    rowTable.set("relation.form.title", Translation.formTitle(proteu, hili, dataItem.getRelationForm()));
                     TemplateBuilder.output(proteu, hili, "edit/notification/delete_error_relations", rowTable);
                 } else {
                     restore = true;
@@ -269,7 +269,7 @@ public class Edit {
                 canDelete = true;
             }
 
-            rowTable.set("displayname", Translation.formTitle(proteu, hili, rowTable));
+            rowTable.set("title", Translation.formTitle(proteu, hili, rowTable));
             rowTable.set("description", Translation.formDescription(proteu, hili, rowTable));
 
             TemplateBuilder.output(proteu, hili, "edit/head", rowTable);
@@ -384,66 +384,6 @@ public class Edit {
                 TemplateBuilder.output(proteu, hili, "form/component_end", valuesActive);
             }
 
-            if (controlGroup && Rule.getRule(proteu, hili).isAdmin()) {
-                /*
-                proteu.getOutput().println("<table width=\"100%\"><tr><td class=\"field\">");
-                proteu.getOutput().println(lang.get("netuno.form.field.group.label") + "<br/>");
-                proteu.getOutput().println("            <select name=\"group_id\" id=\"group_id\">");
-                proteu.getOutput().println("              <option value=\"0\"></option>");
-                for (Values rowTritaoGroup : Script.getDataBaseBuilder(proteu, hili).selectGroup("")) {
-                    if (rsItem != null && rowItem.getString("group_id").equals(rowTritaoGroup.getString("id"))) {
-                        proteu.getOutput().println("              <option value=\""+ rowTritaoGroup.getString("id") +"\" selected>"+ rowTritaoGroup.getString("name") +"</option>");
-                    } else {
-                        proteu.getOutput().println("              <option value=\""+ rowTritaoGroup.getString("id") +"\">"+ rowTritaoGroup.getString("name") +"</option>");
-                    }
-                }
-                proteu.getOutput().println("            </select>");
-                proteu.getOutput().println("</td></tr></table>");
-            } else if (rsItem != null) {
-                /*List<Values> tritaoGroups = Script.getDataBaseBuilder(proteu, hili).selectGroup(rowTritaosearch.getString("group_id"));
-                if (tritaoGroups.size() > 0) {
-                    proteu.getOutput().println("<table width=\"100%\"><tr><td class=\"field\">");
-                    proteu.getOutput().println(lang.get("netuno.form.field.group.label") + ": " + tritaoGroups.get(0).getString("name"));
-                    proteu.getOutput().println("</td></tr></table>");
-                }*/
-            }
-
-            if (controlUser && Rule.getRule(proteu, hili).isAdmin()) {
-                /*
-                TemplateBuilder.output(proteu, hili, "form/line_break");
-                Values data = new Values();
-                data.set("name", "user_id");
-                data.set("displayname", "User");
-                TemplateBuilder.output(proteu, hili, "form/component_start", data);
-                TritaoUser comTritaoUser = new TritaoUser();
-                comTritaoUser.setProteu(proteu, hili);
-                comTritaoUser.setDesignData(data);
-                comTritaoUser.setTableData(rowTable);
-                comTritaoUser.setMode(mode);
-                comTritaoUser.setValues(valuesPrefix, values);
-                comTritaoUser.render();
-                TemplateBuilder.output(proteu, hili, "form/component_end", data);
-                /*proteu.getOutput().println("<table width=\"100%\"><tr><td class=\"field\">");
-                proteu.getOutput().println(lang.get("netuno.form.field.user.label") + "<br/>");
-                proteu.getOutput().println("            <select name=\"user_id\" id=\"user_id\">");
-                proteu.getOutput().println("              <option value=\"0\"></option>");
-                for (Values rowTritaoUser : Script.getDataBaseBuilder(proteu, hili).selectUser("")) {
-                    if (rsItem != null && rowItem.getString("user_id").equals(rowTritaoUser.getString("id"))) {
-                        proteu.getOutput().println("              <option value=\""+ rowTritaoUser.getString("id") +"\" selected>"+ rowTritaoUser.getString("name") +"</option>");
-                    } else {
-                        proteu.getOutput().println("              <option value=\""+ rowTritaoUser.getString("id") +"\">"+ rowTritaoUser.getString("name") +"</option>");
-                    }
-                }
-                proteu.getOutput().println("            </select>");
-                proteu.getOutput().println("</td></tr></table>");*/
-            } else if (rsItem != null) {
-                /*List<Values> tritaoUsers = Script.getDataBaseBuilder(proteu, hili).selectUser(rowTritaosearch.getString("user_id"));
-                if (tritaoUsers.size() > 0) {
-                    proteu.getOutput().println("<table width=\"100%\"><tr><td class=\"field\">");
-                    proteu.getOutput().println(lang.get("netuno.form.field.user.label") + ": " + tritaoUsers.get(0).getString("name"));
-                    proteu.getOutput().println("</td></tr></table>");
-                }*/
-            }
             TemplateBuilder.outputApp(proteu, hili, "form/".concat(tableName).concat("_foot"), rowTable);
             TemplateBuilder.output(proteu, hili, "form/foot", rowTable);
             TemplateBuilder.output(proteu, hili, "edit/form_foot", rowTable);
@@ -452,7 +392,7 @@ public class Edit {
             if (relations.size() > 0) {
                 TemplateBuilder.output(proteu, hili, "edit/relations/head", rowTable);
                 for (Values relation : relations) {
-                    relation.set("displayname", Translation.formTitle(proteu, hili, relation));
+                    relation.set("title", Translation.formTitle(proteu, hili, relation));
                     TemplateBuilder.output(proteu, hili, "edit/relations/button", relation);
                 }
                 TemplateBuilder.output(proteu, hili, "edit/relations/foot", rowTable);
