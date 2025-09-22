@@ -340,7 +340,7 @@ public class Search {
             if (rule.getWrite() > Rule.NONE) {
                 rowTritaoTable.put("button-new", TemplateBuilder.getOutput(proteu, hili, "search/buttons/new", rowTritaoTable));
             }
-            rowTritaoTable.set("displayname", Translation.formTitle(proteu, hili, rowTritaoTable));
+            rowTritaoTable.set("title", Translation.formTitle(proteu, hili, rowTritaoTable));
             rowTritaoTable.set("description", Translation.formDescription(proteu, hili, rowTritaoTable));
             TemplateBuilder.output(proteu, hili, "search/head", rowTritaoTable);
             TemplateBuilder.outputApp(proteu, hili, "search/".concat(tableName).concat("_head"), rowTritaoTable);
@@ -437,7 +437,7 @@ public class Search {
             if (showId) {
                 Values dataColumnId = new Values();
                 dataColumnId.set("name", "id");
-                dataColumnId.set("displayname", "Id");
+                dataColumnId.set("title", "Id");
                 TemplateBuilder.output(proteu, hili, "search/table/header", dataColumnId);
             }
             for (int i = 0; i < rsDesignXY.size(); i++) {
@@ -448,7 +448,7 @@ public class Search {
                 if (!rowDesignXY.getBoolean("whenresult")) {
                     continue;
                 }
-                rowDesignXY.set("displayname", Translation.formFieldLabel(proteu, hili, rowTritaoTable, rowDesignXY));
+                rowDesignXY.set("title", Translation.formFieldTitle(proteu, hili, rowTritaoTable, rowDesignXY));
                 Component com = Config.getNewComponent(proteu, hili, rowDesignXY.getString("type"));
                 com.setProteu(proteu);
                 com.setDesignData(rowDesignXY);
@@ -511,7 +511,7 @@ public class Search {
             }
             cell = row.createCell(cellNum);
             cell.setCellStyle(cellStyleHeader);
-            cell.setCellValue(Translation.formFieldLabel(proteu, hili, rowTritaoTable, rowTritaoDesignXY));
+            cell.setCellValue(Translation.formFieldTitle(proteu, hili, rowTritaoTable, rowTritaoDesignXY));
             cellNum++;
 	}
     	if (exportLastChange) {
@@ -619,7 +619,7 @@ public class Search {
                 com.setMode(Component.Mode.SearchResult);
                 com.setValues(tableName.concat("_"), rowSearch);
                 child = xmldoc.createElementNS(null, rowTritaoDesignXY.getString("name"));
-                child.setAttribute("name", Translation.formFieldLabel(proteu, hili, rowTritaoTable, rowTritaoDesignXY));
+                child.setAttribute("name", Translation.formFieldTitle(proteu, hili, rowTritaoTable, rowTritaoDesignXY));
                 child.setTextContent(com.getTextValue());
                 e.appendChild(child);
     	    }
