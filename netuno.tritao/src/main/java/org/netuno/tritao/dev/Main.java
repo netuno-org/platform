@@ -89,8 +89,8 @@ public class Main extends WebMaster {
         table.put("id", dbTable.getString("id"));
         table.put("uid", dbTable.getString("uid"));
         table.put("name", dbTable.getString("name"));
-        table.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbTable.getString("displayname")));
-        table.put("label", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbTable.getString("displayname")));
+        table.put("text", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbTable.getString("title")));
+        table.put("label", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbTable.getString("title")));
         table.put("description", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbTable.getString("description")));
         table.put("items", subtables);
         Values fields = Values.newList();
@@ -100,7 +100,7 @@ public class Main extends WebMaster {
                 Values.newMap()
                         .set("name", dbField.getString("name"))
                         .set("type", dbField.getString("type"))
-                        .set("label", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbField.getString("displayname")))
+                        .set("label", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbField.getString("title")))
                         .set("description", org.apache.commons.text.StringEscapeUtils.escapeHtml4(dbField.getString("description")))
                         .set("y", dbField.getInt("y"))
                         .set("x", dbField.getInt("x"))

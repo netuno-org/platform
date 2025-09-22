@@ -62,11 +62,11 @@ public class Form {
         }
         Values data = new Values();
         data.set("name", proteu.getRequestAll().getString("name"));
-        data.set("displayname", proteu.getRequestAll().getString("displayname"));
+        data.set("title", proteu.getRequestAll().getString("title"));
         if (proteu.getRequestAll().getString("execute").equals("save")) {
             if (proteu.getRequestAll().getString("name").equals("")) {
                 return;
-            } else if (proteu.getRequestAll().getString("displayname").equals("")) {
+            } else if (proteu.getRequestAll().getString("title").equals("")) {
                 return;
             } else if (!org.netuno.tritao.util.Validate.isDBNameValid(proteu.getRequestAll().getString("name"))) {
                 return;
@@ -204,7 +204,7 @@ public class Form {
         data.set("id.value", table != null ? table.getInt("id") : -1);
         data.set("uid.value", table != null ? table.getString("uid") : "");
         data.set("name.value", table != null ? table.getString("name") : "");
-        data.set("displayname.value", table != null ? table.getString("displayname") : "");
+        data.set("title.value", table != null ? table.getString("title") : "");
         data.set("description.value", table != null ? table.getString("description") : "");
 
         data.set("showid.checked", table != null && table.getBoolean("show_id") ? " checked" : (table == null ? "checked" : ""));

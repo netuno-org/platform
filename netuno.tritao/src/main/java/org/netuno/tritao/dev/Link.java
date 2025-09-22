@@ -56,14 +56,14 @@ public class Link {
             data.set("table.id", rowTable.getString("id"));
             data.set("table.uid", rowTable.getString("uid"));
             data.set("table.name", rowTable.getString("name"));
-            data.set("table.displayname", rowTable.getString("displayname"));
+            data.set("table.title", rowTable.getString("title"));
             TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_fields_head", data);
             List<Values> rsFields = Config.getDBBuilder(proteu).selectTableDesign(rowTable.getString("id"), "");
             for (Values rowField : rsFields) {
                 data.set("field.id", rowField.getString("id"));
                 data.set("field.uid", rowField.getString("uid"));
                 data.set("field.name", rowField.getString("name"));
-                data.set("field.displayname", rowField.getString("displayname"));
+                data.set("field.title", rowField.getString("title"));
                 TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_fields_item", data);
             }
             TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_fields_foot", data);
@@ -72,7 +72,7 @@ public class Link {
                 data.set("table.id", rowTable.getString("id"));
                 data.set("table.uid", rowTable.getString("uid"));
                 data.set("table.name", rowTable.getString("name"));
-                data.set("table.displayname", rowTable.getString("displayname"));
+                data.set("table.title", rowTable.getString("title"));
                 TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_table_item", data);
             }
         }

@@ -78,9 +78,9 @@ public class ComponentConfiguration {
     	TemplateBuilder.output(proteu, hili, "dev/component/config/header");
     	for (String key : conf.getParameters().keySet()) {
     		Parameter param = conf.getParameter(key);
-    		String displayName = lang.get("netuno.component.configuration."+ type.toLowerCase() +"."+ param.getKey().toLowerCase());
+    		String title = lang.get("netuno.component.configuration."+ type.toLowerCase() +"."+ param.getKey().toLowerCase());
 			Values comData = new Values();
-			comData.set("parameter.displayname", displayName);
+			comData.set("parameter.title", title);
 			comData.set("parameter.key", param.getKey());
 			comData.set("parameter.type", param.getType().toString());
 			comData.set("parameter.defaultvalue", param.getDefaultValue());

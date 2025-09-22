@@ -61,7 +61,7 @@ public class ReportDesign extends FormDesign {
         data.set("table.id", table.getString("id"));
         data.set("table.uid", table.getString("uid"));
         data.set("table.name", table.getString("name"));
-        data.set("table.displayname", table.getString("displayname"));
+        data.set("table.title", table.getString("title"));
         if (proteu.getRequestAll().getString("execute").equals("copy")) {
             List<Values> rsField = null;
             if (proteu.getRequestAll().getInt("copy") > 0) {
@@ -77,7 +77,7 @@ public class ReportDesign extends FormDesign {
                     Values newField = rsNewField.get(0);
                     arrangeXY(proteu, hili, table, newField);
                     data.set("name", newField.getString("name"));
-                    data.set("displayname", newField.getString("displayname"));
+                    data.set("title", newField.getString("title"));
                     TemplateBuilder.output(proteu, hili, "dev/notification/formdesign_created", data);
                 }
             }
@@ -101,8 +101,8 @@ public class ReportDesign extends FormDesign {
             if (proteu.getRequestPost().getString("name").equals("")) {
                 logger.warn("Name is empty.");
                 return;
-            } else if (proteu.getRequestPost().getString("displayname").equals("")) {
-                logger.warn("Display name is empty.");
+            } else if (proteu.getRequestPost().getString("title").equals("")) {
+                logger.warn("Title is empty.");
                 return;
             } else if (proteu.getRequestPost().getString("x").equals("")) {
                 logger.warn("X is empty.");
@@ -112,7 +112,7 @@ public class ReportDesign extends FormDesign {
                 return;
             } else {
                 data.set("name", proteu.getRequestPost().getString("name"));
-                data.set("displayname", proteu.getRequestPost().getString("displayname"));
+                data.set("title", proteu.getRequestPost().getString("title"));
                 if (proteu.getRequestPost().getInt("id") > 0) {
                     if (Config.getDBBuilder(proteu).updateTableField()) {
                         rsField = Config.getDBBuilder(proteu).selectTableDesign(proteu.getRequestPost().getString("id"));
@@ -159,7 +159,7 @@ public class ReportDesign extends FormDesign {
         data.set("id.value", field != null ? field.getInt("id") : -1);
         data.set("uid.value", field != null ? field.getString("uid") : "");
         data.set("name.value", field != null ? field.getString("name") : "");
-        data.set("displayname.value", field != null ? field.getString("displayname") : "");
+        data.set("title.value", field != null ? field.getString("title") : "");
         data.set("description.value", field != null ? field.getString("description") : "");
         data.set("mandatory.checked", field != null && field.getBoolean("mandatory") ? " checked" : "");
 
