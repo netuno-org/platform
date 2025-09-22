@@ -120,7 +120,7 @@ public interface TableSelect extends BuilderBase {
         }
         where += conditionToRestrictTables(getProteu().getRequestAll().getBoolean("report"));
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
-        String order = " order by reorder, displayname ";
+        String order = " order by reorder, title ";
         String sql = "select " + select + " from " + from + where + order;
         return getExecutor().query(sql);
     }
@@ -134,7 +134,7 @@ public interface TableSelect extends BuilderBase {
             where += " and parent_id = " + DB.sqlInjectionInt(parent_id);
         }
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
-        String order = " order by reorder, displayname ";
+        String order = " order by reorder, title ";
         String sql = "select " + select + " from " + from + where + order;
         return getExecutor().query(sql);
     }
@@ -146,7 +146,7 @@ public interface TableSelect extends BuilderBase {
         where += conditionToRestrictTables(getProteu().getRequestAll().getBoolean("report"));
         where += " and parent_id not in (select id from netuno_table where id = nt.parent_id) ";
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
-        String order = " order by reorder, displayname ";
+        String order = " order by reorder, title ";
         String sql = "select " + select + " from " + from + where + order;
         return getExecutor().query(sql);
     }

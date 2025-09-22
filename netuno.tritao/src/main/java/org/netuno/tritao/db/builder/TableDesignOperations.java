@@ -69,6 +69,9 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     editGroup = getItemByUId("netuno_group", getProteu().getRequestAll().getString("edit_group_uid"));
                 }
 
+                if (data.hasKey("displayname") && !data.hasKey("title")) {
+                    data.set("title", data.getString("displayname"));
+                }
                 if (data.hasKey("primarykey") && !data.hasKey("unique")) {
                     data.set("unique", data.getBoolean("primarykey"));
                 }
@@ -83,7 +86,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 values.set("uid", "'" + UUID.randomUUID().toString() + "'");
                 values.set("table_id", DB.sqlInjectionInt(data.getString("table_id")));
                 values.set("name", "'" + DB.sqlInjection(data.getString("name")) + "'");
-                values.set("displayname", "'" + DB.sqlInjection(data.getString("displayname")) + "'");
+                values.set("title", "'" + DB.sqlInjection(data.getString("title")) + "'");
                 values.set("description", "'" + DB.sqlInjection(data.getString("description")) + "'");
                 values.set("x", DB.sqlInjectionInt(data.getString("x")));
                 values.set("y", DB.sqlInjectionInt(data.getString("y")));
@@ -260,7 +263,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
 
                 Values values = new Values();
                 values.set("name", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "'");
-                values.set("displayname", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("displayname")) + "'");
+                values.set("title", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("title")) + "'");
                 values.set(getBuilder().escape("unique"), getProteu().getRequestAll().getBoolean("unique"));
                 values.set(getBuilder().escape("mandatory"), getProteu().getRequestAll().getBoolean("mandatory"));
                 values.set("description", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("description")) + "'");
@@ -376,7 +379,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     values.set("name", "'" + DB.sqlInjection(field.getString("name")) + "'");
                     values.set("unique", field.getBoolean("unique"));
                     values.set("mandatory", field.getBoolean("mandatoryv"));
-                    values.set("displayname", "'" + DB.sqlInjection(field.getString("displayname")) + "'");
+                    values.set("title", "'" + DB.sqlInjection(field.getString("title")) + "'");
                     values.set("x", DB.sqlInjectionInt(field.getString("x")));
                     values.set("y", DB.sqlInjectionInt(field.getString("y")));
                     values.set("type", "'" + DB.sqlInjection(field.getString("type")) + "'");

@@ -22,6 +22,9 @@ public interface TableOperations extends BuilderBase, TableSelect, TableDesignSe
             if (selectTable("", name, "").size() > 0) {
                 return false;
             }
+            if (data.hasKey("displayname") && !data.hasKey("title")) {
+                data.set("title", data.getString("displayname"));
+            }
             if (!data.getBoolean("report")) {
                 CheckExists checkExists = new CheckExists(this);
                 if (!checkExists.table(DB.sqlInjectionRawName(name))) {
@@ -78,7 +81,7 @@ public interface TableOperations extends BuilderBase, TableSelect, TableDesignSe
             values.set("uid", "'"
                     + (data.getString("uid").isEmpty() ? UUID.randomUUID().toString() : data.getString("uid")) + "'");
             values.set("name", "'" + DB.sqlInjection(data.getString("name")) + "'");
-            values.set("displayname", "'" + DB.sqlInjection(data.getString("displayname")) + "'");
+            values.set("title", "'" + DB.sqlInjection(data.getString("title")) + "'");
             values.set("description", "'" + DB.sqlInjection(data.getString("description")) + "'");
             values.set("parent_id",
                     rsParentTable != null && rsParentTable.size() == 1 ? rsParentTable.get(0).getString("id")
@@ -168,7 +171,7 @@ public interface TableOperations extends BuilderBase, TableSelect, TableDesignSe
             }
             Values values = new Values();
             values.set("name", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "'");
-            values.set("displayname", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("displayname")) + "'");
+            values.set("title", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("title")) + "'");
             values.set("description", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("description")) + "'");
             values.set("parent_id",
                     rsParentTable != null && rsParentTable.size() == 1 ? rsParentTable.get(0).getString("id") : "0");

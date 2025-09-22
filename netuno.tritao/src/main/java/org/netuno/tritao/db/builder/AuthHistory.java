@@ -55,7 +55,7 @@ public interface AuthHistory extends BuilderBase {
 
     default int insertAuthHistory(Values values) {
         DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_auth_history");
+        dataItem.setFormName("netuno_auth_history");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
         getExecutor().scriptSave(getProteu(), getHili(), "netuno_auth_history", dataItem);

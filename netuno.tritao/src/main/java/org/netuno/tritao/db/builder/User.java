@@ -254,7 +254,7 @@ public interface User extends BuilderBase {
             return false;
         }
         DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("uid"));
-        dataItem.setTable("netuno_user");
+        dataItem.setFormName("netuno_user");
         dataItem.setRecord(dataRecord);
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Update);
@@ -335,7 +335,7 @@ public interface User extends BuilderBase {
             return 0;
         }
         DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_user");
+        dataItem.setFormName("netuno_user");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
         getExecutor().scriptSave(getProteu(), getHili(), "netuno_user", dataItem);
@@ -398,7 +398,7 @@ public interface User extends BuilderBase {
             return false;
         }
         DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("uid"));
-        dataItem.setTable("netuno_user");
+        dataItem.setFormName("netuno_user");
         dataItem.setRecord(dataRecord);
         dataItem.setStatus(DataItem.Status.Delete);
         getExecutor().scriptRemove(getProteu(), getHili(), "netuno_user", dataItem);

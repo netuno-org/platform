@@ -59,8 +59,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
-        dataItem.setTable(tableName);
-        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
+        dataItem.setFormName(tableName);
+        dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), table));
         dataItem.setProgrammatically(true);
         update(table, data, dataItem);
         if (dataItem.getStatusType() == DataItem.StatusType.Error) {
@@ -78,8 +78,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         }
         Values rowTable = rsTable.get(0);
         String tableName = rowTable.getString("name");
-        dataItem.setTable(tableName);
-        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), rowTable));
+        dataItem.setFormName(tableName);
+        dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), rowTable));
         insertByTableNameWithDataItem(tableName, dataItem);
     }
 
@@ -89,8 +89,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             dataItem.setStatus(DataItem.Status.NotFound);
             return;
         }
-        dataItem.setTable(tableName);
-        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
+        dataItem.setFormName(tableName);
+        dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), table));
         Values insertData = new Values().set("uid", "'" + UUID.randomUUID() + "'").set("lock", false).set("active",
                 true);
         Values userData = Auth.getUser(getProteu(), getHili());
@@ -123,8 +123,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             return dataItem;
         }
         String tableName = table.getString("name");
-        dataItem.setTable(tableName);
-        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
+        dataItem.setFormName(tableName);
+        dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), table));
         Values item = getItemByUId(table.getString("name"), getProteu().getRequestAll().getString("netuno_item_uid"));
         if (item == null) {
             dataItem.setStatus(DataItem.Status.NotFound);
@@ -142,8 +142,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
-        dataItem.setTable(tableName);
-        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
+        dataItem.setFormName(tableName);
+        dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), table));
         Values item = getItemById(tableName, id);
         if (item == null) {
             dataItem.setStatus(DataItem.Status.NotFound);
@@ -157,8 +157,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
     }
 
     default void update(Values table, Values values, DataItem dataItem) {
-        dataItem.setTable(table.getString("name"));
-        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
+        dataItem.setFormName(table.getString("name"));
+        dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), table));
         if (dataItem.getRecord() == null || dataItem.getRecord().isEmpty()) {
             Values item = getItemById(table.getString("name"), dataItem.getId());
             if (item == null) {
@@ -303,14 +303,14 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                                 .concat(where).concat(" and "+ getBuilder().escape("id") +" <> ").concat(DB.sqlInjectionInt(dataItem.getId())));
                 if (rsCheckPrimary.size() > 0) {
                     dataItem.setStatus(DataItem.Status.Exists);
-                    dataItem.setField(rowTritaoDesignXY.getString("name"));
-                    dataItem.setFieldDisplayName(Translation.formFieldLabel(getProteu(), getHili(), table, rowTritaoDesignXY));
+                    dataItem.setFieldName(rowTritaoDesignXY.getString("name"));
+                    dataItem.setFieldTitle(Translation.formFieldTitle(getProteu(), getHili(), table, rowTritaoDesignXY));
                 }
             }
             if (rowTritaoDesignXY.getBoolean("mandatory") && !com.isMandatoryValueOk()) {
                 dataItem.setStatus(DataItem.Status.Mandatory);
-                dataItem.setField(rowTritaoDesignXY.getString("name"));
-                dataItem.setFieldDisplayName(Translation.formFieldLabel(getProteu(), getHili(), table, rowTritaoDesignXY));
+                dataItem.setFieldName(rowTritaoDesignXY.getString("name"));
+                dataItem.setFieldTitle(Translation.formFieldTitle(getProteu(), getHili(), table, rowTritaoDesignXY));
             }
         }
         if (!userIdLoaded) {
@@ -451,15 +451,15 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             dataItem.setStatus(DataItem.Status.NotFound);
             return dataItem;
         }
-        dataItem.setTable(tableName);
-        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
+        dataItem.setFormName(tableName);
+        dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), table));
         delete(table, item, dataItem);
         return dataItem;
     }
 
     default void delete(Values table, Values item, DataItem dataItem) {
-        dataItem.setTable(table.getString("name"));
-        dataItem.setTableDisplayName(Translation.formTitle(getProteu(), getHili(), table));
+        dataItem.setFormName(table.getString("name"));
+        dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), table));
         if (dataItem.getRecord() == null || dataItem.getRecord().isEmpty()) {
             Values record = getItemById(table.getString("name"), dataItem.getId());
             if (record == null) {
@@ -515,7 +515,7 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                                             .concat(" where ").concat(getBuilder().escape(data.getName())).concat(" = ")
                                             .concat(DB.sqlInjectionInt(dataItem.getId())));
                             if (rsVerify.size() > 0) {
-                                dataItem.setRelationTable(rowLinkedTable);
+                                dataItem.setRelationForm(rowLinkedTable);
                                 dataItem.setRelationItem(rsVerify.get(0));
                                 dataItem.setStatus(DataItem.Status.Relations);
                                 return;

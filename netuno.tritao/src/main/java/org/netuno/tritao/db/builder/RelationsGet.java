@@ -43,7 +43,7 @@ public interface RelationsGet extends BuilderBase, TableSelect, TableDesignSelec
             }
         }
         relations.sort(Comparator.comparing(
-                table -> table.getString("displayname")
+                table -> table.getString("title")
         ));
         relations.sort(Comparator.comparing(
                 table -> table.getInt("reorder")

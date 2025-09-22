@@ -40,7 +40,7 @@ public interface AuthProvider extends BuilderBase {
             return 0;
         }
         DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_auth_provider");
+        dataItem.setFormName("netuno_auth_provider");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
         getExecutor().scriptSave(getProteu(), getHili(), "netuno_auth_provider", dataItem);
@@ -219,7 +219,7 @@ public interface AuthProvider extends BuilderBase {
 
     default int insertAuthProviderUser(Values values) {
         DataItem dataItem = new DataItem(getProteu(), "0", "");
-        dataItem.setTable("netuno_auth_provider_user");
+        dataItem.setFormName("netuno_auth_provider_user");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
         getExecutor().scriptSave(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
@@ -278,7 +278,7 @@ public interface AuthProvider extends BuilderBase {
             return false;
         }
         DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("uid"));
-        dataItem.setTable("netuno_auth_provider_user");
+        dataItem.setFormName("netuno_auth_provider_user");
         dataItem.setRecord(dataRecord);
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Update);
@@ -325,7 +325,7 @@ public interface AuthProvider extends BuilderBase {
         }
 
         DataItem dataItem = new DataItem(getProteu(), id, dataRecord.getString("id"));
-        dataItem.setTable("netuno_auth_provider_user");
+        dataItem.setFormName("netuno_auth_provider_user");
         dataItem.setRecord(dataRecord);
         dataItem.setStatus(DataItem.Status.Delete);
         getExecutor().scriptRemove(getProteu(), getHili(), "netuno_auth_provider_user", dataItem);
