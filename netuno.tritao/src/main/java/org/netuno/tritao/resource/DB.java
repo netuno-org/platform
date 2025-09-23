@@ -3081,8 +3081,8 @@ public class DB extends ResourceBase {
             if (dataItem.getErrorMessage() != null && !dataItem.getErrorMessage().isEmpty()) {
                 throw new ResourceException(source + ":\n  " + dataItem.getErrorMessage());
             }
-            if (dataItem.getField() != null && !dataItem.getField().isEmpty()) {
-                throw new ResourceException(source + ":\n  " + dataItem.getField() + " - " + dataItem.getStatus().name());
+            if (dataItem.getFieldName() != null && !dataItem.getFieldName().isEmpty()) {
+                throw new ResourceException(source + ":\n  " + dataItem.getFieldName() + " - " + dataItem.getStatus().name());
             }
         }
         return dataItem;
