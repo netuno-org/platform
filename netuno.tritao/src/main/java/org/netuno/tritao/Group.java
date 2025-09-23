@@ -263,7 +263,7 @@ public class Group {
             if (rules.size() > 0) {
                 rule = rules.get(0);
             }
-            data.set("rule.displayname", rowTritaoTableByParent.getString("displayname"));
+            data.set("rule.title", rowTritaoTableByParent.getString("title"));
             data.set("field.name", type +"_rule_active_"+ tableId);
             data.set("field.checked", rule != null && rule.getBoolean("active") ? "checked" : "");
         	data.set("rule.active", TemplateBuilder.getOutput(proteu, hili, "group/rule/active_field", data));
