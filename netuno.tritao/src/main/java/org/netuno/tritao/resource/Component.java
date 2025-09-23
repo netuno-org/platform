@@ -59,7 +59,7 @@ public class Component extends ResourceBase {
         this.component = component;
     }
 
-    public void renderDisplayName() {
+    public void renderTitle() {
         new Label(getProteu(), getHili(), component.getDesignData(), component.getTableData(), component.getMode()).render();
     }
 
