@@ -414,7 +414,7 @@ public class User {
             if (rulesGroup.size() > 0) {
                 ruleGroup = rulesGroup.get(0);
             }
-            data.set("rule.displayname", rowTritaoTableByParent.getString("displayname"));
+            data.set("rule.title", rowTritaoTableByParent.getString("title"));
             if (ruleGroup != null  && ruleGroup.getBoolean("active")) {
             	data.set("rule.active", TemplateBuilder.getOutput(proteu, hili, "user/rule/active_readonly", data));
             } else {
