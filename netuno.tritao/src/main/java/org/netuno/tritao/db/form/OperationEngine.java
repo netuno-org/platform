@@ -253,6 +253,8 @@ public class OperationEngine extends Data {
         String select = "SELECT COUNT("+query.getFormName()+".id"+") AS total \nFROM ";
         if (pagination.getDistinct() != null && !pagination.getDistinct().isBlank()) {
             select = "SELECT COUNT(DISTINCT " + DB.sqlInjection(pagination.getDistinct()) + ") AS total \nFROM ";
+        } else if (query.isDistinct()) {
+            select = "SELECT COUNT(DISTINCT " + query.getFormName() + ".id" + ") AS total \nFROM ";
         }
         String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
         if (pagination.isUseGroup() && query.getGroup() != null) {

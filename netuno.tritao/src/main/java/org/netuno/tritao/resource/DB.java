@@ -4702,6 +4702,58 @@ public class DB extends ResourceBase {
     public Pagination pagination(int page, int pageSize) {
         return new Pagination(page, pageSize);
     }
+    
+        @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna o objeto para configuração de paginação ao usar o metodo page() do Query.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns the object for pagination configuration when using Query's page() method.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "page", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Número da página.",
+                    name = "pagina"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Page number."
+                )
+            }),
+            @ParameterDoc(name = "pageSize", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Número de elementos por página.",
+                    name = "pageSize"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Number of elements per page."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Pagination."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Objeto Pagination."
+            )
+        }
+    )
+    public Pagination page(int page, int pageSize) {
+        return new Pagination(page, pageSize);
+    }
 
     @MethodDoc(
         translations = {

@@ -1306,6 +1306,60 @@ public class Operation {
         return operationalEngine.page(this.setPagination(pagination)).toValues();
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna Pagina com os items resultante da execução da consulta de forma paginada e demais dados da paginação.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns Page with the items resulting from executing the query in a paged form and other pagination data.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "page", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Numero da página de rigistos.",
+                    name = "page"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Records page number."
+                )
+            }),
+            @ParameterDoc(name = "size", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Quantidade de registos por página.",
+                    name = "size"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Number of records per page."
+                )
+            })    
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Pagina com os items e demais dados da paginação."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Page with items and other pagination data."
+            )
+        }
+    )
+    public Values page(int page, int pageSize) {
+        return operationalEngine.page(
+            this.setPagination(new Pagination(page, pageSize))
+        ).toValues();
+    }
+
     public Operation where(Where where) {
         where.setTable(this.formName);
         this.where = where;
