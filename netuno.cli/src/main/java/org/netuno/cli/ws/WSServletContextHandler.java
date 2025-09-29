@@ -87,17 +87,26 @@ public class WSServletContextHandler extends ServletContextHandler {
                             endpointConfig.getUserProperties().put("url", config.getString("public"));
                             endpointConfig.getUserProperties().put("config", config);
                             List<String> host = request.getHeaders().get("Host");
-                            if (host != null && host.size() > 0) {
+                            if (host != null && !host.isEmpty()) {
                                 endpointConfig.getUserProperties().put("host", host.get(0));
                             }
                             List<String> cookie = request.getHeaders().get("Cookie");
-                            if (cookie != null && cookie.size() > 0) {
+                            if (cookie != null && !cookie.isEmpty()) {
                                 endpointConfig.getUserProperties().put("cookie", cookie.get(0));
                             }
                             List<String> authorization = request.getHeaders().get("Authorization");
-                            if (authorization != null && authorization.size() > 0) {
+                            if (authorization != null && !authorization.isEmpty()) {
                                 endpointConfig.getUserProperties().put("authorization", authorization.get(0));
+                            } else {
+                                for (String authKey : List.of("Authorization", "authorization", "Auth", "auth")) {
+                                    authorization = request.getParameterMap().get(authKey);
+                                    if (authorization != null && !authorization.isEmpty()) {
+                                        endpointConfig.getUserProperties().put("authorization", authorization.get(0));
+                                        break;
+                                    }
+                                }
                             }
+                            logger.debug("WS Connection Handshake: "+ new Values(endpointConfig.getUserProperties()).toJSON(4));
                         }
                     };
                 }
@@ -140,17 +149,14 @@ public class WSServletContextHandler extends ServletContextHandler {
             }
             List<String> hosts = new ArrayList<>();
             hosts.add(app.replace("_", "-") + ".local.netu.no");
-            String defaultHost = wsConfig.getString("host");
             if (Config.getAppForce() != null && !Config.getAppForce().isEmpty() && Config.getAppForce().equals(app)) {
                 hosts.add("localhost");
             } else if ((Config.getAppForce() == null || Config.getAppForce().isEmpty()) && Config.getAppDefault().equals(app)) {
                 hosts.add("localhost");
             }
-            if (!defaultHost.isEmpty()) {
-                hosts.add(defaultHost);
-            }
-            if (wsConfig.getValues("host") != null && wsConfig.getValues("host").isList()) {
-                for (String host : wsConfig.toList(String.class)) {
+            Values valuesHosts = wsConfig.getValues("hosts");
+            if (valuesHosts != null && valuesHosts.isList()) {
+                for (String host : valuesHosts.toList(String.class)) {
                     if (!host.isEmpty()) {
                         hosts.add(host);
                     }
@@ -177,11 +183,20 @@ public class WSServletContextHandler extends ServletContextHandler {
                     logger.warn("The "+ app +" app has an endpoint without a public URL.");
                     continue;
                 }
+                List<String> endpointHosts = new ArrayList<>(hosts);
+                Values valuesEndpointHosts = endpointConfig.getValues("hosts");
+                if (valuesEndpointHosts != null && valuesEndpointHosts.isList()) {
+                    for (String host : valuesEndpointHosts.toList(String.class)) {
+                        if (!host.isEmpty()) {
+                            endpointHosts.add(host);
+                        }
+                    }
+                }
                 if (endpointConfig.getString("path").isEmpty()) {
                     endpointConfig.set("path", "/");
                 }
                 try {
-                    handlers.add(new WSServletContextHandler(app, hosts, endpointConfig, ServletContextHandler.SESSIONS));
+                    handlers.add(new WSServletContextHandler(app, endpointHosts, endpointConfig, ServletContextHandler.SESSIONS));
                 } catch (Exception ex) {
                     String message = "The "+ app +" app is not able to initialize the endpoint "+ endpointConfig.getString("public" +".");
                     logger.debug(message, ex);
