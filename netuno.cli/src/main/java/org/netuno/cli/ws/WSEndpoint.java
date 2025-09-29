@@ -78,6 +78,8 @@ public class WSEndpoint {
         this.host = userProperties.get("host").toString();
         this.cookie = (String)userProperties.get("cookie");
         this.authorization = (String)userProperties.get("authorization");
+
+        logger.debug("WS Connect: "+ new Values(userProperties).toJSON(4));
         
         String urlPublic = this.config.getString("public");
         String path = session.getRequestURI().getPath().substring(urlPublic.length());
