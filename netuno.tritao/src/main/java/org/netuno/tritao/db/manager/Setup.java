@@ -418,6 +418,7 @@ public class Setup extends ManagerBase {
                     //table.newColumn().setName("app_id").setType(Column.Type.INT).setNotNull(true).setDefault(),
                     //table.newColumn().setName("web_origin_id").setType(Column.Type.INT).setDefault(),
                     table.newColumn().setName("user_id").setType(Column.Type.INT).setDefault(),
+                    table.newColumn().setName("short_token").setType(Column.Type.VARCHAR).setNotNull(true).setMaxLength(250).setDefault(),
                     table.newColumn().setName("access_token").setType(Column.Type.TEXT).setNotNull(true).setDefault(),
                     table.newColumn().setName("refresh_token").setType(Column.Type.TEXT).setDefault(),
                     table.newColumn().setName("created").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(true),
