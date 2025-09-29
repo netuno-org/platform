@@ -1314,12 +1314,23 @@ public class Auth extends ResourceBase {
         Data dbManagerData = new Data(getProteu(), getHili());
         List<Values> dbTokens = dbManagerData.find(
                 "netuno_auth_jwt_token",
-                new Values().set("where",
-                        new Values()
-                                .set("access_token", new Values()
-                                		.set("type", "text")
-                                		.set("value", token)
-                                ).set("active", true)
+                Values.newMap().set("where", Values.newMap()
+                                .set("active", true)
+                                .set("or", Values.newList()
+                                        .add(Values.newMap()
+                                                .set("short_token", Values.newMap()
+                                                        .set("type", "text")
+                                                        .set("value", token)
+                                                )
+                                        )
+                                        .add(Values.newMap()
+                                                .set("access_token", Values.newMap()
+                                                        .set("type", "text")
+                                                        .set("value", token)
+                                                )
+                                        )
+                                )
+
                 )
         );
         if (dbTokens.size() == 1) {
@@ -1385,12 +1396,14 @@ public class Auth extends ResourceBase {
         Time time = new Time(getProteu(), getHili());
         String accessToken = _jwt.token(contextData);
         Values tokenData = _jwt.data(accessToken);
+        String shortToken = resource(Crypto.class).sha512(tokenData.getString("uid"));
         Data dbManagerData = new Data(getProteu(), getHili());
         int tokenId = dbManagerData.insert(
                 "netuno_auth_jwt_token",
                 new Values()
                         .set("uid", "'"+ tokenData.getString("uid") +"'")
                         .set("user_id", userId)
+                        .set("short_token", "'"+ db.sanitize(shortToken) +"'")
                         .set("access_token", "'"+ db.sanitize(accessToken) +"'")
                         .set("created", "'"+ db.sanitize(db.timestamp().toString()) +"'")
                         .set("access_expires", "'"+ db.sanitize(db.timestamp(time.localDateTime().plusMinutes(jwtAccessExpires())).toString()) +"'")
@@ -1413,12 +1426,13 @@ public class Auth extends ResourceBase {
                         .set("refresh_expires", "'"+ db.sanitize(db.timestamp(time.localDateTime().plusMinutes(jwtRefreshExpires())).toString()) +"'")
         );
         return new Values()
-                        .set("result", true)
-                        .set("access_token", accessToken)
-                        .set("refresh_token", refreshToken)
-                        .set("expires_in", jwtAccessExpires() * 60000)
-                        .set("refresh_expires_in", jwtRefreshExpires() * 60000)
-                        .set("token_type", "Bearer");
+                .set("result", true)
+                .set("short_token", shortToken)
+                .set("access_token", accessToken)
+                .set("refresh_token", refreshToken)
+                .set("expires_in", jwtAccessExpires() * 60000)
+                .set("refresh_expires_in", jwtRefreshExpires() * 60000)
+                .set("token_type", "Bearer");
     }
 
 
