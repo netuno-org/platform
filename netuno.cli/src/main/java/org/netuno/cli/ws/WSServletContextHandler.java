@@ -101,7 +101,7 @@ public class WSServletContextHandler extends ServletContextHandler {
                                 for (String authKey : List.of("Authorization", "authorization", "Auth", "auth")) {
                                     authorization = request.getParameterMap().get(authKey);
                                     if (authorization != null && !authorization.isEmpty()) {
-                                        endpointConfig.getUserProperties().put("authorization", authorization.get(0));
+                                        endpointConfig.getUserProperties().put("authorization", "Bearer "+ authorization.get(0));
                                         break;
                                     }
                                 }
