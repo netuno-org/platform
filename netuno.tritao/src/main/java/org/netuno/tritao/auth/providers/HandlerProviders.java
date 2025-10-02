@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.netuno.tritao.auth.providers;
 
 import org.apache.logging.log4j.LogManager;
@@ -7,13 +24,10 @@ import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.auth.providers.entities.*;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
-import org.netuno.tritao.auth.providers.entities.Discord;
-import org.netuno.tritao.auth.providers.entities.Facebook;
-import org.netuno.tritao.auth.providers.entities.Github;
-import org.netuno.tritao.auth.providers.entities.Google;
 import org.netuno.tritao.resource.Auth;
 import org.netuno.tritao.resource.Header;
 import org.netuno.tritao.resource.Out;
@@ -21,6 +35,10 @@ import org.netuno.tritao.resource.Out;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * Providers Handler
+ * @author Eduardo Fonseca Velasques - @eduveks
+ */
 public class HandlerProviders extends WebMaster {
 
     private static Logger logger = LogManager.getLogger(HandlerProviders.class);
@@ -125,6 +143,71 @@ public class HandlerProviders extends WebMaster {
                         userData.put("avatar", user.getString("avatar"));
                         userData.put("provider", "google");
                         register("google", userData);
+                    }
+                }
+            } else if (requestProvider.equalsIgnoreCase("microsoft")) {
+                Values setting = auth.getProviderConfig(requestProvider);
+                Microsoft microsoft = new Microsoft(setting.getString("tenant"), setting.getString("id"), setting.getString("secret"), setting.getValues("callbacks"));
+                if (!setting.getBoolean("enabled")) {
+                    return;
+                }
+                if (action.equalsIgnoreCase("login")) {
+                    if (header.isGet()) {
+                        proteu.redirect(microsoft.getUrlAuthenticator(Callback.LOGIN));
+                    } else if (header.isPost()) {
+                        Values user = null;
+                        if (proteu.getRequestAll().hasKey("code")) {
+                            Values accessTokens = microsoft.getAccessTokens(Callback.LOGIN, proteu.getRequestAll().getString("code"));
+                            if (accessTokens == null || !accessTokens.hasKey("access_token")) {
+                                logger.warn("MICROSOFT: Invalid Code");
+                                //TODO: RUN ERROR
+                                return;
+                            }
+                            user = microsoft.getUserDetails(accessTokens);
+                            user.put("email", user.getString("userPrincipalName"));
+                        } else if (proteu.getRequestAll().hasKey("uid")) {
+                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
+                            if (dbProviderUser != null) {
+                                user = new Values();
+                                user.put("id", dbProviderUser.getString("code"));
+                                user.put("displayName", dbProviderUser.getString("name"));
+                                user.put("userPrincipalName", dbProviderUser.getString("username"));
+                                user.put("email", dbProviderUser.getString("email"));
+                                user.put("avatar", dbProviderUser.getString("avatar"));
+                            }
+                        }
+                        if (user == null) {
+                            logger.warn("MICROSOFT can not load the user data.");
+                            return;
+                        }
+                        Values userData = new Values();
+                        userData.put("id", user.getString("id"));
+                        userData.put("name", user.getString("displayName"));
+                        userData.put("username", user.getString("userPrincipalName"));
+                        userData.put("email", user.getString("email"));
+                        userData.put("avatar", user.getString("avatar"));
+                        userData.put("provider", "microsoft");
+                        login("microsoft", userData);
+                    }
+                } else if (action.equalsIgnoreCase("register")) {
+                    if (header.isGet()) {
+                        proteu.redirect(microsoft.getUrlAuthenticator(Callback.REGISTER));
+                    } else if (header.isPost()) {
+                        Values accessTokens = microsoft.getAccessTokens(Callback.REGISTER, proteu.getRequestAll().getString("code"));
+                        if (accessTokens == null || !accessTokens.hasKey("access_token")) {
+                            logger.warn("INVALID MICROSOFT CODE -- 401");
+                            //TODO: RUN ERROR
+                            return;
+                        }
+                        Values user = microsoft.getUserDetails(accessTokens);
+                        Values userData = new Values();
+                        userData.put("id", user.getString("id"));
+                        userData.put("name", user.getString("name"));
+                        userData.put("username", user.getString("username"));
+                        userData.put("email", user.getString("email"));
+                        userData.put("avatar", user.getString("avatar"));
+                        userData.put("provider", "microsoft");
+                        register("microsoft", userData);
                     }
                 }
             } else if (requestProvider.equalsIgnoreCase("facebook")) {
