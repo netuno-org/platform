@@ -218,6 +218,7 @@ public class Auth extends ResourceBase {
                                     code = """
                                             // Obtém a configuração do provedor de autenticação para cada provedor.
                                             _log.info('Google Provider Configuration', _auth.providerConfig('google'))
+                                            _log.info('Microsoft Provider Configuration', _auth.providerConfig('microsoft'))
                                             _log.info('GitHub Provider Configuration', _auth.providerConfig('github'))
                                             _log.info('Discord Provider Configuration', _auth.providerConfig('discord'))
                                             _log.info('LDAP Provider Configuration', _auth.providerConfig('ldap'))
@@ -233,6 +234,7 @@ public class Auth extends ResourceBase {
                                     code = """
                                             // Gets authentication provider setting to each provider.
                                             _log.info('Google Provider Configuration', _auth.providerConfig('google'))
+                                            _log.info('Microsoft Provider Configuration', _auth.providerConfig('microsoft'))
                                             _log.info('GitHub Provider Configuration', _auth.providerConfig('github'))
                                             _log.info('Discord Provider Configuration', _auth.providerConfig('discord'))
                                             _log.info('LDAP Provider Configuration', _auth.providerConfig('ldap'))
@@ -248,6 +250,7 @@ public class Auth extends ResourceBase {
                                     description = """
                                             Nome da chave de configuração do provedor, podendo ser:
                                             - google
+                                            - microsoft
                                             - github
                                             - discord
                                             - ldap
@@ -258,6 +261,7 @@ public class Auth extends ResourceBase {
                                     description = """
                                             Name of the provider configuration key, which can be:
                                             - google
+                                            - microsoft
                                             - github
                                             - discord
                                             - ldap
@@ -294,6 +298,7 @@ public class Auth extends ResourceBase {
                                     code = """
                                             // Checa os provedores de autenticação habilitados.
                                             _log.info('Google Provider Enabled', _auth.providerEnabled('google'))
+                                            _log.info('Microsoft Provider Enabled', _auth.providerEnabled('microsoft'))
                                             _log.info('GitHub Provider Enabled', _auth.providerEnabled('github'))
                                             _log.info('Discord Provider Enabled', _auth.providerEnabled('discord'))
                                             _log.info('LDAP Provider Enabled', _auth.providerEnabled('ldap'))
@@ -309,6 +314,7 @@ public class Auth extends ResourceBase {
                                     code = """
                                             // Checks enabled authentication providers.
                                             _log.info('Google Provider Enabled', _auth.providerEnabled('google'))
+                                            _log.info('Microsoft Provider Enabled', _auth.providerEnabled('microsoft'))
                                             _log.info('GitHub Provider Enabled', _auth.providerEnabled('github'))
                                             _log.info('Discord Provider Enabled', _auth.providerEnabled('discord'))
                                             _log.info('LDAP Provider Enabled', _auth.providerEnabled('ldap'))
@@ -324,6 +330,7 @@ public class Auth extends ResourceBase {
                                     description = """
                                             Nome da chave de configuração do provedor, podendo ser:
                                             - google
+                                            - microsoft
                                             - github
                                             - discord
                                             - ldap
@@ -334,6 +341,7 @@ public class Auth extends ResourceBase {
                                     description = """
                                             Name of the provider configuration key, which can be:
                                             - google
+                                            - microsoft
                                             - github
                                             - discord
                                             - ldap
