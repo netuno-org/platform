@@ -24,7 +24,7 @@ import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.WebMaster;
-import org.netuno.tritao.auth.providers.entities.*;
+import org.netuno.tritao.auth.providers.integration.*;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
@@ -40,12 +40,11 @@ import java.util.UUID;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class HandlerProviders extends WebMaster {
-
-    private static Logger logger = LogManager.getLogger(HandlerProviders.class);
-    private Proteu proteu;
-    private Hili hili;
-    public Service service = null;
-    private Builder dbManager = null;
+    private static final Logger LOGGER = LogManager.getLogger(HandlerProviders.class);
+    private final Proteu proteu;
+    private final Hili hili;
+    private final Service service;
+    private final Builder dbManager;
 
     public HandlerProviders(Service service, Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -80,26 +79,26 @@ public class HandlerProviders extends WebMaster {
             return;
         }
 
-        if (auth.isProviderEnabled(requestProvider)) {
-            if (requestProvider.equalsIgnoreCase("google")) {
-                Values setting = auth.getProviderConfig(requestProvider);
-                Google google = new Google(setting.getString("id"), setting.getString("secret"), setting.getValues("callbacks"));
-                if (setting.getBoolean("enabled") == false) {
-                    return;
-                }
+        if (requestProvider != null && auth.isProviderEnabled(requestProvider)) {
+            Values settings = auth.getProviderConfig(requestProvider);
+            if (!settings.getBoolean("enabled")) {
+                return;
+            }
+            Provider provider = getProvider(requestProvider, settings);
+            if (provider != null) {
                 if (action.equalsIgnoreCase("login")) {
                     if (header.isGet()) {
-                        proteu.redirect(google.getUrlAuthenticator(Callback.LOGIN));
+                        proteu.redirect(provider.getUrlAuthenticator(Callback.LOGIN));
                     } else if (header.isPost()) {
                         Values user = null;
                         if (proteu.getRequestAll().hasKey("code")) {
-                            Values accessTokens = google.getAccessTokens(Callback.LOGIN, proteu.getRequestAll().getString("code"));
+                            Values accessTokens = provider.getAccessTokens(Callback.LOGIN, proteu.getRequestAll().getString("code"));
                             if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                                logger.warn("GOOGLE: Invalid Code");
+                                LOGGER.warn(provider.getCode().toUpperCase() + ": Invalid Code");
                                 //TODO: RUN ERROR
                                 return;
                             }
-                            user = google.getUserDetails(accessTokens);
+                            user = provider.getUserDetails(accessTokens);
                         } else if (proteu.getRequestAll().hasKey("uid")) {
                             Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
                             if (dbProviderUser != null) {
@@ -108,11 +107,10 @@ public class HandlerProviders extends WebMaster {
                                 user.put("name", dbProviderUser.getString("name"));
                                 user.put("username", dbProviderUser.getString("username"));
                                 user.put("email", dbProviderUser.getString("email"));
-                                user.put("avatar", dbProviderUser.getString("avatar"));
                             }
                         }
                         if (user == null) {
-                            logger.warn("GOOGLE can not load the user data.");
+                            LOGGER.warn(provider.getCode().toUpperCase() +" can not load the user data.");
                             return;
                         }
                         Values userData = new Values();
@@ -121,290 +119,50 @@ public class HandlerProviders extends WebMaster {
                         userData.put("username", user.getString("username"));
                         userData.put("email", user.getString("email"));
                         userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "google");
-                        login("google", userData);
+                        userData.put("provider", provider.getCode());
+                        login(provider.getCode(), userData);
                     }
                 } else if (action.equalsIgnoreCase("register")) {
                     if (header.isGet()) {
-                        proteu.redirect(google.getUrlAuthenticator(Callback.REGISTER));
+                        proteu.redirect(provider.getUrlAuthenticator(Callback.REGISTER));
                     } else if (header.isPost()) {
-                        Values accessTokens = google.getAccessTokens(Callback.REGISTER, proteu.getRequestAll().getString("code"));
+                        Values accessTokens = provider.getAccessTokens(Callback.REGISTER, proteu.getRequestAll().getString("code"));
                         if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                            logger.warn("INVALID GOOGLE CODE -- 401");
+                            LOGGER.warn("INVALID "+ provider.getCode().toUpperCase() +" CODE -- 401");
                             //TODO: RUN ERROR
                             return;
                         }
-                        Values user = google.getUserDetails(accessTokens);
+                        Values user = provider.getUserDetails(accessTokens);
                         Values userData = new Values();
                         userData.put("id", user.getString("id"));
                         userData.put("name", user.getString("name"));
                         userData.put("username", user.getString("username"));
                         userData.put("email", user.getString("email"));
                         userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "google");
-                        register("google", userData);
-                    }
-                }
-            } else if (requestProvider.equalsIgnoreCase("microsoft")) {
-                Values setting = auth.getProviderConfig(requestProvider);
-                Microsoft microsoft = new Microsoft(setting.getString("tenant"), setting.getString("id"), setting.getString("secret"), setting.getValues("callbacks"));
-                if (!setting.getBoolean("enabled")) {
-                    return;
-                }
-                if (action.equalsIgnoreCase("login")) {
-                    if (header.isGet()) {
-                        proteu.redirect(microsoft.getUrlAuthenticator(Callback.LOGIN));
-                    } else if (header.isPost()) {
-                        Values user = null;
-                        if (proteu.getRequestAll().hasKey("code")) {
-                            Values accessTokens = microsoft.getAccessTokens(Callback.LOGIN, proteu.getRequestAll().getString("code"));
-                            if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                                logger.warn("MICROSOFT: Invalid Code");
-                                //TODO: RUN ERROR
-                                return;
-                            }
-                            user = microsoft.getUserDetails(accessTokens);
-                            user.put("email", user.getString("userPrincipalName"));
-                        } else if (proteu.getRequestAll().hasKey("uid")) {
-                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
-                            if (dbProviderUser != null) {
-                                user = new Values();
-                                user.put("id", dbProviderUser.getString("code"));
-                                user.put("displayName", dbProviderUser.getString("name"));
-                                user.put("userPrincipalName", dbProviderUser.getString("username"));
-                                user.put("email", dbProviderUser.getString("email"));
-                                user.put("avatar", dbProviderUser.getString("avatar"));
-                            }
-                        }
-                        if (user == null) {
-                            logger.warn("MICROSOFT can not load the user data.");
-                            return;
-                        }
-                        Values userData = new Values();
-                        userData.put("id", user.getString("id"));
-                        userData.put("name", user.getString("displayName"));
-                        userData.put("username", user.getString("userPrincipalName"));
-                        userData.put("email", user.getString("email"));
-                        userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "microsoft");
-                        login("microsoft", userData);
-                    }
-                } else if (action.equalsIgnoreCase("register")) {
-                    if (header.isGet()) {
-                        proteu.redirect(microsoft.getUrlAuthenticator(Callback.REGISTER));
-                    } else if (header.isPost()) {
-                        Values accessTokens = microsoft.getAccessTokens(Callback.REGISTER, proteu.getRequestAll().getString("code"));
-                        if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                            logger.warn("INVALID MICROSOFT CODE -- 401");
-                            //TODO: RUN ERROR
-                            return;
-                        }
-                        Values user = microsoft.getUserDetails(accessTokens);
-                        Values userData = new Values();
-                        userData.put("id", user.getString("id"));
-                        userData.put("name", user.getString("name"));
-                        userData.put("username", user.getString("username"));
-                        userData.put("email", user.getString("email"));
-                        userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "microsoft");
-                        register("microsoft", userData);
-                    }
-                }
-            } else if (requestProvider.equalsIgnoreCase("facebook")) {
-                Values settings = auth.getProviderConfig(requestProvider);
-                Facebook facebook = new Facebook(settings.getString("id"), settings.getString("secret"), settings.getValues("callbacks"));
-                if (settings.getBoolean("enabled") == false) {
-                    return;
-                }
-                if (action.equalsIgnoreCase("login")) {
-                    if (header.isGet()) {
-                        proteu.redirect(facebook.getUrlAuthenticator(Callback.LOGIN));
-                    } else if (header.isPost()) {
-                        Values user = null;
-                        if (proteu.getRequestAll().hasKey("code")) {
-                            Values accessTokens = facebook.getAccessTokens(Callback.LOGIN, proteu.getRequestAll().getString("code"));
-                            if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                                logger.warn("GOOGLE: Invalid Code");
-                                //TODO: RUN ERROR
-                                return;
-                            }
-                            user = facebook.getUserDetails(accessTokens);
-                        } else if (proteu.getRequestAll().hasKey("uid")) {
-                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
-                            if (dbProviderUser != null) {
-                                user = new Values();
-                                user.put("id", dbProviderUser.getString("code"));
-                                user.put("name", dbProviderUser.getString("name"));
-                                user.put("username", dbProviderUser.getString("username"));
-                                user.put("email", dbProviderUser.getString("email"));
-                                user.put("avatar", dbProviderUser.getString("avatar"));
-                            }
-                        }
-                        if (user == null) {
-                            logger.warn("FACEBOOK can not load the user data.");
-                            return;
-                        }
-                        Values userData = new Values();
-                        userData.put("id", user.getString("id"));
-                        userData.put("name", user.getString("name"));
-                        userData.put("username", user.getString("username"));
-                        userData.put("email", user.getString("email"));
-                        userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "facebook");
-                        login("facebook", userData);
-                    }
-                } else if (action.equalsIgnoreCase("register")) {
-                    if (header.isGet()) {
-                        proteu.redirect(facebook.getUrlAuthenticator(Callback.REGISTER));
-                    } else if (header.isPost()) {
-                        Values accessTokens = facebook.getAccessTokens(Callback.REGISTER, proteu.getRequestAll().getString("code"));
-                        if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                            logger.warn("INVALID GOOGLE CODE -- 401");
-                            //TODO: RUN ERROR
-                            return;
-                        }
-                        Values user = facebook.getUserDetails(accessTokens);
-                        Values userData = new Values();
-                        userData.put("id", user.getString("id"));
-                        userData.put("name", user.getString("name"));
-                        userData.put("username", user.getString("username"));
-                        userData.put("email", user.getString("email"));
-                        userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "facebook");
-                        register("facebook", userData);
-                    }
-                }
-            } else if (requestProvider.equalsIgnoreCase("github")) {
-                Values settings = auth.getProviderConfig(requestProvider);
-                Github github = new Github(settings.getString("id"), settings.getString("secret"), settings.getValues("callbacks"));
-                if (settings.getBoolean("enabled") == false) {
-                    return;
-                }
-                if (action.equalsIgnoreCase("login")) {
-                    if (header.isGet()) {
-                        proteu.redirect(github.getUrlAuthenticator(Callback.LOGIN));
-                    } else if (header.isPost()) {
-                        Values user = null;
-                        if (proteu.getRequestAll().hasKey("code")) {
-                            Values accessTokens = github.getAccessTokens(Callback.LOGIN, proteu.getRequestAll().getString("code"));
-                            if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                                logger.warn("GITHUB: Invalid Code");
-                                //TODO: RUN ERROR
-                                return;
-                            }
-                            user = github.getUserDetails(accessTokens);
-                        } else if (proteu.getRequestAll().hasKey("uid")) {
-                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
-                            if (dbProviderUser != null) {
-                                user = new Values();
-                                user.put("id", dbProviderUser.getString("code"));
-                                user.put("name", dbProviderUser.getString("name"));
-                                user.put("username", dbProviderUser.getString("username"));
-                                user.put("email", dbProviderUser.getString("email"));
-                                user.put("avatar", dbProviderUser.getString("avatar"));
-                            }
-                        }
-                        if (user == null) {
-                            logger.warn("GITHUB can not load the user data.");
-                            return;
-                        }
-                        Values userData = new Values();
-                        userData.put("id", user.getString("id"));
-                        userData.put("name", user.getString("name"));
-                        userData.put("username", user.getString("username"));
-                        userData.put("email", user.getString("email"));
-                        userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "github");
-                        login("github", userData);
-                    }
-                } else if (action.equalsIgnoreCase("register")) {
-                    if (header.isGet()) {
-                        proteu.redirect(github.getUrlAuthenticator(Callback.REGISTER));
-                    } else if (header.isPost()) {
-                        Values accessTokens = github.getAccessTokens(Callback.REGISTER, proteu.getRequestAll().getString("code"));
-                        if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                            logger.warn("INVALID GITHUB CODE -- 401");
-                            //TODO: RUN ERROR
-                            return;
-                        }
-                        Values user = github.getUserDetails(accessTokens);
-                        Values userData = new Values();
-                        userData.put("id", user.getString("id"));
-                        userData.put("name", user.getString("name"));
-                        userData.put("username", user.getString("username"));
-                        userData.put("email", user.getString("email"));
-                        userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "github");
-                        register("github", userData);
-                    }
-                }
-            } else if (requestProvider.equalsIgnoreCase("discord")) {
-                Values settings = auth.getProviderConfig(requestProvider);
-                Discord discord = new Discord(settings.getString("id"), settings.getString("secret"), settings.getValues("callbacks"));
-                if (settings.getBoolean("enabled") == false) {
-                    return;
-                }
-                if (action.equalsIgnoreCase("login")) {
-                    if (header.isGet()) {
-                        proteu.redirect(discord.getUrlAuthenticator(Callback.LOGIN));
-                    } else if (header.isPost()) {
-                        Values user = null;
-                        if (proteu.getRequestAll().hasKey("code")) {
-                            Values accessTokens = discord.getAccessTokens(Callback.LOGIN, proteu.getRequestAll().getString("code"));
-                            if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                                logger.warn("DISCORD: Invalid Code");
-                                //TODO: RUN ERROR
-                                return;
-                            }
-                            user = discord.getUserDetails(accessTokens);
-                        } else if (proteu.getRequestAll().hasKey("uid")) {
-                            Values dbProviderUser = dbManager.getAuthProviderUserByUid(proteu.getRequestAll().getString("uid"));
-                            if (dbProviderUser != null) {
-                                user = new Values();
-                                user.put("id", dbProviderUser.getString("code"));
-                                user.put("name", dbProviderUser.getString("name"));
-                                user.put("username", dbProviderUser.getString("username"));
-                                user.put("email", dbProviderUser.getString("email"));
-                                user.put("avatar", dbProviderUser.getString("avatar"));
-                            }
-                        }
-                        if (user == null) {
-                            logger.warn("DISCORD can not load the user data.");
-                            return;
-                        }
-                        Values userData = new Values();
-                        userData.put("id", user.getString("id"));
-                        userData.put("name", user.getString("username"));
-                        userData.put("username", user.getString("username"));
-                        userData.put("email", user.getString("email"));
-                        userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "discord");
-                        login("discord", userData);
-                    }
-                } else if (action.equalsIgnoreCase("register")) {
-                    if (header.isGet()) {
-                        proteu.redirect(discord.getUrlAuthenticator(Callback.REGISTER));
-                    } else if (header.isPost()) {
-                        Values accessTokens = discord.getAccessTokens(Callback.REGISTER, proteu.getRequestAll().getString("code"));
-                        if (accessTokens == null || !accessTokens.hasKey("access_token")) {
-                            logger.warn("INVALID GOOGLE CODE -- 401");
-                            //TODO: RUN ERROR
-                            return;
-                        }
-                        Values user = discord.getUserDetails(accessTokens);
-                        Values userData = new Values();
-                        userData.put("id", user.getString("id"));
-                        userData.put("name", user.getString("username"));
-                        userData.put("username", user.getString("username"));
-                        userData.put("email", user.getString("email"));
-                        userData.put("avatar", user.getString("avatar"));
-                        userData.put("provider", "discord");
-                        register("discord", userData);
+                        userData.put("provider", provider.getCode());
+                        register(provider.getCode(), userData);
                     }
                 }
             }
         }
     }
+
+    private Provider getProvider(String requestProvider, Values settings) {
+        Provider provider = null;
+        if (requestProvider.equalsIgnoreCase("google")) {
+            provider = new Google(settings);
+        } else if (requestProvider.equalsIgnoreCase("microsoft")) {
+            provider = new Microsoft(settings);
+        } else if (requestProvider.equalsIgnoreCase("facebook")) {
+            provider = new Facebook(settings);
+        } else if (requestProvider.equalsIgnoreCase("github")) {
+            provider = new GitHub(settings);
+        } else if (requestProvider.equalsIgnoreCase("discord")) {
+            provider = new Discord(settings);
+        }
+        return provider;
+    }
+
     private void login(String provider, Values data) throws ProteuException, IOException {
         if (!data.has("email")) {
             //TODO: RUN ERROR
@@ -432,6 +190,7 @@ public class HandlerProviders extends WebMaster {
                                             .set("secret", null)
                                             .set("new", true)
                                             .set("associate", false)
+                                            .set("avatar", data.getString("avatar"))
                             )
             );
             return;
@@ -460,7 +219,6 @@ public class HandlerProviders extends WebMaster {
                             .set("email", data.get("email"))
                             .set("name", data.get("name"))
                             .set("username", data.get("username"))
-                            .set("avatar", data.get("avatar"))
             );
         }
         int idProvider = dbProvider.getInt("id");
@@ -484,6 +242,7 @@ public class HandlerProviders extends WebMaster {
                                             .set("uid", uid)
                                             .set("new", false)
                                             .set("associate", false)
+                                            .set("avatar", data.getString("avatar"))
                             )
             );
             return;
@@ -499,6 +258,7 @@ public class HandlerProviders extends WebMaster {
                                         .set("uid", uid)
                                         .set("new", false)
                                         .set("associate", isAssociate)
+                                        .set("avatar", data.getString("avatar"))
                         )
         );
     }
@@ -531,7 +291,6 @@ public class HandlerProviders extends WebMaster {
                                 .set("email", data.get("email"))
                                 .set("name", data.get("name"))
                                 .set("username", data.get("username"))
-                                .set("avatar", data.get("avatar"))
                 );
             } else {
                 dbManager.updateAuthProviderUser(
@@ -544,7 +303,6 @@ public class HandlerProviders extends WebMaster {
                                 .set("email", data.get("email"))
                                 .set("name", data.get("name"))
                                 .set("username", data.get("username"))
-                                .set("avatar", data.get("avatar"))
                 );
             }
             String username = data.getString("username");
@@ -571,6 +329,7 @@ public class HandlerProviders extends WebMaster {
                         .set("email", data.getString("email"))
                         .set("name", data.getString("name"))
                         .set("username", username)
+                        .set("avatar", data.getString("avatar"))
             );
         } else {
             out.json(
@@ -579,6 +338,7 @@ public class HandlerProviders extends WebMaster {
                         .set("uid", uid)
                         .set("new", false)
                         .set("exists", true)
+                        .set("avatar", data.getString("avatar"))
             );
         }
     }
