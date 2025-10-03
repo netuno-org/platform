@@ -294,8 +294,7 @@ public class Setup extends ManagerBase {
                     table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(),
                     table.newColumn().setName("email").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
                     table.newColumn().setName("name").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
-                    table.newColumn().setName("username").setType(Column.Type.VARCHAR).setNotNull(false).setDefault(),
-                    table.newColumn().setName("avatar").setType(Column.Type.VARCHAR).setNotNull(false).setDefault()
+                    table.newColumn().setName("username").setType(Column.Type.VARCHAR).setNotNull(false).setDefault()
             );
             sequence.create("netuno_auth_provider_user_id");
             index.create("netuno_auth_provider_user", "user_id");
