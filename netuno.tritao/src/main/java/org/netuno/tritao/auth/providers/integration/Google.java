@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.auth.providers.entities;
+package org.netuno.tritao.auth.providers.integration;
 
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.providers.Callback;
@@ -23,16 +23,23 @@ import org.netuno.tritao.auth.providers.Callback;
 /**
  * Google Authentication
  * @author Marcel Becheanu - @marcelgbecheanu
+ * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Google {
-    private String id = null;
-    private String secret = null;
-    private Values callbacks = null;
-    public Google(String id, String secret, Values callbacks) {
-        this.id = id;
-        this.secret = secret;
-        this.callbacks = callbacks;
+public class Google implements Provider {
+    private static final String CODE = "google";
+    private final String id;
+    private final String secret;
+    private final Values callbacks;
+    public Google(Values settings) {
+        this.id = settings.getString("id");
+        this.secret = settings.getString("secret");
+        this.callbacks = settings.getValues("callbacks");
     }
+
+    public String getCode() {
+        return CODE;
+    }
+
     public String getUrlAuthenticator(Callback callback) {
             return "https://accounts.google.com/o/oauth2/auth?response_type=code&redirect_uri=" + callbacks.getString(callback.toString()) + "&scope="+"https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile"+"&client_id=" + id;
     }
