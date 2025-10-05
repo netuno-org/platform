@@ -316,11 +316,12 @@
         that.prop('disabled', false);
         $('#fieldReportDesign__{data=table.name}_execute').val('');
         netuno.componentConfig.link.select('_{request=netuno_table_uid}', function (field, uid) {
-          $('#fieldReportDesign__{data=table.name}_execute').val('copy');
-          $('#fieldReportDesign__{data=table.name}_copy').val(uid);
-          $('#fieldReportDesign__{data=table.name}_uid').val('');
-          netuno.componentConfig.link.close();
-          netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false);
+          netuno.componentConfig.link.close(function () {
+            $('#fieldReportDesign__{data=table.name}_execute').val('copy');
+            $('#fieldReportDesign__{data=table.name}_copy').val(uid);
+            $('#fieldReportDesign__{data=table.name}_uid').val('');
+            netuno.submitDev('netuno_report_design__{data=table.name}', 'reportDesign__{data=table.uid}', false);
+          });
         });
       })) {
         that.prop('disabled', false);
