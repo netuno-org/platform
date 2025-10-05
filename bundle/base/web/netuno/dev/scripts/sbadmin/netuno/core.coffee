@@ -259,7 +259,7 @@ netuno.nameAutocompleteDev = {
     netuno.nameAutocompleteDev.clearCheckboxesIds()
     netuno.nameAutocompleteDev.checkboxesIds.push(checkboxId)
     checkbox.prop("checked", localStorage.getItem("dev:name:autocomplete") isnt "false")
-    $("\##{fieldsPrefix}_displayName").on("keyup", ()->
+    $("\##{fieldsPrefix}_title").on("keyup", ()->
       if localStorage.getItem("dev:name:autocomplete") is "false"
         return
       that = $(this)
@@ -427,8 +427,13 @@ netuno.componentConfig = {
         $("\#componentConfig#{ netunoTableUid }FieldShow_#{ parameterKey }").val(value)
         netuno.componentConfig.link.updateFields netunoTableUid, parameterKey, tableUid, table
       netuno.componentConfig.link.callbackItem field, fieldUid if netuno.componentConfig.link.callbackItem
-    close: ()->
+    close: (callback)->
       if netuno.componentConfig.link.popup?
+        netuno.componentConfig.link.popup.on('hidden.bs.modal', () ->
+          if callback?
+            callback()
+          netuno.componentConfig.link.popup.off('hidden.bs.modal')
+        )
         netuno.componentConfig.link.popup.attr('data-table-uid', null)
         netuno.componentConfig.link.popup.modal('hide')
   },

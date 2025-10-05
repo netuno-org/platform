@@ -335,7 +335,7 @@
       netuno.nameAutocompleteDev.clearCheckboxesIds();
       netuno.nameAutocompleteDev.checkboxesIds.push(checkboxId);
       checkbox.prop("checked", localStorage.getItem("dev:name:autocomplete") !== "false");
-      return $(`\#${fieldsPrefix}_displayName`).on("keyup", function() {
+      return $(`\#${fieldsPrefix}_title`).on("keyup", function() {
         var endsWithId, fieldName, fieldNameVal, that;
         if (localStorage.getItem("dev:name:autocomplete") === "false") {
           return;
@@ -544,8 +544,14 @@
           return netuno.componentConfig.link.callbackItem(field, fieldUid);
         }
       },
-      close: function() {
+      close: function(callback) {
         if (netuno.componentConfig.link.popup != null) {
+          netuno.componentConfig.link.popup.on('hidden.bs.modal', function() {
+            if (callback != null) {
+              callback();
+            }
+            return netuno.componentConfig.link.popup.off('hidden.bs.modal');
+          });
           netuno.componentConfig.link.popup.attr('data-table-uid', null);
           return netuno.componentConfig.link.popup.modal('hide');
         }
