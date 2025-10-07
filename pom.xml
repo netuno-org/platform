@@ -50,6 +50,7 @@
         <pdfbox.version>3.0.5</pdfbox.version>
         <log4j.version>2.25.1</log4j.version>
         <oshi.version>6.8.3</oshi.version>
+        <junit.version>5.13.4</junit.version>
     </properties>
 
     <dependencyManagement>
