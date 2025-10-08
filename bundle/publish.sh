@@ -63,19 +63,26 @@ node bundle/publish-mode.js "$PublishMode"
 
 node bundle/publish-mode.js
 
-cd netuno.cli/protect && ./run.sh && cd ../..
+mkdir -p netuno.cli/out
 
-mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-base.jar
+mv netuno.cli/target/netuno-cli-*.jar netuno.cli/out/netuno.jar
 
-cd netuno.cli/protect/out/proguard
+#cd netuno.cli/protect && ./run.sh && cd ../..
 
-mkdir -p META-INF/services
-echo "com.oracle.truffle.js.lang.JavaScriptLanguageProvider" > META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
-echo "com.oracle.graal.python.PythonLanguageProvider" >> META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
-echo "com.oracle.truffle.regex.RegexLanguageProvider" >> META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
-jar uf netuno-base.jar META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
-rm -rf META-INF
-cd ../../../../
+mkdir -p netuno.cli/out/core/lib
+
+rm -f netuno.cli/out/core/lib/*
+
+cp netuno.cli/target/core/lib/* netuno.cli/out/core/lib/
+
+#cd netuno.cli/protect/out/proguard
+#mkdir -p META-INF/services
+#echo "com.oracle.truffle.js.lang.JavaScriptLanguageProvider" > META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
+#echo "com.oracle.graal.python.PythonLanguageProvider" >> META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
+#echo "com.oracle.truffle.regex.RegexLanguageProvider" >> META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
+#jar uf netuno-base.jar META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
+#rm -rf META-INF
+#cd ../../../../
 
 cp netuno.cli/pom-setup.xml netuno.cli/pom.xml
 
@@ -85,13 +92,15 @@ cd netuno.cli && mvn clean && mvn package && cd ..
 
 node bundle/publish-mode.js
 
-cd netuno.cli/protect && ./run.sh && cd ../..
+#cd netuno.cli/protect && ./run.sh && cd ../..
 
-mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-setup.jar
+#mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-setup.jar
+
+mv netuno.cli/target/netuno-setup.jar netuno.cli/out/netuno-setup.jar
+
+#mv netuno.cli/protect/out/proguard/netuno-base.jar netuno.cli/protect/out/proguard/netuno.jar
 
 cp netuno.cli/pom-base.xml netuno.cli/pom.xml
-
-mv netuno.cli/protect/out/proguard/netuno-base.jar netuno.cli/protect/out/proguard/netuno.jar
 
 cd netuno.tritao/protect && ./run.sh && cd ../..
 
@@ -101,7 +110,7 @@ cd bundle/out && zip -q -r netuno.zip netuno/ && cd ../..
 
 mkdir -p bundle/dist
 
-cp netuno.cli/protect/out/proguard/netuno-setup.jar bundle/dist/netuno-setup.jar
+cp netuno.cli/out/netuno-setup.jar bundle/dist/netuno-setup.jar
 
 mv bundle/out/netuno.zip bundle/dist/netuno.zip
 
