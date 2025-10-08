@@ -653,20 +653,27 @@ public class Enterprise extends HttpServlet {
             }
         }
         if (proteuError.isLogError()) {
+            String message = "";
             if (!proteuError.getLogError().isEmpty()) {
-                logger.error(proteuError.getLogError());
+                message = proteuError.getLogError();
             } else {
-                logger.error(proteuError.getLogMessage());
+                message = proteuError.getLogMessage();
+            }
+            logger.error(message);
+            if (proteuError.isAppendError()) {
+                logger.trace(message, proteuError.getCause());
             }
         }
         if (proteuError.isLogFatal()) {
-            if (proteuError.isAppendError()) {
-
-            }
+            String message = "";
             if (!proteuError.getLogFatal().isEmpty()) {
-                logger.fatal(proteuError.getLogFatal());
+                message = proteuError.getLogFatal();
             } else {
-                logger.fatal(proteuError.getLogMessage());
+                message = proteuError.getLogMessage();
+            }
+            logger.fatal(message);
+            if (proteuError.isAppendError()) {
+                logger.trace(message, proteuError.getCause());
             }
         }
     }
