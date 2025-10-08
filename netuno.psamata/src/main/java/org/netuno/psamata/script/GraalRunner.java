@@ -68,6 +68,8 @@ public class GraalRunner implements AutoCloseable {
 
             graal = true;
         } catch (Throwable t) {
+            System.out.println("GraalVM not loaded:");
+            t.printStackTrace();
             graal = false;
         }
     }
