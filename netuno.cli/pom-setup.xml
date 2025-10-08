@@ -256,7 +256,7 @@
                         <descriptors>
                             <descriptor>setup-dependencies-excludes.xml</descriptor>
                         </descriptors>
-                        <finalName>netuno-cli</finalName>
+                        <finalName>netuno-setup</finalName>
                         <appendAssemblyId>false</appendAssemblyId>
                         <archive>
                             <manifest>
