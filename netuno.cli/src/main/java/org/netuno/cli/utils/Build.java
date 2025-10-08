@@ -45,7 +45,7 @@ public class Build {
                     "/META-INF/MANIFEST.MF"
             ).openStream());
             Attributes attr = manifest.getMainAttributes();
-            return attr.getValue("Build-Number");
+            return attr.getValue("Implementation-Build");
         } catch (Exception e) {
             logger.fatal("Failed to load the build number.", e);
             return e.getMessage();
