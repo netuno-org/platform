@@ -213,7 +213,13 @@ public class TemplateBuilder {
             String key = matcher.group(1);
             String value = matcher.group(2);
             String output = getValue(proteu, hili, baseDir, lang, key, value, data);
-            content = content.replace("_{".concat(key).concat("=").concat(value).concat("}"), output);
+            String target = "_{".concat(key).concat("=").concat(value).concat("}");
+            try {
+                content = content.replace(target, output);
+            } catch (Throwable t) {
+                logger.fatal("A template in "+ baseDir +" has a replacement failure for: "+ target);
+                throw t;
+            }
         }
 
         return content;
