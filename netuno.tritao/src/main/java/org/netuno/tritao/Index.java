@@ -66,7 +66,7 @@ public class Index extends WebMaster {
         Template template = resource(Template.class).initCore();
         if (req.getString("action").equals("login")) {
             Auth.clearSession(getProteu(), getHili());
-            if (req.getString("username").length() > 0 && req.getString("password").length() > 0) {
+            if (!req.getString("username").isEmpty() && !req.getString("password").isEmpty()) {
                 if (Auth.signIn(getProteu(), getHili(), Auth.Type.SESSION)) {
                     template.out("login_success");
                 } else {
@@ -88,7 +88,7 @@ public class Index extends WebMaster {
             for (Values rowTritaoUser : Config.getDBBuilder(getProteu()).selectUserSearch("")) {
                 if (rowTritaoUser.getBoolean("active") && rowTritaoUser.getInt("group_id") >= -1) {
                     List<Values> groups = Config.getDBBuilder(getProteu()).selectGroup(rowTritaoUser.getString("group_id"));
-                    if (groups.size() == 1 && groups.get(0).getBoolean("active")) {
+                    if (groups.size() == 1 && groups.getFirst().getBoolean("active")) {
                         outputUsers = outputUsers.concat(template.get("index_user_item", rowTritaoUser));
                     }
                 }
