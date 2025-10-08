@@ -16,6 +16,7 @@ const config = {
     },
     output: {
         root: 'out',
+        lib: 'out/netuno/core/lib',
         bundle: 'out/netuno',
         bundleName: 'netuno'
     },
@@ -29,7 +30,8 @@ const config = {
             bundle: '../netuno.tritao/protect/out/proguard/netuno-web.jar'
         },
         cli: {
-            bundle: '../netuno.cli/protect/out/proguard/netuno.jar',
+            lib: '../netuno.cli/out/core/lib',
+            bundle: '../netuno.cli/out/netuno.jar',
             resources: {
                 app: '../netuno.cli/src/main/resources/org/netuno/cli/app',
             }
@@ -54,6 +56,8 @@ fs.copySync(config.base.root, config.output.bundle, {
     }
 })
 
+fs.emptyDirSync(config.output.lib)
+fs.copySync(config.netuno.cli.lib, config.output.lib)
 
 // TODO: Verificar se é windows e se for adicionar função de eleminar todos os ficheiros .json 
 // execSync('c *.json', { cwd: config.output.bundle +'/apps/', maxBuffer: 1024 * 10000 })
