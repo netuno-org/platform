@@ -24,6 +24,8 @@ nb*.xml
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
 
+out/
+
 protect/out.map
 protect/out.map
 protect/out/artifacts/*
