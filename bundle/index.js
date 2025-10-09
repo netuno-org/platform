@@ -11,12 +11,13 @@ const config = {
         root: 'base',
         apps: 'base/apps',
         web: {
-            lib: 'base/web/WEB-INF/lib'
+            lib: 'base/core/web/WEB-INF/lib'
         }
     },
     output: {
         root: 'out',
         lib: 'out/netuno/core/lib',
+        web: 'out/netuno/core/web',
         bundle: 'out/netuno',
         bundleName: 'netuno'
     },
@@ -27,7 +28,7 @@ const config = {
                 proteu: '../netuno.proteu/target/lib',
                 psamata: '../netuno.psamata/target/lib'
             },
-            bundle: '../netuno.tritao/protect/out/proguard/netuno-web.jar'
+            bundle: '../netuno.tritao/out/netuno-web.jar'
         },
         cli: {
             lib: '../netuno.cli/out/core/lib',
@@ -78,10 +79,10 @@ fs.readdir(config.output.bundle +'/apps/', (err, files) => {
 
 
 fs.removeSync(config.output.bundle +'/apps/_')
-fs.removeSync(config.output.bundle +'/web/WEB-INF/classes')
+fs.removeSync(config.output.web +'/WEB-INF/classes')
 
 fs.copySync(config.netuno.cli.bundle, config.output.bundle +'/netuno.jar')
-fs.copySync(config.netuno.web.bundle, config.output.bundle +'/web/WEB-INF/lib/netuno-web.jar')
+fs.copySync(config.netuno.web.bundle, config.output.web +'/WEB-INF/lib/netuno-web.jar')
 
 const jarsFolders = [
     config.netuno.web.lib.tritao,
@@ -130,7 +131,7 @@ var loadJars = (jarsFolder, jarsFolderIndex) => {
         });
         */
 
-        fs.copySync(config.base.web.lib, config.output.bundle +'/web/WEB-INF/lib');
+        fs.copySync(config.base.web.lib, config.output.web +'/WEB-INF/lib');
 
 
 
