@@ -44,13 +44,14 @@ pnpm-lock.yaml
 
 base/netuno.jar
 
-base/web/WEB-INF/lib/
-base/web/WEB-INF/classes
+base/core/web/WEB-INF/lib/
+base/core/web/WEB-INF/classes
 
 base/logs/*.log
 
 base/apps/*.json
 
+base/core/graalvm
 base/graalvm
 
 out/
