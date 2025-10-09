@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.file.Path;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,7 +72,7 @@ public final class Config {
     /**
      * Web Root.
      */
-    public static String webHome = "web";
+    public static String webHome = Path.of(coreHome, "web").toString();
     /**
      * Language.
      */
