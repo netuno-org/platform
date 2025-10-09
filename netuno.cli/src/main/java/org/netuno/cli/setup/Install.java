@@ -441,8 +441,8 @@ public class Install implements MainArg {
                     }
                 }
                 String webWEBINFlib = new File(
-                        path,
-                        ("web/WEB-INF/lib").replace("/", File.separator)
+                        new File(path, Constants.CORE_FOLDER),
+                        (Constants.WEB_FOLDER +"/WEB-INF/lib").replace("/", File.separator)
                 ).getAbsolutePath()
                         .replace(File.separator +"."+ File.separator, File.separator);
                 try (Stream<Path> files = Files.list(Paths.get(webWEBINFlib))) {
