@@ -154,16 +154,16 @@ do {
             Write-Host ""
             Write-Host "Setting SymbolicLink ..."
 
-            if(!(Test-Path -Path ".\bundle\base\web\WEB-INF\classes\org\netuno")){
-                New-Item ".\bundle\base\web\WEB-INF\classes\org\netuno" -ItemType Directory
+            if(!(Test-Path -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno")){
+                New-Item ".\bundle\base\core\web\WEB-INF\classes\org\netuno" -ItemType Directory
             }
 
-            if(!(Test-Path -Path ".\bundle\base\web\WEB-INF\classes\org\netuno\proteu")){
-                New-Item -ItemType SymbolicLink -Path ".\bundle\base\web\WEB-INF\classes\org\netuno\proteu" -Target ".\netuno.proteu\target\classes\org\netuno\proteu"
+            if(!(Test-Path -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno\proteu")){
+                New-Item -ItemType SymbolicLink -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno\proteu" -Target ".\netuno.proteu\target\classes\org\netuno\proteu"
             }
 
-            if(!(Test-Path -Path ".\bundle\base\web\WEB-INF\classes\org\netuno\tritao")){
-                New-Item -ItemType SymbolicLink -Path ".\bundle\base\web\WEB-INF\classes\org\netuno\tritao" -Target ".\netuno.tritao\target\classes\org\netuno\tritao"
+            if(!(Test-Path -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno\tritao")){
+                New-Item -ItemType SymbolicLink -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno\tritao" -Target ".\netuno.tritao\target\classes\org\netuno\tritao"
             }
 
             Write-Host ""
