@@ -67,22 +67,11 @@ mkdir -p netuno.cli/out
 
 mv netuno.cli/target/netuno-cli-*.jar netuno.cli/out/netuno.jar
 
-#cd netuno.cli/protect && ./run.sh && cd ../..
-
 mkdir -p netuno.cli/out/core/lib
 
 rm -f netuno.cli/out/core/lib/*
 
 cp netuno.cli/target/core/lib/* netuno.cli/out/core/lib/
-
-#cd netuno.cli/protect/out/proguard
-#mkdir -p META-INF/services
-#echo "com.oracle.truffle.js.lang.JavaScriptLanguageProvider" > META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
-#echo "com.oracle.graal.python.PythonLanguageProvider" >> META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
-#echo "com.oracle.truffle.regex.RegexLanguageProvider" >> META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
-#jar uf netuno-base.jar META-INF/services/com.oracle.truffle.api.provider.TruffleLanguageProvider
-#rm -rf META-INF
-#cd ../../../../
 
 cp netuno.cli/pom-setup.xml netuno.cli/pom.xml
 
@@ -92,18 +81,20 @@ cd netuno.cli && mvn clean && mvn package && cd ..
 
 node bundle/publish-mode.js
 
-#cd netuno.cli/protect && ./run.sh && cd ../..
-
-#mv netuno.cli/protect/out/proguard/netuno.jar netuno.cli/protect/out/proguard/netuno-setup.jar
-
 mv netuno.cli/target/netuno-setup.jar netuno.cli/out/netuno-setup.jar
-
-#mv netuno.cli/protect/out/proguard/netuno-base.jar netuno.cli/protect/out/proguard/netuno.jar
 
 cp netuno.cli/pom-base.xml netuno.cli/pom.xml
 
-cd netuno.tritao/protect && ./run.sh && cd ../..
+# build netuno-web.jar
+mkdir -p netuno.tritao/out/temp
+cd netuno.tritao/out
+(cd temp; unzip -uo ../../../netuno.proteu/target/netuno-proteu-*.jar)
+(cd temp; unzip -uo ../../../netuno.tritao/target/netuno-tritao-*.jar)
+jar -cvf netuno-web.jar -C temp .
+rm -rf temp
+cd ../..
 
+# executes bundle/index.js
 cd bundle && node index.js && cd ..
 
 cd bundle/out && zip -q -r netuno.zip netuno/ && cd ../..
@@ -114,7 +105,7 @@ cp netuno.cli/out/netuno-setup.jar bundle/dist/netuno-setup.jar
 
 mv bundle/out/netuno.zip bundle/dist/netuno.zip
 
-BuildVersion=`unzip -p bundle/out/netuno/netuno.jar META-INF/MANIFEST.MF | grep "Build-Number:" | grep -Eow "[0-9\.]+"`
+BuildVersion=`unzip -p bundle/out/netuno/netuno.jar META-INF/MANIFEST.MF | grep "Implementation-Build:" | grep -Eow "[0-9\.]+"`
 
 cp bundle/dist/netuno.zip bundle/dist/netuno-`echo $BuildVersion | sed -E 's/[\\.]/_/g'`.zip
 
