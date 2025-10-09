@@ -53,11 +53,11 @@ public class GraalVMSetup {
 
     public static void checkAndSetup(String graalVMVersion) {
         try {
-            if (!graalCheck(Constants.ROOT_PATH, graalVMVersion)) {
+            if (!graalCheck(Constants.CORE_PATH, graalVMVersion)) {
                 System.out.println();
                 System.out.println();
                 System.out.println(OS.consoleOutput("@|red Setting up the GraalVM is required.|@ "));
-                execute(Constants.ROOT_PATH, graalVMVersion);
+                execute(Constants.CORE_PATH, graalVMVersion);
                 System.out.println();
                 System.out.println(OS.consoleOutput("@|green GraalVM has been successfully updated.|@ "));
                 System.out.println();
