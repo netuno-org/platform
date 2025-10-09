@@ -158,7 +158,13 @@ public class Install implements MainArg {
         }
 
         if (graal) {
-            GraalVMSetup.execute(path, graalVMVersion);
+            File coreFolder = new File(path, Constants.CORE_FOLDER);
+            if ((!coreFolder.exists() && !coreFolder.mkdir()) || (coreFolder.exists() && !coreFolder.isDirectory())) {
+                String message = "Failed to install, unable to create the core folder.";
+                logger.error(message);
+                throw new Error(message);
+            }
+            GraalVMSetup.execute(coreFolder.toString(), graalVMVersion);
         }
 
         ConfigScript.loadEnv();
