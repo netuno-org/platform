@@ -139,7 +139,7 @@ public class Server implements MainArg {
             this.appsHome = Config.getAppsHome();
         }
         if (coreHomeConfigOverride) {
-            this.appsHome = Config.getAppsHome();
+            this.coreHome = Config.getCoreHome();
         }
         if (webHomeConfigOverride) {
             this.webHome = Config.getWebHome();
