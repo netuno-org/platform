@@ -22,7 +22,7 @@ package org.netuno.tritao;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class WebTestConfig {
-    private String base = "web";
+    private String base = "core/web";
     private String app = "test";
     private String env = "development";
     private String method = "GET";
