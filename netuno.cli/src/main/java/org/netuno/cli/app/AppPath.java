@@ -310,10 +310,14 @@ public enum AppPath {
 
     public static void copyApp(String appPath, AppPath path, String file) throws IOException {
         String systemPath;
+        String systemFile = file;
+        if (systemFile.startsWith("_.")) {
+            systemFile = systemFile.substring(1);
+        }
         if (path == null) {
-            systemPath = AppPath.app(appPath, null) + File.separator + file;
+            systemPath = AppPath.app(appPath, null) + File.separator + systemFile;
         } else {
-            systemPath = AppPath.app(appPath, path) + File.separator + file;
+            systemPath = AppPath.app(appPath, path) + File.separator + systemFile;
         }
         copyBase(systemPath, path, file);
     }
