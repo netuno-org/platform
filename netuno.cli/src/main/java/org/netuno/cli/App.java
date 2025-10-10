@@ -454,12 +454,12 @@ public class App implements MainArg {
 
         AppPath.copyApp(appPath, AppPath.UI_SRC, "index.jsx");
 
-        AppPath.copyApp(appPath, AppPath.UI, ".gitignore");
+        AppPath.copyApp(appPath, AppPath.UI, "_.gitignore");
         AppPath.copyApp(appPath, AppPath.UI, "package.json");
         AppPath.copyApp(appPath, AppPath.UI, "README.md");
         AppPath.copyApp(appPath, AppPath.UI, "vite.config.js");
 
-        AppPath.copyApp(appPath, null, ".gitignore");
+        AppPath.copyApp(appPath, null, "_.gitignore");
         AppPath.copyApp(appPath, null, ".editor.config");
 
         Values configJSON = new Values();
