@@ -31,6 +31,7 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.psamata.io.File;
 
+import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 import net.schmizz.sshj.xfer.InMemoryDestFile;
 import net.schmizz.sshj.xfer.InMemorySourceFile;
 
@@ -47,11 +48,11 @@ import net.schmizz.sshj.xfer.InMemorySourceFile;
         )
 })
 public class SSHSCP implements AutoCloseable {
-    private net.schmizz.sshj.xfer.scp.SCPFileTransfer scp = null;
+    private SCPFileTransfer scp = null;
 
     public boolean closed = false;
     
-    protected SSHSCP(net.schmizz.sshj.xfer.scp.SCPFileTransfer scp) {
+    protected SSHSCP(SCPFileTransfer scp) {
         this.scp = scp;
     }
 
