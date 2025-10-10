@@ -286,6 +286,7 @@
                     <configuration>
                         <excludes>
                             <exclude>**/node_modules/**</exclude>
+                            <exclude>**/netuno/cli/app/**</exclude>
                             <exclude>**/netuno/cli/migrate/**</exclude>
                             <exclude>**/netuno/cli/migrate/h2/**</exclude>
                             <exclude>**/netuno/cli/monitoring/**</exclude>
