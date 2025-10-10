@@ -1,0 +1,16 @@
+
+node_modules/
+
+.DS_Store
+*.log
+.idea/
+.metadata/
+.vscode
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+.Trash
+
+*~*
+*#*
