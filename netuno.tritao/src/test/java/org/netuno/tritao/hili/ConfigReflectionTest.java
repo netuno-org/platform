@@ -18,6 +18,7 @@
 package org.netuno.tritao.hili;
 
 import org.junit.jupiter.api.Test;
+
 public class ConfigReflectionTest {
 
     public ConfigReflectionTest() {

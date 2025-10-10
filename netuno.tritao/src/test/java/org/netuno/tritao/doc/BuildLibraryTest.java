@@ -25,8 +25,6 @@ import org.netuno.library.doc.*;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.resource.Resource;
-
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -62,13 +60,13 @@ public class BuildLibraryTest {
                     Files.createDirectories(path);
                 }
             }
+            List<String> acceptPakcages = new ArrayList<>(org.netuno.proteu.Config.getPackagesScan());
+            acceptPakcages.add("org.netuno");
             Files.createFile(pathTSdBase.resolve("main.d.ts"));
             ScanResult scanResult = new ClassGraph()
                     .disableRuntimeInvisibleAnnotations()
-                    .acceptPackages(
-                            org.netuno.proteu.Config.getPackagesScan()
-                                    .toArray(new String[0])
-                    ).enableAllInfo()
+                    .acceptPackages(acceptPakcages.toArray(new String[0]))
+                    .enableAllInfo()
                     .scan();
             ClassInfoList libraryClasses = scanResult.getClassesWithAnnotation(LibraryDoc.class.getName());
             List<String> docClasses = libraryClasses.getNames();

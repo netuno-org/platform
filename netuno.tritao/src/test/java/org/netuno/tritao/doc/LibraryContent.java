@@ -17,7 +17,7 @@
 
 package org.netuno.tritao.doc;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

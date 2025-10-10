@@ -17,7 +17,7 @@
 
 package org.netuno.tritao.service;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.netuno.tritao.WebTest;
 import org.netuno.tritao.WebTestConfig;
 import org.netuno.tritao.config.Config;

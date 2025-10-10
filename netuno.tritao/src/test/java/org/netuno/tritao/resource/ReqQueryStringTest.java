@@ -17,7 +17,7 @@
 
 package org.netuno.tritao.resource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.WebMaster;
 import org.netuno.tritao.WebTest;
