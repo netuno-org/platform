@@ -201,6 +201,7 @@
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>**/node_modules/**</exclude>
+                    <exclude>**/netuno/cli/app/.idea/**</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -232,6 +233,7 @@
                     <configuration>
                         <excludes>
                             <exclude>**/node_modules/**</exclude>
+                            <exclude>**/netuno/cli/app/.idea/**</exclude>
                         </excludes>
                         <source>17</source>
                         <target>17</target>
@@ -288,6 +290,7 @@
                     <configuration>
                         <excludes>
                             <exclude>**/node_modules/**</exclude>
+                            <exclude>**/netuno/cli/app/.idea/**</exclude>
                         </excludes>
                         <archive>
                             <manifest>
