@@ -9,7 +9,7 @@
                     <option value="">&nbsp;</option>
                     #foreach($item in $data.get('forms'))
                     <option value="$item.getString('uid')">
-                        $item.getString('path')
+                        $item.getString('text_path')
                     </option>
                     #end
                 </select>
