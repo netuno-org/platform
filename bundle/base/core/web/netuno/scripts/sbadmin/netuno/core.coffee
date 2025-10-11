@@ -560,6 +560,13 @@ netuno.addContentLoad (container)->
       placeholder: $("<div />").html(placeholder).text()
       maximumSelectionSize: 6
       allowClear: select.is("[allow-clear]")
+      tags: true
+      language: {
+        noResults: ()->
+          return netuno.config.com.lang.multiselect["noresults"]
+        searching: ()->
+          return netuno.config.com.lang.multiselect["searching"]
+      }
     )
   )
 
@@ -830,6 +837,15 @@ netuno.com['select'] =
       theme: "bootstrap"
       placeholder: placeholder
       allowClear: true,
+      tags: true,
+      language: {
+        noResults: ()->
+          return netuno.config.com.lang.multiselect["noresults"]
+        ,
+        searching: ()->
+          return netuno.config.com.lang.multiselect["searching"]
+        ,
+      },
       data: [ ]
       ajax: {
         url: service
@@ -984,13 +1000,17 @@ netuno.com['multiselect'] =
     )
   ,
   load: (fieldId, designId, referenceId) ->
-    $("\##{fieldId}").select2(
-      formatNoMatches: ()->
-        return netuno.config.com.lang.multiselect["noresults"]
-      ,
-      formatSearching: ()->
-        return netuno.config.com.lang.multiselect["searching"]
-      ,
+    $("\##{fieldId}").select2x(
+      allowClear: true,
+      tags: true,
+      language: {
+        noResults: ()->
+          return netuno.config.com.lang.multiselect["noresults"]
+        ,
+        searching: ()->
+          return netuno.config.com.lang.multiselect["searching"]
+        ,
+      },
       placeholder: $('<div />').html(netuno.config.com.lang.multiselect["defaulttext"]).text(),
       ajax: {
         url: "com/MultiSelect.netuno",

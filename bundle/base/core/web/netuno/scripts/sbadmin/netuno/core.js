@@ -739,7 +739,16 @@
         theme: "bootstrap",
         placeholder: $("<div />").html(placeholder).text(),
         maximumSelectionSize: 6,
-        allowClear: select.is("[allow-clear]")
+        allowClear: select.is("[allow-clear]"),
+        tags: true,
+        language: {
+          noResults: function() {
+            return netuno.config.com.lang.multiselect["noresults"];
+          },
+          searching: function() {
+            return netuno.config.com.lang.multiselect["searching"];
+          }
+        }
       });
     });
   });
@@ -1060,6 +1069,15 @@
         theme: "bootstrap",
         placeholder: placeholder,
         allowClear: true,
+        tags: true,
+        language: {
+          noResults: function() {
+            return netuno.config.com.lang.multiselect["noresults"];
+          },
+          searching: function() {
+            return netuno.config.com.lang.multiselect["searching"];
+          }
+        },
         data: [],
         ajax: {
           url: service,
@@ -1250,12 +1268,16 @@
       });
     },
     load: function(fieldId, designId, referenceId) {
-      return $(`\#${fieldId}`).select2({
-        formatNoMatches: function() {
-          return netuno.config.com.lang.multiselect["noresults"];
-        },
-        formatSearching: function() {
-          return netuno.config.com.lang.multiselect["searching"];
+      return $(`\#${fieldId}`).select2x({
+        allowClear: true,
+        tags: true,
+        language: {
+          noResults: function() {
+            return netuno.config.com.lang.multiselect["noresults"];
+          },
+          searching: function() {
+            return netuno.config.com.lang.multiselect["searching"];
+          }
         },
         placeholder: $('<div />').html(netuno.config.com.lang.multiselect["defaulttext"]).text(),
         ajax: {
