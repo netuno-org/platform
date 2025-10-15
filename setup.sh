@@ -6,8 +6,6 @@ echo ""
 
 chmod +x *.sh
 chmod +x bundle/*.sh
-chmod +x netuno.cli/protect/run.sh
-chmod +x netuno.tritao/protect/run.sh
 
 ###########################################
 #
