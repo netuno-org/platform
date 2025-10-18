@@ -33,7 +33,7 @@ import org.netuno.tritao.util.TemplateBuilder;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class FormDesign {
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(FormDesign.class);
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FormDesign.class);
 
 	public static void _main(Proteu proteu, Hili hili) throws Exception {
 		if (!Auth.isDevAuthenticated(proteu, hili, Auth.Type.SESSION, true)) {
@@ -46,12 +46,12 @@ public class FormDesign {
         if (!proteu.getRequestAll().getString("netuno_table_uid").isEmpty()) {
             rsTable = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("netuno_table_uid"));
         }
-        if (rsTable == null || rsTable.size() == 0) {
+        if (rsTable == null || rsTable.isEmpty()) {
             proteu.setResponseHeaderStatus(400);
             logger.warn("Form not selected.");
             return;
         }
-        Values table = rsTable.get(0);
+        Values table = rsTable.getFirst();
         proteu.getRequestAll().set("netuno_table_id", table.getString("id"));
         proteu.getRequestPost().set("netuno_table_id", table.getString("id"));
         proteu.getRequestGet().set("netuno_table_id", table.getString("id"));
@@ -69,14 +69,15 @@ public class FormDesign {
                 rsField = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("copy"));
             }
             if (rsField != null && rsField.size() == 1) {
-                Config.getDBBuilder(proteu).copyTableField(rsField.get(0).getString("id"), table.getString("id"), rsField.get(0).getString("name"));
-                List<Values> rsNewField = Config.getDBBuilder(proteu).selectTableDesign(table.getString("id"), rsField.get(0).getString("name"));
-                if (rsNewField.size() == 1) {
-                    Values newField = rsNewField.get(0);
-                    arrangeXY(proteu, hili, table, newField);
-                    data.set("name", newField.getString("name"));
-                    data.set("title", newField.getString("title"));
-                    TemplateBuilder.output(proteu, hili, "dev/notification/formdesign_created", data);
+                if (Config.getDBBuilder(proteu).copyTableField(rsField.getFirst().getString("id"), table.getString("id"), rsField.getFirst().getString("name"))) {
+                    List<Values> rsNewField = Config.getDBBuilder(proteu).selectTableDesign(table.getString("id"), rsField.getFirst().getString("name"));
+                    if (rsNewField.size() == 1) {
+                        Values newField = rsNewField.getFirst();
+                        arrangeXY(proteu, hili, table, newField);
+                        data.set("name", newField.getString("name"));
+                        data.set("title", newField.getString("title"));
+                        TemplateBuilder.output(proteu, hili, "dev/notification/formdesign_created", data);
+                    }
                 }
             }
         }
@@ -90,7 +91,7 @@ public class FormDesign {
             rsField = Config.getDBBuilder(proteu).selectTableDesign("", "", "", proteu.getRequestAll().getString("uid"));
         }
         if (rsField != null && rsField.size() == 1) {
-            field = rsField.get(0);
+            field = rsField.getFirst();
             proteu.getRequestAll().set("id", field.getString("id"));
             proteu.getRequestPost().set("id", field.getString("id"));
             proteu.getRequestGet().set("id", field.getString("id"));
@@ -98,19 +99,19 @@ public class FormDesign {
         proteu.getRequestPost().set("report", "0");
         proteu.getRequestAll().set("report", "0");
         if (proteu.getRequestAll().getString("execute").equals("save")) {
-            if (proteu.getRequestAll().getString("name").equals("")) {
+            if (proteu.getRequestAll().getString("name").isEmpty()) {
                 proteu.setResponseHeaderStatus(400);
                 logger.warn("Name is empty.");
                 return;
-            } else if (proteu.getRequestAll().getString("title").equals("")) {
+            } else if (proteu.getRequestAll().getString("title").isEmpty()) {
                 proteu.setResponseHeaderStatus(400);
                 logger.warn("Display name is empty.");
                 return;
-            } else if (proteu.getRequestAll().getString("x").equals("")) {
+            } else if (proteu.getRequestAll().getString("x").isEmpty()) {
                 proteu.setResponseHeaderStatus(400);
                 logger.warn("X is empty.");
                 return;
-            } else if (proteu.getRequestAll().getString("y").equals("")) {
+            } else if (proteu.getRequestAll().getString("y").isEmpty()) {
                 proteu.setResponseHeaderStatus(400);
                 logger.warn("Y is empty.");
                 return;
@@ -121,7 +122,7 @@ public class FormDesign {
                     if (Config.getDBBuilder(proteu).updateTableField()) {
                         rsField = Config.getDBBuilder(proteu).selectTableDesign(proteu.getRequestAll().getString("id"));
                         if (rsField.size() == 1) {
-                            field = rsField.get(0);
+                            field = rsField.getFirst();
                             arrangeXY(proteu, hili, table, field);
                         }
                         TemplateBuilder.output(proteu, hili, "dev/notification/formdesign_saved", data);
@@ -132,7 +133,7 @@ public class FormDesign {
                     if (Config.getDBBuilder(proteu).createTableField()) {
                         List<Values> rsNewField = Config.getDBBuilder(proteu).selectTableDesign(table.getString("id"), proteu.getRequestAll().getString("name"));
                         if (rsNewField.size() == 1) {
-                            field = rsNewField.get(0);
+                            field = rsNewField.getFirst();
                             arrangeXY(proteu, hili, table, field);
                         }
                         TemplateBuilder.output(proteu, hili, "dev/notification/formdesign_created", data);
@@ -167,21 +168,23 @@ public class FormDesign {
         data.set("description.value", field != null ? field.getString("description") : "");
         data.set("unique.checked", field != null && field.getBoolean("unique") ? " checked" : "");
         data.set("mandatory.checked", field != null && field.getBoolean("mandatory") ? " checked" : "");
-        data.set("whenresult.checked", field == null || (field != null && field.getBoolean("whenresult")) ? " checked" : "");
-        data.set("whenfilter.checked", field == null || (field != null && field.getBoolean("whenfilter")) ? " checked" : "");
-        data.set("whenview.checked", field == null || (field != null && field.getBoolean("whenview")) ? " checked" : "");
-        data.set("whenedit.checked", field == null || (field != null && field.getBoolean("whenedit")) ? " checked" : "");
-        data.set("whennew.checked", field == null || (field != null && field.getBoolean("whennew")) ? " checked" : "");
-        data.set("whenexport.checked", field == null || (field != null && field.getBoolean("whenexport")) ? " checked" : "");
+        data.set("whenresult.checked", field == null || field.getBoolean("whenresult") ? " checked" : "");
+        data.set("whenfilter.checked", field == null || field.getBoolean("whenfilter") ? " checked" : "");
+        data.set("whenview.checked", field == null || field.getBoolean("whenview") ? " checked" : "");
+        data.set("whenedit.checked", field == null || field.getBoolean("whenedit") ? " checked" : "");
+        data.set("whennew.checked", field == null || field.getBoolean("whennew") ? " checked" : "");
+        data.set("whenexport.checked", field == null || field.getBoolean("whenexport") ? " checked" : "");
 
         String typeItems = "";
         for (String key : Config.getComponents(proteu, hili).keysSorted()) {
             Component com = (Component)Config.getComponents(proteu, hili).get(key);
-            data.set("type.item.id", key);
-            data.set("type.item.selected", field != null && field.getString("type").equals(key) ? " selected" : "");
-            data.set("type.item.name", com.getName());
-            data.set("type.item.description", com.getDescription());
-            typeItems = typeItems.concat(TemplateBuilder.getOutput(proteu, hili, "dev/formdesign_type_item", data));
+            if (com != null) {
+                data.set("type.item.id", key);
+                data.set("type.item.selected", field != null && field.getString("type").equals(key) ? " selected" : "");
+                data.set("type.item.name", com.getName());
+                data.set("type.item.description", com.getDescription());
+                typeItems = typeItems.concat(TemplateBuilder.getOutput(proteu, hili, "dev/formdesign_type_item", data));
+            }
         }
         data.set("type.items", typeItems);
 
@@ -211,21 +214,20 @@ public class FormDesign {
     protected static void arrangeXY(Proteu proteu, Hili hili, Values table, Values field) {
 		List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(table.getString("id"));
 		int addY = 0;
-		for (int i = 0; i < rsDesignXY.size(); i++) {
-            Values rowTritaoDesignXY = rsDesignXY.get(i);
+        for (Values rowTritaoDesignXY : rsDesignXY) {
             if (rowTritaoDesignXY.getString("id").equals(field.getString("id"))) {
-            	continue;
+                continue;
             }
             if (rowTritaoDesignXY.getString("x").equals(field.getString("x"))
-            		&& rowTritaoDesignXY.getString("y").equals(field.getString("y"))) {
-            	addY += 1;
+                    && rowTritaoDesignXY.getString("y").equals(field.getString("y"))) {
+                addY += 1;
             }
             if (addY > 0) {
-            	Config.getDBBuilder(proteu).updateTableFieldXY(rowTritaoDesignXY.getString("id"),
-            			rowTritaoDesignXY.getInt("x"),
-            			rowTritaoDesignXY.getInt("y") + addY);
+                Config.getDBBuilder(proteu).updateTableFieldXY(rowTritaoDesignXY.getString("id"),
+                        rowTritaoDesignXY.getInt("x"),
+                        rowTritaoDesignXY.getInt("y") + addY);
             }
-		}
+        }
 	}
 
 
