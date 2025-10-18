@@ -31,9 +31,9 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     DB.sqlInjection(data.getString("name"))
             );
             DB db = new DB(getExecutor().getConnection());
-            if (rsTableDesign.size() == 0) {
+            if (rsTableDesign.isEmpty()) {
                 List<Values> rsTable = selectTable(data.getString("table_id"), "", "", data.getBoolean("report"));
-                Values table = rsTable.get(0);
+                Values table = rsTable.getFirst();
                 Component com = null;
                 try {
                     com = Config.getNewComponent(getProteu(), getHili(), data.getString("type"));
@@ -135,8 +135,6 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 new org.netuno.tritao.resource.Setup(getProteu(), getHili()).autoCreateSchema();
 
                 result = true;
-            } else {
-                result = false;
             }
         } catch (Exception e) {
             throw new Error(e);
@@ -151,11 +149,11 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     + DB.sqlInjectionInt(getProteu().getRequestGet().getString("netuno_table_id")) + " and name = '"
                     + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "' and id != "
                     + DB.sqlInjectionInt(getProteu().getRequestAll().getString("id")));
-            if (rsTableDesign.size() == 0) {
+            if (rsTableDesign.isEmpty()) {
                 List<Values> rsTable = selectTable(getProteu().getRequestGet().getString("netuno_table_id"), "", "");
-                Values table = rsTable.get(0);
+                Values table = rsTable.getFirst();
                 List<Values> rsTableDesignField = selectTableDesign(getProteu().getRequestAll().getString("id"));
-                Values field = rsTableDesignField.get(0);
+                Values field = rsTableDesignField.getFirst();
                 if (getProteu().getRequestAll().getString("type").equals("user")) {
                     getProteu().getRequestAll().set("link", "netuno_user:name");
                 } else if (getProteu().getRequestAll().getString("type").equals("group")) {
@@ -304,8 +302,6 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 new org.netuno.tritao.resource.Setup(getProteu(), getHili()).autoCreateSchema();
 
                 result = true;
-            } else {
-                result = false;
             }
         } catch (Exception e) {
             throw new Error(e);
@@ -318,9 +314,9 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
         try {
             List<Values> rsTableDesignField = selectTableDesign(getProteu().getRequestAll().getString("id"));
             if (rsTableDesignField.size() == 1) {
-                Values field = rsTableDesignField.get(0);
+                Values field = rsTableDesignField.getFirst();
                 List<Values> rsTable = selectTable(getProteu().getRequestGet().getString("netuno_table_id"), "", "");
-                Values table = rsTable.get(0);
+                Values table = rsTable.getFirst();
                 DB db = new DB(getExecutor().getConnection());
                 if (!getProteu().getRequestAll().getBoolean("report")) {
                     org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
@@ -344,8 +340,6 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 new org.netuno.tritao.resource.Setup(getProteu(), getHili()).autoCreateSchema();
 
                 result = true;
-            } else {
-                result = false;
             }
         } catch (Exception e) {
             throw new Error(e);
@@ -357,15 +351,13 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
         boolean result = false;
         try {
             List<Values> rsTableDesign = selectTableDesign(toTableId, newName);
-            if (rsTableDesign.size() == 0) {
+            if (rsTableDesign.isEmpty()) {
                 List<Values> rsTable = selectTable(toTableId, "", "");
-                Values table = rsTable.get(0);
+                Values table = rsTable.getFirst();
 
                 List<Values> rsField = Config.getDBBuilder(getProteu()).selectTableDesign(fieldId);
                 if (rsField.size() == 1) {
-                    Values field = rsField.get(0);
-
-                    DB db = new DB(getExecutor().getConnection());
+                    Values field = rsField.getFirst();
 
                     Component com = Config.getNewComponent(getProteu(), getHili(), field.getString("type"));
                     com.getConfiguration().load(getComponentPropertiesFromRequestAll());
@@ -374,11 +366,11 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     if (sequence()) {
                         values.set("id", new Sequence(this).commandNextValue("netuno_design_id"));
                     }
-                    values.set("uid", "'" + UUID.randomUUID().toString() + "'");
+                    values.set("uid", "'" + UUID.randomUUID() + "'");
                     values.set("table_id", DB.sqlInjectionInt(table.getString("id")));
                     values.set("name", "'" + DB.sqlInjection(field.getString("name")) + "'");
                     values.set("unique", field.getBoolean("unique"));
-                    values.set("mandatory", field.getBoolean("mandatoryv"));
+                    values.set("mandatory", field.getBoolean("mandatory"));
                     values.set("title", "'" + DB.sqlInjection(field.getString("title")) + "'");
                     values.set("x", DB.sqlInjectionInt(field.getString("x")));
                     values.set("y", DB.sqlInjectionInt(field.getString("y")));
