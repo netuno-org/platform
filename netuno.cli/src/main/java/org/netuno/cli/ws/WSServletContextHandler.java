@@ -149,10 +149,12 @@ public class WSServletContextHandler extends ServletContextHandler {
             }
             List<String> hosts = new ArrayList<>();
             hosts.add(app.replace("_", "-") + ".local.netu.no");
-            if (Config.getAppForce() != null && !Config.getAppForce().isEmpty() && Config.getAppForce().equals(app)) {
+            hosts.add(app.replace("_", "-") + ".localhost");
+            hosts.add(app.replace("_", "-") + ".local");
+            if ((Config.getAppForce() != null && !Config.getAppForce().isEmpty() && Config.getAppForce().equals(app))
+                || ((Config.getAppForce() == null || Config.getAppForce().isEmpty()) && Config.getAppDefault().equals(app))) {
                 hosts.add("localhost");
-            } else if ((Config.getAppForce() == null || Config.getAppForce().isEmpty()) && Config.getAppDefault().equals(app)) {
-                hosts.add("localhost");
+                hosts.add("127.0.0.1");
             }
             Values valuesHosts = wsConfig.getValues("hosts");
             if (valuesHosts != null && valuesHosts.isList()) {
