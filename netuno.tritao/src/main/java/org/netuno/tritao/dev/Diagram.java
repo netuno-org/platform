@@ -85,6 +85,25 @@ public class Diagram {
                 table.set("links_count", linksCount);
                 table.set("fields", fields);
             }
+
+            // This makes the diagram look better.
+            Values tablesLinksCounter = Values.newMap();
+            for (Values table : tables) {
+                String tableName = table.getString("name");
+                tablesLinksCounter.set(
+                        tableName,
+                        Values.newMap()
+                                .set("fromCount", links.stream().filter((l) -> l.getString("from").equals(tableName)).count())
+                                .set("toCount", links.stream().filter((l) -> l.getString("to").equals(tableName)).count())
+                );
+            }
+            // This sorting changes how the diagram is shown.
+            tables.sort((l1, l2) -> {
+                Values l1Counter = tablesLinksCounter.getValues(l1.getString("name"));
+                Values l2Counter = tablesLinksCounter.getValues(l2.getString("name"));
+                return Integer.compare(l1Counter.getInt("fromCount"), l2Counter.getInt("toCount"));
+            });
+
             data.set("tables", tables);
             data.set("links", links);
             data.set("linksFrom", linksFrom);
