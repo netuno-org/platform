@@ -113,15 +113,17 @@ public class Hili implements AutoCloseable {
     }
 
     public void loadLangResource(String path, String name, Locale locale) {
-        LangResource lang = (LangResource)proteu.getConfig().get("_lang");
-        try {
-            lang.addExtra(new LangResource(name, path, locale));
-        } catch (MalformedURLException e) {
-            HiliError error = new HiliError(proteu, this, "Language Recource "+ name +" ("+ locale.toString() +") "+ path + (e.getLocalizedMessage() != null ? ": "+ e.getLocalizedMessage() : ""), e);
-            error.setLogError(true);
-            throw error;
-        } catch (MissingResourceException e) {
-            logger.warn("Language Recource "+ name +" ("+ locale.toString() +") "+ path + (e.getLocalizedMessage() != null ? ": "+ e.getLocalizedMessage() : ""));
+        if (!proteu.getConfig().getBoolean("_lang:disabled")) {
+            LangResource lang = (LangResource) proteu.getConfig().get("_lang:default");
+            try {
+                lang.addExtra(new LangResource(name, path, locale));
+            } catch (MalformedURLException e) {
+                HiliError error = new HiliError(proteu, this, "Language Recource " + name + " (" + locale.toString() + ") " + path + (e.getLocalizedMessage() != null ? ": " + e.getLocalizedMessage() : ""), e);
+                error.setLogError(true);
+                throw error;
+            } catch (MissingResourceException e) {
+                logger.warn("Language Recource " + name + " (" + locale.toString() + ") " + path + (e.getLocalizedMessage() != null ? ": " + e.getLocalizedMessage() : ""));
+            }
         }
     }
 
