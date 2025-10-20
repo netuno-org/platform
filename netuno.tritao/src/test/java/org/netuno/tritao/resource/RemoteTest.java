@@ -18,7 +18,7 @@
 package org.netuno.tritao.resource;
 
 import org.junit.jupiter.api.Test;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.WebTest;
 import org.netuno.tritao.WebTestConfig;
 
@@ -39,7 +39,7 @@ public class RemoteTest extends WebTest {
 
     @Test
     public void testGet() throws Exception {
-        new WebMaster(getProteu(), getHili()) {
+        new Web(getProteu(), getHili()) {
             @Override
             public void run() throws Exception {
                 Remote remote = resource(Remote.class);

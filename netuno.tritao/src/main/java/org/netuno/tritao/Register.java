@@ -35,7 +35,7 @@ import org.netuno.tritao.util.TemplateBuilder;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/Register")
-public class Register extends WebMaster {
+public class Register extends Web {
     private static Logger logger = LogManager.getLogger(Register.class);
 
     public static void key(Proteu proteu, Hili hili) throws Exception {

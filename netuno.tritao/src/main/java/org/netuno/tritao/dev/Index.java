@@ -20,7 +20,7 @@ package org.netuno.tritao.dev;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.hili.Hili;
 
 /**
@@ -28,7 +28,7 @@ import org.netuno.tritao.hili.Hili;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/dev/Index")
-public class Index extends WebMaster {
+public class Index extends Web {
 
     public Index(Proteu proteu, Hili hili) {
         super(proteu, hili);

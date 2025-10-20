@@ -22,7 +22,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.DB;
@@ -36,7 +36,7 @@ import org.netuno.tritao.resource.Req;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/dev/Form")
-public class Form extends WebMaster {
+public class Form extends Web {
     public Form() {
         super();
     }

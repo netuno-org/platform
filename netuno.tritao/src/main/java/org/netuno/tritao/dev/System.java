@@ -21,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.resource.Out;
 import org.netuno.tritao.resource.Req;
 import org.netuno.tritao.resource.Template;
@@ -31,7 +31,7 @@ import org.netuno.tritao.resource.Template;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/dev/System")
-public class System extends WebMaster {
+public class System extends Web {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(System.class);
     
     @Override

@@ -32,7 +32,7 @@ import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.SafePath;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.Service;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.hili.HiliError;
@@ -49,7 +49,7 @@ import java.util.stream.Stream;
  * Builds the OpenAPI Definition.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Schema extends WebMaster {
+public class Schema extends Web {
     private static Logger logger = LogManager.getLogger(Schema.class);
 
     public Service service = null;

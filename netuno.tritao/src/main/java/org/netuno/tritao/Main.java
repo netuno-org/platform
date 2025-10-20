@@ -40,7 +40,7 @@ import javax.script.ScriptException;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/Main")
-public class Main extends WebMaster {
+public class Main extends Web {
     private static Logger logger = LogManager.getLogger(Main.class);
 
     public Main(Proteu proteu, Hili hili) {

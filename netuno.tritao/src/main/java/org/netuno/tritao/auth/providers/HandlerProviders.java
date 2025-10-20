@@ -23,7 +23,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.auth.providers.integration.*;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
@@ -39,7 +39,7 @@ import java.util.UUID;
  * Providers Handler
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class HandlerProviders extends WebMaster {
+public class HandlerProviders extends Web {
     private static final Logger LOGGER = LogManager.getLogger(HandlerProviders.class);
     private final Proteu proteu;
     private final Hili hili;

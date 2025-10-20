@@ -21,16 +21,16 @@ package org.netuno.tritao;
  * Web Master Exception
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class WebMasterException extends Exception {
-    public WebMasterException(final String text, final Exception ex) {
+public class WebException extends Exception {
+    public WebException(final String text, final Exception ex) {
         super(text, ex);
     }
 
-    public WebMasterException(final Exception ex) {
+    public WebException(final Exception ex) {
         super(ex);
     }
 
-    public WebMasterException(final String text) {
+    public WebException(final String text) {
         super(text);
     }
 }

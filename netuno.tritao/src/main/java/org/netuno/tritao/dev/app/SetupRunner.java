@@ -2,7 +2,7 @@ package org.netuno.tritao.dev.app;
 
 import org.netuno.proteu.Path;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.resource.Header;
 import org.netuno.tritao.resource.Out;
 import org.netuno.tritao.resource.Req;
@@ -14,7 +14,7 @@ import org.netuno.tritao.resource.Val;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/dev/app/SetupRunner")
-public class SetupRunner extends WebMaster {
+public class SetupRunner extends Web {
     public void run() throws Exception {
         Header header = resource(Header.class);
         Setup setup = resource(Setup.class);

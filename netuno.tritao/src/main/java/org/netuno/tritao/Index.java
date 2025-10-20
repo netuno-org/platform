@@ -39,7 +39,7 @@ import java.util.List;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/Index")
-public class Index extends WebMaster {
+public class Index extends Web {
 
     private static Logger logger = LogManager.getLogger(Index.class);
 

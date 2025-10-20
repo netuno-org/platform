@@ -25,7 +25,7 @@ import org.netuno.proteu.Proteu.HTTPStatus;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
@@ -37,7 +37,7 @@ import org.netuno.tritao.util.Rule;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/Navigation")
-public class Navigation extends WebMaster {
+public class Navigation extends Web {
     public Navigation() {
         super();
     }

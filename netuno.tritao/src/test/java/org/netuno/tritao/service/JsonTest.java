@@ -19,7 +19,7 @@ package org.netuno.tritao.service;
 
 import org.junit.jupiter.api.Test;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.WebTest;
 import org.netuno.tritao.WebTestConfig;
 import org.netuno.tritao.resource.Out;
@@ -38,7 +38,7 @@ public class JsonTest extends WebTest {
     @Test
     public void test() throws Exception {
     	"".toString();
-        new WebMaster(getProteu(), getHili()) {
+        new Web(getProteu(), getHili()) {
             @Override
             public void run() throws Exception {
                 Values result = new Values();

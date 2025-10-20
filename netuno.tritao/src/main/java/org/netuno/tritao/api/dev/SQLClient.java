@@ -27,7 +27,7 @@ import org.netuno.proteu.Path;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
@@ -39,7 +39,7 @@ import org.netuno.tritao.resource.Req;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/dev/SQLClient")
-public class SQLClient extends WebMaster {
+public class SQLClient extends Web {
     private static Logger logger = LogManager.getLogger(SQLClient.class);
     
     public SQLClient() {

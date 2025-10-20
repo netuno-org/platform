@@ -26,7 +26,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
@@ -39,7 +39,7 @@ import org.netuno.tritao.resource.Req;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/dev/CodeClient")
-public class CodeClient extends WebMaster {
+public class CodeClient extends Web {
     private static Logger logger = LogManager.getLogger(CodeClient.class);
     
     public CodeClient() {

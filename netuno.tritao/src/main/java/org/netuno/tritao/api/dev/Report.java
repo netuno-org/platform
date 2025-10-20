@@ -20,7 +20,7 @@ package org.netuno.tritao.api.dev;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
 
@@ -29,7 +29,7 @@ import org.netuno.tritao.resource.Header;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/dev/Report")
-public class Report extends WebMaster {
+public class Report extends Web {
     public Report() {
         super();
     }

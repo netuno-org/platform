@@ -25,7 +25,7 @@ import org.netuno.proteu.ProteuException;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.config.Config;
 
 import java.util.List;
@@ -40,7 +40,7 @@ import javax.script.ScriptException;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/dev/Main")
-public class Main extends WebMaster {
+public class Main extends Web {
 
     public Main(Proteu proteu, Hili hili) {
         super(proteu, hili);

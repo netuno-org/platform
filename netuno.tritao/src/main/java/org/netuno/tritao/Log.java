@@ -35,7 +35,7 @@ import java.util.List;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/Log")
-public class Log extends WebMaster {
+public class Log extends Web {
 
     @Override
     public void run() throws Exception {

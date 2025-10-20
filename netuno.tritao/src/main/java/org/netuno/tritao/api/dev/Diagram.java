@@ -23,7 +23,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.Parameter;
 import org.netuno.tritao.com.ParameterType;
@@ -37,7 +37,7 @@ import org.netuno.tritao.resource.Out;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/dev/Diagram")
-public class Diagram extends WebMaster {
+public class Diagram extends Web {
     public Diagram() {
         super();
     }

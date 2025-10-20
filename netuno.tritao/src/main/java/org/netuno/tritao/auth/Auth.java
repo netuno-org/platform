@@ -23,7 +23,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.hili.Hili;
@@ -42,7 +42,7 @@ import java.util.List;
  * @author Marcel Becheanu - @marcelgbecheanu
  */
 @Path("/org/netuno/tritao/Auth")
-public class Auth extends WebMaster {
+public class Auth extends Web {
     
     private Profile profile = Profile.ALL;
 

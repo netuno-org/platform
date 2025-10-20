@@ -21,7 +21,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Header;
@@ -32,7 +32,7 @@ import org.netuno.tritao.resource.Out;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/dev/Group")
-public class Group extends WebMaster {
+public class Group extends Web {
     public Group() {
         super();
     }

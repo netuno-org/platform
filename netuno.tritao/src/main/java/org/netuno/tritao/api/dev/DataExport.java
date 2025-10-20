@@ -23,7 +23,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.Path;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.com.Component;
 import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.config.Config;
@@ -38,7 +38,7 @@ import org.netuno.tritao.resource.Req;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @Path("/org/netuno/tritao/api/dev/DataExport")
-public class DataExport extends WebMaster {
+public class DataExport extends Web {
     public DataExport() {
         super();
     }

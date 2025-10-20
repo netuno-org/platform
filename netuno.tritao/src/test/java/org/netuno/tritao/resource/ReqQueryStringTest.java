@@ -19,7 +19,7 @@ package org.netuno.tritao.resource;
 
 import org.junit.jupiter.api.Test;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.WebMaster;
+import org.netuno.tritao.Web;
 import org.netuno.tritao.WebTest;
 import org.netuno.tritao.WebTestConfig;
 
@@ -48,7 +48,7 @@ public class ReqQueryStringTest extends WebTest {
 
     @Test
     public void test() throws Exception {
-        new WebMaster(getProteu(), getHili()) {
+        new Web(getProteu(), getHili()) {
             @Override
             public void run() throws Exception {
                 Out _out = resource(Out.class);

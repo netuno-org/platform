@@ -18,22 +18,21 @@
 package org.netuno.tritao;
 
 import org.netuno.proteu.Proteu;
-import org.netuno.proteu.Web;
 import org.netuno.tritao.hili.Hili;
 
 /**
  * Web Master
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class WebMaster implements Web {
+public class Web implements org.netuno.proteu.Web {
     private Proteu proteu;
     private Hili hili;
 
-    public WebMaster() {
+    public Web() {
 
     }
 
-    public WebMaster(Proteu proteu, Hili hili) {
+    public Web(Proteu proteu, Hili hili) {
         setProteu(proteu);
         setFaros(hili);
     }
@@ -66,6 +65,6 @@ public class WebMaster implements Web {
 
     @Override
     public void run() throws Exception {
-        throw new WebMasterException("You should not execute directly this class.");
+        throw new WebException("You should not execute directly this class.");
     }
 }
