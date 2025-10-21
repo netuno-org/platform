@@ -182,7 +182,10 @@ public class LangResource {
         try (URLClassLoader urlLoader = new URLClassLoader(new java.net.URL[]{new java.io.File(path).toURI().toURL()}, null)) {
             bundle = ResourceBundle.getBundle(name, locale, urlLoader);
         } catch(Exception e) {
-            logger.error(String.format("Lang resource %s_%s in %s was unable to process.", resourceName, resourceLocale, path), e);
+            String message = String.format("Lang resource %s_%s in %s was unable to be processed.", resourceName, resourceLocale, path);
+            message += "\n\t"+ e.getMessage();
+            logger.error(message);
+            logger.debug(message, e);
         }
     }
     
