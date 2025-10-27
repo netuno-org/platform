@@ -53,7 +53,6 @@ public class Config {
     private static PasswordBuilder defaultPasswordBuilder = new PasswordSHA256Hex();
 
     private static List<Class> definitionsClasses = new ArrayList<>();
-    private static List<Class> resourcesClasses = new ArrayList<>();
 
     private static String[] permittedLanguages = new String[] { "js", "regex", "python", "ruby" };
 
@@ -647,7 +646,7 @@ public class Config {
     }
 
     public static void setScriptingDefinition(Proteu proteu, Hili hili, String name, Object value) {
-	getScriptingDefinitions(proteu, hili).set(name, value);
+	    getScriptingDefinitions(proteu, hili).set(name, value);
     }
 
     public static Values getScriptingDefinitions(Proteu proteu, Hili hili) {
