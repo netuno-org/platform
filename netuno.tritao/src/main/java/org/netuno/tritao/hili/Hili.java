@@ -27,6 +27,7 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.FileManager;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.event.EventManager;
 import org.netuno.tritao.resource.Resource;
 import org.netuno.tritao.resource.ResourceManager;
 import org.netuno.tritao.sandbox.SandboxManager;
@@ -52,6 +53,8 @@ public class Hili implements AutoCloseable {
 
     private ResourceManager resource = null;
 
+    private EventManager event = null;
+
     private ScriptEngine scriptEngineVelocity = null;
     
     private int scriptsRunning = 0;
@@ -71,6 +74,7 @@ public class Hili implements AutoCloseable {
 
         sandbox = new SandboxManager(proteu, this);
         resource = new ResourceManager(proteu, this);
+        event = new EventManager(proteu, this);
     }
 
     public SandboxManager sandbox() {
@@ -79,6 +83,10 @@ public class Hili implements AutoCloseable {
 
     public ResourceManager resource() {
         return resource;
+    }
+
+    public EventManager event() {
+        return event;
     }
 
     public<T> T definition(Class<T> resourceClass) {
