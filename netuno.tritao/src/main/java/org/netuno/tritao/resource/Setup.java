@@ -25,9 +25,11 @@ import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
+import org.netuno.psamata.Event;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.event.EventId;
 import org.netuno.tritao.hili.Hili;
 
 import java.io.File;
@@ -134,6 +136,8 @@ public class Setup extends ResourceBase {
             if (setupConfig == null || !setupConfig.getBoolean("enabled", true)) {
                 return RunResult.Disabled;
             }
+            Event.run("_setup:"+ Config.getApp(getProteu()) +":schema:start");
+            getHili().event().run(EventId.SETUP_START);
             ScriptResult scriptStartResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), "_start");
             result.set(result.get() && scriptStartResult.isSuccess());
             Config.getDBBuilder(getProteu(), "default").setup();
@@ -189,6 +193,7 @@ public class Setup extends ResourceBase {
             }
             ScriptResult scriptEndResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), "_end");
             result.set(result.get() && scriptEndResult.isSuccess());
+            getHili().event().run(EventId.SETUP_END, Values.newMap().set("result", result.get()));
             if (!result.get()) {
                 return RunResult.Error;
             }

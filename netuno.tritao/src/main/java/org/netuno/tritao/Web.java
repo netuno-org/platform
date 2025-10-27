@@ -21,7 +21,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.tritao.hili.Hili;
 
 /**
- * Web Master
+ * Web
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class Web implements org.netuno.proteu.Web {
