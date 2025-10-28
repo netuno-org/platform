@@ -26,6 +26,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.event.EventId;
 import org.netuno.tritao.hili.Hili;
 
 import java.text.DateFormat;
@@ -174,41 +175,61 @@ public class DBExecutor {
         }
     }
 
-    public void scriptSave(Proteu proteu, Hili hili, String tableName, DataItem dataItem) {
+    public void scriptSave(Proteu proteu, Hili hili, DataItem dataItem) {
         try {
-            hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "save");
+            Values eventData = Values.newMap()
+                    .set("dataItem", dataItem)
+                    .set("setupRunning", setupRunning);
+            hili.event().run(EventId.ACTION_SCRIPT_SAVE_BEFORE, eventData);
+            hili.sandbox().bind("dataItem", dataItem);
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), dataItem.getFormName() + "/" + (setupRunning ? "setup_" : "") + "save");
+            hili.event().run(EventId.ACTION_SCRIPT_SAVE_AFTER, eventData);
         } finally {
             hili.sandbox().unbind("dataItem");
         }
     }
 
-    public void scriptSaved(Proteu proteu, Hili hili, String tableName, DataItem dataItem) {
+    public void scriptSaved(Proteu proteu, Hili hili, DataItem dataItem) {
         try {
-            hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "saved");
+            Values eventData = Values.newMap()
+                    .set("dataItem", dataItem)
+                    .set("setupRunning", setupRunning);
+            hili.event().run(EventId.ACTION_SCRIPT_SAVED_BEFORE, eventData);
+            hili.sandbox().bind("dataItem", dataItem);
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), dataItem.getFormName() + "/" + (setupRunning ? "setup_" : "") + "saved");
+            hili.event().run(EventId.ACTION_SCRIPT_SAVED_AFTER, eventData);
         } finally {
             hili.sandbox().unbind("dataItem");
         }
     }
 
-    public void scriptRemove(Proteu proteu, Hili hili, String tableName, DataItem dataItem) {
+    public void scriptRemove(Proteu proteu, Hili hili, DataItem dataItem) {
         try {
-            hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "remove");
+            Values eventData = Values.newMap()
+                    .set("dataItem", dataItem)
+                    .set("setupRunning", setupRunning);
+            hili.event().run(EventId.ACTION_SCRIPT_REMOVE_BEFORE, eventData);
+            hili.sandbox().bind("dataItem", dataItem);
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), dataItem.getFormName() + "/" + (setupRunning ? "setup_" : "") + "remove");
+            hili.event().run(EventId.ACTION_SCRIPT_REMOVE_AFTER, eventData);
         } finally {
             hili.sandbox().unbind("dataItem");
         }
     }
 
-    public void scriptRemoved(Proteu proteu, Hili hili, String tableName, DataItem dataItem) {
+    public void scriptRemoved(Proteu proteu, Hili hili, DataItem dataItem) {
         try {
-            hili.sandbox().bind("dataItem", dataItem);
             boolean setupRunning = proteu.getConfig().getBoolean("_setup:running", false);
-            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), "" + tableName + "/" + (setupRunning ? "setup_" : "") + "removed");
+            Values eventData = Values.newMap()
+                    .set("dataItem", dataItem)
+                    .set("setupRunning", setupRunning);
+            hili.event().run(EventId.ACTION_SCRIPT_REMOVED_BEFORE, eventData);
+            hili.sandbox().bind("dataItem", dataItem);
+            hili.sandbox().runScriptIfExists(Config.getPathAppActions(proteu), dataItem.getFormName() + "/" + (setupRunning ? "setup_" : "") + "removed");
+            hili.event().run(EventId.ACTION_SCRIPT_REMOVED_AFTER, eventData);
         } finally {
             hili.sandbox().unbind("dataItem");
         }
