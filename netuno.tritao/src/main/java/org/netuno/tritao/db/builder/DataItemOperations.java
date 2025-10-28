@@ -12,6 +12,7 @@ import org.netuno.tritao.com.ParameterType;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.LogAction;
+import org.netuno.tritao.event.EventId;
 import org.netuno.tritao.resource.Firebase;
 import org.netuno.tritao.util.Link;
 import org.netuno.tritao.util.Rule;
@@ -192,7 +193,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             com.onSave();
         }
 
-        getExecutor().scriptSave(getProteu(), getHili(), table.getString("name"), dataItem);
+        getHili().event().run(EventId.ACTION_SAVE, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptSave(getProteu(), getHili(), dataItem);
 
         if (dataItem.isStatusAsError()) {
             if (insert) {
@@ -373,7 +375,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
 
         dataItem.setRecord(getItemById(table.getString("name"), dataItem.getId()));
 
-        getExecutor().scriptSaved(getProteu(), getHili(), table.getString("name"), dataItem);
+        getHili().event().run(EventId.ACTION_SAVED, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptSaved(getProteu(), getHili(), dataItem);
 
         for (Values rowTritaoDesignXY : rsDesignXY) {
             Component com = Config.getNewComponent(
@@ -483,7 +486,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             com.onDelete();
         }
 
-        getExecutor().scriptRemove(getProteu(), getHili(), tableName, dataItem);
+        getHili().event().run(EventId.ACTION_REMOVE, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptRemove(getProteu(), getHili(), dataItem);
         if (dataItem.isStatusAsError()) {
             return;
         }
@@ -535,7 +539,8 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
                 .concat(" where id = ").concat(DB.sqlInjectionInt(dataItem.getId())).concat("")));
         dataItem.setStatus(DataItem.Status.Deleted);
         saveLog(LogAction.Delete, table, dataItem, itemLog);
-        getExecutor().scriptRemoved(getProteu(), getHili(), tableName, dataItem);
+        getHili().event().run(EventId.ACTION_REMOVED, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptRemoved(getProteu(), getHili(), dataItem);
         for (Values rowTritaoDesignXY : rsTritaoDesignXY) {
             Component com = Config.getNewComponent(getProteu(), getHili(),
                     rowTritaoDesignXY.getString("type"));
