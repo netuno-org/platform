@@ -21,6 +21,7 @@ import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.DataItem;
+import org.netuno.tritao.event.EventId;
 
 import java.util.List;
 import java.util.UUID;
@@ -258,7 +259,8 @@ public interface User extends BuilderBase {
         dataItem.setRecord(dataRecord);
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Update);
-        getExecutor().scriptSave(getProteu(), getHili(), "netuno_user", dataItem);
+        getHili().event().run(EventId.ACTION_SAVE, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptSave(getProteu(), getHili(), dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
@@ -301,7 +303,8 @@ public interface User extends BuilderBase {
         }
         getExecutor().execute("update netuno_user set id = " + id + update + " where id = " + id);
         dataItem.setStatus(DataItem.Status.Updated);
-        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_user", dataItem);
+        getHili().event().run(EventId.ACTION_SAVED, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptSaved(getProteu(), getHili(), dataItem);
         return true;
     }
 
@@ -338,7 +341,8 @@ public interface User extends BuilderBase {
         dataItem.setFormName("netuno_user");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getExecutor().scriptSave(getProteu(), getHili(), "netuno_user", dataItem);
+        getHili().event().run(EventId.ACTION_SAVE, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptSave(getProteu(), getHili(), dataItem);
         if (dataItem.isStatusAsError()) {
             return 0;
         }
@@ -387,7 +391,8 @@ public interface User extends BuilderBase {
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
         dataItem.setUid(record.getString("uid"));
-        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_user", dataItem);
+        getHili().event().run(EventId.ACTION_SAVED, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptSaved(getProteu(), getHili(), dataItem);
         return id;
     }
 
@@ -401,13 +406,15 @@ public interface User extends BuilderBase {
         dataItem.setFormName("netuno_user");
         dataItem.setRecord(dataRecord);
         dataItem.setStatus(DataItem.Status.Delete);
-        getExecutor().scriptRemove(getProteu(), getHili(), "netuno_user", dataItem);
+        getHili().event().run(EventId.ACTION_REMOVE, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptRemove(getProteu(), getHili(), dataItem);
         if (dataItem.isStatusAsError()) {
             return false;
         }
         getExecutor().execute("delete from netuno_user where id = " + id);
         dataItem.setStatus(DataItem.Status.Deleted);
-        getExecutor().scriptRemoved(getProteu(), getHili(), "netuno_user", dataItem);
+        getHili().event().run(EventId.ACTION_REMOVED, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptRemoved(getProteu(), getHili(), dataItem);
         return true;
     }
 }
