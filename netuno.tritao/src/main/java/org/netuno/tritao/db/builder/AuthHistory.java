@@ -21,6 +21,7 @@ import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.DataItem;
+import org.netuno.tritao.event.EventId;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -58,7 +59,8 @@ public interface AuthHistory extends BuilderBase {
         dataItem.setFormName("netuno_auth_history");
         dataItem.setValues(values);
         dataItem.setStatus(DataItem.Status.Insert);
-        getExecutor().scriptSave(getProteu(), getHili(), "netuno_auth_history", dataItem);
+        getHili().event().run(EventId.ACTION_SAVE, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptSave(getProteu(), getHili(), dataItem);
 
         if (dataItem.isStatusAsError()) {
             return 0;
@@ -90,7 +92,8 @@ public interface AuthHistory extends BuilderBase {
         dataItem.setRecord(getAuthHistoryById("" + id));
         dataItem.setStatus(DataItem.Status.Inserted);
         dataItem.setId(record.getString("id"));
-        getExecutor().scriptSaved(getProteu(), getHili(), "netuno_auth_history", dataItem);
+        getHili().event().run(EventId.ACTION_SAVED, Values.newMap().set("dataItem", dataItem));
+        getExecutor().scriptSaved(getProteu(), getHili(), dataItem);
         return id;
     }
 
