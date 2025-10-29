@@ -61,7 +61,7 @@ public class ResourceManager implements AutoCloseable {
                 classes.add(Class.forName(_resourcesClass));
             } catch (Exception e) {
                 try {
-                    logger.fatal("Trying init resource "+ resourcesClass +"...", e);
+                    logger.fatal("Trying to load the "+ resourcesClass +" resource...", e);
                 } catch (Exception ex) {}
             }
         }

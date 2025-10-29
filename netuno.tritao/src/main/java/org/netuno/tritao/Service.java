@@ -27,6 +27,7 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.event.EventId;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.hili.HiliError;
 
@@ -67,7 +68,7 @@ public class Service {
         "lock", "unlock", "propfind", "view"
     }; 
 
-    private static Logger logger = LogManager.getLogger(Service.class);
+    private static final Logger logger = LogManager.getLogger(Service.class);
     private Proteu proteu = null;
     private Hili hili = null;
     public String method = "";
@@ -190,9 +191,14 @@ public class Service {
                     || Auth.isAuthenticated(proteu, hili)) {
                 service.allow();
             }
+            hili.event().run(EventId.SERVICE_CONFIG_BEFORE);
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
+            hili.event().run(EventId.SERVICE_CONFIG);
+            hili.event().run(EventId.SERVICE_CONFIG_SCRIPT_BEFORE);
             if (service.core("_service_config")) {
+                hili.event().run(EventId.SERVICE_CONFIG_SCRIPT_AFTER);
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
+                hili.event().run(EventId.SERVICE_CONFIG_AFTER);
                 if (service.wasCancelled()) {
                     if (proteu.isResponseHeaderStatusOk()) {
                         proteu.responseHTTPError(Proteu.HTTPStatus.ServiceUnavailable503, hili);
@@ -216,9 +222,14 @@ public class Service {
                     service.defaultEmptyOutput();
                     return;
                 }
+                hili.event().run(EventId.SERVICE_START_BEFORE);
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
+                hili.event().run(EventId.SERVICE_START);
+                hili.event().run(EventId.SERVICE_START_SCRIPT_BEFORE);
                 service.core("_service_start");
+                hili.event().run(EventId.SERVICE_START_SCRIPT_AFTER);
                 EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
+                hili.event().run(EventId.SERVICE_START_AFTER);
                 ByteArrayOutputStream outStream = null;
                 if (schema.schemaOutExists()) {
                     outStream = new ByteArrayOutputStream();
@@ -234,9 +245,14 @@ public class Service {
                     schema.validateSchemaOut(outStream);
                 }
                 if (proteu.getConfig().getBoolean("_script:_service_end")) {
+                    hili.event().run(EventId.SERVICE_END_BEFORE);
                     EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
+                    hili.event().run(EventId.SERVICE_END);
+                    hili.event().run(EventId.SERVICE_END_SCRIPT_BEFORE);
                     service.core("_service_end");
+                    hili.event().run(EventId.SERVICE_END_SCRIPT_AFTER);
                     EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
+                    hili.event().run(EventId.SERVICE_END_AFTER);
                 }
             }
         } catch (Throwable e) {
@@ -264,7 +280,12 @@ public class Service {
                     .whenError((t) -> {
                         proteu.setResponseHeader(Proteu.HTTPStatus.InternalServerError500);
                         if (!file.equals("_service_error")) {
+                            hili.event().run(EventId.SERVICE_ERROR_BEFORE, Values.newMap().set("error", t));
+                            hili.event().run(EventId.SERVICE_ERROR);
+                            hili.event().run(EventId.SERVICE_ERROR_SCRIPT_BEFORE, Values.newMap().set("error", t));
                             core("_service_error");
+                            hili.event().run(EventId.SERVICE_ERROR_SCRIPT_AFTER, Values.newMap().set("error", t));
+                            hili.event().run(EventId.SERVICE_ERROR_AFTER, Values.newMap().set("error", t));
                         }
                     })
                     .isSuccess();
@@ -300,11 +321,17 @@ public class Service {
                                 func.apply(new Object[] {t, file});
                             }
                         } finally {
+                            hili.event().run(EventId.SERVICE_ERROR_BEFORE, Values.newMap().set("error", t));
+                            hili.event().run(EventId.SERVICE_ERROR);
+                            hili.event().run(EventId.SERVICE_ERROR_SCRIPT_BEFORE, Values.newMap().set("error", t));
                             core("_service_error");
+                            hili.event().run(EventId.SERVICE_ERROR_SCRIPT_AFTER, Values.newMap().set("error", t));
+                            hili.event().run(EventId.SERVICE_ERROR_AFTER, Values.newMap().set("error", t));
                         }
                     })
                     .isSuccess();
         } else if (!file.equals("config")) {
+            hili.event().run(EventId.SERVICE_NOT_FOUND_BEFORE);
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceNotFound);
             if (isNotFoundDefaultError()) {
                 proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
@@ -320,7 +347,9 @@ public class Service {
                         + "\n"
                 );
             }
+            hili.event().run(EventId.SERVICE_NOT_FOUND);
             EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceNotFound);
+            hili.event().run(EventId.SERVICE_NOT_FOUND_AFTER);
             proteu.getConfig().unset("_service:not-found:default-error");
         }
         return false;
@@ -351,12 +380,5 @@ public class Service {
     public static Service getInstance(Proteu proteu) {
         return (Service)proteu.getConfig().get("_service:instance");
     }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        /*
-        GC TEST
-        hili.unbind("service");
-        */
-    }
+
 }
