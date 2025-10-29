@@ -38,8 +38,8 @@ import java.util.function.Function;
 
 import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.auth.providers.HandlerProviders;
-import org.netuno.tritao.resource.event.AppEventType;
-import org.netuno.tritao.resource.event.EventExecutor;
+import org.netuno.tritao.resource.event.ResourceEventType;
+import org.netuno.tritao.resource.event.ResourceEventExecutor;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -192,12 +192,12 @@ public class Service {
                 service.allow();
             }
             hili.event().run(EventId.SERVICE_CONFIG_BEFORE);
-            EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
+            ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeServiceConfiguration);
             hili.event().run(EventId.SERVICE_CONFIG);
             hili.event().run(EventId.SERVICE_CONFIG_SCRIPT_BEFORE);
             if (service.core("_service_config")) {
                 hili.event().run(EventId.SERVICE_CONFIG_SCRIPT_AFTER);
-                EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
+                ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterServiceConfiguration);
                 hili.event().run(EventId.SERVICE_CONFIG_AFTER);
                 if (service.wasCancelled()) {
                     if (proteu.isResponseHeaderStatusOk()) {
@@ -213,7 +213,7 @@ public class Service {
                     return;
                 }
                 if (!service.isMethod() && method.equalsIgnoreCase("options")) {
-                    EventExecutor.getInstance(proteu).runAppEvent(AppEventType.ServiceOptionsMethodAutoReply);
+                    ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.ServiceOptionsMethodAutoReply);
                     return;
                 }
                 org.netuno.tritao.resource.Auth auth = hili.resource().get(org.netuno.tritao.resource.Auth.class);
@@ -223,12 +223,12 @@ public class Service {
                     return;
                 }
                 hili.event().run(EventId.SERVICE_START_BEFORE);
-                EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
+                ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeServiceConfiguration);
                 hili.event().run(EventId.SERVICE_START);
                 hili.event().run(EventId.SERVICE_START_SCRIPT_BEFORE);
                 service.core("_service_start");
                 hili.event().run(EventId.SERVICE_START_SCRIPT_AFTER);
-                EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
+                ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterServiceConfiguration);
                 hili.event().run(EventId.SERVICE_START_AFTER);
                 ByteArrayOutputStream outStream = null;
                 if (schema.schemaOutExists()) {
@@ -246,12 +246,12 @@ public class Service {
                 }
                 if (proteu.getConfig().getBoolean("_script:_service_end")) {
                     hili.event().run(EventId.SERVICE_END_BEFORE);
-                    EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceConfiguration);
+                    ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeServiceConfiguration);
                     hili.event().run(EventId.SERVICE_END);
                     hili.event().run(EventId.SERVICE_END_SCRIPT_BEFORE);
                     service.core("_service_end");
                     hili.event().run(EventId.SERVICE_END_SCRIPT_AFTER);
-                    EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceConfiguration);
+                    ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterServiceConfiguration);
                     hili.event().run(EventId.SERVICE_END_AFTER);
                 }
             }
@@ -332,7 +332,7 @@ public class Service {
                     .isSuccess();
         } else if (!file.equals("config")) {
             hili.event().run(EventId.SERVICE_NOT_FOUND_BEFORE);
-            EventExecutor.getInstance(proteu).runAppEvent(AppEventType.BeforeServiceNotFound);
+            ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeServiceNotFound);
             if (isNotFoundDefaultError()) {
                 proteu.responseHTTPError(Proteu.HTTPStatus.NotFound404, hili);
                 logger.warn("\n"
@@ -348,7 +348,7 @@ public class Service {
                 );
             }
             hili.event().run(EventId.SERVICE_NOT_FOUND);
-            EventExecutor.getInstance(proteu).runAppEvent(AppEventType.AfterServiceNotFound);
+            ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterServiceNotFound);
             hili.event().run(EventId.SERVICE_NOT_FOUND_AFTER);
             proteu.getConfig().unset("_service:not-found:default-error");
         }
