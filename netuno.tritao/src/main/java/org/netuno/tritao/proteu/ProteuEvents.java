@@ -41,8 +41,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Function;
 import org.netuno.tritao.db.DBError;
-import org.netuno.tritao.resource.event.AppEventType;
-import org.netuno.tritao.resource.event.EventExecutor;
+import org.netuno.tritao.resource.event.ResourceEventType;
+import org.netuno.tritao.resource.event.ResourceEventExecutor;
 
 /**
  * Proteu Events - Lifecycle of the HTTP Requests
@@ -458,9 +458,9 @@ public class ProteuEvents implements Events {
         Config.getComponents(proteu, hili);
         Config.getScriptingDefinitions(proteu, hili);
         hili.resource().all(true);
-        EventExecutor eventExecutor = new EventExecutor(proteu, hili);
+        ResourceEventExecutor resourceEventExecutor = new ResourceEventExecutor(proteu, hili);
         hili.event().run(EventId.CONFIG_ENVIRONMENT_BEFORE);
-        eventExecutor.runAppEvent(AppEventType.BeforeEnvironment);
+        resourceEventExecutor.runAppEvent(ResourceEventType.BeforeEnvironment);
         hili.event().run(EventId.CONFIG_ENVIRONMENT);
         try {
             proteu.ensureJail(Config.getPathAppBase(proteu));
@@ -470,33 +470,33 @@ public class ProteuEvents implements Events {
         hili.event().run(EventId.CONFIG_ENVIRONMENT_SCRIPT_BEFORE);
         hili.sandbox().runScript(Config.getPathAppBaseConfig(proteu), "_"+ Config.getEnv(proteu));
         hili.event().run(EventId.CONFIG_ENVIRONMENT_SCRIPT_AFTER);
-        eventExecutor.runAppEvent(AppEventType.AfterEnvironment);
+        resourceEventExecutor.runAppEvent(ResourceEventType.AfterEnvironment);
         hili.event().run(EventId.CONFIG_ENVIRONMENT_AFTER);
         if (Config.isSetup(proteu)) {
-            eventExecutor.runAppEvent(AppEventType.BeforeSetup);
+            resourceEventExecutor.runAppEvent(ResourceEventType.BeforeSetup);
             new Setup(proteu, hili).run();
-            eventExecutor.runAppEvent(AppEventType.AfterSetup);
+            resourceEventExecutor.runAppEvent(ResourceEventType.AfterSetup);
         }
 
         hili.event().run(EventId.CONFIG_BEFORE);
-        eventExecutor.runAppEvent(AppEventType.BeforeConfiguration);
+        resourceEventExecutor.runAppEvent(ResourceEventType.BeforeConfiguration);
         hili.event().run(EventId.CONFIG);
         hili.event().run(EventId.CONFIG_SCRIPT_BEFORE);
         hili.sandbox().runScript(Config.getPathAppCore(proteu), "_config");
         hili.event().run(EventId.CONFIG_SCRIPT_AFTER);
         proteu.getConfig().set("_app:config:loaded", true);
-        eventExecutor.runAppEvent(AppEventType.AfterConfiguration);
+        resourceEventExecutor.runAppEvent(ResourceEventType.AfterConfiguration);
         hili.event().run(EventId.CONFIG_AFTER);
         //hili.resource().all(true);
         if (!starting.contains(Config.getApp(proteu))) {
             starting.add(Config.getApp(proteu));
             hili.event().run(EventId.INIT_BEFORE);
-            eventExecutor.runAppEvent(AppEventType.BeforeInitialization);
+            resourceEventExecutor.runAppEvent(ResourceEventType.BeforeInitialization);
             hili.event().run(EventId.INIT);
             hili.event().run(EventId.INIT_SCRIPT_BEFORE);
             hili.sandbox().runScript(Config.getPathAppCore(proteu), "_init");
             hili.event().run(EventId.INIT_SCRIPT_AFTER);
-            eventExecutor.runAppEvent(AppEventType.AfterInitialization);
+            resourceEventExecutor.runAppEvent(ResourceEventType.AfterInitialization);
             hili.event().run(EventId.INIT_AFTER);
         }
         hili.event().run(EventId.REQUEST_START_BEFORE);
