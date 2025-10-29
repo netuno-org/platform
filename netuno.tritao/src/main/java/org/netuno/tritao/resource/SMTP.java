@@ -32,8 +32,8 @@ import org.netuno.psamata.mail.Mail;
 import org.netuno.psamata.mail.SMTPConfig;
 import org.netuno.psamata.mail.SMTPTransport;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 
 /**
@@ -93,7 +93,7 @@ public class SMTP extends ResourceBase {
         this.multipartSubtype = smtpConfig.getMultipartSubtype();
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         getProteu().getConfig().set("_smtp", getProteu().getConfig().getValues("_app:config").getValues("smtp"));
     }

@@ -29,8 +29,8 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 
 /**
  * Authentication - Resource
@@ -81,7 +81,7 @@ public class Auth extends ResourceBase {
         super(proteu, hili);
     }
 
-    @AppEvent(type= AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         Values authConfig = getProteu().getConfig().getValues("_app:config").getValues("auth");
         if (authConfig != null) {
@@ -90,12 +90,12 @@ public class Auth extends ResourceBase {
         }
     }
 
-    @AppEvent(type=AppEventType.AfterConfiguration)
+    @ResourceEvent(type= ResourceEventType.AfterConfiguration)
     private void afterConfiguration() {
         load();
     }
 
-    @AppEvent(type=AppEventType.AfterServiceConfiguration)
+    @ResourceEvent(type= ResourceEventType.AfterServiceConfiguration)
     private void afterServiceConfiguration() {
         load();
     }

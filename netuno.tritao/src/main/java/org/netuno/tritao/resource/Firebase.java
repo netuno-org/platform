@@ -38,8 +38,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.netuno.tritao.Service;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 
 /**
  * Firebase - Resource
@@ -72,7 +72,7 @@ public class Firebase extends ResourceBase {
         super(proteu, hili);
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         Values firebaseConfig = getProteu().getConfig().getValues("_app:config").getValues("firebase");
         if (firebaseConfig != null) {
@@ -83,12 +83,12 @@ public class Firebase extends ResourceBase {
         }
     }
     
-    @AppEvent(type=AppEventType.BeforeInitialization)
+    @ResourceEvent(type= ResourceEventType.BeforeInitialization)
     private void beforeInitialization() {
         config();
     }
     
-    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    @ResourceEvent(type= ResourceEventType.BeforeServiceConfiguration)
     private void beforeServiceConfiguration() {
         Service service = Service.getInstance(getProteu());
         if (service.path.startsWith("firebase/listener/")

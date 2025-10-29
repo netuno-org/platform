@@ -6,7 +6,6 @@ import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
-import org.netuno.library.doc.ReturnDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
@@ -15,8 +14,8 @@ import org.netuno.psamata.ftp.FTPConfig;
 import org.netuno.psamata.ftp.FTPFile;
 import org.netuno.psamata.io.File;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ErrorException;
 import org.netuno.tritao.resource.util.ResourceException;
 
@@ -61,7 +60,7 @@ public class FTP extends ResourceBase implements AutoCloseable {
         this.enabled = ftpConfig.isEnabled();
     }
 
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         getProteu().getConfig().set("_ftp", getProteu().getConfig().getValues("_app:config").getValues("ftp"));
     }

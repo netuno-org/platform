@@ -24,9 +24,9 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ResourceException;
-import org.netuno.tritao.resource.event.AppEvent;
+import org.netuno.tritao.resource.event.ResourceEvent;
 
 /**
  * CRON - Resource
@@ -140,7 +140,7 @@ public class Cron extends ResourceBase {
         super(proteu, hili);
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         Values cronConfig = getProteu().getConfig().getValues("_app:config").getValues("cron");
         if (cronConfig != null) {
@@ -152,7 +152,7 @@ public class Cron extends ResourceBase {
         }
     }
     
-    @AppEvent(type=AppEventType.BeforeConfiguration)
+    @ResourceEvent(type= ResourceEventType.BeforeConfiguration)
     private void beforeConfiguration() {
         Values jobs = getProteu().getConfig().getValues("_cron:jobs");
         String secret = getProteu().getConfig().getString("_cron:secret");
@@ -173,12 +173,12 @@ public class Cron extends ResourceBase {
         }
     }
     
-    @AppEvent(type=AppEventType.BeforeInitialization)
+    @ResourceEvent(type= ResourceEventType.BeforeInitialization)
     private void beforeInitialization() {
         config();
     }
     
-    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    @ResourceEvent(type= ResourceEventType.BeforeServiceConfiguration)
     private void beforeServiceConfiguration() {
         if (!getProteu().getRequestAll().getString("job").isEmpty() && !getProteu().getRequestAll().getString("secret").isEmpty()) {
             Service service = Service.getInstance(getProteu());

@@ -31,8 +31,8 @@ import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.Service;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 
 import java.io.IOException;
 
@@ -64,7 +64,7 @@ public class CORS extends ResourceBase {
         super(proteu, hili);
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         Values corsConfig = getProteu().getConfig().getValues("_app:config").getValues("cors");
         if (corsConfig != null) {
@@ -72,12 +72,12 @@ public class CORS extends ResourceBase {
         }
     }
     
-    @AppEvent(type=AppEventType.AfterServiceConfiguration)
+    @ResourceEvent(type= ResourceEventType.AfterServiceConfiguration)
     private void afterServiceConfiguration() {
         load();
     }
 
-    @AppEvent(type=AppEventType.BeforeServiceNotFound)
+    @ResourceEvent(type= ResourceEventType.BeforeServiceNotFound)
     private void beforeServiceNotFound() {
         if (getProteu().getRequestHeader().getString("Method").equalsIgnoreCase("options")) {
             Values entry = getProteu().getConfig().getValues("_cors:entry");
@@ -95,7 +95,7 @@ public class CORS extends ResourceBase {
         }
     }
 
-    @AppEvent(type=AppEventType.ServiceOptionsMethodAutoReply)
+    @ResourceEvent(type= ResourceEventType.ServiceOptionsMethodAutoReply)
     private void serviceOptionsMethodAutoReply() {
         if (getProteu().getRequestHeader().getString("Method").equalsIgnoreCase("options")) {
             Values entry = getProteu().getConfig().getValues("_cors:entry");

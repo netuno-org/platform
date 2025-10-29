@@ -41,8 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.sandbox.ScriptResult;
 
 /**
@@ -96,7 +96,7 @@ public class Setup extends ResourceBase {
         super(proteu, hili);
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         Values setupConfig = getProteu().getConfig().getValues("_app:config").getValues("setup");
         getProteu().getConfig().set("_setup:config", setupConfig);

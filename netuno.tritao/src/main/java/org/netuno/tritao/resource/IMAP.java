@@ -17,8 +17,8 @@ import org.netuno.psamata.mail.IMAPClient;
 import org.netuno.psamata.mail.IMAPConfig;
 import org.netuno.psamata.mail.Mail;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 
 /**
@@ -66,7 +66,7 @@ public class IMAP extends ResourceBase implements AutoCloseable {
         this.enabled = imapConfig.isEnabled();
     }
 
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         getProteu().getConfig().set("_imap", getProteu().getConfig().getValues("_app:config").getValues("imap"));
     }

@@ -42,8 +42,8 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.resource.util.ResourceException;
 
 import org.netuno.tritao.Service;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ErrorException;
 
 /*
@@ -133,7 +133,7 @@ public class RabbitMQ extends ResourceBase {
         getKey();
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         Values rabbitmqConfig = getProteu().getConfig().getValues("_app:config").getValues("rabbitmq");
         if (rabbitmqConfig != null) {
@@ -143,12 +143,12 @@ public class RabbitMQ extends ResourceBase {
         }
     }
     
-    @AppEvent(type=AppEventType.AfterInitialization)
+    @ResourceEvent(type= ResourceEventType.AfterInitialization)
     private void afterInitialization() {
         config();
     }
     
-    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    @ResourceEvent(type= ResourceEventType.BeforeServiceConfiguration)
     private void beforeServiceConfiguration() {
         if (!getProteu().getConfig().getValues("_app:config").getString("name").equals(getProteu().getRequestAll().getString("app"))) {
             return;

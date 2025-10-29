@@ -36,8 +36,8 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.psamata.io.File;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 
 /**
  * Remote (Web Client) - Resource
@@ -82,7 +82,7 @@ public class Remote extends org.netuno.psamata.net.Remote {
         this.name = name;
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         proteu.getConfig().set("_remote", proteu.getConfig().getValues("_app:config").getValues("remote"));
     }

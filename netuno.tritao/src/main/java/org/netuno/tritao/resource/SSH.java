@@ -18,8 +18,8 @@ import org.netuno.psamata.ssh.SSHClient;
 import org.netuno.psamata.ssh.SSHSession;
 import org.netuno.psamata.ssh.SSHConfig;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ErrorException;
 import org.netuno.tritao.resource.util.ResourceException;
 
@@ -63,7 +63,7 @@ public class SSH extends ResourceBase implements AutoCloseable {
         this.enabled = sshConfig.isEnabled();
     }
 
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         getProteu().getConfig().set("_ssh", getProteu().getConfig().getValues("_app:config").getValues("ssh"));
     }

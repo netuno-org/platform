@@ -36,8 +36,8 @@ import org.netuno.tritao.resource.util.ResourceException;
 
 import javax.crypto.SecretKey;
 
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 
 /**
  * JWT (JSON Web Token) - Resource
@@ -78,13 +78,13 @@ public class JWT extends ResourceBase {
         isEnabled();
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         getProteu().getConfig().set("_jwt", getProteu().getConfig().getValues("_app:config").getValues("jwt"));
         init();
     }
     
-    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    @ResourceEvent(type= ResourceEventType.BeforeServiceConfiguration)
     private void beforeServiceConfiguration() {
         init();
     }

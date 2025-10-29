@@ -32,8 +32,8 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.event.AppEvent;
-import org.netuno.tritao.resource.event.AppEventType;
+import org.netuno.tritao.resource.event.ResourceEvent;
+import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 
 /**
@@ -83,7 +83,7 @@ public class WS extends ResourceBase {
         app = Config.getApp(getProteu());
     }
     
-    @AppEvent(type=AppEventType.BeforeEnvironment)
+    @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
         Values wsConfig = getProteu().getConfig().getValues("_app:config").getValues("ws");
         if (wsConfig != null) {
@@ -91,7 +91,7 @@ public class WS extends ResourceBase {
         }
     }
     
-    @AppEvent(type=AppEventType.BeforeServiceConfiguration)
+    @ResourceEvent(type= ResourceEventType.BeforeServiceConfiguration)
     private void beforeServiceConfiguration() {
         Req req = resource(Req.class);
         Header header = resource(Header.class);
