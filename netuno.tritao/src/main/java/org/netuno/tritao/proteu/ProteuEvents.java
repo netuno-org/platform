@@ -30,6 +30,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.ConfigError;
 import org.netuno.tritao.db.DBExecutor;
+import org.netuno.tritao.event.EventId;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Setup;
 import org.netuno.tritao.resource.URL;
@@ -458,33 +459,52 @@ public class ProteuEvents implements Events {
         Config.getScriptingDefinitions(proteu, hili);
         hili.resource().all(true);
         EventExecutor eventExecutor = new EventExecutor(proteu, hili);
+        hili.event().run(EventId.CONFIG_ENVIRONMENT_BEFORE);
         eventExecutor.runAppEvent(AppEventType.BeforeEnvironment);
+        hili.event().run(EventId.CONFIG_ENVIRONMENT);
         try {
             proteu.ensureJail(Config.getPathAppBase(proteu));
         } catch (ProteuException e) {
             logger.error("When starting ensure jail to: "+ Config.getPathAppBase(proteu), e);
         }
-
+        hili.event().run(EventId.CONFIG_ENVIRONMENT_SCRIPT_BEFORE);
         hili.sandbox().runScript(Config.getPathAppBaseConfig(proteu), "_"+ Config.getEnv(proteu));
+        hili.event().run(EventId.CONFIG_ENVIRONMENT_SCRIPT_AFTER);
         eventExecutor.runAppEvent(AppEventType.AfterEnvironment);
+        hili.event().run(EventId.CONFIG_ENVIRONMENT_AFTER);
         if (Config.isSetup(proteu)) {
             eventExecutor.runAppEvent(AppEventType.BeforeSetup);
             new Setup(proteu, hili).run();
             eventExecutor.runAppEvent(AppEventType.AfterSetup);
         }
 
+        hili.event().run(EventId.CONFIG_BEFORE);
         eventExecutor.runAppEvent(AppEventType.BeforeConfiguration);
+        hili.event().run(EventId.CONFIG);
+        hili.event().run(EventId.CONFIG_SCRIPT_BEFORE);
         hili.sandbox().runScript(Config.getPathAppCore(proteu), "_config");
+        hili.event().run(EventId.CONFIG_SCRIPT_AFTER);
         proteu.getConfig().set("_app:config:loaded", true);
         eventExecutor.runAppEvent(AppEventType.AfterConfiguration);
+        hili.event().run(EventId.CONFIG_AFTER);
         //hili.resource().all(true);
         if (!starting.contains(Config.getApp(proteu))) {
             starting.add(Config.getApp(proteu));
+            hili.event().run(EventId.INIT_BEFORE);
             eventExecutor.runAppEvent(AppEventType.BeforeInitialization);
+            hili.event().run(EventId.INIT);
+            hili.event().run(EventId.INIT_SCRIPT_BEFORE);
             hili.sandbox().runScript(Config.getPathAppCore(proteu), "_init");
+            hili.event().run(EventId.INIT_SCRIPT_AFTER);
             eventExecutor.runAppEvent(AppEventType.AfterInitialization);
+            hili.event().run(EventId.INIT_AFTER);
         }
+        hili.event().run(EventId.REQUEST_START_BEFORE);
+        hili.event().run(EventId.REQUEST_START);
+        hili.event().run(EventId.REQUEST_START_SCRIPT_BEFORE);
         hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_start");
+        hili.event().run(EventId.REQUEST_START_SCRIPT_AFTER);
+        hili.event().run(EventId.REQUEST_START_AFTER);
     }
 
     public String beforeUrl(Proteu proteu, Object faros, String url) {
@@ -622,7 +642,12 @@ public class ProteuEvents implements Events {
         Hili hili = (Hili)faros;
         URL _url = new URL(proteu, hili);
         _url.to(url);
+        hili.event().run(EventId.REQUEST_URL_BEFORE);
+        hili.event().run(EventId.REQUEST_URL);
+        hili.event().run(EventId.REQUEST_URL_SCRIPT_BEFORE);
         hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_url");
+        hili.event().run(EventId.REQUEST_URL_SCRIPT_AFTER);
+        hili.event().run(EventId.REQUEST_URL_AFTER);
         url = _url.request();
         String storage_url = Config.getUrlStorage(proteu);
         if (url.startsWith(storage_url)) {
@@ -660,7 +685,12 @@ public class ProteuEvents implements Events {
         }
         Hili hili = (Hili)faros;
         if (proteu.getConfig().getValues("_app:config") != null) {
+            hili.event().run(EventId.REQUEST_CLOSE_BEFORE);
+            hili.event().run(EventId.REQUEST_CLOSE);
+            hili.event().run(EventId.REQUEST_CLOSE_SCRIPT_BEFORE);
             hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_close");
+            hili.event().run(EventId.REQUEST_CLOSE_SCRIPT_AFTER);
+            hili.event().run(EventId.REQUEST_CLOSE_AFTER);
         }
     }
 
@@ -673,7 +703,12 @@ public class ProteuEvents implements Events {
     public void beforeEnd(Proteu proteu, Object faros) {
         Hili hili = (Hili)faros;
         if (proteu.getConfig().getBoolean("_script:_request_end")) {
+            hili.event().run(EventId.REQUEST_END_BEFORE);
+            hili.event().run(EventId.REQUEST_END);
+            hili.event().run(EventId.REQUEST_END_SCRIPT_BEFORE);
             hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_end");
+            hili.event().run(EventId.REQUEST_END_SCRIPT_AFTER);
+            hili.event().run(EventId.REQUEST_END_AFTER);
         }
     }
 
