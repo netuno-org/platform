@@ -24,16 +24,16 @@ import org.netuno.proteu.ProteuError;
  *
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class EventError extends ProteuError {
-    public EventError() {
+public class ResourceEventError extends ProteuError {
+    public ResourceEventError() {
         super();
     }
     
-    public EventError(String message) {
+    public ResourceEventError(String message) {
         super(message);
     }
     
-    public EventError(String message, Throwable cause) {
+    public ResourceEventError(String message, Throwable cause) {
         super(message, cause);
     }
 }

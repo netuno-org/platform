@@ -30,6 +30,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AppEvent {
-    AppEventType type();
+public @interface ResourceEvent {
+    ResourceEventType type();
 }

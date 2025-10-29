@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuError;
 import org.netuno.psamata.Values;
-import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.Resource;
 
@@ -32,7 +31,7 @@ import org.netuno.tritao.resource.Resource;
  *
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class EventExecutor {
+public class ResourceEventExecutor {
     private Proteu proteu = null;
     private Hili hili = null;
     
@@ -41,20 +40,20 @@ public class EventExecutor {
      * @param proteu Client
      * @param hili Core
      */
-    public EventExecutor(Proteu proteu, Hili hili) {
-        if (proteu.getConfig().hasKey("_event:executor")) {
-            throw new Error("Event Executor already created, instead use: EventExecutor.getInstance(proteu)");
+    public ResourceEventExecutor(Proteu proteu, Hili hili) {
+        if (proteu.getConfig().hasKey("_resource:event:executor")) {
+            throw new Error("Resource Event Executor already created, instead use: EventExecutor.getInstance(proteu)");
         }
         this.proteu = proteu;
         this.hili = hili;
-        proteu.getConfig().set("_event:executor:instance", this);
+        proteu.getConfig().set("_resource:event:executor:instance", this);
     }
     
     /**
      * Run the application live cycle events.
-     * @param appEventType The application event type will be executed.
+     * @param resourceEventType The application event type will be executed.
      */
-    public void runAppEvent(AppEventType appEventType) {
+    public void runAppEvent(ResourceEventType resourceEventType) {
         Values resources = hili.resource().all();
         for (String key : resources.keys()) {
             Object objectResource = resources.get(key);
@@ -66,9 +65,9 @@ public class EventExecutor {
                     "".toString();
                 }
                 for (Method method : methods) {
-                    AppEvent appEvent = method.getAnnotation(AppEvent.class);
+                    ResourceEvent appEvent = method.getAnnotation(ResourceEvent.class);
                     if (appEvent != null) {
-                        if (appEvent.type() == appEventType) {
+                        if (appEvent.type() == resourceEventType) {
                             method.setAccessible(true);
                             try {
                                 method.invoke(objectResource);
@@ -76,23 +75,23 @@ public class EventExecutor {
                                 String message = "\n"
                                         +"# "+ EmojiParser.parseToUnicode(":skull_crossbones:") +" Resource "+ resource.name() +" with illegal access on method "+ method.getName() +".";
                                 if (e.getCause() != null && e.getCause() instanceof ProteuError) {
-                                    throw new EventError(message, e.getCause()).setLogFatal(true);
+                                    throw new ResourceEventError(message, e.getCause()).setLogFatal(true);
                                 }
-                                throw new EventError(message, e).setLogFatal(true);
+                                throw new ResourceEventError(message, e).setLogFatal(true);
                             } catch (InvocationTargetException e) {
                                 String message = "\n"
                                         +"#\n"
                                         +"# "+ EmojiParser.parseToUnicode(":skull_crossbones:") +" Resource "+ resource.name() +" with invocation error on method "+ method.getName() +".\n"
                                         +"#\n";
                                 if (e.getCause() != null && e.getCause() instanceof ProteuError) {
-                                    throw new EventError(message, e.getCause()).setLogFatal(true);
+                                    throw new ResourceEventError(message, e.getCause()).setLogFatal(true);
                                 }
-                                throw new EventError(message, e).setLogFatal(true);
+                                throw new ResourceEventError(message, e).setLogFatal(true);
                             } catch (Throwable t) {
                                 if (t instanceof ProteuError) {
                                     throw t;
                                 } else {
-                                    throw new EventError("Resource "+ resource.name() +" with invocation error on method "+ method.getName() +".", t).setLogFatal(true);
+                                    throw new ResourceEventError("Resource "+ resource.name() +" with invocation error on method "+ method.getName() +".", t).setLogFatal(true);
                                 }
                             }
                         }
@@ -102,8 +101,8 @@ public class EventExecutor {
         }
     }
     
-    public static EventExecutor getInstance(Proteu proteu) {
-        return (EventExecutor)proteu.getConfig().get("_event:executor:instance");
+    public static ResourceEventExecutor getInstance(Proteu proteu) {
+        return (ResourceEventExecutor)proteu.getConfig().get("_resource:event:executor:instance");
     }
     
 }

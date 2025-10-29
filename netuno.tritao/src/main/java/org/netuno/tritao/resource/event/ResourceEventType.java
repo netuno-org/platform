@@ -22,7 +22,7 @@ package org.netuno.tritao.resource.event;
  *
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public enum AppEventType {
+public enum ResourceEventType {
     /**
      * To execute before the environment of an application.
      */
