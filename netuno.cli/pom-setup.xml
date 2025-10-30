@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.netuno.cli</groupId>
     <artifactId>netuno-cli</artifactId>
-    <version>7.0.0</version>
+    <version>${revision}</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -14,21 +14,21 @@
     <parent>
         <groupId>org.netuno</groupId>
         <artifactId>netuno</artifactId>
-        <version>7.0.0</version>
+        <version>${revision}</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.netuno.library.doc</groupId>
             <artifactId>netuno-library-doc</artifactId>
-            <version>${netuno.library.doc.version}</version>
+            <version>${revision}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.netuno.psamata</groupId>
             <artifactId>netuno-psamata</artifactId>
-            <version>${netuno.psamata.version}</version>
+            <version>${revision}</version>
             <type>jar</type>
 	        <scope>compile</scope>
         </dependency>

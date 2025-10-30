@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.netuno.library.doc</groupId>
     <artifactId>netuno-library-doc</artifactId>
-    <version>7.0.0</version>
+    <version>${revision}</version>
 
     <name>netuno-library-doc</name>
 
@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.netuno</groupId>
         <artifactId>netuno</artifactId>
-        <version>7.0.0</version>
+        <version>${revision}</version>
     </parent>
 
     <dependencies>
@@ -29,12 +29,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>25</source>
+                    <target>25</target>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
@@ -48,6 +47,13 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <finalName>${project.artifactId}</finalName>
+                </configuration>
             </plugin>
         </plugins>
     </build>

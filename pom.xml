@@ -5,7 +5,7 @@
 
     <groupId>org.netuno</groupId>
     <artifactId>netuno</artifactId>
-    <version>7.0.0</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <name>netuno</name>
@@ -20,13 +20,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netuno.version>7.0.0</netuno.version>
-        <netuno.cli.version>7.0.0</netuno.cli.version>
-        <netuno.license.version>7.0.0</netuno.license.version>
-        <netuno.proteu.version>7.0.0</netuno.proteu.version>
-        <netuno.psamata.version>7.0.0</netuno.psamata.version>
-        <netuno.tritao.version>7.0.0</netuno.tritao.version>
-        <netuno.library.doc.version>7.0.0</netuno.library.doc.version>
         <apache.commons-text.version>1.12.0</apache.commons-text.version>
         <apache.commons-lang3.version>3.18.0</apache.commons-lang3.version>
         <apache.commons-io.version>2.17.0</apache.commons-io.version>

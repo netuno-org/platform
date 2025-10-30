@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.netuno.psamata</groupId>
     <artifactId>netuno-psamata</artifactId>
-    <version>7.0.0</version>
+    <version>${revision}</version>
 
     <name>netuno-psamata</name>
 
@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.netuno</groupId>
         <artifactId>netuno</artifactId>
-        <version>7.0.0</version>
+        <version>${revision}</version>
     </parent>
 
     <repositories>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.netuno.library.doc</groupId>
             <artifactId>netuno-library-doc</artifactId>
-            <version>${netuno.library.doc.version}</version>
+            <version>${revision}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -147,6 +147,13 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <finalName>${project.artifactId}</finalName>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.netuno.tritao</groupId>
     <artifactId>netuno-tritao</artifactId>
-    <version>7.0.0</version>
+    <version>${revision}</version>
 
     <name>netuno-tritao</name>
 
@@ -15,14 +15,14 @@
     <parent>
         <groupId>org.netuno</groupId>
         <artifactId>netuno</artifactId>
-        <version>7.0.0</version>
+        <version>${revision}</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.netuno.library.doc</groupId>
             <artifactId>netuno-library-doc</artifactId>
-            <version>${netuno.library.doc.version}</version>
+            <version>${revision}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.netuno.cli</groupId>
             <artifactId>netuno-cli</artifactId>
-            <version>${netuno.cli.version}</version>
+            <version>${revision}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.netuno.psamata</groupId>
             <artifactId>netuno-psamata</artifactId>
-            <version>${netuno.psamata.version}</version>
+            <version>${revision}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.netuno.proteu</groupId>
             <artifactId>netuno-proteu</artifactId>
-            <version>${netuno.proteu.version}</version>
+            <version>${revision}</version>
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
