@@ -53,7 +53,7 @@
         <classgraph.version>4.8.163</classgraph.version>
         <json.version>20240303</json.version>
         <itext.version>9.3.0</itext.version>
-        <pdfbox.version>3.0.5</pdfbox.version>
+        <pdfbox.version>3.0.6</pdfbox.version>
         <log4j.version>2.25.2</log4j.version>
         <oshi.version>6.8.3</oshi.version>
         <sshj.version>0.40.0</sshj.version>
