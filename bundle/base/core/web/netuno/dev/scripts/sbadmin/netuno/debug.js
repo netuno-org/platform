@@ -88,14 +88,22 @@
       },
       script: (script) => {
         let name = script.file;
-        if (name.indexOf('/') >= 0) {
-          name = name.substring(name.lastIndexOf('/') + 1);
+        let path = '';
+        if (script.file.indexOf('/') >= 0) {
+          path = script.file.substring(0, script.file.lastIndexOf('/')) + '/produto/cliente/logistica/';
+          name = script.file.substring(script.file.lastIndexOf('/') + 1);
         }
         return { td: {
           _: { div: {
               class: 'hint--top ',
               'aria-label': script.file + '.' + script.extension,
-              _: name + '.' + script.extension
+              _: [
+                { span: {
+                  style: {fontSize: '11px'},
+                  _: path
+                } },
+                name + '.' + script.extension
+              ]
           } }
         } };
       },
