@@ -1,5 +1,7 @@
 #!/bin/bash
 
+REVISION=$(date '+%Y.%m.%d')
+
 echo
 
 PS3='Publish Mode: '
@@ -47,11 +49,6 @@ rm -f dist/netuno*.json
 cd ..
 
 echo
-echo "MVN Install"
-echo
-./mvn-install.sh
-
-echo
 echo "MVN Package"
 echo
 
@@ -77,7 +74,16 @@ cp netuno.cli/pom-setup.xml netuno.cli/pom.xml
 
 node bundle/publish-mode.js "$PublishMode"
 
-cd netuno.cli && mvn clean && mvn package && cd ..
+# build netuno-web.jar
+mkdir -p netuno.tritao/out/temp
+cd netuno.tritao/out
+(cd temp; unzip -uo ../../../netuno.proteu/target/netuno-proteu-*.jar)
+(cd temp; unzip -uo ../../../netuno.tritao/target/netuno-tritao-*.jar)
+jar -cvf netuno-web-$REVISION.jar -C temp .
+rm -rf temp
+cd ../..
+
+mvn --projects netuno.cli,netuno.psamata,netuno.library.doc -Drevision=$REVISION -Dmaven.test.skip=true clean package
 
 node bundle/publish-mode.js
 
@@ -85,17 +91,8 @@ mv netuno.cli/target/netuno-setup.jar netuno.cli/out/netuno-setup.jar
 
 cp netuno.cli/pom-base.xml netuno.cli/pom.xml
 
-# build netuno-web.jar
-mkdir -p netuno.tritao/out/temp
-cd netuno.tritao/out
-(cd temp; unzip -uo ../../../netuno.proteu/target/netuno-proteu-*.jar)
-(cd temp; unzip -uo ../../../netuno.tritao/target/netuno-tritao-*.jar)
-jar -cvf netuno-web.jar -C temp .
-rm -rf temp
-cd ../..
-
 # executes bundle/index.js
-cd bundle && node index.js && cd ..
+cd bundle && node index.js $REVISION && cd ..
 
 cd bundle/out && zip -q -r netuno.zip netuno/ && cd ../..
 
