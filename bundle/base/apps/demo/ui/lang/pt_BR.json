@@ -17,11 +17,11 @@
                 "title": "Introdução",
                 "how-to-start": {
                     "title": "Como Iniciar",
-                    "content": "<p>Se é novo no Netuno, inicie criando o seu <a href='https://doc.netuno.org/pt/docs/academy/demonstration/form' rel='external'>primeiro formulário</a>, e certifique as <a href='https://doc.netuno.org/pt/docs/academy/demonstration/config/' rel='external'>configurações iniciais</a>.</p>"
+                    "content": "<p>Se é novo no Netuno, inicie criando o seu <a href='https://doc.netuno.org/pt/docs/academy/demonstration/form' target='_blank' rel='external'>primeiro formulário</a>, e certifique as <a href='https://doc.netuno.org/pt/docs/academy/demonstration/config' target='_blank' rel='external'>configurações iniciais</a>.</p>"
                 },
                 "from-the-root": {
                     "title": "A partir da raíz do Netuno",
-                    "content": "<p>Pasta da App: <b>apps/demo/</b></p><p>Configurações da App: <b>apps/demo/config/</b></p><p>Código fonte dos serviços: <b>apps/demo/server/services</b></p><p>Código fonte dos templates: <b>apps/demo/server/templates</b></p><p><a href='https://doc.netuno.org/pt/docs/library/app-folders/app-folder-structure/' rel='external'>+ informações sobre a estrutura de pastas.</a></p>"
+                    "content": "<p>Pasta da App: <b>apps/demo/</b></p><p>Configurações da App: <b>apps/demo/config/</b></p><p>Código fonte dos serviços: <b>apps/demo/server/services</b></p><p>Código fonte dos templates: <b>apps/demo/server/templates</b></p><p><a href='https://doc.netuno.org/pt/docs/library/app-structure/folders-overview' target='_blank' rel='external'>+ informações sobre a estrutura de pastas.</a></p>"
                 },
                 "button-link": "https://doc.netuno.org/pt/"
             },

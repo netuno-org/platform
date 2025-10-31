@@ -30,7 +30,7 @@ function ListServices() {
           <div dangerouslySetInnerHTML={{ __html: intl.formatMessage({ id: `${messages}.introduction.how-to-start.content` }) }} />
           <Title level={5}><HomeOutlined /> {intl.formatMessage({ id: `${messages}.introduction.from-the-root.title` })}</Title>
           <div dangerouslySetInnerHTML={{ __html: intl.formatMessage({ id: `${messages}.introduction.from-the-root.content` }) }} />
-          <Button type="primary" href={intl.formatMessage({ id: `${messages}.introduction.button-link` })} rel="external">doc.netuno.org</Button>
+          <Button type="primary" href={intl.formatMessage({ id: `${messages}.introduction.button-link` })} target="_blank" rel="external">doc.netuno.org</Button>
         </div>
       </div>
       <div className="panel panel-default">
