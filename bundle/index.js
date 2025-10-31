@@ -6,6 +6,8 @@ const path = require('path');
 const folder = require('path').dirname(require.main.filename)
 //const AdmZip = require("adm-zip");
 
+const REVISION = process.argv[2];
+
 const config = {
     base: {
         root: 'base',
@@ -28,7 +30,7 @@ const config = {
                 proteu: '../netuno.proteu/target/lib',
                 psamata: '../netuno.psamata/target/lib'
             },
-            bundle: '../netuno.tritao/out/netuno-web.jar'
+            bundle: '../netuno.tritao/out/netuno-web-'+ REVISION +'.jar'
         },
         cli: {
             lib: '../netuno.cli/out/core/lib',
@@ -82,7 +84,7 @@ fs.removeSync(config.output.bundle +'/apps/_')
 fs.removeSync(config.output.web +'/WEB-INF/classes')
 
 fs.copySync(config.netuno.cli.bundle, config.output.bundle +'/netuno.jar')
-fs.copySync(config.netuno.web.bundle, config.output.web +'/WEB-INF/lib/netuno-web.jar')
+fs.copySync(config.netuno.web.bundle, config.output.web +'/WEB-INF/lib/netuno-web-'+ REVISION +'.jar')
 
 const jarsFolders = [
     config.netuno.web.lib.tritao,
