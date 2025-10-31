@@ -25,7 +25,7 @@ import java.nio.file.Path;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class Constants {
-    public static String GRAALVM_VERSION = "25.0.0";
+    public static String GRAALVM_VERSION = "25.0.1";
 
     public static String GRAALVM_FOLDER = "graalvm";
 
