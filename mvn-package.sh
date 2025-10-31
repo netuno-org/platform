@@ -1,4 +1,6 @@
 #!/bin/sh
 
-mvn clean && mvn compile && mvn -Dmaven.test.skip=true package
+REVISION=$(date '+%Y.%m.%d')
+
+mvn -Drevision=$REVISION clean && mvn -Drevision=$REVISION compile && mvn -Dmaven.test.skip=true -Drevision=$REVISION package
 
