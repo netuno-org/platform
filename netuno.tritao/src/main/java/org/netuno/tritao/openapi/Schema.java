@@ -247,6 +247,9 @@ public class Schema extends Web {
                             parentValues.set("minLength", 1);
                         } else if (type.equalsIgnoreCase("id")) {
                             parentValues.set("type", "number");
+                        } else if (type.equalsIgnoreCase("email")) {
+                            parentValues.set("type", "string");
+                            parentValues.set("format", "email");
                         } else if (type.equalsIgnoreCase("uid") || type.equalsIgnoreCase("uuid") || type.equalsIgnoreCase("guid")) {
                             parentValues.set("type", "string");
                             parentValues.set("pattern", "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
