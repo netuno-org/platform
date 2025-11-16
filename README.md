@@ -11,10 +11,10 @@ Join [Netuno’s Discord](https://discord.gg/4sfXG6YWFu) for help and to know mo
 You can follow to not lose the news, tips, and tutorials:
 
 - [YouTube](https://www.youtube.com/channel/UCYY1Nz6T2NJtP29vba2fqkg)
-- [Twitter](https://twitter.com/netuno_org)
 - [LinkedIn](https://www.linkedin.com/company/netuno-org/)
 - [Facebook](https://www.facebook.com/netuno.org/)
 - [Instagram](https://www.instagram.com/netuno_org/)
+- [Twitter](https://twitter.com/netuno_org)
 
 [Netuno.org](https://www.netuno.org/) is the official website.
 
