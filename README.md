@@ -1,6 +1,6 @@
-# Netuno Platform: [Get Started](https://doc.netuno.org/docs/en/installation/)
+# Netuno Platform: [Get Started](https://doc.netuno.org/docs/get-started/installation)
 
-### To install, follow the [Get Started](https://doc.netuno.org/docs/en/installation/).
+### To install, follow the [Get Started](https://doc.netuno.org/docs/get-started/installation).
 
 Quickly build applications adapted to your business logic.
 
@@ -22,16 +22,16 @@ You can follow to not lose the news, tips, and tutorials:
 
 Find more in [netuno.org](https://www.netuno.org/)
 
-[Get Started](https://doc.netuno.org/docs/en/installation/)
-&middot; [First Steps](https://doc.netuno.org/docs/en/academy/start/demonstration/form/)
-&middot; [Polyglot](https://doc.netuno.org/docs/en/business/polyglot/)
+[Get Started](https://doc.netuno.org/docs/get-started/installation)
+&middot; [First Steps](https://doc.netuno.org/docs/academy/ui/graphical-interface)
+&middot; [Polyglot](https://doc.netuno.org/docs/academy/understand/polyglot)
 
 Documentation highlights:
 
-[REST](https://doc.netuno.org/docs/en/academy/server/services/rest/)
-&middot; [OpenAPI](https://doc.netuno.org/docs/en/academy/server/services/openapi/)
-&middot; [Cron Jobs](https://doc.netuno.org/docs/en/academy/server/cron-jobs/)
-&middot; [Monitor & Alerts](https://doc.netuno.org/docs/en/academy/server/monitor-alerts/)
+[REST](https://doc.netuno.org/docs/academy/server/services/rest)
+&middot; [OpenAPI](https://doc.netuno.org/docs/academy/server/services/openapi)
+&middot; [Cron Jobs](https://doc.netuno.org/docs/academy/server/cron-jobs/)
+&middot; [Monitor & Alerts](https://doc.netuno.org/docs/academy/server/monitor-alerts/)
 
 ## Polyglot Low-Code Web Applications
 
