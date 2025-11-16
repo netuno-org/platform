@@ -44,7 +44,7 @@
         <apache.tika.version>3.2.3</apache.tika.version>
         <apache.velocity.version>2.4.1</apache.velocity.version>
         <classgraph.version>4.8.163</classgraph.version>
-        <json.version>20240303</json.version>
+        <json.version>20250517</json.version>
         <itext.version>9.3.0</itext.version>
         <pdfbox.version>3.0.6</pdfbox.version>
         <log4j.version>2.25.2</log4j.version>
