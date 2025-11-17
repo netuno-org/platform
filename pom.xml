@@ -28,7 +28,7 @@
         <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
         <jetty.version>12.1.2</jetty.version>
         <picocli.version>4.7.7</picocli.version>
-        <jansi.version>2.4.1</jansi.version>
+        <jansi.version>2.4.2</jansi.version>
         <progressbar.version>0.10.1</progressbar.version>
         <emoji.version>5.1.1</emoji.version>
         <quartz.version>2.5.0</quartz.version>
