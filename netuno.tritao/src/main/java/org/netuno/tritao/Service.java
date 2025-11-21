@@ -182,8 +182,6 @@ public class Service {
             }
 
             if (!schema.validateSchemaIn()) {
-                proteu.responseHTTPError(Proteu.HTTPStatus.BadRequest400, hili);
-                service.defaultEmptyOutput();
                 return;
             }
             if (service.getPath().startsWith("_auth_provider/")
