@@ -89,13 +89,13 @@ public class Schema extends Web {
         if (Files.exists(pathSchema)) {
             try {
                 JsonSchema schema = jsonValidationService.readSchema(loadSchemaAsInputStream(pathSchema));
-                ProblemHandler handler = jsonValidationService.createProblemPrinter(this::validateSchemaInProblem);
+                ValidationProblemHandler validationProblemHandler = new ValidationProblemHandler(jsonValidationService);
                 Values data = new Values();
                 data.merge(getProteu().getRequestGet());
                 data.merge(getProteu().getRequestPost());
-                try (JsonReader reader = jsonValidationService.createReader(new StringReader(data.toJSON()), schema, handler)) {
+                try (JsonReader reader = jsonValidationService.createReader(new StringReader(data.toJSON()), schema, validationProblemHandler)) {
                     JsonValue value = reader.readValue();
-                    if (validateSchemaInProblems.isEmpty()) {
+                    if (validationProblemHandler.hasNoProblem()) {
                         return true;
                     }
                     logger.warn("\n"
@@ -105,9 +105,11 @@ public class Schema extends Web {
                             + "\n# "+ EmojiParser.parseToUnicode(":crossed_swords:") +" Invalid request to service " + service.getPath() + ""
                             + "\n#"
                             + "\n"
-                            + validateSchemaInProblems
+                            + validationProblemHandler.toPrint()
                             + "\n#" +
                             "\n");
+                    getProteu().responseHTTPError(Proteu.HTTPStatus.BadRequest400, getHili());
+                    getProteu().outputJSON(validationProblemHandler.getProblems());
                     return false;
                 }
             } catch (Exception e) {
