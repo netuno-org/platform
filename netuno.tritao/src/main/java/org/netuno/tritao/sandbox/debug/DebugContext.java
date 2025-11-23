@@ -233,7 +233,14 @@ public class DebugContext implements AutoCloseable {
         }
 
         public void setValue(Object value) {
-            this.value = value;
+            switch (value) {
+                case null -> this.value = "NULL";
+                case Values objects ->
+                        this.value = objects.toJSON(4);
+                case List<?> list when list.stream().filter((i) -> i instanceof Values).count() == list.size() ->
+                        this.value = Values.of(list).toJSON(4);
+                default -> this.value = value;
+            }
             this.loaded = true;
         }
     }
