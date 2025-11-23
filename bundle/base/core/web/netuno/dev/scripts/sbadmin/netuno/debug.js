@@ -90,7 +90,7 @@
         let name = script.file;
         let path = '';
         if (script.file.indexOf('/') >= 0) {
-          path = script.file.substring(0, script.file.lastIndexOf('/')) + '/produto/cliente/logistica/';
+          path = script.file.substring(0, script.file.lastIndexOf('/')) + '/';
           name = script.file.substring(script.file.lastIndexOf('/') + 1);
         }
         return { td: {
