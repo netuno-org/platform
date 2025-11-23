@@ -18,6 +18,7 @@
 package org.netuno.tritao.resource;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.library.doc.LanguageDoc;
@@ -89,14 +90,14 @@ public class Logger extends ResourceBase {
     }
 
     private String message(String type, String message, Object o) {
-        String content = "";
-        if (o == null) {
-            content = "null";
-        } else if (o instanceof Values) {
-            content = Arrays.stream(((Values)o).toJSON(2).split("\\n")).collect(Collectors.joining("\n# "));
-        } else {
-            content = o.toString();
-        }
+        String content = switch (o) {
+            case null -> "NULL";
+            case Values values ->
+                    values.toJSON(4).replace("\n", "\n# ");
+            case List<?> list when list.stream().filter((i) -> i instanceof Values).count() == list.size() ->
+                    Values.of(list).toJSON(4).replace("\n", "\n# ");
+            default -> o.toString();
+        };
         return "\n" +
                 "\n#" +
                 "\n# "+ type +
