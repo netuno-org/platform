@@ -2,11 +2,9 @@
 
 cd ..
 
-./mvn-install.sh
+mvn -am -pl netuno.tritao -Drevision=DEV -Dtest=BuildLibraryTest -Dsurefire.failIfNoSpecifiedTests=false test
 
 cd netuno.tritao
-
-mvn -Dtest=BuildLibraryTest test
 
 trash-put ../../doc/docs/library/objects/*.md
 trash-put ../../doc/docs/library/resources/*.md
