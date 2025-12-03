@@ -48,13 +48,9 @@ public class OutputStream extends java.io.OutputStream {
      */
     private boolean enabled = true;
     /**
-     * Is first writer.
+     * First writer started.
      */
-    private boolean isFirst = true;
-    /**
-     * Starting?
-     */
-    private boolean start = true;
+    private boolean started = false;
     /**
      * Output.
      */
@@ -100,22 +96,25 @@ public class OutputStream extends java.io.OutputStream {
         return this.getLength() == 0;
     }
 
+    public boolean isStarted() {
+        return started;
+    }
+
     /**
      * Start.
      */
     public final OutputStream start() {
-        if (notify != null && isFirst && start) {
-            isFirst = false;
+        if (notify != null && !started) {
             notify.start();
         }
+        started = true;
         return this;
     }
     /**
-     * Set Start.
-     * @param v Start
+     * Restart.
      */
-    public final OutputStream setStart(final boolean v) {
-        this.start = v;
+    public final OutputStream restart() {
+        this.started = false;
         return this;
     }
     /**
