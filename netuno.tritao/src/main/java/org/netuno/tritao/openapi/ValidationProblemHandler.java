@@ -71,6 +71,7 @@ public class ValidationProblemHandler implements ProblemHandler {
     private void render(Problem problem, Values list) {
         if (!problem.hasBranches()) {
             Values data = new Values(problem.parametersAsMap());
+            data.set("pointer", problem.getPointer());
             data.set("message", problem.getMessage());
             list.add(data);
         } else {
@@ -92,11 +93,13 @@ public class ValidationProblemHandler implements ProblemHandler {
     private void renderBranchingProblem(Problem problem, Values list) {
         int numOfBranches = problem.countBranches();
         Values data = Values.newMap();
+        data.set("pointer", problem.getPointer());
         data.set("message", problem.getMessage());
         Values branches = Values.newList();
         for(int i = 0; i < numOfBranches; ++i) {
             Values branchData = new Values(problem.parametersAsMap());
             branchData.set("index", i + 1);
+            branchData.set("pointer", problem.getPointer());
             branchData.set("message", problem.getMessage());
             Values branchList = Values.newList();
             for (Problem value : problem.getBranch(i)) {
@@ -116,6 +119,7 @@ public class ValidationProblemHandler implements ProblemHandler {
 
     private void renderSimpleProblem(Problem problem, Values list) {
         Values data = new Values(problem.parametersAsMap());
+        data.set("pointer", problem.getPointer());
         data.set("message", problem.getMessage());
         list.add(data);
     }
