@@ -972,7 +972,7 @@ public class Proteu {
             java.net.Socket client = new java.net.Socket(server, port);
             org.netuno.psamata.io.OutputStream output = new org.netuno.psamata.io.OutputStream(client.getOutputStream());
             org.netuno.psamata.io.InputStream input = new org.netuno.psamata.io.InputStream(client.getInputStream());
-            this.out.setStart(false);
+            this.out.restart();
             output.write(_clientHttp.getBytes());
             while (true) {
                 int _byte = input.read();
