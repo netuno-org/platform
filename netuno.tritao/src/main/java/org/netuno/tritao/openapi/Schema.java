@@ -80,6 +80,8 @@ public class Schema extends Web {
     }
 
     public boolean validateSchemaIn() {
+        Values appConfigOpenAPI = getProteu().getConfig().getValues("_app:config").getValues("openapi", new Values());
+        boolean errorsOutput = appConfigOpenAPI.getBoolean("errorsOutput", true);
         dataSchemaProcessing.setMethod(getProteu().getRequestHeader().getString("Method"));
         dataSchemaProcessing.setService(service.getPath());
         dataSchemaProcessing.setIn(true);
@@ -108,8 +110,12 @@ public class Schema extends Web {
                             + validationProblemHandler.toPrint()
                             + "\n#" +
                             "\n");
-                    getProteu().responseHTTPError(Proteu.HTTPStatus.BadRequest400, getHili());
-                    getProteu().outputJSON(validationProblemHandler.getProblems());
+                    if (!getProteu().getOutput().isStarted()) {
+                        getProteu().responseHTTPError(Proteu.HTTPStatus.BadRequest400, getHili());
+                        if (errorsOutput) {
+                            getProteu().outputJSON(validationProblemHandler.getProblems());
+                        }
+                    }
                     return false;
                 }
             } catch (Exception e) {
