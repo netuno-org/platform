@@ -26,7 +26,7 @@
         <sun.jakarta.mail.version>2.0.1</sun.jakarta.mail.version>
         <jakarta.mail.version>2.1.4</jakarta.mail.version>
         <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
-        <jetty.version>12.1.2</jetty.version>
+        <jetty.version>12.1.4</jetty.version>
         <picocli.version>4.7.7</picocli.version>
         <jansi.version>2.4.2</jansi.version>
         <progressbar.version>0.10.1</progressbar.version>
