@@ -139,6 +139,7 @@ public class Auth extends ResourceBase {
     public Auth load() {
         Values auth = getProteu().getConfig().getValues("_auth", Values.newMap());
         Values attempts = auth.getValues("attempts", Values.newMap());
+        getProteu().getConfig().set("_auth:attempts:enabled", attempts.getBoolean("enabled", Config.getAuthAttemptsEnabled(getProteu())));
         getProteu().getConfig().set("_auth:attempts:interval", attempts.getInt("interval", Config.getAuthAttemptsInterval(getProteu())));
         getProteu().getConfig().set("_auth:attempts:max_fails", attempts.getInt("maxFails", Config.getAuthAttemptsMaxFails(getProteu())));
         Values jwt = auth.getValues("jwt", Values.newMap());
@@ -1003,6 +1004,38 @@ public class Auth extends ResourceBase {
 
     public Auth setSignInAbortWithData(Values data) {
         return signInAbortWithData(data);
+    }
+
+    @MethodDoc(
+            translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Se está abilitado ou não o bloqueio automático de tentativas de autenticação falhadas.",
+                            howToUse = {}),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Whether or not automatic blocking of failed authentication attempts is enabled.",
+                            howToUse = {})
+            },
+            parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna se o bloqueio automático de tentativas consecutivas falhadas na autenticação está ativo."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns whether automatic blocking of consecutive failed authentication attempts is enabled."
+                    )
+            }
+    )
+    public boolean attemptsEnabled() {
+        return Config.getAuthAttemptsEnabled(getProteu());
+    }
+
+    public Auth attemptsEnabled(boolean attemptsEnabled) {
+        getProteu().getConfig().set("_auth:attempts:enabled", attemptsEnabled);
+        return this;
     }
 
     @MethodDoc(

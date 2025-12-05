@@ -33,6 +33,10 @@ import java.util.List;
  */
 public interface AuthHistory extends BuilderBase {
     default boolean userAuthLockedByHistoryConsecutiveFailure(String userId, String ip) {
+        boolean authAttemptsEnabled = Config.getAuthAttemptsEnabled(getProteu());
+        if (!authAttemptsEnabled) {
+            return false;
+        }
         int authAttemptsInterval = Config.getAuthAttemptsInterval(getProteu());
         int authAttemptsMaxFails = Config.getAuthAttemptsMaxFails(getProteu());
         String select = " success ";
