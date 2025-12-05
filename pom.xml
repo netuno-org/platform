@@ -21,12 +21,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <apache.commons-text.version>1.12.0</apache.commons-text.version>
-        <apache.commons-lang3.version>3.19.0</apache.commons-lang3.version>
+        <apache.commons-lang3.version>3.20.0</apache.commons-lang3.version>
         <apache.commons-io.version>2.17.0</apache.commons-io.version>
         <sun.jakarta.mail.version>2.0.1</sun.jakarta.mail.version>
-        <jakarta.mail.version>2.1.3</jakarta.mail.version>
+        <jakarta.mail.version>2.1.4</jakarta.mail.version>
         <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
-        <jetty.version>12.1.2</jetty.version>
+        <jetty.version>12.1.4</jetty.version>
         <picocli.version>4.7.7</picocli.version>
         <jansi.version>2.4.2</jansi.version>
         <progressbar.version>0.10.1</progressbar.version>
@@ -37,7 +37,7 @@
         <jython.version>2.7.4</jython.version>
         <groovy.version>4.0.23</groovy.version>
         <jruby.version>10.0.2.0</jruby.version>
-        <kotlin.version>2.2.20</kotlin.version>
+        <kotlin.version>2.2.21</kotlin.version>
         <arrow.version>2.2.0</arrow.version>
         <jjwt.version>0.13.0</jjwt.version>
         <apache.poi.version>5.4.0</apache.poi.version>
