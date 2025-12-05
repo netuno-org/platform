@@ -690,6 +690,13 @@ public class Config {
         return (PasswordBuilder)proteu.getConfig().get("_password:builder");
     }
 
+    public static boolean getAuthAttemptsEnabled(Proteu proteu) {
+        if (!proteu.getConfig().hasKey("_auth:attempts:enabled")) {
+            return true;
+        }
+        return proteu.getConfig().getBoolean("_auth:attempts:enabled", true);
+    }
+
     public static int getAuthAttemptsInterval(Proteu proteu) {
         if (!proteu.getConfig().hasKey("_auth:attempts:interval")) {
             return 60;
