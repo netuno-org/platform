@@ -302,7 +302,7 @@ public class Auth extends Web {
                 if (dbGroups.size() != 1) {
                     return false;
                 }
-                Values dbGroup = dbGroups.get(0);
+                Values dbGroup = dbGroups.getFirst();
                 if (!dbGroup.getBoolean("login_allowed")) {
                     return false;
                 }
@@ -333,7 +333,7 @@ public class Auth extends Web {
         data.set("_user_code", user.getString("code"));
         List<Values> groups = org.netuno.tritao.config.Config.getDBBuilder(proteu).selectGroup(user.getString("group_id"));
         if (groups.size() == 1) {
-            Values group = groups.get(0);
+            Values group = groups.getFirst();
             data.set("_group_uid", group.getString("uid"));
             data.set("_group_name", group.getString("name"));
             data.set("_group_code", group.getString("code"));
@@ -434,12 +434,7 @@ public class Auth extends Web {
         _group.load();
         App _app = resource(App.class);
         Values groups = _app.config().getValues("auth", new Values()).getValues("groups");
-        if (groups != null && groups.size() > 0) {
-            if (groups.contains(_group.code)) {
-                return true;
-            }
-        }
-        return false;
+        return groups != null && !groups.isEmpty() && groups.contains(_group.code);
     }
 
     public void authenticatorProviders(Proteu proteu, Hili hili) throws ProteuException, IOException {
@@ -480,8 +475,8 @@ public class Auth extends Web {
 
             List<Values> users = DBManager.selectUserByEmail(dbProviderUser.getString("email"));
 
-            if (users.size() > 0) {
-                Values user = users.get(0);
+            if (!users.isEmpty()) {
+                Values user = users.getFirst();
                 if (user.getString("nonce").equals(secret) && user.getString("nonce_generator").equals(provider)) {
                     int providerId = dbProvider.getInt("id");
                     boolean isAssociated = DBManager.isAuthProviderUserAssociate(
@@ -504,7 +499,7 @@ public class Auth extends Web {
                     } else {
                         if (req.hasKey("password")) {
                             String passwordEncrypted = Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), req.getString("password"));
-                            if (DBManager.selectUserLogin(user.getString("user"), passwordEncrypted).size() > 0) {
+                            if (!DBManager.selectUserLogin(user.getString("user"), passwordEncrypted).isEmpty()) {
                                 DBManager.insertAuthProviderUser(
                                         new Values()
                                                 .set("user_id", user.getString("id"))
@@ -586,7 +581,7 @@ public class Auth extends Web {
                 user.set("mail", dbProviderUser.getString("email"));
                 user.set("user", req.getString("user"));
                 user.set("pass", passwordEncrypted);
-                user.set("group_id", DBManager.selectGroupOther("", group).get(0).getInt("id"));
+                user.set("group_id", DBManager.selectGroupOther("", group).getFirst().getInt("id"));
                 user.set("active", true);
 
                 int id = DBManager.insertUser(user);
