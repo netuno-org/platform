@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Hili - Global Features
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Hili implements AutoCloseable {
+public class Hili {
     private static Logger logger = LogManager.getLogger(Hili.class);
 
     private static Map<String, ImmutablePair<Long, String>> cachedScripts = new ConcurrentHashMap<>();
@@ -135,7 +135,6 @@ public class Hili implements AutoCloseable {
         }
     }
 
-    @Override
     public void close() throws Exception {
         FileManager.clear();
         sandbox.close();
