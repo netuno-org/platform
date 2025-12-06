@@ -104,12 +104,12 @@ public class GraalSandbox implements Scriptable {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         graalRunner.closeContext();
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         graalRunner.close();
         graalRunner = null;
     }

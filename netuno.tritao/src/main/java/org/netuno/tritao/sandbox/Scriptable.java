@@ -23,14 +23,15 @@ import org.netuno.psamata.Values;
  * Scriptable Interface used on Scripts Sandboxes
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public interface Scriptable extends AutoCloseable {
+public interface Scriptable {
 
     void resetContext();
 
-    void stop() throws Exception;
+    void stop();
 
     void run(ScriptSourceCode script, Values bindings) throws Exception;
 
     Object get(ScriptSourceCode script, String name);
 
+    void close();
 }

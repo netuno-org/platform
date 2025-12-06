@@ -89,12 +89,12 @@ public abstract class JSR223GenericSandbox implements Scriptable {
     }
     
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         executor.cancel(true);
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         bindings.clear();
         bindings = null;
         engine = null;

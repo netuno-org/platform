@@ -54,12 +54,12 @@ import java.util.regex.Pattern;
  * Sandbox Manager
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class SandboxManager implements AutoCloseable {
+public class SandboxManager {
     private static final Logger logger = LogManager.getLogger(SandboxManager.class);
 
     private static final Pattern REGEX_IMPORT_CORE = Pattern.compile("^\\s*(\\/\\/|#|--)\\s*(_core)\\s*[:]+\\s*(.*)$", Pattern.MULTILINE);
 
-    private static Map<String, ImmutablePair<Long, String>> cachedSourceCodes = new ConcurrentHashMap<>();
+    private static final Map<String, ImmutablePair<Long, String>> cachedSourceCodes = new ConcurrentHashMap<>();
 
     private static Map<String, Class<? extends Scriptable>> sandboxesClasses = null;
 
@@ -68,11 +68,11 @@ public class SandboxManager implements AutoCloseable {
 
     private  Map<String, Scriptable> sandboxes = new HashMap<>();
 
-    private Values bindings = new Values();
+    private final Values bindings = new Values();
 
-    private List<ScriptSourceCode> scriptSourceCodeStack = new ArrayList<>();
+    private final List<ScriptSourceCode> scriptSourceCodeStack = new ArrayList<>();
 
-    private List<Scriptable> scriptablesRunning = new ArrayList<>();
+    private final List<Scriptable> scriptablesRunning = new ArrayList<>();
 
     private boolean scriptRequestErrorExecuted = false;
 
@@ -83,28 +83,29 @@ public class SandboxManager implements AutoCloseable {
     static {
         sandboxesClasses = new ConcurrentHashMap<>();
 
-        ScanResult scanResult = new ClassGraph()
+        try (ScanResult scanResult = new ClassGraph()
                 .disableRuntimeInvisibleAnnotations()
                 .acceptPackages(
                         org.netuno.proteu.Config.getPackagesScan()
                                 .toArray(new String[0])
                 ).enableAllInfo()
-                .scan();
-        String scriptSandboxClassName = "";
-        try {
-            ClassInfoList scriptSandboxClasses = scanResult.getClassesWithAnnotation(ScriptSandbox.class.getName());
-            for (String scriptSandboxClassNameItem : scriptSandboxClasses.getNames()) {
-                scriptSandboxClassName = scriptSandboxClassNameItem;
-                Class<? extends Scriptable> sandbox = (Class<? extends Scriptable>)Class.forName(scriptSandboxClassName);
-                ScriptSandbox scriptSandbox = sandbox.getAnnotation(ScriptSandbox.class);
-                ScriptRunner.addExtensions(scriptSandbox.extensions());
-                for (String extension : scriptSandbox.extensions()) {
-                    logger.trace("Sandbox "+ sandbox.getName() +" registered to extension "+ extension +".");
-                    sandboxesClasses.put(extension, sandbox);
+                .scan()) {
+            String scriptSandboxClassName = "";
+            try {
+                ClassInfoList scriptSandboxClasses = scanResult.getClassesWithAnnotation(ScriptSandbox.class.getName());
+                for (String scriptSandboxClassNameItem : scriptSandboxClasses.getNames()) {
+                    scriptSandboxClassName = scriptSandboxClassNameItem;
+                    Class<? extends Scriptable> sandbox = (Class<? extends Scriptable>) Class.forName(scriptSandboxClassName);
+                    ScriptSandbox scriptSandbox = sandbox.getAnnotation(ScriptSandbox.class);
+                    ScriptRunner.addExtensions(scriptSandbox.extensions());
+                    for (String extension : scriptSandbox.extensions()) {
+                        logger.trace("Sandbox " + sandbox.getName() + " registered to extension " + extension + ".");
+                        sandboxesClasses.put(extension, sandbox);
+                    }
                 }
+            } catch (Exception e) {
+                logger.fatal("Trying initialize the " + scriptSandboxClassName + " script sandbox...", e);
             }
-        } catch (Exception e) {
-            logger.fatal("Trying initialize the "+ scriptSandboxClassName +" script sandbox...", e);
         }
     }
 
@@ -126,7 +127,7 @@ public class SandboxManager implements AutoCloseable {
     }
 
     public boolean isScriptsRunning() {
-        return scriptablesRunning.size() > 0;
+        return !scriptablesRunning.isEmpty();
     }
 
     public void bind(String name, Object obj) {
@@ -183,11 +184,11 @@ public class SandboxManager implements AutoCloseable {
     }
 
     public void stopScript() {
-        if (scriptablesRunning.size() == 0) {
+        if (scriptablesRunning.isEmpty()) {
             return;
         }
         stopped = true;
-        var scriptable = scriptablesRunning.get(scriptablesRunning.size() - 1);
+        var scriptable = scriptablesRunning.getLast();
         try {
             scriptable.stop();
         } catch (Exception e) {
@@ -207,7 +208,7 @@ public class SandboxManager implements AutoCloseable {
     public Scriptable getSandbox(String extension) {
         return sandboxes.entrySet().stream().filter((es) ->
                         es.getKey().equals(extension)
-                ).map((es) -> es.getValue())
+                ).map(Map.Entry::getValue)
                 .findFirst()
                 .orElseGet(() -> {
                         Class<? extends Scriptable> sandboxClass = sandboxesClasses.get(extension);
@@ -259,7 +260,7 @@ public class SandboxManager implements AutoCloseable {
         try {
             if (scriptPath != null) {
                 if (!preserveContext) {
-                    scriptablesRunning.forEach((s) -> s.resetContext());
+                    scriptablesRunning.forEach(Scriptable::resetContext);
                 }
                 Path scriptPathFileSystem = Paths.get(path);
                 path = scriptPathFileSystem.getParent().toAbsolutePath().toString();
@@ -267,7 +268,7 @@ public class SandboxManager implements AutoCloseable {
                 String sourceCode = "";
                 ImmutablePair<Long, String> cachedScript = cachedSourceCodes.get(scriptPath);
                 File fileScript = new File(scriptPath);
-                if (cachedScript == null || fileScript.lastModified() != cachedScript.left.longValue()) {
+                if (cachedScript == null || fileScript.lastModified() != cachedScript.left) {
                     sourceCode = org.netuno.psamata.io.InputStream.readFromFile(scriptPath);
                     if (cachedScript == null) {
                         cachedSourceCodes.remove(scriptPath);
@@ -311,7 +312,7 @@ public class SandboxManager implements AutoCloseable {
                         }
                     }
                     scriptable = Optional.ofNullable(getSandbox(scriptExtension));
-                    if (!scriptable.isPresent()) {
+                    if (scriptable.isEmpty()) {
                         throw new Exception("This script "+ file +"."+ scriptExtension +" is not supported.");
                     } else {
                         scriptSourceCodeStack.add(scriptSourceCode.get());
@@ -330,7 +331,7 @@ public class SandboxManager implements AutoCloseable {
                 return ScriptResult.withError(t);
             }
             if (t instanceof ScriptError && t.getMessage().contains(EmojiParser.parseToUnicode(":boom:") +" SCRIPT RUNTIME ERROR")) {
-                logger.fatal(((ScriptError)t).getMessage());
+                logger.fatal(t.getMessage());
                 return ScriptResult.withError(t);
             }
             String detail = "";
@@ -353,10 +354,6 @@ public class SandboxManager implements AutoCloseable {
             StackTraceElement stackTrace = t.getStackTrace()[0];
             if (!stackTrace.getClassName().equals(this.getClass().getName())) {
                 detail += "\n#    "+  stackTrace.getClassName() +"."+ stackTrace.getMethodName();
-            }
-            if (t instanceof PolyglotException) {
-                //PolyglotException e = (PolyglotException)t;
-                //detail += "\n    "+  e.toString();
             }
             String message = "\n"+
                     "\n#" +
@@ -395,11 +392,11 @@ public class SandboxManager implements AutoCloseable {
                 if (!preserveContext && scriptable.isPresent()) {
                     scriptable.get().resetContext();
                 }
-                if (scriptablesRunning.size() > 0) {
-                    scriptablesRunning.remove(scriptablesRunning.size() - 1);
+                if (!scriptablesRunning.isEmpty()) {
+                    scriptablesRunning.removeLast();
                 }
-                if (scriptSourceCodeStack.size() > 0) {
-                    scriptSourceCodeStack.remove(scriptSourceCodeStack.size() - 1);
+                if (!scriptSourceCodeStack.isEmpty()) {
+                    scriptSourceCodeStack.removeLast();
                 }
             }
         }
@@ -447,10 +444,10 @@ public class SandboxManager implements AutoCloseable {
                         throwable = scriptException.asHostException();
                     }
                     */
-                    Object sourceSection = throwable.getClass().getMethod("getSourceLocation", null).invoke(throwable);
+                    Object sourceSection = throwable.getClass().getMethod("getSourceLocation").invoke(throwable);
                     if (sourceSection != null) {
-                        errorLineNumber = (int)sourceSection.getClass().getMethod("getStartLine", null).invoke(sourceSection);
-                        errorColumnNumber = (int)sourceSection.getClass().getMethod("getStartColumn", null).invoke(sourceSection);
+                        errorLineNumber = (int)sourceSection.getClass().getMethod("getStartLine").invoke(sourceSection);
+                        errorColumnNumber = (int)sourceSection.getClass().getMethod("getStartColumn").invoke(sourceSection);
                     } else {
                         for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
                             try {
@@ -465,15 +462,14 @@ public class SandboxManager implements AutoCloseable {
                             }
                         }
                     }
-                    boolean isHostException = (boolean)throwable.getClass().getMethod("isHostException", null).invoke(throwable);
+                    boolean isHostException = (boolean)throwable.getClass().getMethod("isHostException").invoke(throwable);
                     if (isHostException) {
-                        throwable = (Throwable) throwable.getClass().getMethod("asHostException", null).invoke(throwable);
+                        throwable = (Throwable) throwable.getClass().getMethod("asHostException").invoke(throwable);
                     }
                 } catch (Exception e) {
                     logger.trace("Fail to process the GraalVM exception.", e);
                 }
-            } else if (throwable instanceof ScriptException) {
-                ScriptException scriptException = (ScriptException)throwable;
+            } else if (throwable instanceof ScriptException scriptException) {
                 errorLineNumber = scriptException.getLineNumber();
                 errorColumnNumber = scriptException.getColumnNumber();
             }
@@ -496,7 +492,7 @@ public class SandboxManager implements AutoCloseable {
             if (script.fileName().equals("_request_error")) {
                 scriptRequestErrorExecuted = true;
             }
-            if (script.error() == false) {
+            if (!script.error()) {
                 onError(script, getErrorMessage(throwable), errorLineNumber, errorColumnNumber, throwable);
             }
             return ScriptResult.withError(throwable);
@@ -566,7 +562,6 @@ public class SandboxManager implements AutoCloseable {
         runScript(Config.getPathAppCore(proteu), "_request_error", false, true, true);
     }
 
-    @Override
     public void close() {
         sandboxes.forEach((v, s) -> {
             try {
@@ -582,20 +577,17 @@ public class SandboxManager implements AutoCloseable {
     }
 }
 
-class TimeKiller implements Runnable
-{
-
-    private Thread mainThread;
-    private Thread targetThread;
+class TimeKiller implements Runnable {
+    private final Thread mainThread;
+    private final Thread targetThread;
     private ExecutorService executorService;
     private long millis;
-    private Thread watcherThread;
+    private final Thread watcherThread;
     private boolean loop;
     private boolean enabled;
     private Throwable throwable;
 
-    public TimeKiller(ExecutorService executorService, Thread targetThread, long millis)
-    {
+    public TimeKiller(ExecutorService executorService, Thread targetThread, long millis) {
         this.mainThread = Thread.currentThread();
         this.executorService = executorService;
         this.targetThread = targetThread;
@@ -604,11 +596,9 @@ class TimeKiller implements Runnable
         watcherThread = new Thread(this);
         watcherThread.start();
         // Hack - pause a bit to let the watcher thread get started.
-        try
-        {
+        try {
             Thread.sleep( 100 );
-        }
-        catch (InterruptedException e) {}
+        } catch (InterruptedException e) {}
     }
 
     /// Constructor.  Give it a thread to watch, and a timeout in milliseconds.
@@ -623,37 +613,31 @@ class TimeKiller implements Runnable
         watcherThread = new Thread(this);
         watcherThread.start();
         // Hack - pause a bit to let the watcher thread get started.
-        try
-        {
+        try {
             Thread.sleep(100);
-        }
-        catch (InterruptedException e) {}
+        } catch (InterruptedException e) {}
     }
 
     /// Constructor, current thread.
-    public TimeKiller(long millis)
-    {
+    public TimeKiller(long millis) {
         this(Thread.currentThread(), millis);
     }
 
     /// Call this when the target thread has finished.
-    public synchronized void done()
-    {
+    public synchronized void done() {
         loop = false;
         enabled = false;
         notify();
     }
 
     /// Call this to restart the wait from zero.
-    public synchronized void reset()
-    {
+    public synchronized void reset() {
         loop = true;
         notify();
     }
 
     /// Call this to restart the wait from zero with a different timeout value.
-    public synchronized void reset( long millis )
-    {
+    public synchronized void reset( long millis ) {
         this.millis = millis;
         reset();
     }
@@ -661,8 +645,7 @@ class TimeKiller implements Runnable
     /// The watcher thread - from the Runnable interface.
     // This has to be pretty anal to avoid monitor lockup, lost
     // threads, etc.
-    public synchronized void run()
-    {
+    public synchronized void run() {
         Thread me = Thread.currentThread();
         me.setPriority(Thread.MAX_PRIORITY);
         if (enabled) {
@@ -773,7 +756,6 @@ class ThreadMonitor {
         threadToMonitor = null;
     }
 
-    @SuppressWarnings("deprecation")
     void run() {
         try {
             // wait, for threadToMonitor to be set in JS evaluator thread
@@ -792,7 +774,6 @@ class ThreadMonitor {
                 final long memory = getCurrentMemory() - startMemory;
 
                 if (isCpuTimeExceeded(runtime) || isMemoryExceeded(memory)) {
-
                     cpuLimitExceeded.set(isCpuTimeExceeded(runtime));
                     memoryLimitExceeded.set(isMemoryExceeded(memory));
                     threadToMonitor.interrupt();
@@ -808,8 +789,6 @@ class ThreadMonitor {
                         scriptKilled.set(true);
                     }
                     return;
-                } else {
-
                 }
                 synchronized (monitor) {
                     long waitTime = getCheckInterval(runtime);
@@ -852,13 +831,13 @@ class ThreadMonitor {
 
     private long getCurrentMemory() {
         if (maxMemory == 0 || memoryCounter != null) {
-            return memoryCounter.getThreadAllocatedBytes(threadToMonitor.getId());
+            return memoryCounter.getThreadAllocatedBytes(threadToMonitor.threadId());
         }
         return 0L;
     }
 
     private long getCPUTime() {
-        return threadBean.getThreadCpuTime(threadToMonitor.getId());
+        return threadBean.getThreadCpuTime(threadToMonitor.threadId());
     }
 
     public void stopMonitor() {
