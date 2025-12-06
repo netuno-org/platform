@@ -32,8 +32,6 @@ public class GraalRunner implements AutoCloseable {
 
     private static HostAccess hostAccess = null;
 
-    private String[] permittedLanguages = null;
-
     private Builder contextBuilder = null;
     
     private Context context = null;
@@ -49,20 +47,20 @@ public class GraalRunner implements AutoCloseable {
                 .allowAllImplementations(true)
                 .targetTypeMapping(
                         Value.class, Object.class,
-                        (v) -> v.hasArrayElements(),
-                        (v) -> transformArray(v)
+                        Value::hasArrayElements,
+                        GraalRunner::transformArray
                 ).targetTypeMapping(
                         Value.class, List.class,
-                        (v) -> v.hasArrayElements(),
-                        (v) -> transformArray(v)
+                            Value::hasArrayElements,
+                            GraalRunner::transformArray
                 ).targetTypeMapping(
                         Value.class, Collection.class,
-                        (v) -> v.hasArrayElements(),
-                        (v) -> transformArray(v)
+                            Value::hasArrayElements,
+                            GraalRunner::transformArray
                 ).targetTypeMapping(
                         Value.class, Iterable.class,
-                        (v) -> v.hasArrayElements(),
-                        (v) -> transformArray(v)
+                            Value::hasArrayElements,
+                            GraalRunner::transformArray
                 )
                 .build();
 
@@ -83,7 +81,6 @@ public class GraalRunner implements AutoCloseable {
     }
     
     private void init(Map<String, String> options, String... permittedLanguages) {
-        this.permittedLanguages = permittedLanguages;
         //engine = Engine.create();
         contextBuilder = Context.newBuilder(permittedLanguages)
                 .allowNativeAccess(true)
@@ -127,19 +124,18 @@ public class GraalRunner implements AutoCloseable {
     }
     
     public void closeContext() {
-        if (contexts.size() > 0) {
-            contexts.get(contexts.size() - 1).close(true);
-            contexts.remove(contexts.size() - 1);
+        if (!contexts.isEmpty()) {
+            contexts.remove(contexts.size() - 1).close(true);
         }
         context = null;
-        if (contexts.size() > 0) {
+        if (!contexts.isEmpty()) {
             context = contexts.get(contexts.size() - 1);
         } else {
             newContext();
         }
     }
     
-    public void close() throws Exception {
+    public void close() {
         if (contexts != null) {
             for (Context context : contexts) {
                 context.close(true);
@@ -219,8 +215,7 @@ public class GraalRunner implements AutoCloseable {
                 sourceBuilder.mimeType("application/javascript+module");
             }
             Source source = sourceBuilder.build();
-            Value result = context.eval(source);
-            return result;
+            return context.eval(source);
         } catch (java.io.IOException e) {
             throw new Error(e);
         } catch (org.graalvm.polyglot.PolyglotException e) {
@@ -238,8 +233,7 @@ public class GraalRunner implements AutoCloseable {
                 sourceBuilder.mimeType("application/javascript+module");
             }
             Source source = sourceBuilder.build();
-            Value result = context.eval(source);
-            return result;
+            return context.eval(source);
         } catch (java.io.IOException e) {
             throw new Error(e);
         } catch (org.graalvm.polyglot.PolyglotException e) {
@@ -252,20 +246,12 @@ public class GraalRunner implements AutoCloseable {
 
     public Object eval(String language, String code) {
         try {
-            //context.enter();
-        } catch (Exception e) { }
-        try {
-            Value result = context.eval(language, code);
-            return result;
+            return context.eval(language, code);
         } catch (org.graalvm.polyglot.PolyglotException e) {
             if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("Context execution was cancelled.")) {
                 return null;
             }
             throw e;
-        } finally {
-            try {
-                //context.leave();
-            } catch (Exception e) { }
         }
     }
 
