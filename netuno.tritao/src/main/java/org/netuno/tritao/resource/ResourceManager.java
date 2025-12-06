@@ -35,10 +35,10 @@ import java.util.List;
  * Resource Manager
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class ResourceManager implements AutoCloseable {
-    private static Logger logger = LogManager.getLogger(ResourceManager.class);
+public class ResourceManager {
+    private static final Logger logger = LogManager.getLogger(ResourceManager.class);
 
-    private static List<Class> classes = Collections.synchronizedList(new ArrayList<>());
+    private static final List<Class<?>> classes = Collections.synchronizedList(new ArrayList<>());
 
     private Proteu proteu = null;
     private Hili hili = null;
@@ -46,23 +46,22 @@ public class ResourceManager implements AutoCloseable {
     private Values resources = null;
 
     static {
-        ScanResult scanResult = new ClassGraph()
+        try (ScanResult scanResult = new ClassGraph()
                 .disableRuntimeInvisibleAnnotations()
                 .acceptPackages(
                         org.netuno.proteu.Config.getPackagesScan()
                                 .toArray(new String[0])
                 ).enableAllInfo()
-                .scan();
-        String resourcesClass = "";
-        ClassInfoList resourcesClasses = scanResult.getClassesWithAnnotation(Resource.class.getName());
-        for (String _resourcesClass : resourcesClasses.getNames()) {
-            resourcesClass = _resourcesClass;
-            try {
-                classes.add(Class.forName(_resourcesClass));
-            } catch (Exception e) {
+                .scan()) {
+            String resourcesClass = "";
+            ClassInfoList resourcesClasses = scanResult.getClassesWithAnnotation(Resource.class.getName());
+            for (String _resourcesClass : resourcesClasses.getNames()) {
+                resourcesClass = _resourcesClass;
                 try {
-                    logger.fatal("Trying to load the "+ resourcesClass +" resource...", e);
-                } catch (Exception ex) {}
+                    classes.add(Class.forName(_resourcesClass));
+                } catch (Exception e) {
+                    logger.fatal("Trying to load the " + resourcesClass + " resource...", e);
+                }
             }
         }
     }
@@ -94,17 +93,17 @@ public class ResourceManager implements AutoCloseable {
             resources.set("config", proteu.getConfig());
             resources.set("session", proteu.getSession());
 
-            Class currentClass = null;
-            for (Class _class : classes) {
+            Class<?> currentClass = null;
+            for (Class<?> _class : classes) {
                 currentClass = _class;
-                Resource resource = (Resource) _class.getAnnotation(Resource.class);
+                Resource resource = _class.getAnnotation(Resource.class);
                 if (!resource.autoLoad()) {
                     continue;
                 }
                 if (resource.name().equals("config") || resource.name().equals("session")) {
                     continue;
                 }
-                if (resource.name().equals("lang") && proteu.getConfig().getBoolean("_lang:disabled") == true) {
+                if (resource.name().equals("lang") && proteu.getConfig().getBoolean("_lang:disabled")) {
                     continue;
                 }
                 try {
@@ -127,7 +126,6 @@ public class ResourceManager implements AutoCloseable {
         return resources;
     }
 
-    @Override
     public void close() throws Exception {
         if (resources != null) {
             for (Object resource : resources.values()) {
