@@ -255,14 +255,8 @@ public class User {
 			}
 		} else if (proteu.getRequestAll().getString("execute").equalsIgnoreCase("auth-unlock")) {
 			Values user = Config.getDBBuilder(proteu).getUserByUId(proteu.getRequestAll().getString("uid"));
-			Config.getDBBuilder(proteu).insertAuthHistory(
-					Values.newMap()
-							.set("user_id", user.getInt("id"))
-							.set("ip", proteu.getClientIP())
-							.set("success", true)
-							.set("lock", false)
-							.set("unlock", true)
-			);
+			Values latest = Config.getDBBuilder(proteu).getAuthHistoryUserLatest(user.getString("id"));
+			Config.getDBBuilder(proteu).authHistoryForceUnlock(user.getString("id"), latest.getString("ip"));
 			TemplateBuilder.output(proteu, hili, "user/notification/auth_unlocked", user);
 		} else if (proteu.getRequestAll().hasKey("uid") && proteu.getRequestAll().getString("uid").isEmpty()) {
         	TemplateBuilder.output(proteu, hili, "user/notification/new", data);
