@@ -1332,4 +1332,32 @@ public class User extends ResourceBase {
         return setProviderLDAP(id, active);
     }
 
+    public boolean checkAuthHistoryConsecutiveFailure(int id) {
+        return Config.getDBBuilder(getProteu()).checkAuthHistoryConsecutiveFailure(Integer.toString(id));
+    }
+
+    public boolean authHistoryLatestIsLocked() {
+        return authHistoryLatestIsLocked(id());
+    }
+
+    public boolean authHistoryLatestIsLocked(int userId) {
+        return authHistoryLatest(userId).getBoolean("lock");
+    }
+
+    public Values authHistoryLatest() {
+        return authHistoryLatest(id());
+    }
+
+    public Values authHistoryLatest(int userId) {
+        return Config.getDBBuilder(getProteu()).getAuthHistoryUserLatest(Integer.toString(id));
+    }
+
+    public void authHistoryForceUnlock() {
+        authHistoryForceUnlock(id());
+    }
+
+    public void authHistoryForceUnlock(int userId) {
+        Config.getDBBuilder(getProteu()).authHistoryForceUnlock(Integer.toString(id), getProteu().getClientIP());
+    }
+
 }
