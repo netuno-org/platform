@@ -48,13 +48,33 @@ public class Auth extends Web {
 
     public enum Type {
         JWT,
-        SESSION
+        SESSION,
+        JWT_REQUEST,
+        SESSION_REQUEST;
+
+        public boolean isJWT() {
+            return this == JWT || this == JWT_REQUEST;
+        }
+
+        public boolean isSESSION() {
+            return this == SESSION || this == SESSION_REQUEST;
+        }
+
+        public boolean isREQUEST() {
+            return this == JWT_REQUEST || this == SESSION_REQUEST;
+        }
     }
     
     public enum Profile {
         ALL,
         ADMIN,
         DEV
+    }
+
+    public enum SignInState {
+        OK,
+        NOK,
+        LOCKED
     }
 
     private static Logger logger = LogManager.getLogger(Auth.class);
@@ -79,7 +99,7 @@ public class Auth extends Web {
     }
 
     public static Values getUser(Proteu proteu, Hili hili, Type type) {
-        if (type == Type.JWT) {
+        if (type.isJWT()) {
             if (proteu.getConfig().has("_auth:jwt:db:user")
                     && proteu.getConfig().getValues("_auth:jwt:db:user") != null) {
                 return proteu.getConfig().getValues("_auth:jwt:db:user");
@@ -93,7 +113,7 @@ public class Auth extends Web {
             proteu.getConfig().set("_auth:jwt:db:user", user);
             return user;
         }
-        if (type == Type.SESSION) {
+        if (type.isSESSION()) {
             if (proteu.getConfig().has("_auth:session:db:user")
                     && proteu.getConfig().getValues("_auth:session:db:user") != null) {
                 return proteu.getConfig().getValues("_auth:session:db:user");
@@ -116,7 +136,7 @@ public class Auth extends Web {
     }
 
     public static Values getGroup(Proteu proteu, Hili hili, Type type) {
-        if (type == Type.JWT) {
+        if (type.isJWT()) {
             if (proteu.getConfig().has("_auth:jwt:db:group")
                     && proteu.getConfig().getValues("_auth:jwt:db:group") != null) {
                 return proteu.getConfig().getValues("_auth:jwt:db:group");
@@ -128,7 +148,7 @@ public class Auth extends Web {
             }
             return org.netuno.tritao.config.Config.getDBBuilder(proteu).getGroupByUId(values.getString("_group_uid"));
         }
-        if (type == Type.SESSION) {
+        if (type.isSESSION()) {
             if (proteu.getConfig().has("_auth:session:db:group")
                     && proteu.getConfig().getValues("_auth:session:db:group") != null) {
                 return proteu.getConfig().getValues("_auth:session:db:group");
@@ -187,15 +207,15 @@ public class Auth extends Web {
 
     public static boolean isAuthenticated(Proteu proteu, Hili hili, Type type, boolean redirect) {
         boolean result = false;
-        if (type == Type.JWT) {
+        if (type.isJWT()) {
             org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
             return auth.jwtTokenCheck();
         }
-        if (type == Type.SESSION) {
+        if (type.isSESSION()) {
             result = !proteu.getSession().getString("_user_uid").isEmpty()
                     && !proteu.getSession().getString("_group_uid").isEmpty();
-            if (!result && signIn(proteu, hili, Type.SESSION)) {
-                    return true;
+            if (!result && signIn(proteu, hili, type) == SignInState.OK) {
+                return true;
             }
         }
         if (!result && redirect) {
@@ -205,14 +225,14 @@ public class Auth extends Web {
         return result;
     }
 
-    public static boolean signIn(Proteu proteu, Hili hili, Type type) {
+    public static SignInState signIn(Proteu proteu, Hili hili, Type type) {
         return signIn(proteu, hili, type, Profile.ALL);
     }
 
-    public static boolean signIn(Proteu proteu, Hili hili, Type type, Profile profile) {
+    public static SignInState signIn(Proteu proteu, Hili hili, Type type, Profile profile) {
     	Credentials credentials = getCredentials(proteu, hili);
     	if (credentials == null) {
-    		return false;
+    		return SignInState.NOK;
     	}
         return signIn(proteu, hili,
         		credentials.getUsername(),
@@ -220,67 +240,64 @@ public class Auth extends Web {
                 type, profile);
     }
 
-    public static boolean signIn(Proteu proteu, Hili hili, Values dbUser, Type type) {
+    public static SignInState signIn(Proteu proteu, Hili hili, Values dbUser, Type type) {
         return signIn(proteu, hili, dbUser, type, Profile.ALL);
     }
     
-    public static boolean signIn(Proteu proteu, Hili hili, Values dbUser, Type type, Profile profile) {
+    public static SignInState signIn(Proteu proteu, Hili hili, Values dbUser, Type type, Profile profile) {
         Values contextData = createContextData(proteu, hili, dbUser, profile);
         if (contextData != null) {
-            if (type == Type.JWT) {
+            if (type.isJWT()) {
                 org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
                 if (!auth.jwtEnabled() || !auth.checkUserInJWTGroups(dbUser.getInt("id"))) {
-                    return false;
+                    return SignInState.NOK;
                 }
                 auth.jwtSignIn(dbUser.getInt("id"), contextData);
-                Config.getDBBuilder(proteu).insertAuthHistory(
-                        Values.newMap()
-                                .set("user_id", dbUser.getInt("id"))
-                                .set("ip", proteu.getClientIP())
-                                .set("success", true)
-                                .set("lock", false)
-                                .set("unlock", false)
-                );
-                return true;
-            } else if (type == Type.SESSION) {
+                if (type.isREQUEST()) {
+                    Config.getDBBuilder(proteu).insertAuthHistory(
+                            Values.newMap()
+                                    .set("user_id", dbUser.getInt("id"))
+                                    .set("ip", proteu.getClientIP())
+                                    .set("success", true)
+                                    .set("lock", false)
+                                    .set("unlock", false)
+                    );
+                }
+                return SignInState.OK;
+            } else if (type.isSESSION()) {
                 proteu.getSession().merge(contextData);
                 proteu.saveSession();
-                Config.getDBBuilder(proteu).insertAuthHistory(
-                        Values.newMap()
-                                .set("user_id", dbUser.getInt("id"))
-                                .set("ip", proteu.getClientIP())
-                                .set("success", true)
-                                .set("lock", false)
-                                .set("unlock", false)
-                );
-                return true;
+                if (type.isREQUEST()) {
+                    Config.getDBBuilder(proteu).insertAuthHistory(
+                            Values.newMap()
+                                    .set("user_id", dbUser.getInt("id"))
+                                    .set("ip", proteu.getClientIP())
+                                    .set("success", true)
+                                    .set("lock", false)
+                                    .set("unlock", false)
+                    );
+                }
+                return SignInState.OK;
             } 
-            return false;
+            return SignInState.NOK;
         } else {
-            return false;
+            return SignInState.NOK;
         }
     }
     
-    public static boolean signIn(Proteu proteu, Hili hili, String username, String password, Type type) {
+    public static SignInState signIn(Proteu proteu, Hili hili, String username, String password, Type type) {
         return signIn(proteu, hili, username, password, type, Profile.ALL);
     }
 
-    public static boolean signIn(Proteu proteu, Hili hili, String username, String password, Type type, Profile profile) {
+    public static SignInState signIn(Proteu proteu, Hili hili, String username, String password, Type type, Profile profile) {
         Values dbUser = null;
         Values dbUserBase = org.netuno.tritao.config.Config.getDBBuilder(proteu).selectUser(username);
         if (dbUserBase == null) {
-            return false;
+            return SignInState.NOK;
         }
-        if (Config.getDBBuilder(proteu).userAuthLockedByHistoryConsecutiveFailure(dbUserBase.getString("id"), proteu.getClientIP())) {
-            Config.getDBBuilder(proteu).insertAuthHistory(
-                    Values.newMap()
-                            .set("user_id", dbUserBase.getInt("id"))
-                            .set("ip", proteu.getClientIP())
-                            .set("success", false)
-                            .set("lock", true)
-                            .set("unlock", false)
-            );
-            return false;
+        if (type.isREQUEST() && Config.getDBBuilder(proteu).checkAuthHistoryConsecutiveFailure(dbUserBase.getString("id"), proteu.getClientIP())) {
+            Config.getDBBuilder(proteu).authHistoryLockAttemptInsert(dbUserBase.getString("id"), proteu.getClientIP());
+            return SignInState.LOCKED;
         }
         if (!dbUserBase.getBoolean("no_pass")) {
             dbUser = org.netuno.tritao.config.Config.getDBBuilder(proteu).selectUserLogin(
@@ -297,28 +314,25 @@ public class Auth extends Web {
             }
         }
         if (dbUser != null) {
-            if (type == Type.SESSION) {
+            if (type.isSESSION()) {
                 List<Values> dbGroups = org.netuno.tritao.config.Config.getDBBuilder(proteu).selectGroup(dbUser.getString("group_id"));
                 if (dbGroups.size() != 1) {
-                    return false;
+                    return SignInState.NOK;
                 }
                 Values dbGroup = dbGroups.getFirst();
                 if (!dbGroup.getBoolean("login_allowed")) {
-                    return false;
+                    return SignInState.NOK;
                 }
             }
             return signIn(proteu, hili, dbUser, type, profile);
         } else {
-            Config.getDBBuilder(proteu).insertAuthHistory(
-                    Values.newMap()
-                            .set("user_id", dbUserBase.getInt("id"))
-                            .set("ip", proteu.getClientIP())
-                            .set("success", false)
-                            .set("lock", false)
-                            .set("unlock", false)
-            );
+            if (type.isREQUEST()) {
+                if (Config.getDBBuilder(proteu).authHistoryFailureInsert(dbUserBase.getString("id"), proteu.getClientIP())) {
+                    return SignInState.LOCKED;
+                }
+            }
         }
-        return false;
+        return SignInState.NOK;
     }
 
     public static Values createContextData(Proteu proteu, Hili hili, Values user) {
@@ -490,7 +504,7 @@ public class Auth extends Web {
                         user.set("nonce", "");
                         user.set("nonce_generator", "");
                         DBManager.updateUser(user);
-                        if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
+                        if (signIn(proteu, hili, user, Type.JWT_REQUEST, Profile.ALL) == SignInState.OK) {
                             header.status(Proteu.HTTPStatus.OK200);
                             org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
                             proteu.outputJSON(auth.jwtSignInData());
@@ -510,7 +524,7 @@ public class Auth extends Web {
                                 user.set("nonce", "");
                                 user.set("nonce_generator", "");
                                 DBManager.updateUser(user);
-                                if (signIn(proteu, hili, user, Type.JWT, Profile.ALL)) {
+                                if (signIn(proteu, hili, user, Type.JWT_REQUEST, Profile.ALL) == SignInState.OK) {
                                     header.status(Proteu.HTTPStatus.OK200);
                                     org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
                                     proteu.outputJSON(
@@ -524,18 +538,11 @@ public class Auth extends Web {
                         out.json(
                                 new Values()
                                         .set("result", false)
+                                        .set("locked", DBManager.checkAuthHistoryConsecutiveFailure(user.getString("id"), proteu.getClientIP()))
                                         .set("errors",
                                                 new Values()
-                                                        .set("password", "wrong password.")
+                                                        .set("password", "wrong-password")
                                         )
-                        );
-                        DBManager.insertAuthHistory(
-                                Values.newMap()
-                                        .set("user_id", user.getInt("id"))
-                                        .set("ip", proteu.getClientIP())
-                                        .set("success", false)
-                                        .set("lock", false)
-                                        .set("unlock", false)
                         );
                     }
                 } else {
@@ -587,14 +594,19 @@ public class Auth extends Web {
                 int id = DBManager.insertUser(user);
                 Values values = DBManager.getUserById(id + "");
                 DBManager.clearOldAuthProviderUser(dbProvider.getString("id"), dbProviderUser.getString("code"));
-                if (signIn(proteu, hili, values, Type.JWT, Profile.ALL)) {
+                SignInState signInState = signIn(proteu, hili, values, Type.JWT_REQUEST, Profile.ALL);
+                if (signInState == SignInState.OK) {
                     header.status(Proteu.HTTPStatus.OK200);
                     org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
                     proteu.outputJSON(auth.jwtSignInData());
                     return;
                 }
                 header.status(Proteu.HTTPStatus.Forbidden403);
-                out.json(new Values().set("result", false));
+                out.json(
+                        Values.newMap()
+                                .set("result", false)
+                                .set("locked", signInState == SignInState.LOCKED)
+                );
             }
         }
     }
@@ -641,7 +653,8 @@ public class Auth extends Web {
                     out.json(auth.attemptRejectWithData());
                     return;
                 }
-                if (signIn(getProteu(), getHili(), Type.JWT, profile)) {
+                SignInState signInState = signIn(getProteu(), getHili(), Type.JWT_REQUEST, profile);
+                if (signInState == SignInState.OK) {
                     if (getHili().sandbox().runScriptIfExists(
                             Config.getPathAppCore(getProteu()), "_auth_sign_in"
                         ).isError()) {
@@ -665,15 +678,20 @@ public class Auth extends Web {
                     }
                 } else {
                     header.status(Proteu.HTTPStatus.Forbidden403);
-                    out.json(new Values().set("result", false));
+                    out.json(
+                            Values.newMap()
+                                    .set("result", false)
+                                    .set("locked", signInState == SignInState.LOCKED)
+                    );
                 }
             } else {
-                if (signIn(getProteu(), getHili(), Type.SESSION, profile)) {
+                SignInState signInState = signIn(getProteu(), getHili(), Type.SESSION_REQUEST, profile);
+                if (signInState == SignInState.OK) {
                     header.status(Proteu.HTTPStatus.OK200);
-                    out.json(new Values().set("result", true));
+                    out.json(Values.newMap().set("result", true));
                 } else {
                     header.status(Proteu.HTTPStatus.Forbidden403);
-                    out.json(new Values().set("result", false));
+                    out.json(Values.newMap().set("result", false).set("locked", signInState == SignInState.LOCKED));
                 }
             }
         } else {

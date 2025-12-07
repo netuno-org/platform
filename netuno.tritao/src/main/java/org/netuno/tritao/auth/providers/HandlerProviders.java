@@ -231,7 +231,7 @@ public class HandlerProviders extends Web {
         dbUser.set("nonce", uid);
         dbUser.set("nonce_generator", provider);
         dbManager.updateUser(dbUser);
-        if (!org.netuno.tritao.auth.Auth.signIn(proteu, hili, dbUser, org.netuno.tritao.auth.Auth.Type.JWT, org.netuno.tritao.auth.Auth.Profile.ALL)) {
+        if (org.netuno.tritao.auth.Auth.signIn(proteu, hili, dbUser, org.netuno.tritao.auth.Auth.Type.JWT, org.netuno.tritao.auth.Auth.Profile.ALL) != org.netuno.tritao.auth.Auth.SignInState.OK) {
             out.json(
                     new Values()
                             .set("token", null)

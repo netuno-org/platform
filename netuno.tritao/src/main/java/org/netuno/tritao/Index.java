@@ -67,10 +67,10 @@ public class Index extends Web {
         if (req.getString("action").equals("login")) {
             Auth.clearSession(getProteu(), getHili());
             if (!req.getString("username").isEmpty() && !req.getString("password").isEmpty()) {
-                if (Auth.signIn(getProteu(), getHili(), Auth.Type.SESSION)) {
-                    template.out("login_success");
-                } else {
-                    template.out("notification/login_wrong");
+                switch (Auth.signIn(getProteu(), getHili(), Auth.Type.SESSION_REQUEST)) {
+                    case OK -> template.out("login_success");
+                    case NOK -> template.out("notification/login_wrong");
+                    case LOCKED -> template.out("notification/login_locked");
                 }
             } else {
                 template.out("notification/login_empty");
