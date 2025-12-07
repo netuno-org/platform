@@ -32,7 +32,11 @@ import java.util.List;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public interface AuthHistory extends BuilderBase {
-    default boolean userAuthLockedByHistoryConsecutiveFailure(String userId, String ip) {
+    default boolean checkAuthHistoryConsecutiveFailure(String userId) {
+        return checkAuthHistoryConsecutiveFailure(userId, null);
+    }
+
+    default boolean checkAuthHistoryConsecutiveFailure(String userId, String ip) {
         boolean authAttemptsEnabled = Config.getAuthAttemptsEnabled(getProteu());
         if (!authAttemptsEnabled) {
             return false;
@@ -43,7 +47,9 @@ public interface AuthHistory extends BuilderBase {
         String from = " netuno_auth_history ";
         String where = "WHERE 1 = 1";
         where += " AND user_id = "+ DB.sqlInjectionInt(userId);
-        where += " AND ip = '" + DB.sqlInjection(ip) + "'";
+        if (ip != null && !ip.isBlank() && !ip.equals("0.0.0.0")) {
+            where += " AND ip = '" + DB.sqlInjection(ip) + "'";
+        }
         where += " AND moment >= '" + DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now().minusMinutes(authAttemptsInterval)) + "'";
         String order = " ORDER BY moment DESC";
         String sql = "SELECT ";
@@ -56,6 +62,51 @@ public interface AuthHistory extends BuilderBase {
         }
         List<Values> rows = getExecutor().query(sql);
         return (int)rows.stream().filter((r) -> !r.getBoolean("success")).count() == authAttemptsMaxFails;
+    }
+
+    default void authHistoryLockAttemptInsert(String userId, String ip) {
+        insertAuthHistory(
+                Values.newMap()
+                        .set("user_id", userId)
+                        .set("ip", ip)
+                        .set("success", false)
+                        .set("lock", true)
+                        .set("unlock", false)
+        );
+    }
+
+    default boolean authHistoryFailureInsert(String userId, String ip) {
+        insertAuthHistory(
+                Values.newMap()
+                        .set("user_id", userId)
+                        .set("ip", ip)
+                        .set("success", false)
+                        .set("lock", false)
+                        .set("unlock", false)
+        );
+        if (checkAuthHistoryConsecutiveFailure(userId, ip)) {
+            insertAuthHistory(
+                    Values.newMap()
+                            .set("user_id", userId)
+                            .set("ip", ip)
+                            .set("success", false)
+                            .set("lock", true)
+                            .set("unlock", false)
+            );
+            return true;
+        }
+        return false;
+    }
+
+    default void authHistoryForceUnlock(String userId, String ip) {
+        insertAuthHistory(
+                Values.newMap()
+                        .set("user_id", userId)
+                        .set("ip", ip)
+                        .set("success", true)
+                        .set("lock", false)
+                        .set("unlock", true)
+        );
     }
 
     default int insertAuthHistory(Values values) {
