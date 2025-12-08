@@ -31,7 +31,7 @@
         <jansi.version>2.4.2</jansi.version>
         <progressbar.version>0.10.1</progressbar.version>
         <emoji.version>5.1.1</emoji.version>
-        <quartz.version>2.5.0</quartz.version>
+        <quartz.version>2.5.2</quartz.version>
         <lucene.version>10.3.1</lucene.version>
         <graalvm.version>25.0.1</graalvm.version>
         <jython.version>2.7.4</jython.version>
