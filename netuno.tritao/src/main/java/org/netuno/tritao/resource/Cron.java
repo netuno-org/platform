@@ -147,6 +147,7 @@ public class Cron extends ResourceBase {
             if (GLOBAL_SECRET == null) {
                 GLOBAL_SECRET = resource(Random.class).initString().nextString();
             }
+            getProteu().getConfig().set("_cron:enabled", cronConfig.getBoolean("enabled", true));
             getProteu().getConfig().set("_cron:jobs", cronConfig.getValues("jobs"));
             getProteu().getConfig().set("_cron:secret", cronConfig.getString("secret", GLOBAL_SECRET));
         }
@@ -207,6 +208,9 @@ public class Cron extends ResourceBase {
     		returns = {}
     )
     public void config() throws ResourceException {
+        if (!getProteu().getConfig().getBoolean("_cron:enabled", true)) {
+            return;
+        }
         Values jobs = getProteu().getConfig().getValues("_cron:jobs");
         String secret = getProteu().getConfig().getString("_cron:secret");
         if (jobs != null) {
