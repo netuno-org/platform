@@ -3112,7 +3112,7 @@ public class DB extends ResourceBase {
         }
     )
     public boolean isH2() {
-        return ManagerBase.isMariaDB(Config.getDBBuilder(getProteu()));
+        return ManagerBase.isH2(Config.getDBBuilder(getProteu()));
     }
 
     @MethodDoc(translations = {
@@ -3545,6 +3545,48 @@ public class DB extends ResourceBase {
     )
     public String sanitizePath(String data) throws PsamataException {
         return org.netuno.psamata.DB.sqlInjectionRawPath(data);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém e número da versão da base de dados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (_db.isMariaDB() && _db.version() > 10.5) {\n" +
+                                            "    // A base de dados é MariaDB e a versão é superior a 10.5\n" +
+                                            "}"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Get the database version number.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (_db.isMariaDB() && _db.version() > 10.5) {\n" +
+                                            "    // The database is MariaDB and the version is higher than 10.5.\n" +
+                                            "}"
+                            )
+                    })
+    }, parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "A versão da base de dados em formato numérico, por exemplo: 10.5"
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "The version of the database in numeric format, for example: 10.5"
+                    )
+            }
+    )
+    public float getVersion() {
+        return new DBVersion(getProteu(), getHili(), key).getVersion();
+    }
+    public float version() {
+        return new DBVersion(getProteu(), getHili(), key).getVersion();
     }
 
     @MethodDoc(translations = {
