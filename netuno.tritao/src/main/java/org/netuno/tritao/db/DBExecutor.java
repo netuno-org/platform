@@ -123,6 +123,14 @@ public class DBExecutor {
         return query(sql, null);
     }
 
+    public Values queryFirst(String sql) {
+        List<Values> dbRecords = query(sql);
+        if (!dbRecords.isEmpty()) {
+            return dbRecords.getFirst();
+        }
+        return null;
+    }
+
     public int execute(String sql, Object... params) {
         try {
             Connection con = getConnection();
