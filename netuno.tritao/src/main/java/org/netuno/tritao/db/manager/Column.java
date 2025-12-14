@@ -450,12 +450,15 @@ public class Column extends ManagerBase {
             String oldRawSQLName = DB.sqlInjectionRawName(oldName);
             String newRawSQLName = DB.sqlInjectionRawName(newName);
             if (!new CheckExists(this).column(table, newRawSQLName)) {
+                DBVersion version = new DBVersion(this);
                 if (isH2()) {
                     getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
-                } else if (isPostgreSQL() || isMariaDB()) {
+                } else if (isPostgreSQL() || (isMariaDB() && version.getVersion() > 10.5)) {
                     getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " rename column " + getBuilder().escape(oldRawSQLName) + " to " + getBuilder().escape(newRawSQLName) + "");
                 } else if (isMSSQL()) {
                 	getExecutor().execute("exec sp_rename '" + DB.sqlInjectionRawName(table) + "." + getBuilder().escape(oldRawSQLName) + "', '" + newRawSQLName + "', 'COLUMN'");
+                } else if (isMariaDB() && version.getVersion() <= 10.5) {
+                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " change column " + getBuilder().escape(oldRawSQLName) + " " + getBuilder().escape(newRawSQLName) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
                 }
             }
         } catch (Exception e) {
