@@ -461,7 +461,7 @@ public class Column extends ManagerBase {
                 } else if (isMariaDB() && version.getVersion() <= 10.5) {
                     Values dbColumnInfo = getExecutor().queryFirst("SELECT DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ DB.sqlInjectionRawName(table) +"' AND COLUMN_NAME = '"+ oldRawSQLName +"'");
                     String columnDefault = "";
-                    if (dbColumnInfo.get("COLUMN_DEFAULT") != null) {
+                    if (dbColumnInfo.get("COLUMN_DEFAULT") != null && !dbColumnInfo.getString("COLUMN_DEFAULT").equalsIgnoreCase("NULL")) {
                         columnDefault = " default ";
                         columnDefault += switch (dbColumnInfo.getString("DATA_TYPE").toLowerCase()) {
                             case "varchar", "text" -> "'"+ dbColumnInfo.getString("COLUMN_DEFAULT") +"'";
