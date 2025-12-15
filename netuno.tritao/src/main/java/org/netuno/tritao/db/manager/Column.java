@@ -24,6 +24,7 @@ import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
+import org.netuno.psamata.Values;
 import org.netuno.tritao.db.builder.BuilderBase;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
@@ -458,7 +459,22 @@ public class Column extends ManagerBase {
                 } else if (isMSSQL()) {
                 	getExecutor().execute("exec sp_rename '" + DB.sqlInjectionRawName(table) + "." + getBuilder().escape(oldRawSQLName) + "', '" + newRawSQLName + "', 'COLUMN'");
                 } else if (isMariaDB() && version.getVersion() <= 10.5) {
-                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " change column " + getBuilder().escape(oldRawSQLName) + " " + getBuilder().escape(newRawSQLName) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
+                    Values dbColumnInfo = getExecutor().queryFirst("SELECT DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ DB.sqlInjectionRawName(table) +"' AND COLUMN_NAME = '"+ oldRawSQLName +"'");
+                    String columnDefault = "";
+                    if (dbColumnInfo.get("COLUMN_DEFAULT") != null) {
+                        columnDefault = " default ";
+                        columnDefault += switch (dbColumnInfo.getString("DATA_TYPE").toLowerCase()) {
+                            case "varchar", "text" -> "'"+ dbColumnInfo.getString("COLUMN_DEFAULT") +"'"
+                            default -> dbColumnInfo.getString("COLUMN_DEFAULT");
+                        };
+                    }
+                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " change column " + getBuilder().escape(oldRawSQLName)
+                            + " " + getBuilder().escape(newRawSQLName)
+                            + " " + dbColumnInfo.getString("COLUMN_TYPE")
+                            + " " + (dbColumnInfo.getBoolean("IS_NULLABLE") ? "" : "NOT NULL")
+                            + " " + dbColumnInfo.getString("COLUMN_TYPE")
+                            + " " + columnDefault
+                    );
                 }
             }
         } catch (Exception e) {
