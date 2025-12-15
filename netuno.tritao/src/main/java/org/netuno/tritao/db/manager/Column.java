@@ -464,7 +464,7 @@ public class Column extends ManagerBase {
                     if (dbColumnInfo.get("COLUMN_DEFAULT") != null) {
                         columnDefault = " default ";
                         columnDefault += switch (dbColumnInfo.getString("DATA_TYPE").toLowerCase()) {
-                            case "varchar", "text" -> "'"+ dbColumnInfo.getString("COLUMN_DEFAULT") +"'"
+                            case "varchar", "text" -> "'"+ dbColumnInfo.getString("COLUMN_DEFAULT") +"'";
                             default -> dbColumnInfo.getString("COLUMN_DEFAULT");
                         };
                     }
