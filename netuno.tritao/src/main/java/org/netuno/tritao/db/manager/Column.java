@@ -468,11 +468,11 @@ public class Column extends ManagerBase {
                             default -> dbColumnInfo.getString("COLUMN_DEFAULT");
                         };
                     }
-                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " change column " + getBuilder().escape(oldRawSQLName)
+                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table))
+                            + " change column " + getBuilder().escape(oldRawSQLName)
                             + " " + getBuilder().escape(newRawSQLName)
                             + " " + dbColumnInfo.getString("COLUMN_TYPE")
                             + " " + (dbColumnInfo.getBoolean("IS_NULLABLE") ? "" : "NOT NULL")
-                            + " " + dbColumnInfo.getString("COLUMN_TYPE")
                             + " " + columnDefault
                     );
                 }
