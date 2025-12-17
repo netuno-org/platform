@@ -555,11 +555,11 @@ public class Enterprise extends HttpServlet {
                     } finally {
                         try {
                             try {
-                                if (faros != null && faros instanceof AutoCloseable) {
+                                if (faros instanceof AutoCloseable) {
                                     ((AutoCloseable)faros).close();
                                 }
                             } catch (Throwable t) {
-                                logger.error("Enterprise Cleaning Faros", t);
+                                logger.error("Enterprise Closing Faros", t);
                             }
                             try {
                                 if (proteu != null) {
