@@ -135,7 +135,7 @@ public class Hili {
         }
     }
 
-    public void close() throws Exception {
+    public void close() {
         FileManager.clear();
         sandbox.close();
         resource.close();
