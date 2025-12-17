@@ -722,6 +722,8 @@ public class ProteuEvents implements Events {
             }
         }
         proteu.getConfig().unset("_scripting_resources");
+        Hili hili = (Hili)faros;
+        hili.close();
     }
 
     public void responseHTTPError(Proteu proteu, Object faros, Proteu.HTTPStatus httpStatus) {
