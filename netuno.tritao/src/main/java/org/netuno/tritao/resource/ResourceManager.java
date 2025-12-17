@@ -126,11 +126,17 @@ public class ResourceManager {
         return resources;
     }
 
-    public void close() throws Exception {
+    public void close() {
         if (resources != null) {
             for (Object resource : resources.values()) {
                 if (resource instanceof AutoCloseable) {
-                    ((AutoCloseable) resource).close();
+                    try {
+                        ((AutoCloseable) resource).close();
+                    } catch (Exception e) {
+                        logger.warn("The "+ resource.getClass().getSimpleName() +" failed to close.");
+                        logger.debug("The "+ resource.getClass().getSimpleName() +" failed to close.", e);
+                    }
+
                 }
             }
             resources.clear();
