@@ -23,18 +23,18 @@ package org.netuno.proteu;
  */
 public class RunEvent {
 
-    public static void beforeStart(Proteu proteu, Object faros) {
+    public static void beforeStart(Proteu proteu, Faros faros) {
         for (Events event : Config.getEvents()) {
             event.beforeStart(proteu, faros);
         }
     }
-    public static void afterStart(Proteu proteu, Object faros) {
+    public static void afterStart(Proteu proteu, Faros faros) {
         for (Events event : Config.getEvents()) {
             event.afterStart(proteu, faros);
         }
     }
 
-    public static String beforeUrl(Proteu proteu, Object faros, String url) {
+    public static String beforeUrl(Proteu proteu, Faros faros, String url) {
         String finalUrl = url;
         for (Events event : Config.getEvents()) {
             String tempUrl = event.beforeUrl(proteu, faros, finalUrl);
@@ -44,7 +44,7 @@ public class RunEvent {
         }
         return finalUrl;
     }
-    public static String afterUrl(Proteu proteu, Object faros, String url) {
+    public static String afterUrl(Proteu proteu, Faros faros, String url) {
         String finalUrl = url;
         for (Events event : Config.getEvents()) {
             String tempUrl = event.afterUrl(proteu, faros, finalUrl);
@@ -55,32 +55,32 @@ public class RunEvent {
         return finalUrl;
     }
 
-    public static void beforeClose(Proteu proteu, Object faros) {
+    public static void beforeClose(Proteu proteu, Faros faros) {
         for (Events event : Config.getEvents()) {
             event.beforeClose(proteu, faros);
         }
     }
-    public static void afterClose(Proteu proteu, Object faros) {
+    public static void afterClose(Proteu proteu, Faros faros) {
         for (Events event : Config.getEvents()) {
             event.afterClose(proteu, faros);
         }
     }
-    public static void beforeEnd(Proteu proteu, Object faros) {
+    public static void beforeEnd(Proteu proteu, Faros faros) {
         for (Events event : Config.getEvents()) {
             event.beforeEnd(proteu, faros);
         }
     }
-    public static void afterEnd(Proteu proteu, Object faros) {
+    public static void afterEnd(Proteu proteu, Faros faros) {
         for (Events event : Config.getEvents()) {
             event.afterEnd(proteu, faros);
         }
     }
-    public static void responseHTTPError(Proteu proteu, Object faros, Proteu.HTTPStatus httpStatus) {
+    public static void responseHTTPError(Proteu proteu, Faros faros, Proteu.HTTPStatus httpStatus) {
         for (Events event : Config.getEvents()) {
             event.responseHTTPError(proteu, faros, httpStatus);
         }
     }
-    public static void onError(Proteu proteu, Object faros, Throwable t, String url) {
+    public static void onError(Proteu proteu, Faros faros, Throwable t, String url) {
         for (Events event : Config.getEvents()) {
             event.onError(proteu, faros, t, url);
         }

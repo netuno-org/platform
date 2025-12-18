@@ -319,7 +319,7 @@ public class Enterprise extends HttpServlet {
         }
         boolean error = false;
         Proteu proteu = null;
-        Object faros = null;
+        Faros faros = null;
         boolean isURLDownload = false;
         try {
             proteu = new Proteu(this, request, response, out);
@@ -328,9 +328,13 @@ public class Enterprise extends HttpServlet {
                 proteu = null;
                 return;
             }
-            out = null;
-            Class<?> farosClass = Class.forName(Config.getFarosClassPath());
-            faros = farosClass.getConstructor(Proteu.class).newInstance(proteu);
+            try {
+                Class<Faros> farosClass = (Class<Faros>)Class.forName(Config.getFarosClassPath());
+                faros = farosClass.getConstructor(Proteu.class).newInstance(proteu);
+            } catch (Throwable t) {
+                logger.error("Failed to load the Faros class.", t);
+                return;
+            }
             try {
                 for (EnterpriseEvents enterpriseEvents : getEvents()) {
                     enterpriseEvents.onStarting(proteu, faros);
@@ -378,7 +382,6 @@ public class Enterprise extends HttpServlet {
                 }
             }
             if (isDownloaded(proteu) || proteu.isClosed()) {
-                //proteu = null;
                 return;
             }
             try {
@@ -393,7 +396,6 @@ public class Enterprise extends HttpServlet {
                 return;
             }
             if (isDownloaded(proteu) || proteu.isClosed()) {
-                //proteu = null;
                 return;
             }
             try {
@@ -410,7 +412,6 @@ public class Enterprise extends HttpServlet {
                 return;
             }
             if (isDownloaded(proteu) || proteu.isClosed()) {
-                //proteu = null;
                 return;
             }
             if (!proteu.isClosed()) {
@@ -428,14 +429,10 @@ public class Enterprise extends HttpServlet {
             if (isURLDownload) {
                 try {
                     if (proteu != null) {
-                        //proteu.clear();
                     }
-                    //System.gc();
                 } finally {
-                    //proteu = null;
                     Config.initialized();
                 }
-                //return;
             }
             try {
                 for (EnterpriseEvents enterpriseEvents : getEvents()) {
@@ -508,7 +505,7 @@ public class Enterprise extends HttpServlet {
         return isURLDownload;
     }
     
-    private void end(Proteu proteu, Object faros, HttpServletRequest request, HttpServletResponse response, ScriptRunner scriptRunner, boolean error) {
+    private void end(Proteu proteu, Faros faros, HttpServletRequest request, HttpServletResponse response, ScriptRunner scriptRunner, boolean error) {
         if (proteu != null) {
             RunEvent.beforeEnd(proteu, faros);
         }
@@ -555,9 +552,7 @@ public class Enterprise extends HttpServlet {
                     } finally {
                         try {
                             try {
-                                if (faros instanceof AutoCloseable) {
-                                    ((AutoCloseable)faros).close();
-                                }
+                                faros.close();
                             } catch (Throwable t) {
                                 logger.error("Enterprise Closing Faros", t);
                             }

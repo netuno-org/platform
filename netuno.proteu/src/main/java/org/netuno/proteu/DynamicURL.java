@@ -37,11 +37,11 @@ public class DynamicURL {
      * Url filter and control.
      * @param proteu Proteu
      */
-    public static void build(Proteu proteu, Object faros) {
+    public static void build(Proteu proteu, Faros faros) {
         build(proteu, faros, null);
     }
 
-    public static void build(Proteu proteu, Object faros, ScriptRunner scriptRunner) {
+    public static void build(Proteu proteu, Faros faros, ScriptRunner scriptRunner) {
         String url = proteu.getRequestHeader().getString("Url");
         logger.info("Url: "+ url +" loading.");
         url = proteu.safePath(url);
@@ -194,7 +194,7 @@ public class DynamicURL {
         }
     }
 
-    private static void throwable(Proteu proteu, Object faros, Throwable t, String url) {
+    private static void throwable(Proteu proteu, Faros faros, Throwable t, String url) {
         try {
             RunEvent.onError(proteu, faros, t, url);
         	/*if (!proteu.getConfig().getBoolean("proteu_silent_output_error")) {

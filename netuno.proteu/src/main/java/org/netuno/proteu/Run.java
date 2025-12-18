@@ -34,14 +34,14 @@ import org.netuno.psamata.script.ScriptRunner;
 public class Run implements AutoCloseable {
     static Logger logger = LogManager.getLogger(Run.class);
     private Proteu proteu = null;
-    private Object faros = null;
+    private Faros faros = null;
     private ScriptRunner scriptRunner = null;
 
     /**
      * Run file.
      * @param proteu Proteu
      */
-    public Run(Proteu proteu, Object faros, ScriptRunner scriptRunner) throws ProteuException {
+    public Run(Proteu proteu, Faros faros, ScriptRunner scriptRunner) throws ProteuException {
         this.proteu = proteu;
         this.faros = faros;
         this.scriptRunner = scriptRunner;

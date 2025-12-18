@@ -18,30 +18,12 @@
 package org.netuno.proteu;
 
 /**
- * Execution life-cycle events.
+ * Faros Interface
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public interface Events {
-
-    int getPriority();
-
-    void beforeStart(Proteu proteu, Faros faros);
-
-    void afterStart(Proteu proteu, Faros faros);
-
-    String beforeUrl(Proteu proteu, Faros faros, String url);
-
-    String afterUrl(Proteu proteu, Faros faros, String url);
-
-    void beforeClose(Proteu proteu, Faros faros);
-
-    void afterClose(Proteu proteu, Faros faros);
-
-    void beforeEnd(Proteu proteu, Faros faros);
-
-    void afterEnd(Proteu proteu, Faros faros);
-
-    void responseHTTPError(Proteu proteu, Faros faros, Proteu.HTTPStatus httpStatus);
-
-    void onError(Proteu proteu, Faros faros, Throwable t, String url);
+public interface Faros {
+    default <T> T get(Class<T> cls) {
+        return (T)this;
+    }
+    void close();
 }
