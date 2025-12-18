@@ -22,10 +22,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.netuno.proteu.Download;
-import org.netuno.proteu.Events;
-import org.netuno.proteu.Proteu;
-import org.netuno.proteu.ProteuException;
+import org.netuno.proteu.*;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.ConfigError;
@@ -117,7 +114,7 @@ public class ProteuEvents implements Events {
         return 100;
     }
 
-    public void beforeStart(Proteu proteu, Object faros) {
+    public void beforeStart(Proteu proteu, Faros faros) {
         if (firstStart) {
             firstStart = false;
 
@@ -419,8 +416,8 @@ public class ProteuEvents implements Events {
         proteu.getConfig().set("_response:error", true);
     }
 
-    public void afterStart(Proteu proteu, Object faros) {
-        Hili hili = (Hili)faros;
+    public void afterStart(Proteu proteu, Faros faros) {
+        Hili hili = faros.get(Hili.class);
         Values appConfig = proteu.getConfig().getValues("_app:config");
         Values dbs = appConfig.getValues("db");
         for (String key : dbs.keys()) {
@@ -507,7 +504,7 @@ public class ProteuEvents implements Events {
         hili.event().run(EventId.REQUEST_START_AFTER);
     }
 
-    public String beforeUrl(Proteu proteu, Object faros, String url) {
+    public String beforeUrl(Proteu proteu, Faros faros, String url) {
         proteu.getConfig().set("_storage:download", false);
         proteu.getConfig().set("_storage:filesystem:private:download", false);
         proteu.getConfig().set("_storage:filesystem:public:download", true);
@@ -638,8 +635,8 @@ public class ProteuEvents implements Events {
         return url;
     }
 
-    public String afterUrl(Proteu proteu, Object faros, String url) {
-        Hili hili = (Hili)faros;
+    public String afterUrl(Proteu proteu, Faros faros, String url) {
+        Hili hili = faros.get(Hili.class);
         URL _url = new URL(proteu, hili);
         _url.to(url);
         hili.event().run(EventId.REQUEST_URL_BEFORE);
@@ -679,11 +676,11 @@ public class ProteuEvents implements Events {
         return url;
     }
 
-    public void beforeClose(Proteu proteu, Object faros) {
+    public void beforeClose(Proteu proteu, Faros faros) {
         for (Function<Object[], Object> func : proteu.getConfig().getValues("_exec:proteu:events:beforeClose", Values.newList()).list(Function.class)) {
             func.apply(null);
         }
-        Hili hili = (Hili)faros;
+        Hili hili = faros.get(Hili.class);
         if (proteu.getConfig().getValues("_app:config") != null) {
             hili.event().run(EventId.REQUEST_CLOSE_BEFORE);
             hili.event().run(EventId.REQUEST_CLOSE);
@@ -694,14 +691,14 @@ public class ProteuEvents implements Events {
         }
     }
 
-    public void afterClose(Proteu proteu, Object faros) {
+    public void afterClose(Proteu proteu, Faros faros) {
         for (Function<Object[], Object> func : proteu.getConfig().getValues("_exec:proteu:events:afterClose", Values.newList()).list(Function.class)) {
             func.apply(null);
         }
     }
 
-    public void beforeEnd(Proteu proteu, Object faros) {
-        Hili hili = (Hili)faros;
+    public void beforeEnd(Proteu proteu, Faros faros) {
+        Hili hili = faros.get(Hili.class);
         if (proteu.getConfig().getBoolean("_script:_request_end")) {
             hili.event().run(EventId.REQUEST_END_BEFORE);
             hili.event().run(EventId.REQUEST_END);
@@ -712,7 +709,7 @@ public class ProteuEvents implements Events {
         }
     }
 
-    public void afterEnd(Proteu proteu, Object faros) {
+    public void afterEnd(Proteu proteu, Faros faros) {
         for (String key : proteu.getConfig().keys()) {
             if (key.startsWith("_database:executor:")) {
                 Object o = proteu.getConfig().get(key);
@@ -722,11 +719,9 @@ public class ProteuEvents implements Events {
             }
         }
         proteu.getConfig().unset("_scripting_resources");
-        Hili hili = (Hili)faros;
-        hili.close();
     }
 
-    public void responseHTTPError(Proteu proteu, Object faros, Proteu.HTTPStatus httpStatus) {
+    public void responseHTTPError(Proteu proteu, Faros faros, Proteu.HTTPStatus httpStatus) {
         if (!proteu.getConfig().getBoolean("_response:error")) {
             return;
         }
@@ -736,14 +731,14 @@ public class ProteuEvents implements Events {
             proteu.start();
             return;
         }
-        Hili hili = (Hili)faros;
+        if (faros == null) {
+            return;
+        }
+        Hili hili = faros.get(Hili.class);
         proteu.setResponseHeader(httpStatus);
         proteu.setResponseHeader(Proteu.ContentType.HTML);
         String errorMessage = "";
         try {
-            if (faros == null) {
-                return;
-            }
             TemplateBuilder.output(proteu, hili, "includes/head_login");
             errorMessage = switch (httpStatus) {
                 case Forbidden403 -> {
@@ -769,8 +764,8 @@ public class ProteuEvents implements Events {
         }
     }
 
-    public void onError(Proteu proteu, Object faros, Throwable t, String url) {
-        /*Hili hili = (Hili)faros;
+    public void onError(Proteu proteu, Faros faros, Throwable t, String url) {
+        /*Hili hili = faros.get(Hili.class);
         proteu.setResponseHeader(Proteu.HTTPStatus.InternalServerError500);
         proteu.setResponseHeader(Proteu.ContentType.HTML);
         try {

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.velocity.script.VelocityScriptEngineFactory;
+import org.netuno.proteu.Faros;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.LangResource;
 import org.netuno.psamata.Values;
@@ -40,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Hili - Global Features
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class Hili {
+public class Hili implements Faros {
     private static Logger logger = LogManager.getLogger(Hili.class);
 
     private static Map<String, ImmutablePair<Long, String>> cachedScripts = new ConcurrentHashMap<>();
