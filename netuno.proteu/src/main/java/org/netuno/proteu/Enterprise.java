@@ -552,7 +552,9 @@ public class Enterprise extends HttpServlet {
                     } finally {
                         try {
                             try {
-                                faros.close();
+                                if (faros != null) {
+                                    faros.close();
+                                }
                             } catch (Throwable t) {
                                 logger.error("Enterprise Closing Faros", t);
                             }
