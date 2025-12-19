@@ -72,6 +72,8 @@ import org.netuno.tritao.resource.event.ResourceEventType;
 public class Auth extends ResourceBase {
 
     public Values allProvidersConfig = new Values();
+    private boolean altchaEnabled = false;
+    private boolean altchaAdminEnabled = false;
     private boolean jwtEnabled = true;
     private Values jwtGroups = Values.newList();
     private int jwtAccessExpires = 60;
@@ -142,6 +144,10 @@ public class Auth extends ResourceBase {
         getProteu().getConfig().set("_auth:attempts:enabled", attempts.getBoolean("enabled", Config.getAuthAttemptsEnabled(getProteu())));
         getProteu().getConfig().set("_auth:attempts:interval", attempts.getInt("interval", Config.getAuthAttemptsInterval(getProteu())));
         getProteu().getConfig().set("_auth:attempts:max_fails", attempts.getInt("maxFails", Config.getAuthAttemptsMaxFails(getProteu())));
+        Values altcha = auth.getValues("altcha", Values.newMap());
+        this.altchaEnabled = altcha.getBoolean("enabled", this.altchaEnabled);
+        Values altchaAdmin = altcha.getValues("admin", Values.newMap());
+        this.altchaAdminEnabled = altchaAdmin.getBoolean("enabled", this.altchaAdminEnabled);
         Values jwt = auth.getValues("jwt", Values.newMap());
         this.jwtEnabled = jwt.getBoolean("enabled", this.jwtEnabled);
         this.jwtGroups = jwt.getValues("groups", Values.newList());
@@ -1099,6 +1105,24 @@ public class Auth extends ResourceBase {
 
     public Auth attemptsMaxFails(int attemptsMaxFails) {
         getProteu().getConfig().set("_auth:attempts:max_fails", attemptsMaxFails);
+        return this;
+    }
+
+    public boolean altchaEnabled() {
+        return altchaEnabled;
+    }
+
+    public Auth altchaEnabled(boolean enabled) {
+        this.altchaEnabled = enabled;
+        return this;
+    }
+
+    public boolean altchaAdminEnabled() {
+        return altchaAdminEnabled;
+    }
+
+    public Auth altchaAdminEnabled(boolean enabled) {
+        this.altchaAdminEnabled = enabled;
         return this;
     }
 
