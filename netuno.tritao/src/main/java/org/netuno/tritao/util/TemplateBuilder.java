@@ -309,6 +309,10 @@ public class TemplateBuilder {
                 output = Config.getUrlDevImages(proteu);
             } else if (value.equalsIgnoreCase("lang-code")) {
                 output = lang.getCode();
+            } else if (value.equalsIgnoreCase("language")) {
+                output = lang.getLanguage();
+            } else if (value.equalsIgnoreCase("country")) {
+                output = lang.getCountry();
             }
         } else if (key.equalsIgnoreCase("config")) {
             output = proteu.getConfig().getString(value);
