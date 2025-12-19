@@ -344,11 +344,28 @@ public class Lang extends ResourceBase {
                     howToUse = {})
     }, parameters = {},
             returns = {})
-
-
     public final String getCode() {
         return langResource.getLocale().toString();
     }
+
+    public final String getLanguage() {
+        String code = getCode();
+        int _pos = code.indexOf("_");
+        if (_pos > 0) {
+            return code.substring(0, _pos);
+        }
+        return code;
+    }
+
+    public final String getCountry() {
+        String code = getCode();
+        int _pos = code.indexOf("_");
+        if (_pos < code.length() - 1) {
+            return code.substring(_pos + 1);
+        }
+        return code;
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
