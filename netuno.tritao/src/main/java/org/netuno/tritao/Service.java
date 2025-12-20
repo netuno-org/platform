@@ -38,6 +38,8 @@ import java.util.function.Function;
 
 import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.auth.providers.HandlerProviders;
+import org.netuno.tritao.resource.Altcha;
+import org.netuno.tritao.resource.Out;
 import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.event.ResourceEventExecutor;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -307,6 +309,14 @@ public class Service {
         if (file.equalsIgnoreCase("_auth")) {
             new Auth(proteu, hili).run();
             return true;
+        }
+        if (file.equalsIgnoreCase("_altcha")) {
+            Altcha altcha = hili.resource().get(Altcha.class);
+            if (altcha.enabled()) {
+                Out out = hili.resource().get(Out.class);
+                out.json(altcha.challenge());
+                return true;
+            }
         }
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppServices(proteu) + "/" + file);
         if (scriptPath != null) {
