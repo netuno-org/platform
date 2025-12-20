@@ -39,5 +39,8 @@
         netuno.config.validation = {};
         netuno.config.validation.message = _{lang=netuno.validation};
     </script>
+    #if($_auth.altchaAdminEnabled())
+    <script type="text/javascript" src="_{netuno-config=url-scripts}/plugins/altcha/altcha.i18n.umd.js"></script>
+    #end
 </head>
 <body>
