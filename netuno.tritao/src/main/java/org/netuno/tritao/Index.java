@@ -26,6 +26,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.Altcha;
 import org.netuno.tritao.resource.Req;
 import org.netuno.tritao.resource.Template;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -65,6 +66,17 @@ public class Index extends Web {
         }
         Template template = resource(Template.class).initCore();
         if (req.getString("action").equals("login")) {
+            org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
+            if (auth.altchaAdminEnabled()) {
+                Altcha altcha = resource(Altcha.class);
+                if (!req.hasKey("altcha") || req.getString("altcha").isBlank()) {
+                    template.out("notification/login_altcha_no_payload");
+                    return;
+                } else if (!altcha.verifySolution(req.getString("altcha"))) {
+                    template.out("notification/login_altcha_invalidated");
+                    return;
+                }
+            }
             Auth.clearSession(getProteu(), getHili());
             if (!req.getString("username").isEmpty() && !req.getString("password").isEmpty()) {
                 switch (Auth.signIn(getProteu(), getHili(), Auth.Type.SESSION_REQUEST)) {
