@@ -625,7 +625,20 @@ public class Auth extends Web {
         org.netuno.tritao.resource.Auth auth = resource(org.netuno.tritao.resource.Auth.class);
         
         boolean jwtRequest = req.hasKey("jwt") && req.getBoolean("jwt");
-        
+
+        if (auth.altchaEnabled()) {
+            org.netuno.tritao.resource.Altcha altcha = resource(org.netuno.tritao.resource.Altcha.class);
+            if (!req.hasKey("altcha") || req.getString("altcha").isBlank()) {
+                header.status(Proteu.HTTPStatus.NotAcceptable406);
+                out.json(new Values().set("result", false).set("altcha", "no-payload"));
+                return;
+            } else if (!altcha.verifySolution(req.getString("altcha"))) {
+                header.status(Proteu.HTTPStatus.NotAcceptable406);
+                out.json(new Values().set("result", false).set("altcha", "invalidated"));
+                return;
+            }
+        }
+
         if (jwtRequest) {
             if (!auth.jwtEnabled()) {
                 header.status(Proteu.HTTPStatus.ServiceUnavailable503);
