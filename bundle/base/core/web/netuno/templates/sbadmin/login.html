@@ -8,12 +8,30 @@
 		<div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
 			<div>
 				<form id="formSignIn" netuno-login-auto="_{data=auto}">
-					<label for="inputUserName" class="sr-only">_{&lang=netuno.login.user}</label>
-					<input type="text" id="inputUserName" class="form-control" placeholder="_{&lang=netuno.login.username}" value="_{data=username}" required autofocus>
-					<label for="inputPassword" class="sr-only">_{&lang=netuno.login.password}</label>
-					<input type="password" id="inputPassword" class="form-control" placeholder="_{&lang=netuno.login.password}" value="_{data=password}" required>
-					<hr/>
-					<button class="btn btn-lg btn-primary btn-block" type="submit">_{&lang=netuno.login.button.login}</button>
+					<div class="form-group">
+						<label for="inputUserName">_{&lang=netuno.login.username}</label>
+						<input type="text" id="inputUserName" class="form-control" placeholder="_{&lang=netuno.login.username}" value="_{data=username}" required autofocus>
+					</div>
+					<div class="form-group">
+						<label for="inputPassword">_{&lang=netuno.login.password}</label>
+						<input type="password" id="inputPassword" class="form-control" placeholder="_{&lang=netuno.login.password}" value="_{data=password}" required>
+					</div>
+					#if($_auth.altchaAdminEnabled())
+					<div class="form-group">
+						<input id="inputAltcha" type="hidden" name="altcha" value="">
+						<altcha-widget id="widgetAltcha" challengeurl="_{netuno-config=url-services}_altcha" language="_{netuno-config=language}" hidelogo hidefooter></altcha-widget>
+						<script>
+							document.getElementById("widgetAltcha").addEventListener("statechange", function (ev) {
+								if (ev.detail.state === "verified") {
+									document.getElementById("inputAltcha").value = ev.detail.payload;
+								}
+							}, false);
+						</script>
+					</div>
+					#end
+					<div class="form-group">
+						<button class="btn btn-lg btn-primary btn-block" type="submit">_{&lang=netuno.login.button.login}</button>
+					</div>
 					<div id="login_result"></div>
 				</form>
 			</div> <!-- /container -->
