@@ -8,6 +8,7 @@ netuno.addPageLoad () ->
       data: {
         'username': $("#inputUserName").val()
         'password': $("#inputPassword").val()
+        'altcha': if $("#inputAltcha").length then $("#inputAltcha").val() else undefined
       }
       success: (response) ->
         $('#login_result').html(response)
