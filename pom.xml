@@ -43,7 +43,7 @@
         <apache.poi.version>5.5.1</apache.poi.version>
         <apache.tika.version>3.2.3</apache.tika.version>
         <apache.velocity.version>2.4.1</apache.velocity.version>
-        <classgraph.version>4.8.163</classgraph.version>
+        <classgraph.version>4.8.184</classgraph.version>
         <json.version>20250517</json.version>
         <itext.version>9.4.0</itext.version>
         <pdfbox.version>3.0.6</pdfbox.version>
