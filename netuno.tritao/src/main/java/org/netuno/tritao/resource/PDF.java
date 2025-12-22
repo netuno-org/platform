@@ -527,7 +527,7 @@ public class PDF extends ResourceBase implements PDFToText, PDFToHTML, PDFExtrac
                     description = "Returns PDF document with the page size defined."
             )
     })
-    public Document newDocument(org.netuno.psamata.io.IO out, PageSize pageSize) {
+    public Document newDocument(org.netuno.psamata.io.IO out, PageSize pageSize) throws IOException {
         return newDocument(out.getOutputStream(), pageSize);
     }
     public Document newDocument(java.io.OutputStream out, PageSize pageSize) {

@@ -900,11 +900,11 @@ public class Storage extends ResourceBase implements IO {
                 description = "Data output object from Netuno to the storage in use."
         )
     })
-    public org.netuno.psamata.io.OutputStream output() {
+    public org.netuno.psamata.io.OutputStream output() throws IOException {
         return new org.netuno.psamata.io.OutputStream(file().getOutputStream());
     }
 
-    public org.netuno.psamata.io.OutputStream getOutput() {
+    public org.netuno.psamata.io.OutputStream getOutput() throws IOException {
         return output();
     }
     
@@ -927,10 +927,10 @@ public class Storage extends ResourceBase implements IO {
                 description = "Java data output object for the storage in use."
         )
     })
-    public java.io.OutputStream outputStream() {
+    public java.io.OutputStream outputStream() throws IOException {
         return file().getOutputStream();
     }
-    public java.io.OutputStream getOutputStream() {
+    public java.io.OutputStream getOutputStream() throws IOException {
         return outputStream();
     }
 
@@ -953,7 +953,7 @@ public class Storage extends ResourceBase implements IO {
                 description = "Output object as Java text for the storage in use."
         )
     })
-    public Writer writer() {
+    public Writer writer() throws IOException {
         return new OutputStreamWriter(file().getOutputStream());
     }
     
@@ -976,14 +976,14 @@ public class Storage extends ResourceBase implements IO {
                 description = "Data input object from Netuno to the storage in use."
         )
     })
-    public org.netuno.psamata.io.InputStream input() {
+    public org.netuno.psamata.io.InputStream input() throws IOException {
         if (isFile()) {
             return new org.netuno.psamata.io.InputStream(file().getInputStream());
         } else {            
             throw new ResourceException("storage.input("+ file().fullPath() +"):\nThe path is not a file.");
         }
     }
-    public org.netuno.psamata.io.InputStream getInput() {
+    public org.netuno.psamata.io.InputStream getInput() throws IOException {
         return input();
     }
     
@@ -1006,14 +1006,14 @@ public class Storage extends ResourceBase implements IO {
                 description = "Java data input object for the storage in use."
         )
     })
-    public java.io.InputStream inputStream() {
+    public java.io.InputStream inputStream() throws IOException {
         if (isFile()) {
             return file().getInputStream();
         } else {            
             throw new ResourceException("storage.inputStream("+ file().fullPath() +"):\nThe path is not a file.");
         }
     }
-    public java.io.InputStream getInputStream() {
+    public java.io.InputStream getInputStream() throws IOException {
         return inputStream();
     }
 
@@ -1036,7 +1036,7 @@ public class Storage extends ResourceBase implements IO {
                 description = "Input object as Java text for the storage in use."
         )
     })
-    public Reader reader() {
+    public Reader reader() throws IOException {
         if (isFile()) {
             return new InputStreamReader(file().getInputStream());
         } else {            
@@ -1063,7 +1063,7 @@ public class Storage extends ResourceBase implements IO {
                 description = "Java text input object (_BOM_) for the storage in use."
         )
     })
-    public Reader readerBOM() throws UnsupportedEncodingException {
+    public Reader readerBOM() throws IOException {
         return readerBOM("UTF-8");
     }
 
@@ -1109,7 +1109,7 @@ public class Storage extends ResourceBase implements IO {
                 description = "Java text input object (_BOM_) for the storage in use."
         )
     })
-    public Reader readerBOM(String charsetName) throws UnsupportedEncodingException {
+    public Reader readerBOM(String charsetName) throws IOException {
         if (isFile()) {
             return new InputStreamReader(new BOMInputStream(file().getInputStream()), charsetName);
         } else {            
