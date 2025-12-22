@@ -15,7 +15,7 @@ public class AttachmentDataSource implements DataSource {
     private String type;
     private byte[] data;
 
-    public AttachmentDataSource(final Attachment attachment) {
+    public AttachmentDataSource(final Attachment attachment) throws IOException {
         name = attachment.getName();
         type = attachment.getType();
         if (attachment.getFile() != null) {

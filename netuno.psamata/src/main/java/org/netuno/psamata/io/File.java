@@ -20,6 +20,7 @@ package org.netuno.psamata.io;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -47,24 +48,28 @@ public class File implements IO {
      * Path.
      */
     private String path = "";
+
     /**
      * Jail.
      */
     private String jail = "";
+
     /**
      * Real Path.
      */
     private String physicalPath = "";
+
     /**
      * Content Type.
      */
     private String contentType = "";
+
     /**
      * Bytes.
      */
     private ByteArrayInputStream bytes;
 
-    private FileManager manager = FileManager.get();
+    private final FileManager manager = FileManager.get();
 
     /**
      * File.
@@ -75,6 +80,7 @@ public class File implements IO {
         java.io.File ioFilePath = new java.io.File(path);
         physicalPath = ioFilePath.getAbsolutePath();
     }
+
     /**
      * File.
      * @param filePath Path
@@ -88,6 +94,7 @@ public class File implements IO {
         }
         physicalPath = SafePath.fileSystemPath(path);
     }
+
     /**
      * File.
      * @param filePath Path
@@ -100,18 +107,19 @@ public class File implements IO {
         contentType = fileContentType;
         bytes = fileBytes;
     }
+
     /**
      * File.
      * @param filePath Path
      * @param filePhysicalPath Physic Path
      * @param fileContentType Content Type
      */
-
     public File(final String filePath, final String filePhysicalPath, final String fileContentType) {
         path = SafePath.path(filePath);
         physicalPath = SafePath.fileSystemPath(filePhysicalPath);
         contentType = fileContentType;
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -130,9 +138,9 @@ public class File implements IO {
     public File ensureJail(String jailPath) {
         if (jail.isEmpty()) {
             jail = jailPath;
-        } else {
+        } // else {
             //throw new PsamataException("Jail was already sets and can not be set again.");
-        }
+        // }
         return this;
     }
 
@@ -169,6 +177,7 @@ public class File implements IO {
     public final String path() {
         return path;
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -183,6 +192,7 @@ public class File implements IO {
     public final String getPath() {
         return path;
     }
+
     /**
      * Get Name.
      * @return Name
@@ -201,6 +211,7 @@ public class File implements IO {
     public final String name() {
         return getName(path);
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -215,6 +226,7 @@ public class File implements IO {
     public final String getName() {
         return getName(path);
     }
+
     /**
      * Get Name.
      * @return Name
@@ -243,26 +255,26 @@ public class File implements IO {
     }, returns = {})
     public static String getName(String path) {
         String name = path;
-        if (name.indexOf(":") > -1) {
+        if (name.contains(":")) {
             name = name.substring(name.lastIndexOf(":"));
         }
-        if (name.indexOf("?") > -1) {
+        if (name.contains("?")) {
             name = name.substring(0, name.indexOf("?"));
         }
-        if (name.indexOf(java.io.File.separator) > -1) {
+        if (name.contains(java.io.File.separator)) {
             name = name.substring(name.lastIndexOf(java.io.File.separator) + 1);
         }
-        if (name.indexOf("\\") > -1) {
+        if (name.contains("\\")) {
             name = name.substring(name.lastIndexOf("\\") + 1);
         }
-        if (name.indexOf("/") > -1) {
+        if (name.contains("/")) {
             name = name.substring(name.lastIndexOf("/") + 1);
         }
         name = Normalizer.normalize(name, Normalizer.Form.NFD);
         name = name.replaceAll("\\p{M}", "")
                 .replaceAll("[^\\p{ASCII}]", "")
                 .replace(" ", "-")
-                .replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+                .replaceAll("[^a-zA-Z0-9.\\-]", "_");
         return name;
     }
     
@@ -296,7 +308,7 @@ public class File implements IO {
         newName = newName.replaceAll("\\p{M}", "")
                 .replaceAll("[^\\p{ASCII}]", "")
                 .replace(" ", "-")
-                .replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+                .replaceAll("[^a-zA-Z0-9.\\-]", "_");
         String lastWithSeparator = "";
         String newPath = path;
         if (newPath.endsWith(java.io.File.separator)) {
@@ -309,16 +321,16 @@ public class File implements IO {
             lastWithSeparator = "/";
             newPath = newPath.substring(0, newPath.length() - 1);
         }
-        if (newPath.indexOf(java.io.File.separator) > -1) {
+        if (newPath.contains(java.io.File.separator)) {
             newPath = newPath.substring(0, newPath.lastIndexOf(java.io.File.separator) + 1);
         }
-        if (newPath.indexOf("\\") > -1) {
+        if (newPath.contains("\\")) {
             newPath = newPath.substring(0, newPath.lastIndexOf("\\") + 1);
         }
-        if (newPath.indexOf("/") > -1) {
+        if (newPath.contains("/")) {
             newPath = newPath.substring(0, newPath.lastIndexOf("/") + 1);
         }
-        if (newPath.indexOf(java.io.File.separator) == -1 && newPath.indexOf("\\") == -1 && newPath.indexOf("/") == -1) {
+        if (!newPath.contains(java.io.File.separator) && !newPath.contains("\\") && !newPath.contains("/")) {
             newPath = "";
         }
         path = newPath + newName + lastWithSeparator;
@@ -334,10 +346,12 @@ public class File implements IO {
     public static String sequenceName(java.io.File targetPath, String fileName) {
     	return getSequenceName(targetPath, fileName);
     }
+
     public static String getSequenceName(java.io.File targetPath, String fileName) {
         fileName = SafePath.fileName(fileName);
         return getSequenceName(targetPath.getAbsolutePath(), fileName);
     }
+
     /**
      * Get a file name with a sequence number if the file already exists with the original name.
      * @param targetPath Target path
@@ -399,6 +413,7 @@ public class File implements IO {
         }
         return sequenceFileName;
     }
+
     /**
      * Physic Path.
      * @return Path
@@ -417,9 +432,11 @@ public class File implements IO {
     public final String physicalPath() {
         return physicalPath;
     }
+
     public final String getPhysicalPath() {
         return physicalPath;
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -459,6 +476,7 @@ public class File implements IO {
     public String baseName() {
     	return getBaseName();
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -494,7 +512,6 @@ public class File implements IO {
      * Get Content Type.
      * @return Content Type
      */
-
     public final String contentType() {
         if (contentType == null || contentType.isEmpty()) {
             contentType = java.net.URLConnection.guessContentTypeFromName(getName());
@@ -511,6 +528,7 @@ public class File implements IO {
         }
         return contentType;
     }
+
     public final String getContentType() {
         return contentType();
     }
@@ -518,63 +536,69 @@ public class File implements IO {
     public final File contentType(String contentType) {
         return setContentType(contentType);
     }
+
     public final File setContentType(String contentType) {
         this.contentType = contentType;
         return this;
     }
+
     /**
      * Get Output Stream.
      * @return Output Stream
      */
     @Override
-    public OutputStream getOutput() {
+    public OutputStream getOutput() throws IOException {
         return output();
     }
+
     @Override
-    public OutputStream output() {
+    public OutputStream output() throws IOException {
         return manager.onOutput(this, new org.netuno.psamata.io.OutputStream(this.getOutputStream()));
     }
+
     @Override
-    public final java.io.OutputStream outputStream() {
+    public final java.io.OutputStream outputStream() throws IOException {
     	return getOutputStream();
     }
+
     @Override
-    public final java.io.OutputStream getOutputStream() {
+    public final java.io.OutputStream getOutputStream() throws IOException {
         if (!physicalPath.isEmpty()) {
-            try {
-                return manager.onOutputStream(this, new FileOutputStream(physicalPath));
-            } catch (Exception e) {
-                return null;
-            }
+            return manager.onOutputStream(this, new FileOutputStream(physicalPath));
         } else if (!jail.isEmpty() && !path.isEmpty()) {
-            try {
-                return manager.onOutputStream(this, new FileOutputStream(jail + java.io.File.separator + path));
-            } catch (Exception e) {
-                return null;
-            }
+            return manager.onOutputStream(this, new FileOutputStream(jail + java.io.File.separator + path));
         } else {
             return null;
         }
     }
-    public java.io.Writer writer() {
-        return new java.io.OutputStreamWriter(this.getOutputStream());
+
+    public java.io.Writer writer() throws IOException {
+        java.io.OutputStream out = this.getOutputStream();
+        if (out == null) {
+            return null;
+        }
+        return new java.io.OutputStreamWriter(out);
     }
+
     /**
      * Get Input Stream.
      * @return Input Stream
      */
     @Override
-    public InputStream getInput() {
+    public InputStream getInput() throws IOException {
         return input();
     }
+
     @Override
-    public org.netuno.psamata.io.InputStream input() {
+    public org.netuno.psamata.io.InputStream input() throws IOException {
         return manager.onInput(this, new org.netuno.psamata.io.InputStream(this.getInputStream()));
     }
+
     @Override
-    public final java.io.InputStream inputStream() {
+    public final java.io.InputStream inputStream() throws IOException {
     	return getInputStream();
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -587,33 +611,29 @@ public class File implements IO {
     }, parameters = {
     }, returns = {})
     @Override
-    public final java.io.InputStream getInputStream() {
+    public final java.io.InputStream getInputStream() throws IOException {
         if (!physicalPath.isEmpty()) {
-            try {
-                return manager.onInputStream(this, new FileInputStream(physicalPath));
-            } catch (Exception e) {
-                return null;
-            }
+            return manager.onInputStream(this, new FileInputStream(physicalPath));
         } else if (!jail.isEmpty() && !path.isEmpty()) {
-            try {
-                return manager.onInputStream(this, new FileInputStream(jail + java.io.File.separator + path));
-            } catch (Exception e) {
-                return null;
-            }
+            return manager.onInputStream(this, new FileInputStream(jail + java.io.File.separator + path));
         } else {
             return bytes;
         }
     }
 
-    public java.io.Reader reader() {
+    public java.io.Reader reader() throws IOException {
+        java.io.InputStream in = this.getInputStream();
+        if (in == null) {
+            return null;
+        }
         return new java.io.InputStreamReader(this.getInputStream());
     }
     
-    public java.io.Reader readerBOM() throws UnsupportedEncodingException, IOException {
+    public java.io.Reader readerBOM() throws IOException {
         return readerBOM("UTF-8");
     }
 
-    public java.io.Reader readerBOM(String charsetName) throws UnsupportedEncodingException, IOException {
+    public java.io.Reader readerBOM(String charsetName) throws IOException {
         return new java.io.InputStreamReader(
             org.apache.commons.io.input.BOMInputStream
                 .builder()
@@ -624,27 +644,27 @@ public class File implements IO {
         );
     }
     
-    public java.io.BufferedReader bufferedReader() throws FileNotFoundException {
+    public java.io.BufferedReader bufferedReader() throws IOException {
         return new java.io.BufferedReader(manager.onReader(this, new java.io.FileReader(this.physicalPath)), Buffer.DEFAULT_LENGTH);
     }
     
-    public java.io.BufferedReader bufferedReader(int bufferSize) throws FileNotFoundException {
+    public java.io.BufferedReader bufferedReader(int bufferSize) throws IOException {
         return new java.io.BufferedReader(manager.onReader(this, new java.io.FileReader(this.physicalPath)), bufferSize);
     }
     
-    public java.io.BufferedReader bufferedReader(int bufferSize, String charset) throws FileNotFoundException, IOException {
+    public java.io.BufferedReader bufferedReader(int bufferSize, String charset) throws IOException {
         return bufferedReader(bufferSize, Charset.forName(charset));
     }
     
-    public java.io.BufferedReader bufferedReader(int bufferSize, Charset charset) throws FileNotFoundException, IOException {
+    public java.io.BufferedReader bufferedReader(int bufferSize, Charset charset) throws IOException {
         return new java.io.BufferedReader(manager.onReader(this, new java.io.FileReader(this.physicalPath, charset)), bufferSize);
     }
     
-    public java.io.BufferedReader bufferedReader(String charset) throws FileNotFoundException, IOException {
+    public java.io.BufferedReader bufferedReader(String charset) throws IOException {
         return bufferedReader(Buffer.DEFAULT_LENGTH, Charset.forName(charset));
     }
     
-    public java.io.BufferedReader bufferedReader(Charset charset) throws FileNotFoundException, IOException {
+    public java.io.BufferedReader bufferedReader(Charset charset) throws IOException {
         return new java.io.BufferedReader(manager.onReader(this, new java.io.FileReader(this.physicalPath, charset)), Buffer.DEFAULT_LENGTH);
     }
     
@@ -652,9 +672,10 @@ public class File implements IO {
      * Get Bytes.
      * @return Bytes
      */
-    public final byte[] bytes() {
+    public final byte[] bytes() throws IOException {
     	return getBytes();
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -666,18 +687,14 @@ public class File implements IO {
                     howToUse = {})
     }, parameters = {
     }, returns = {})
-    public final byte[] getBytes() {
-        if (physicalPath.length() == 0) {
+    public final byte[] getBytes() throws IOException {
+        if (physicalPath.isEmpty()) {
             try {
                 byte[] fullBytes = new byte[bytes.available()];
                 bytes.read(fullBytes);
                 return fullBytes;
-            } catch (Exception e) {
-                return null;
             } finally {
-                try {
-                    bytes.close();
-                } catch(Exception e) { }
+                bytes.close();
             }
         } else {
             FileInputStream fis = null;
@@ -686,15 +703,13 @@ public class File implements IO {
                 byte[] b = new byte[fis.available()];
                 fis.read(b);
                 return b;
-            } catch (Exception e) {
-                return null;
             } finally {
-                try {
-                    fis.close();
-                } catch(Exception e) { }
+                assert fis != null;
+                fis.close();
             }
         }
     }
+
     /**
      * Save file.
      * @param path Object with path to save file.
@@ -725,6 +740,7 @@ public class File implements IO {
     public final void save(Object path) throws IOException {
         save(path.toString());
     }
+
     /**
      * Save file.
      * @param pathToWriteFile Path to save file.
@@ -783,6 +799,7 @@ public class File implements IO {
             physicalPath = pathToWriteFile;
         }
     }
+
     /**
      * Copy.
      */
@@ -812,10 +829,10 @@ public class File implements IO {
     public boolean copy(String destPath) throws IOException {
         return copy(destPath, false);
     }
+
     /**
      * Copy.
      */
-
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -956,6 +973,7 @@ public class File implements IO {
     public final boolean deleteAll() {
         return FileUtils.delete(fullPath(), FileRecursionLevel.ALL, true, "");
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1018,7 +1036,6 @@ public class File implements IO {
     /**
      * Rename.
      */
-
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1040,7 +1057,6 @@ public class File implements IO {
                     description = "Path to the file/directory."
             )})
     }, returns = {})
-
     public boolean renameTo(String destPath) {
         if (!jail.isEmpty()) {
             destPath = SafePath.fileSystemPath(destPath);
@@ -1053,6 +1069,7 @@ public class File implements IO {
         java.io.File f = new java.io.File(fullPath());
         return f.renameTo(new java.io.File(destPath));
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1091,6 +1108,7 @@ public class File implements IO {
         java.io.File f = new java.io.File(this.physicalPath());
         return f.isDirectory();
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1131,6 +1149,7 @@ public class File implements IO {
         java.io.File f = new java.io.File(fullPath());
         return f.lastModified();
     }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1166,34 +1185,43 @@ public class File implements IO {
      * Available.
      * @return File size.
      */
-
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Retorna o número estimado de bytes restantes para a leitura dum ficheiro.",
+                    description = "Retorna o número de bytes para a leitura do arquivo.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Returns the number of estimated bytes left to read a file",
+                    description = "Returns the number of bytes required to read the file.",
                     howToUse = {})
     }, parameters = {
     }, returns = {})
-    public final int available() {
-        if (physicalPath.length() == 0) {
+    public final long available() {
+        return size();
+    }
+
+    public final long size() {
+        if (physicalPath.isEmpty()) {
             return bytes.available();
         } else {
-            FileInputStream fis = null;
-            try {
-                fis = new FileInputStream(physicalPath);
-                return fis.available();
+            try (FileChannel fc = FileChannel.open(Paths.get(physicalPath))) {
+                return fc.size();
             } catch (Exception e) {
                 return -1;
-            } finally {
-                try {
-                    fis.close();
-                } catch(Exception e) { }
             }
         }
+    }
+
+    public final double sizeKB() {
+        return size() / 1024;
+    }
+
+    public final double sizeMB() {
+        return sizeKB() / 1024;
+    }
+
+    public final double availableGB() {
+        return sizeMB() / 1024;
     }
 
     @MethodDoc(translations = {

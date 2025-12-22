@@ -16,27 +16,29 @@
  */
 
  package org.netuno.psamata.io;
- 
- /**
+
+import java.io.IOException;
+
+/**
   * Required methods to supports .
   * @author Eduardo Fonseca Velasques - @eduveks
   */
 public interface IO {
 
-    InputStream input();
+    InputStream input() throws IOException;
 
-    InputStream getInput();
+    InputStream getInput() throws IOException;
 
-    java.io.InputStream inputStream();
+    java.io.InputStream inputStream() throws IOException;
 
-    java.io.InputStream getInputStream();
+    java.io.InputStream getInputStream() throws IOException;
 
-    OutputStream output();
+    OutputStream output() throws IOException;
 
-    OutputStream getOutput();
+    OutputStream getOutput() throws IOException;
 
-    java.io.OutputStream outputStream();
+    java.io.OutputStream outputStream() throws IOException;
 
-    java.io.OutputStream getOutputStream();
+    java.io.OutputStream getOutputStream() throws IOException;
 
 }
