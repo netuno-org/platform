@@ -1127,6 +1127,14 @@ public class File implements IO {
         java.io.File f = new java.io.File(this.physicalPath());
         return f.isFile();
     }
+
+    public boolean inMemoryFile() {
+        return isInMemoryFile();
+    }
+
+    public boolean isInMemoryFile() {
+        return this.physicalPath().isBlank() && bytes != null && bytes.available() > 0;
+    }
     
     /**
      * Last modified.
