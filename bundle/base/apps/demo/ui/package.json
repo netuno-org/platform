@@ -11,23 +11,23 @@
     "preview": "bunx --bun vite preview"
   },
   "dependencies": {
-    "@ant-design/icons": "^6.0.0",
+    "@ant-design/icons": "^6.1.0",
     "@monaco-editor/react": "^4.7.0",
-    "@netuno/service-client": "^1.2.0",
-    "antd": "^5.26.4",
-    "chart.js": "^4.5.0",
+    "@netuno/service-client": "^1.2.1",
+    "antd": "^6.1.1",
+    "chart.js": "^4.5.1",
     "flat": "^6.0.1",
     "json-loader": "^0.5.7",
-    "less": "4.3.0",
-    "react": "^19.1.0",
-    "react-chartjs-2": "^5.3.0",
-    "react-dom": "^19.1.0",
-    "react-intl": "^7.1.11",
+    "less": "4.5.1",
+    "react": "^19.2.3",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^19.2.3",
+    "react-intl": "^8.0.7",
     "ui": "file:"
   },
   "devDependencies": {
-    "@vitejs/plugin-react-swc": "^3.10.2",
-    "vite": "^7.0.4",
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.0",
     "vite-plugin-imp": "^2.4.0"
   }
 }

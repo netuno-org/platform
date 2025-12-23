@@ -89,7 +89,7 @@ function ServiceSample({name, title, intro, langs, params}) {
         title={`${langTitles[modalLanguage]} - ${title}`}
         onCancel={() => { setShowModalSource(false); }}
         footer={null}
-        visible={true}
+        open={true}
         width={"90vw"}
       >
         <div dangerouslySetInnerHTML={{ __html: intro }} />
