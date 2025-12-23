@@ -73,8 +73,7 @@ public class ImageTools implements AutoCloseable {
      * @throws IOException Read Exception
      */
     public ImageTools(final InputStream in) throws IOException {
-        image = ImageIO.read(ImageIO.createImageInputStream(in));
-        resetGraphics();
+        initInputStream(in);
     }
     /**
      * Image Tools.
@@ -95,31 +94,26 @@ public class ImageTools implements AutoCloseable {
     }
     /**
      * Image Tools.
-     * @param path Path of an image
+     * @param file File of an image
      * @throws IOException Read Exception
      */
-    public ImageTools(final org.netuno.psamata.io.File path) throws IOException {
-        this(path.toString());
+    public ImageTools(final org.netuno.psamata.io.File file) throws IOException {
+        if (file.isInMemoryFile()) {
+            initInputStream(file.getInputStream());
+        } else {
+            initFile(new java.io.File(file.toString()));
+        }
     }
+
     /**
      * Image Tools.
      * @param path Path of an image
      * @throws IOException Read Exception
      */
     public ImageTools(final java.io.File path) throws IOException {
-    	FileImageInputStream in = null;
-        try {
-            in = new FileImageInputStream(path);
-            image = ImageIO.read(in);
-            resetGraphics();
-        } catch (IOException ioe) {
-            throw ioe;
-        } finally {
-        	if (in != null && image == null) {
-                in.close();
-            }
-        }
+        initFile(path);
     }
+
     /**
      * Image Tools.
      * @param imgobj Image
@@ -134,6 +128,27 @@ public class ImageTools implements AutoCloseable {
         grapImg.drawImage(imgobj, 0, 0, null);
         grapImg.dispose();
     }
+
+    private void initInputStream(InputStream in) throws IOException {
+        image = ImageIO.read(ImageIO.createImageInputStream(in));
+        resetGraphics();
+    }
+
+    private void initFile(java.io.File path) throws IOException {
+        FileImageInputStream in = null;
+        try {
+            in = new FileImageInputStream(path);
+            image = ImageIO.read(in);
+            resetGraphics();
+        } catch (IOException ioe) {
+            throw ioe;
+        } finally {
+            if (in != null && image == null) {
+                in.close();
+            }
+        }
+    }
+
     /**
      * Get Width.
      * @return width
