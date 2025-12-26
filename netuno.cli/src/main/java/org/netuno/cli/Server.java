@@ -483,18 +483,19 @@ class CheckServerStartedRunnable implements Runnable {
                     System.out.println();
                     System.out.println();
                     System.out.println(OS.consoleOutput("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@"));
+                    System.out.println();
                     Set<String> localhosts = LocalHosts.getAll();
                     for (String localhost : localhosts) {
                         if (!localhost.startsWith("127.0.0.1") && !localhost.startsWith("localhost")) {
                             continue;
                         }
-                        System.out.println(OS.consoleOutput("        @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
+                        System.out.println(OS.consoleOutput("        - @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
                     }
                     for (String localhost : localhosts) {
                         if (localhost.startsWith("127.0.0.1") || localhost.startsWith("localhost")) {
                             continue;
                         }
-                        System.out.println(OS.consoleOutput("        @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
+                        System.out.println(OS.consoleOutput("        - @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
                     }
                     System.out.println();
                     System.out.println();
