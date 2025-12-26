@@ -40,6 +40,7 @@ import org.netuno.cli.utils.OS;
 import org.netuno.cli.ws.DevServletContextHandler;
 import org.netuno.psamata.io.StreamGobbler;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.net.LocalHosts;
 import picocli.CommandLine;
 
 import java.awt.Desktop;
@@ -48,15 +49,12 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -189,6 +187,7 @@ public class Server implements MainArg {
             App.setup();
 
             boolean forceApp = false;
+
             if (!app.isEmpty()) {
                 if (new File(app).exists() && new File(app).isDirectory()) {
                     appConfig = Config.loadAppConfig(app);
@@ -460,10 +459,10 @@ class CheckServerStartedRunnable implements Runnable {
                         if (configURL.hasKey("admin") && !configURL.getString("admin").isEmpty()) {
                             adminPath = configURL.getString("admin");
                         }
-                        String url = "http://" + app.replace("_", "-") + ".local.netu.no:" + server.getURI().getPort() + adminPath;
+                        String url = "http://"+ app.replace("_", "-") +".local.netu.no:"+ server.getURI().getPort() + adminPath;
 
                         System.out.println();
-                        System.out.println(OS.consoleOutput("     - @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + server.getURI().getPort() + adminPath +" |@"));
+                        System.out.println(OS.consoleOutput("     - @|cyan http://|@@|green "+ app.replace("_", "-") +"|@@|cyan .local.netu.no:"+ server.getURI().getPort() + adminPath +" |@"));
 
                         new Remote().get(url);
 
@@ -483,15 +482,28 @@ class CheckServerStartedRunnable implements Runnable {
                     }
                     System.out.println();
                     System.out.println();
-                    System.out.println(OS.consoleOutput("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@ @|cyan http://" + host + ":" + server.getURI().getPort() + "/ |@"));
+                    System.out.println(OS.consoleOutput("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@"));
+                    Set<String> localhosts = LocalHosts.getAll();
+                    for (String localhost : localhosts) {
+                        if (!localhost.startsWith("127.0.0.1") && !localhost.startsWith("localhost")) {
+                            continue;
+                        }
+                        System.out.println(OS.consoleOutput("        @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
+                    }
+                    for (String localhost : localhosts) {
+                        if (localhost.startsWith("127.0.0.1") || localhost.startsWith("localhost")) {
+                            continue;
+                        }
+                        System.out.println(OS.consoleOutput("        @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
+                    }
                     System.out.println();
                     System.out.println();
                     if (isDev) {
                         String url = "http://" + host + ":" + server.getURI().getPort() + "/";
                         new Remote().get(url);
-                        if (launch && Desktop.isDesktopSupported()) {
+                        if (launch && Desktop.isDesktopSupported() && appConfig != null) {
                             try {
-                                Desktop.getDesktop().browse(new URI(url));
+                                Desktop.getDesktop().browse(new URI("http://localhost:" + server.getURI().getPort() + "/"));
                             } catch (Exception e) {
                                 logger.error(e);
                             }
