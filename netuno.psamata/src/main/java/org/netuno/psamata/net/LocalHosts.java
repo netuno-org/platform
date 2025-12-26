@@ -33,7 +33,7 @@ public class LocalHosts {
     }
 
     public static Set<String> getAll(boolean includeIPv6) throws SocketException {
-        Set<String> hosts = new HashSet<>();
+        Set<String> hosts = new TreeSet<>();
         Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
         while (netInterfaces.hasMoreElements()) {
             NetworkInterface netInterface = netInterfaces.nextElement();
