@@ -462,7 +462,7 @@ class CheckServerStartedRunnable implements Runnable {
                         String url = "http://"+ app.replace("_", "-") +".local.netu.no:"+ server.getURI().getPort() + adminPath;
 
                         System.out.println();
-                        System.out.println(OS.consoleOutput("     - @|cyan http://|@@|green "+ app.replace("_", "-") +"|@@|cyan .local.netu.no:"+ server.getURI().getPort() + adminPath +" |@"));
+                        System.out.println(OS.consoleOutput("      - @|cyan http://|@@|green "+ app.replace("_", "-") +"|@@|cyan .local.netu.no:"+ server.getURI().getPort() + adminPath +" |@"));
 
                         new Remote().get(url);
 
@@ -489,13 +489,13 @@ class CheckServerStartedRunnable implements Runnable {
                         if (!localhost.startsWith("127.0.0.1") && !localhost.startsWith("localhost")) {
                             continue;
                         }
-                        System.out.println(OS.consoleOutput("        - @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
+                        System.out.println(OS.consoleOutput("      - @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
                     }
                     for (String localhost : localhosts) {
                         if (localhost.startsWith("127.0.0.1") || localhost.startsWith("localhost")) {
                             continue;
                         }
-                        System.out.println(OS.consoleOutput("        - @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
+                        System.out.println(OS.consoleOutput("      - @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
                     }
                     System.out.println();
                     System.out.println();
