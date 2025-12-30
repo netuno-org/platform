@@ -59,6 +59,8 @@ public class Schema extends Web {
     private String validateSchemaInProblems = "";
     private String validateSchemaOutProblems = "";
 
+    private boolean apiDefinition = false;
+
     public Schema(Service service, Proteu proteu, Hili hili) {
         super(proteu, hili);
         this.service = service;
@@ -111,6 +113,7 @@ public class Schema extends Web {
                             + "\n#" +
                             "\n");
                     if (!getProteu().getOutput().isStarted()) {
+                        getProteu().setResponseHeader(Proteu.ContentType.JSON);
                         getProteu().responseHTTPError(Proteu.HTTPStatus.BadRequest400, getHili());
                         if (errorsOutput) {
                             getProteu().outputJSON(validationProblemHandler.getProblems());
@@ -120,6 +123,9 @@ public class Schema extends Web {
                 }
             } catch (Exception e) {
                 validationSchemaError(pathSchema, e);
+                if (!getProteu().getOutput().isStarted()) {
+                    getProteu().responseHTTPError(Proteu.HTTPStatus.InternalServerError500, getHili());
+                }
                 return false;
             }
         } else {
@@ -239,9 +245,27 @@ public class Schema extends Web {
 
     private void loadSchema(Values data) {
         for (String parentKey : data.keys()) {
+            if (!apiDefinition) {
+                if ((parentKey.equalsIgnoreCase("example") || parentKey.equalsIgnoreCase("examples"))
+                        && data.getValues(parentKey, Values.newList()).isMap()) {
+                    data.unset(parentKey);
+                    continue;
+                }
+            }
             Values parentValues = data.getValues(parentKey);
             if (parentValues != null && parentValues.isMap()) {
                 for (String childKey : parentValues.keys()) {
+                    if (!apiDefinition) {
+                        if ((childKey.equalsIgnoreCase("example") || childKey.equalsIgnoreCase("examples"))
+                                && parentValues.getValues(childKey, Values.newList()).isMap()) {
+                            parentValues.unset(childKey);
+                            continue;
+                        }
+                        if (childKey.equalsIgnoreCase("required") && !parentValues.getValues(childKey, Values.newMap()).isList()) {
+                            parentValues.unset(childKey);
+                            continue;
+                        }
+                    }
                     if (childKey.equalsIgnoreCase("_schema")) {
                         String pathSchema = parentValues.getString(childKey);
                         loadDataWithSchema(parentValues, pathSchema);
@@ -273,6 +297,13 @@ public class Schema extends Web {
                         } else if (type.equalsIgnoreCase("path")) {
                             parentValues.set("type", "string");
                             parentValues.set("pattern", "^\\/[a-zA-Z0-9-_\\/.]*$");
+                        } else if (type.equalsIgnoreCase("file")) {
+                            parentValues.set("type", apiDefinition ? "file" : "string");
+                            if (getProteu().isRequestJSON()) {
+                                parentValues.set("pattern", "^data:[A-Za-z]+\\/[A-Za-z0-9-+.]+;base64,[-A-Za-z0-9+\\/]*={0,3}$");
+                            } else {
+                                parentValues.set("pattern", ".*");
+                            }
                         }
                     }
                 }
@@ -404,11 +435,23 @@ public class Schema extends Web {
                                                     Values parameter = new Values();
                                                     parameter.set("in", "query");
                                                     parameter.set("name", key);
-                                                    parameter.set("schema", schemaInProperty);
                                                     if (schemaInProperty.hasKey("description")) {
                                                         parameter.set("description", schemaInProperty.getString("description"));
                                                         schemaInProperty.unset("description");
                                                     }
+                                                    if (schemaInProperty.hasKey("required")) {
+                                                        parameter.set("required", schemaInProperty.getBoolean("required"));
+                                                        schemaInProperty.unset("required");
+                                                    }
+                                                    if (schemaInProperty.hasKey("example")) {
+                                                        parameter.set("example", schemaInProperty.getValues("example"));
+                                                        schemaInProperty.unset("example");
+                                                    }
+                                                    if (schemaInProperty.hasKey("examples")) {
+                                                        parameter.set("examples", schemaInProperty.getValues("examples"));
+                                                        schemaInProperty.unset("examples");
+                                                    }
+                                                    parameter.set("schema", schemaInProperty);
                                                     parameters.add(parameter);
                                                 }
                                                 endpoint.set("parameters", parameters);
@@ -416,9 +459,13 @@ public class Schema extends Web {
                                         } else {
                                             Values requestContents = new Values();
                                             Values requestContent = new Values();
-                                            if (schemaIn.hasKey("description")) {
-                                                requestContent.set("description", schemaIn.getString("description"));
-                                                schemaIn.unset("description");
+                                            if (schemaIn.hasKey("example")) {
+                                                requestContent.set("example", schemaIn.getValues("example"));
+                                                schemaIn.unset("example");
+                                            }
+                                            if (schemaIn.hasKey("examples")) {
+                                                requestContent.set("examples", schemaIn.getValues("examples"));
+                                                schemaIn.unset("examples");
                                             }
                                             requestContent.set("schema", schemaIn);
                                             requestContents.set("application/json", requestContent);
@@ -451,6 +498,14 @@ public class Schema extends Web {
                                                                 schemaOut.unset("description");
                                                             } else {
                                                                 response.set("description", Proteu.HTTPStatus.fromCode(dataSchemaProcessing.getStatusCode()).toString());
+                                                            }
+                                                            if (schemaOut.hasKey("example")) {
+                                                                responseContent.set("example", schemaOut.getValues("example"));
+                                                                schemaOut.unset("example");
+                                                            }
+                                                            if (schemaOut.hasKey("examples")) {
+                                                                responseContent.set("examples", schemaOut.getValues("examples"));
+                                                                schemaOut.unset("examples");
                                                             }
                                                             responseContent.set("schema", schemaOut);
                                                             Values responseContents = new Values();
@@ -525,7 +580,8 @@ public class Schema extends Web {
     }
 
     public void run() throws Exception {
-        Values openapi = new Values();
+        apiDefinition = true;
+        Values openapi = Values.newMap();
         Path fileInfo = Paths.get(Config.getPathAppServices(getProteu()), "_openapi.json");
         if (Files.exists(fileInfo)) {
             openapi = Values.fromJSON(InputStream.readFromFile(fileInfo));
