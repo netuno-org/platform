@@ -1322,6 +1322,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         }
     }
 
+    public java.util.Calendar asCalendar(int index) {
+        return getCalendar(index);
+    }
+
+    public java.util.Calendar getCalendar(int index) {
+        return getCalendar(index, null);
+    }
+
+    public java.util.Calendar asCalendar(int index, java.util.Calendar defaultValue) {
+        return getCalendar(index, defaultValue);
+    }
+
+    public java.util.Calendar getCalendar(int index, java.util.Calendar defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseCalendar(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public java.util.Calendar asCalendar(String key) {
         return getCalendar(key);
     }
@@ -1388,6 +1412,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return (java.util.Calendar)o;
     }
 
+    public java.util.Date asDate(int index) {
+        return getDate(index);
+    }
+
+    public java.util.Date getDate(int index) {
+        return getDate(index, null);
+    }
+
+    public java.util.Date asDate(int index, java.util.Date defaultValue) {
+        return getDate(index, defaultValue);
+    }
+
+    public java.util.Date getDate(int index, java.util.Date defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseDate(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public java.util.Date asDate(String key) {
         return getDate(key);
     }
@@ -1443,6 +1491,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             return baseCalendar(o, s).getTime();
         }
         return (java.util.Date)o;
+    }
+
+    public java.sql.Date asSQLDate(int index) {
+        return getSQLDate(index);
+    }
+
+    public java.sql.Date getSQLDate(int index) {
+        return getSQLDate(index, null);
+    }
+
+    public java.sql.Date asSQLDate(int index, java.sql.Date defaultValue) {
+        return getSQLDate(index, defaultValue);
+    }
+
+    public java.sql.Date getSQLDate(int index, java.sql.Date defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseSQLDate(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     public java.sql.Date asSQLDate(final String key) {
@@ -1504,6 +1576,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return java.sql.Date.valueOf(s);
     }
 
+    public java.sql.Timestamp asSQLTimestamp(int index) {
+        return getSQLTimestamp(index);
+    }
+
+    public java.sql.Timestamp getSQLTimestamp(int index) {
+        return getSQLTimestamp(index, null);
+    }
+
+    public java.sql.Timestamp asSQLTimestamp(int index, java.sql.Timestamp defaultValue) {
+        return getSQLTimestamp(index, defaultValue);
+    }
+
+    public java.sql.Timestamp getSQLTimestamp(int index, java.sql.Timestamp defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseSQLTimestamp(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public java.sql.Timestamp asSQLTimestamp(final String key) {
         return getSQLTimestamp(key);
     }
@@ -1559,6 +1655,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             return new java.sql.Timestamp(baseCalendar(o, s).getTime().getTime());
         }
         return java.sql.Timestamp.valueOf(s);
+    }
+
+    public java.sql.Time asSQLTime(int index) {
+        return getSQLTime(index);
+    }
+
+    public java.sql.Time getSQLTime(int index) {
+        return getSQLTime(index, null);
+    }
+
+    public java.sql.Time asSQLTime(int index, java.sql.Time defaultValue) {
+        return getSQLTime(index, defaultValue);
+    }
+
+    public java.sql.Time getSQLTime(int index, java.sql.Time defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseSQLTime(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     public java.sql.Time asSQLTime(final String key) {
@@ -1621,6 +1741,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return java.sql.Time.valueOf(s);
     }
 
+    public java.time.LocalDate asLocalDate(int index) {
+        return getLocalDate(index);
+    }
+
+    public java.time.LocalDate getLocalDate(int index) {
+        return getLocalDate(index, null);
+    }
+
+    public java.time.LocalDate asLocalDate(int index, java.time.LocalDate defaultValue) {
+        return getLocalDate(index, defaultValue);
+    }
+
+    public java.time.LocalDate getLocalDate(int index, java.time.LocalDate defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseLocalDate(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public java.time.LocalDate asLocalDate(String key) {
         return getLocalDate(key);
     }
@@ -1670,6 +1814,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                     .toLocalDate();
         }
         return (java.time.LocalDate)o;
+    }
+
+    public java.time.LocalTime asLocalTime(int index) {
+        return getLocalTime(index);
+    }
+
+    public java.time.LocalTime getLocalTime(int index) {
+        return getLocalTime(index, null);
+    }
+
+    public java.time.LocalTime asLocalTime(int index, java.time.LocalTime defaultValue) {
+        return getLocalTime(index, defaultValue);
+    }
+
+    public java.time.LocalTime getLocalTime(int index, java.time.LocalTime defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseLocalTime(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     public java.time.LocalTime asLocalTime(String key) {
@@ -1723,6 +1891,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return (java.time.LocalTime)o;
     }
 
+    public java.time.LocalDateTime asLocalDateTime(int index) {
+        return getLocalDateTime(index);
+    }
+
+    public java.time.LocalDateTime getLocalDateTime(int index) {
+        return getLocalDateTime(index, null);
+    }
+
+    public java.time.LocalDateTime asLocalDateTime(int index, java.time.LocalDateTime defaultValue) {
+        return getLocalDateTime(index, defaultValue);
+    }
+
+    public java.time.LocalDateTime getLocalDateTime(int index, java.time.LocalDateTime defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseLocalDateTime(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public java.time.LocalDateTime asLocalDateTime(String key) {
         return getLocalDateTime(key);
     }
@@ -1769,6 +1961,30 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                     .toLocalDateTime();
         }
         return (java.time.LocalDateTime)o;
+    }
+
+    public java.time.Instant asInstant(int index) {
+        return getInstant(index);
+    }
+
+    public java.time.Instant getInstant(int index) {
+        return getInstant(index, null);
+    }
+
+    public java.time.Instant asInstant(int index, java.time.Instant defaultValue) {
+        return getInstant(index, defaultValue);
+    }
+
+    public java.time.Instant getInstant(int index, java.time.Instant defaultValue) {
+        try {
+            Object o = get(index);
+            if (o == null) {
+                return defaultValue;
+            }
+            return baseInstant(o, getString(index));
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     public java.time.Instant asInstant(String key) {
