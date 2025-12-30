@@ -1228,7 +1228,7 @@ public class File implements IO {
         return sizeKB() / 1024;
     }
 
-    public final double availableGB() {
+    public final double sizeGB() {
         return sizeMB() / 1024;
     }
 
