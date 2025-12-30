@@ -1350,38 +1350,42 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 if (o == null) {
                     return defaultValue;
                 }
-                if (o instanceof java.util.Date) {
-                    java.util.Calendar c = Calendar.getInstance();
-                    c.setTime(getDate(key));
-                    return c;
-                }
-                if (o instanceof java.sql.Date) {
-                    java.util.Calendar c = Calendar.getInstance();
-                    c.setTimeInMillis(getSQLDate(key).getTime());
-                    return c;
-                }
-                if (o instanceof java.sql.Time) {
-                    java.util.Calendar c = Calendar.getInstance();
-                    c.setTimeInMillis(getSQLTime(key).getTime());
-                    return c;
-                }
-                if (o instanceof java.sql.Timestamp) {
-                    java.util.Calendar c = Calendar.getInstance();
-                    c.setTimeInMillis(getSQLTimestamp(key).getTime());
-                    return c;
-                }
-                if (o instanceof java.time.Instant || o instanceof java.time.LocalDateTime || o instanceof java.time.LocalTime) {
-                    java.util.Calendar c = Calendar.getInstance();
-                    c.setTime(java.util.Date.from(getInstant(key)));
-                    return c;
-                }
-                return (java.util.Calendar)o;
+                return baseCalendar(o, getString(key));
             } catch (Exception e) {
                 return defaultValue;
             }
         } else {
             return defaultValue;
         }
+    }
+
+    private java.util.Calendar baseCalendar(Object o, String s) {
+        if (o instanceof java.sql.Date) {
+            java.util.Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(baseSQLDate(o, s).getTime());
+            return c;
+        }
+        if (o instanceof java.sql.Time) {
+            java.util.Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(baseSQLTime(o, s).getTime());
+            return c;
+        }
+        if (o instanceof java.sql.Timestamp) {
+            java.util.Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(baseSQLTimestamp(o, s).getTime());
+            return c;
+        }
+        if (o instanceof java.util.Date) {
+            java.util.Calendar c = Calendar.getInstance();
+            c.setTime(baseDate(o, s));
+            return c;
+        }
+        if (o instanceof java.time.Instant || o instanceof java.time.LocalDateTime || o instanceof java.time.LocalTime) {
+            java.util.Calendar c = Calendar.getInstance();
+            c.setTime(java.util.Date.from(baseInstant(o, s)));
+            return c;
+        }
+        return (java.util.Calendar)o;
     }
 
     public java.util.Date asDate(String key) {
@@ -1413,28 +1417,32 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 if (o == null) {
                     return defaultValue;
                 }
-                if (o instanceof java.sql.Date) {
-                    return new java.util.Date(getSQLDate(key).getTime());
-                }
-                if (o instanceof java.sql.Time) {
-                    return new java.util.Date(getSQLTime(key).getTime());
-                }
-                if (o instanceof java.sql.Timestamp) {
-                    return new java.util.Date(getSQLTimestamp(key).getTime());
-                }
-                if (o instanceof java.time.Instant || o instanceof java.time.LocalDateTime || o instanceof java.time.LocalTime) {
-                    return java.util.Date.from(getInstant(key));
-                }
-                if (o instanceof java.util.Calendar) {
-                    return getCalendar(key).getTime();
-                }
-                return (java.util.Date)o;
+                return baseDate(o, getString(key));
             } catch (Exception e) {
                 return defaultValue;
             }
         } else {
             return defaultValue;
         }
+    }
+
+    private java.util.Date baseDate(Object o, String s) {
+        if (o instanceof java.sql.Date) {
+            return new java.util.Date(baseSQLDate(o, s).getTime());
+        }
+        if (o instanceof java.sql.Time) {
+            return new java.util.Date(baseSQLTime(o, s).getTime());
+        }
+        if (o instanceof java.sql.Timestamp) {
+            return new java.util.Date(baseSQLTimestamp(o, s).getTime());
+        }
+        if (o instanceof java.time.Instant || o instanceof java.time.LocalDateTime || o instanceof java.time.LocalTime) {
+            return java.util.Date.from(baseInstant(o, s));
+        }
+        if (o instanceof java.util.Calendar) {
+            return baseCalendar(o, s).getTime();
+        }
+        return (java.util.Date)o;
     }
 
     public java.sql.Date asSQLDate(final String key) {
@@ -1465,31 +1473,35 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             if (o == null) {
                 return defaultValue;
             }
-            if (o instanceof java.sql.Date) {
-                return (java.sql.Date)o;
-            }
-            if (o instanceof java.sql.Timestamp) {
-                return new java.sql.Date(getSQLTimestamp(key).getTime());
-            }
-            if (o instanceof java.time.LocalDate) {
-                return java.sql.Date.valueOf(getLocalDate(key));
-            }
-            if (o instanceof java.time.LocalDateTime) {
-                return java.sql.Date.valueOf(getLocalDateTime(key).toLocalDate());
-            }
-            if (o instanceof java.time.Instant) {
-                return new java.sql.Date(java.util.Date.from(getInstant(key)).getTime());
-            }
-            if (o instanceof java.util.Date) {
-                return new java.sql.Date(getDate(key).getTime());
-            }
-            if (o instanceof java.util.Calendar) {
-                return new java.sql.Date(getCalendar(key).getTime().getTime());
-            }
-            return java.sql.Date.valueOf(this.getString(key));
+            return baseSQLDate(o, getString(key));
         } catch (Exception e) {
             return defaultValue;
         }
+    }
+
+    private java.sql.Date baseSQLDate(Object o, String s) {
+        if (o instanceof java.sql.Date) {
+            return (java.sql.Date)o;
+        }
+        if (o instanceof java.sql.Timestamp) {
+            return new java.sql.Date(baseSQLTimestamp(o, s).getTime());
+        }
+        if (o instanceof java.time.LocalDate) {
+            return java.sql.Date.valueOf(baseLocalDate(o, s));
+        }
+        if (o instanceof java.time.LocalDateTime) {
+            return java.sql.Date.valueOf(baseLocalDateTime(o, s).toLocalDate());
+        }
+        if (o instanceof java.time.Instant) {
+            return new java.sql.Date(java.util.Date.from(baseInstant(o, s)).getTime());
+        }
+        if (o instanceof java.util.Date) {
+            return new java.sql.Date(baseDate(o, s).getTime());
+        }
+        if (o instanceof java.util.Calendar) {
+            return new java.sql.Date(baseCalendar(o, s).getTime().getTime());
+        }
+        return java.sql.Date.valueOf(s);
     }
 
     public java.sql.Timestamp asSQLTimestamp(final String key) {
@@ -1521,28 +1533,32 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             if (o == null) {
                 return defaultValue;
             }
-            if (o instanceof java.sql.Timestamp) {
-                return (java.sql.Timestamp)o;
-            }
-            if (o instanceof java.sql.Date) {
-                return new java.sql.Timestamp(getSQLDate(key).getTime());
-            }
-            if (o instanceof java.time.LocalDateTime) {
-                return java.sql.Timestamp.valueOf(getLocalDateTime(key));
-            }
-            if (o instanceof java.time.Instant) {
-                return java.sql.Timestamp.from(getInstant(key));
-            }
-            if (o instanceof java.util.Date) {
-                return new java.sql.Timestamp(getDate(key).getTime());
-            }
-            if (o instanceof java.util.Calendar) {
-                return new java.sql.Timestamp(getCalendar(key).getTime().getTime());
-            } 
-            return java.sql.Timestamp.valueOf(this.getString(key));
+            return baseSQLTimestamp(o, this.getString(key));
         } catch (Exception e) {
             return defaultValue;
         }
+    }
+
+    private java.sql.Timestamp baseSQLTimestamp(Object o, String s) {
+        if (o instanceof java.sql.Timestamp) {
+            return (java.sql.Timestamp)o;
+        }
+        if (o instanceof java.sql.Date) {
+            return new java.sql.Timestamp(baseSQLDate(o, s).getTime());
+        }
+        if (o instanceof java.time.LocalDateTime) {
+            return java.sql.Timestamp.valueOf(baseLocalDateTime(o, s));
+        }
+        if (o instanceof java.time.Instant) {
+            return java.sql.Timestamp.from(baseInstant(o, s));
+        }
+        if (o instanceof java.util.Date) {
+            return new java.sql.Timestamp(baseDate(o, s).getTime());
+        }
+        if (o instanceof java.util.Calendar) {
+            return new java.sql.Timestamp(baseCalendar(o, s).getTime().getTime());
+        }
+        return java.sql.Timestamp.valueOf(s);
     }
 
     public java.sql.Time asSQLTime(final String key) {
@@ -1570,36 +1586,39 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      */
     public final java.sql.Time getSQLTime(final String key, final java.sql.Time defaultValue) {
         try {
-            Object value = this.get(key);
             Object o = get(key);
             if (o == null) {
                 return defaultValue;
             }
-            if (o instanceof java.sql.Time) {
-                return (java.sql.Time)value;
-            }
-            if (o instanceof java.sql.Timestamp) {
-                return new java.sql.Time(getSQLTimestamp(key).getTime());
-            }
-            if (o instanceof java.time.LocalTime) {
-                return java.sql.Time.valueOf(getLocalTime(key));
-            }
-            if (o instanceof java.time.LocalDateTime) {
-                return java.sql.Time.valueOf(getLocalDateTime(key).toLocalTime());
-            }
-            if (o instanceof java.time.Instant) {
-                return new java.sql.Time(java.sql.Time.from(getInstant(key)).getTime());
-            }
-            if (o instanceof java.util.Date) {
-                return new java.sql.Time(getDate(key).getTime());
-            }
-            if (o instanceof java.util.Calendar) {
-                return new java.sql.Time(getCalendar(key).getTime().getTime());
-            }
-            return java.sql.Time.valueOf(this.getString(key));
+            return baseSQLTime(o, getString(key));
         } catch (Exception e) {
             return defaultValue;
         }
+    }
+
+    private java.sql.Time baseSQLTime(Object o, String s) {
+        if (o instanceof java.sql.Time) {
+            return (java.sql.Time)o;
+        }
+        if (o instanceof java.sql.Timestamp) {
+            return new java.sql.Time(baseSQLTimestamp(o, s).getTime());
+        }
+        if (o instanceof java.time.LocalTime) {
+            return java.sql.Time.valueOf(baseLocalTime(o, s));
+        }
+        if (o instanceof java.time.LocalDateTime) {
+            return java.sql.Time.valueOf(baseLocalDateTime(o, s).toLocalTime());
+        }
+        if (o instanceof java.time.Instant) {
+            return new java.sql.Time(java.sql.Time.from(baseInstant(o, s)).getTime());
+        }
+        if (o instanceof java.util.Date) {
+            return new java.sql.Time(baseDate(o, s).getTime());
+        }
+        if (o instanceof java.util.Calendar) {
+            return new java.sql.Time(baseCalendar(o, s).getTime().getTime());
+        }
+        return java.sql.Time.valueOf(s);
     }
 
     public java.time.LocalDate asLocalDate(String key) {
@@ -1621,32 +1640,36 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 if (o == null) {
                     return defaultValue;
                 }
-                if (o instanceof java.sql.Date) {
-                    return getSQLDate(key).toLocalDate();
-                }
-                if (o instanceof java.sql.Timestamp) {
-                    return getSQLTimestamp(key).toLocalDateTime().toLocalDate();
-                }
-                if (o instanceof java.time.Instant) {
-                    return java.time.LocalDate.ofInstant(getInstant(key), java.time.ZoneId.systemDefault());
-                }
-                if (o instanceof java.util.Date) {
-                    return java.time.Instant.ofEpochMilli(getDate(key).getTime())
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalDate();
-                }
-                if (o instanceof java.util.Calendar) {
-                    return java.time.Instant.ofEpochMilli(getCalendar(key).getTime().getTime())
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalDate();
-                }
-                return (java.time.LocalDate)o;
+                return baseLocalDate(o, getString(key));
             } catch (Exception e) {
                 return defaultValue;
             }
         } else {
             return defaultValue;
         }
+    }
+
+    private java.time.LocalDate baseLocalDate(Object o, String s) {
+        if (o instanceof java.sql.Date) {
+            return baseSQLDate(o, s).toLocalDate();
+        }
+        if (o instanceof java.sql.Timestamp) {
+            return baseSQLTimestamp(o, s).toLocalDateTime().toLocalDate();
+        }
+        if (o instanceof java.time.Instant) {
+            return java.time.LocalDate.ofInstant(baseInstant(o, s), java.time.ZoneId.systemDefault());
+        }
+        if (o instanceof java.util.Date) {
+            return java.time.Instant.ofEpochMilli(baseDate(o, s).getTime())
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+        if (o instanceof java.util.Calendar) {
+            return java.time.Instant.ofEpochMilli(baseCalendar(o, s).getTime().getTime())
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+        return (java.time.LocalDate)o;
     }
 
     public java.time.LocalTime asLocalTime(String key) {
@@ -1668,32 +1691,36 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 if (o == null) {
                     return defaultValue;
                 }
-                if (o instanceof java.sql.Time) {
-                    return getSQLTime(key).toLocalTime();
-                }
-                if (o instanceof java.sql.Timestamp) {
-                    return getSQLTimestamp(key).toLocalDateTime().toLocalTime();
-                }
-                if (o instanceof java.time.Instant) {
-                    return java.time.LocalTime.ofInstant(getInstant(key), java.time.ZoneId.systemDefault());
-                }
-                if (o instanceof java.util.Date) {
-                    return java.time.Instant.ofEpochMilli(getDate(key).getTime())
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalTime();
-                }
-                if (o instanceof java.util.Calendar) {
-                    return java.time.Instant.ofEpochMilli(getCalendar(key).getTime().getTime())
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalTime();
-                }
-                return (java.time.LocalTime)o;
+                return baseLocalTime(o, getString(key));
             } catch (Exception e) {
                 return defaultValue;
             }
         } else {
             return defaultValue;
         }
+    }
+
+    private java.time.LocalTime baseLocalTime(Object o, String s) {
+        if (o instanceof java.sql.Time) {
+            return baseSQLTime(o, s).toLocalTime();
+        }
+        if (o instanceof java.sql.Timestamp) {
+            return baseSQLTimestamp(o, s).toLocalDateTime().toLocalTime();
+        }
+        if (o instanceof java.time.Instant) {
+            return java.time.LocalTime.ofInstant(baseInstant(o, s), java.time.ZoneId.systemDefault());
+        }
+        if (o instanceof java.util.Date) {
+            return java.time.Instant.ofEpochMilli(baseDate(o, s).getTime())
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalTime();
+        }
+        if (o instanceof java.util.Calendar) {
+            return java.time.Instant.ofEpochMilli(baseCalendar(o, s).getTime().getTime())
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalTime();
+        }
+        return (java.time.LocalTime)o;
     }
 
     public java.time.LocalDateTime asLocalDateTime(String key) {
@@ -1715,29 +1742,33 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 if (o == null) {
                     return defaultValue;
                 }
-                if (o instanceof java.sql.Timestamp) {
-                    return getSQLTimestamp(key).toLocalDateTime();
-                }
-                if (o instanceof java.time.Instant) {
-                    return java.time.LocalDateTime.ofInstant(getInstant(key), java.time.ZoneId.systemDefault());
-                }
-                if (o instanceof java.util.Date) {
-                    return java.time.Instant.ofEpochMilli(getDate(key).getTime())
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalDateTime();
-                }
-                if (o instanceof java.util.Calendar) {
-                    return java.time.Instant.ofEpochMilli(getCalendar(key).getTime().getTime())
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalDateTime();
-                }
-                return (java.time.LocalDateTime)get(key);
+                return baseLocalDateTime(o, getString(key));
             } catch (Exception e) {
                 return defaultValue;
             }
         } else {
             return defaultValue;
         }
+    }
+
+    private java.time.LocalDateTime baseLocalDateTime(Object o, String s) {
+        if (o instanceof java.sql.Timestamp) {
+            return baseSQLTimestamp(o, s).toLocalDateTime();
+        }
+        if (o instanceof java.time.Instant) {
+            return java.time.LocalDateTime.ofInstant(baseInstant(o, s), java.time.ZoneId.systemDefault());
+        }
+        if (o instanceof java.util.Date) {
+            return java.time.Instant.ofEpochMilli(baseDate(o, s).getTime())
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDateTime();
+        }
+        if (o instanceof java.util.Calendar) {
+            return java.time.Instant.ofEpochMilli(baseCalendar(o, s).getTime().getTime())
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDateTime();
+        }
+        return (java.time.LocalDateTime)o;
     }
 
     public java.time.Instant asInstant(String key) {
@@ -1759,34 +1790,38 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                 if (o == null) {
                     return defaultValue;
                 }
-                if (o instanceof java.sql.Date) {
-                    return getSQLDate(key).toInstant();
-                }
-                if (o instanceof java.sql.Timestamp) {
-                    return getSQLTimestamp(key).toInstant();
-                }
-                if (o instanceof java.sql.Time) {
-                    return getSQLTime(key).toInstant();
-                }
-                if (o instanceof java.time.LocalDateTime) {
-                    return getLocalDateTime(key).atZone(java.time.ZoneId.systemDefault()).toInstant();
-                }
-                if (o instanceof java.time.LocalDate) {
-                    return getLocalDate(key).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant();
-                }
-                if (o instanceof java.util.Date) {
-                    return java.time.Instant.ofEpochMilli(getDate(key).getTime());
-                }
-                if (o instanceof java.util.Calendar) {
-                    return java.time.Instant.ofEpochMilli(getCalendar(key).getTime().getTime());
-                }
-                return (java.time.Instant)o;
+                return baseInstant(o, getString(key));
             } catch (Exception e) {
                 return defaultValue;
             }
         } else {
             return defaultValue;
         }
+    }
+
+    private java.time.Instant baseInstant(Object o, String s) {
+        if (o instanceof java.sql.Date) {
+            return baseSQLDate(o, s).toInstant();
+        }
+        if (o instanceof java.sql.Timestamp) {
+            return baseSQLTimestamp(o, s).toInstant();
+        }
+        if (o instanceof java.sql.Time) {
+            return baseSQLTime(o, s).toInstant();
+        }
+        if (o instanceof java.time.LocalDateTime) {
+            return baseLocalDateTime(o, s).atZone(java.time.ZoneId.systemDefault()).toInstant();
+        }
+        if (o instanceof java.time.LocalDate) {
+            return baseLocalDate(o, s).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant();
+        }
+        if (o instanceof java.util.Date) {
+            return java.time.Instant.ofEpochMilli(baseDate(o, s).getTime());
+        }
+        if (o instanceof java.util.Calendar) {
+            return java.time.Instant.ofEpochMilli(baseCalendar(o, s).getTime().getTime());
+        }
+        return (java.time.Instant)o;
     }
 
     public org.netuno.psamata.io.File asFile(String key) {
