@@ -2047,8 +2047,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final org.netuno.psamata.io.File getFile(final int index) {
         try {
             Object value = get(index);
-            baseFile(value, Integer.toString(index), getString(index));
-            return null;
+            return baseFile(value, Integer.toString(index), getString(index));
         } catch (Exception e) {
             return null;
         }
@@ -2066,8 +2065,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final org.netuno.psamata.io.File getFile(final String key) {
         try {
             Object value = get(key);
-            baseFile(value, key, getString(key));
-            return null;
+            return baseFile(value, key, getString(key));
         } catch (Exception e) {
             return null;
         }
