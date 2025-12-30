@@ -2086,7 +2086,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
                             && commaPosition < content.length() - 1) {
                         String mimeType = content.substring(colonPosition + 1, semicolonPosition);
                         String encoding = content.substring(semicolonPosition + 1, commaPosition);
-                        if (encoding.equalsIgnoreCase("base64")) {
+                        if (encoding.equals("base64")) {
                             String fileName = key +"."+ MimeTypes.getExtensionFromMimeType(mimeType);
                             byte[] bytes = Base64.getDecoder().decode(content.substring(commaPosition + 1));
                             org.netuno.psamata.io.File file = new org.netuno.psamata.io.File(fileName, mimeType, new ByteArrayInputStream(bytes));
