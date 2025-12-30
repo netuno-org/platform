@@ -2040,6 +2040,20 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return (java.time.Instant)o;
     }
 
+    public org.netuno.psamata.io.File asFile(int index) {
+        return getFile(index);
+    }
+
+    public final org.netuno.psamata.io.File getFile(final int index) {
+        try {
+            Object value = get(index);
+            baseFile(value, Integer.toString(index), getString(index));
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public org.netuno.psamata.io.File asFile(String key) {
         return getFile(key);
     }
@@ -2052,10 +2066,18 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     public final org.netuno.psamata.io.File getFile(final String key) {
         try {
             Object value = get(key);
+            baseFile(value, key, getString(key));
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public final org.netuno.psamata.io.File baseFile(final Object value, final String key, final String content) {
+        try {
             if (value instanceof org.netuno.psamata.io.File) {
                 return (org.netuno.psamata.io.File)value;
             } else if (value instanceof String) {
-                String content = getString(key);
                 if (content.startsWith("data:")) {
                     int colonPosition = content.indexOf(':');
                     int semicolonPosition = content.indexOf(';');
@@ -2083,6 +2105,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             return null;
         }
     }
+
     /**
      * Set Object, create or update.
      * @param key key
