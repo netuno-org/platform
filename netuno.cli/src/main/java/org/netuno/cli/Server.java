@@ -225,7 +225,7 @@ public class Server implements MainArg {
             server = new org.eclipse.jetty.server.Server(serverAddress);
             //server = new org.eclipse.jetty.server.Server();
             if (Config.getConnectionLimit() > 0) {
-                server.addBean(new ConnectionLimit(Config.getConnectionLimit(), server));
+                server.addBean(new NetworkConnectionLimit(Config.getConnectionLimit(), server));
             }
             if (Config.getThreadPoolMax() > 0) {
                 server.addBean(new QueuedThreadPool(Config.getThreadPoolMax(), Config.getThreadPoolMin(), Config.getThreadPoolIdleTimeout()));
