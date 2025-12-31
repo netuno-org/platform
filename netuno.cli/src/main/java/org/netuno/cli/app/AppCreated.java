@@ -42,6 +42,7 @@ public class AppCreated {
         System.out.println();
         System.out.println(OS.consoleOutput("@|white Then when the server is running, try open in your browser: |@"));
         System.out.println();
+        System.err.println(OS.consoleOutput("    >    @|cyan http://localhost:" + Config.getPort() + "/ |@"));
         System.err.println(OS.consoleOutput("    >    @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + Config.getPort() + "/ |@"));
         System.out.println();
         System.out.println();
