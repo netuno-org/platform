@@ -16,7 +16,6 @@ import org.netuno.tritao.db.form.link.Link;
 import org.netuno.tritao.db.form.link.LinkEngine;
 import org.netuno.tritao.db.form.link.RelationshipLink;
 import org.netuno.tritao.db.form.pagination.Pagination;
-import org.netuno.tritao.db.form.populate.Populate;
 import org.netuno.tritao.db.form.where.Where;
 
 import java.util.*;
@@ -44,7 +43,6 @@ public class Operation {
     private boolean distinct;
     private Pagination pagination;
     private boolean debug = false;
-    private List<Populate> tablesToPopulate = new ArrayList<>();
     private int limit = 1000;
     private final OperationEngine operationalEngine;
     private final LinkEngine linkEngine;
@@ -723,15 +721,6 @@ public class Operation {
         return this;
     }
 
-    public List<Populate> getTablesToPopulate() {
-        return tablesToPopulate;
-    }
-
-    public Operation setTablesToPopulate(List<Populate> tablesToPopulate) {
-        this.tablesToPopulate = tablesToPopulate;
-        return this;
-    }
-
     public int getLimit() {
         return limit;
     }
@@ -1194,16 +1183,6 @@ public class Operation {
 
     public Operation distinct(boolean distinct) {
         this.distinct = distinct;
-        return this;
-    }
-
-    public Operation populate(String table, Field filter) {
-        this.tablesToPopulate.add(new Populate(table, filter));
-        return this;
-    }
-
-    public Operation populate(String table, Field filter, List<Field> fields) {
-        this.tablesToPopulate.add(new Populate(table, filter, fields));
         return this;
     }
 
