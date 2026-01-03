@@ -44,6 +44,7 @@ public class Operation {
     private Pagination pagination;
     private boolean debug = false;
     private int limit = 1000;
+    private List<Operation> formsToPopulate = new ArrayList<>();
     private final OperationEngine operationalEngine;
     private final LinkEngine linkEngine;
 
@@ -88,6 +89,14 @@ public class Operation {
     )
     public String getFormName() {
         return formName;
+    }
+
+    public List<Operation> getFormsToPopulate() {
+        return formsToPopulate;
+    }
+
+    public void setFormsToPopulate(List<Operation> formsToPopulate) {
+        this.formsToPopulate = formsToPopulate;
     }
 
     @MethodDoc(
@@ -1342,6 +1351,11 @@ public class Operation {
     public Operation where(Where where) {
         where.setTable(this.formName);
         this.where = where;
+        return this;
+    }
+
+    public Operation getForm(Operation operation) {
+        this.formsToPopulate.add(operation);
         return this;
     }
 
