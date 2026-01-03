@@ -9,7 +9,6 @@ import org.netuno.tritao.db.form.join.Join;
 import org.netuno.tritao.db.form.join.Relationship;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.db.form.pagination.Page;
-import org.netuno.tritao.db.form.populate.Populate;
 import org.netuno.tritao.db.form.where.ConditionalOperator;
 import org.netuno.tritao.db.form.where.RelationalOperator;
 import org.netuno.tritao.db.form.where.Where;
@@ -178,35 +177,6 @@ public class OperationEngine extends Data {
         return select;
     }
 
-    public List<Values> populateResults(List<Values> results, Operation query) {
-        String querySQLPart = this.buildQuerySQL(query);
-        for (int i = 0; i < results.size();i++) {
-            for (Populate populate : query.getTablesToPopulate()) {
-                List<String> fieldList = populate.getFields().stream().map(
-                        field -> field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn())
-                        .collect(Collectors.toList());
-                String selectSQLPart = "SELECT DISTINCT "
-                        + (!fieldList.isEmpty() ? String.join(", ", fieldList) : populate.getTable() + ".*")
-                        + " FROM " + query.getFormName();
-                String commandSQL = selectSQLPart + " " + querySQLPart;
-                commandSQL += " AND "
-                        + populate.getFilter().getColumn() + " = "
-                        + "'" + results.get(i).get((
-                                populate.getFilter().getAlias() != null
-                                        ? populate.getFilter().getAlias()
-                                        : populate.getFilter().getColumn().split("\\.")[1]
-                )).toString() + "'";
-                List<Values> items = getExecutor().query(commandSQL);
-                if (items.isEmpty()) {
-                    results.get(i).set(populate.getTable(), Collections.EMPTY_LIST);
-                    continue;
-                }
-                results.get(i).set(populate.getTable(), items.size() > 1 ? items : items.get(0));
-            }
-        }
-        return results;
-    }
-
     public List<Values> all(Operation query) {
         String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + query.getFormName()+ this.buildQuerySQL(query);
@@ -224,7 +194,7 @@ public class OperationEngine extends Data {
         if (items.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        return !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
+        return items;
     }
 
     public Values first(Operation query) {
@@ -244,7 +214,6 @@ public class OperationEngine extends Data {
         if (items.isEmpty()) {
             return null;
         }
-        items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
         return items.getFirst();
     }
 
@@ -282,7 +251,6 @@ public class OperationEngine extends Data {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
         List<Values> items = getExecutor().query(selectCommandSQL);
-        items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
         int total = this.count(query);
         return new Page(items.isEmpty() ? Collections.EMPTY_LIST : items , total, query.getPagination());
     }
