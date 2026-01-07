@@ -16,6 +16,8 @@ import org.netuno.tritao.db.form.link.Link;
 import org.netuno.tritao.db.form.link.LinkEngine;
 import org.netuno.tritao.db.form.link.RelationshipLink;
 import org.netuno.tritao.db.form.pagination.Pagination;
+import org.netuno.tritao.db.form.populate.Populate;
+import org.netuno.tritao.db.form.populate.PopulateEngine;
 import org.netuno.tritao.db.form.where.Where;
 
 import java.util.*;
@@ -44,22 +46,25 @@ public class Operation {
     private Pagination pagination;
     private boolean debug = false;
     private int limit = 1000;
-    private List<Operation> formsToPopulate = new ArrayList<>();
+    private List<Populate> formsToPopulate = new ArrayList<>();
     private final OperationEngine operationalEngine;
     private final LinkEngine linkEngine;
+    private final PopulateEngine populateEngine;
 
-    public Operation(String formName, OperationEngine operationalEngine, LinkEngine linkEngine) {
+    public Operation(String formName, OperationEngine operationalEngine, LinkEngine linkEngine, PopulateEngine populateEngine) {
         this.formName = formName;
         this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
+        this.populateEngine = populateEngine;
     }
 
-    public Operation(String formName, Where where, OperationEngine operationalEngine, LinkEngine linkEngine) {
+    public Operation(String formName, Where where, OperationEngine operationalEngine, LinkEngine linkEngine, PopulateEngine populateEngine) {
         this.formName = formName;
         where.setTable(formName);
         this.where = where;
         this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
+        this.populateEngine = populateEngine;
     }
 
     @MethodDoc(
@@ -91,12 +96,13 @@ public class Operation {
         return formName;
     }
 
-    public List<Operation> getFormsToPopulate() {
+    public List<Populate> getFormsToPopulate() {
         return formsToPopulate;
     }
 
-    public void setFormsToPopulate(List<Operation> formsToPopulate) {
+    public Operation setFormsToPopulate(List<Populate> formsToPopulate) {
         this.formsToPopulate = formsToPopulate;
+        return this;
     }
 
     @MethodDoc(
@@ -1355,7 +1361,8 @@ public class Operation {
     }
 
     public Operation getForm(Operation operation) {
-        this.formsToPopulate.add(operation);
+        this.populateEngine.checkForm(operation.getFormName());
+        this.populateEngine.buildPopulate(this.getFormName(), operation);
         return this;
     }
 
