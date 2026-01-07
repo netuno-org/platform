@@ -32,6 +32,7 @@ import org.netuno.tritao.db.form.link.Link;
 import org.netuno.tritao.db.form.link.LinkEngine;
 import org.netuno.tritao.db.form.link.RelationshipLink;
 import org.netuno.tritao.db.form.pagination.Pagination;
+import org.netuno.tritao.db.form.populate.PopulateEngine;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DataItem;
@@ -119,6 +120,7 @@ public class DB extends ResourceBase {
     private org.netuno.psamata.DB dbOps = null;
     private OperationEngine operationEngine = new OperationEngine(getProteu(), getHili());
     private LinkEngine linkEngine = new LinkEngine(getProteu(), getHili());
+    private PopulateEngine populateEngine = new PopulateEngine(getProteu(), getHili());
 
     public DB(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -4574,11 +4576,11 @@ public class DB extends ResourceBase {
         }
     )
     public Operation form(String formName) {
-        return new Operation(formName, operationEngine, linkEngine);
+        return new Operation(formName, operationEngine, linkEngine, populateEngine);
     }
 
     public Operation form(String formName, org.netuno.tritao.db.form.where.Where where) {
-        return new Operation(formName, where, operationEngine, linkEngine);
+        return new Operation(formName, where, operationEngine, linkEngine, populateEngine);
     }
 
     @MethodDoc(
