@@ -302,12 +302,12 @@ public class OperationEngine extends Data {
 
     public Values deleteAll(Operation query) {
         List<Values> recordIDs = getRecordIDs(query);
-        int numberOfAffectedRows = 0;
+        int numberOfAffectedRecords = 0;
         List<String> undeletedRecords = new ArrayList<>();
         for (Values recordID : recordIDs) {
             final DataItem dataItem = getBuilder().delete(query.getFormName(), recordID.getString("id"));
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
-                numberOfAffectedRows++;
+                numberOfAffectedRecords++;
             } else {
                 undeletedRecords.add(recordID.getString("id"));
             }
@@ -316,9 +316,9 @@ public class OperationEngine extends Data {
             logger.warn("Impossible to delete the following records IDs: [{}]", String.join(", ", undeletedRecords));
         }
         if (query.isDebug()) {
-            logger.warn("Number of rows affected: " + numberOfAffectedRows);
+            logger.warn("Number of affected records: " + numberOfAffectedRecords);
         }
-        return new Values().set("numberOfAffectedRows", numberOfAffectedRows);
+        return Values.newMap().set(query.getFormName(), numberOfAffectedRecords);
     }
 
     public Values cascadeDelete(Values deleteLinks, Operation query) {
@@ -353,9 +353,9 @@ public class OperationEngine extends Data {
         }
         if (query.isDebug()) {
             if (!undeletedRecords.isEmpty()) {
-                logger.warn("Impossible to delete the records in forms: {}", undeletedRecords.toJSON());
+                logger.warn("Impossible to delete the records in these forms: {}", undeletedRecords.toJSON());
             }
-            logger.warn("Rows of the forms affected: {}", affectedForms.toJSON());
+            logger.warn("Number of rows deleted in these forms: {}", affectedForms.toJSON());
         }
         return affectedForms;
     }
@@ -381,12 +381,12 @@ public class OperationEngine extends Data {
             throw new UnsupportedOperationException("No values in update method");
         }
         List<Values> recordIDs = this.getRecordIDs(query);
-        int numberOfAffectedForms = 0;
+        int numberOfAffectedRecords = 0;
         List<String> unaffectedRecords = new ArrayList<>();
         for (Values recordID : recordIDs) {
             DataItem dataItem = getBuilder().update(query.getFormName(), recordID.getString("id"), data);
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
-                numberOfAffectedForms++;
+                numberOfAffectedRecords++;
             } else {
                 unaffectedRecords.add(recordID.getString("id"));
             }
@@ -395,9 +395,9 @@ public class OperationEngine extends Data {
             if (!unaffectedRecords.isEmpty()) {
                 logger.warn("Impossible to update the following records IDs: [{}]", String.join(", ", unaffectedRecords));
             }
-            logger.warn("Number of rows affected: " + numberOfAffectedForms);
+            logger.warn("Number of records affected: " + numberOfAffectedRecords);
         }
-        return new Values().set("numberOfAffectedForms", numberOfAffectedForms);
+        return Values.newMap().set(query.getFormName(), numberOfAffectedRecords);
     }
 
     public String cascadeUpdateSubForms(Values dataValues, Map.Entry<String, Object> updateLink, String recordID) {
@@ -474,6 +474,9 @@ public class OperationEngine extends Data {
                     }
                 }
             }
+        }
+        if (query.isDebug()) {
+            logger.warn("Number of rows updated in these forms: {}", affectedValues.toJSON());
         }
         return affectedValues;
     }
