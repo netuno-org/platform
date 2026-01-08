@@ -4,11 +4,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bunx --bun vite",
-    "build": "bunx --bun vite build ",
-    "watch": "bunx --bun vite build --watch",
+    "dev": "vite",
+    "build": "vite build ",
+    "watch": "vite build --watch",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "bunx --bun vite preview"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -24,5 +24,8 @@
     "@vitejs/plugin-react": "^5.1.2",
     "vite": "^7.3.0",
     "vite-plugin-imp": "^2.4.0"
-  }
+  },
+  "trustedDependencies": [
+    "less"
+  ]
 }
