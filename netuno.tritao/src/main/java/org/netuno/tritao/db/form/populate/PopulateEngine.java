@@ -19,13 +19,27 @@ public class PopulateEngine extends TableBuilderResourceBase {
         RelationshipPopulate relationship = new RelationshipPopulate();
         relationship.setForm(operation.getFormName());
         Populate populate = new Populate(formName, relationship, operation.getFieldsToGet());
-        buildRelation(formName, relationship);
-        return null;
+        populate.setRelationship(buildRelation(formName, relationship));
+        return populate;
     }
 
-    public Relationship buildRelation(String form, RelationshipPopulate relationship) {
+    public RelationshipPopulate buildRelation(String form, RelationshipPopulate relationship) {
         var linkBetween = getLinkBetween(form, relationship.getForm());
-        return null;
+
+        if(linkBetween != null) {
+            String column = linkBetween.getString("name");
+            relationship.setColumnLink(column).setRelationshipType(RelationshipType.OneToMany);
+            return relationship;
+        } else {
+            linkBetween = getLinkBetween(relationship.getForm(), form);
+            if(linkBetween != null) {
+                String column = linkBetween.getString("name");
+                relationship.setColumnLink(column).setRelationshipType(RelationshipType.ManyToOne);
+                return relationship;
+            } else {
+                throw new IllegalArgumentException("There is no link between the forms " + form + " and " + relationship.getForm());
+            }
+        }
     }
 
     public void checkForm(String formName) {

@@ -1362,7 +1362,7 @@ public class Operation {
 
     public Operation getForm(Operation operation) {
         this.populateEngine.checkForm(operation.getFormName());
-        this.populateEngine.buildPopulate(this.getFormName(), operation);
+        this.formsToPopulate.add(this.populateEngine.buildPopulate(this.getFormName(), operation));
         return this;
     }
 
