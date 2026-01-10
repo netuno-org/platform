@@ -7,6 +7,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.form.join.Join;
 import org.netuno.tritao.db.form.join.Relationship;
+import org.netuno.tritao.db.form.populate.Populate;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.db.form.pagination.Page;
 import org.netuno.tritao.db.form.where.ConditionalOperator;
@@ -177,6 +178,59 @@ public class OperationEngine extends Data {
         return select;
     }
 
+    public String buildBottomSQL(Operation query) {
+        StringBuilder bottomSQL = new StringBuilder();
+        if (query.getGroup() != null) {
+            bottomSQL.append("\nGROUP BY ").append(query.getGroup().getColumn());
+        }
+        if (query.getOrder() != null) {
+            bottomSQL.append("\nORDER BY ").append(query.getOrder().getColumn()).append(" ").append(query.getOrder().getOrder());
+        }
+        if (query.getPagination() != null) {
+            bottomSQL
+                    .append("\nLIMIT ").append(query.getPagination().getPageSize())
+                    .append(" OFFSET ").append(query.getPagination().getOffset());
+        } else {
+            bottomSQL.append("\nLIMIT ").append(query.getLimit());
+        }
+        return  bottomSQL.toString();
+    }
+
+    public List<Values> populateForms(Operation query, List<Values> items) {
+        StringBuilder mainSQl = new StringBuilder();
+        mainSQl.append("SELECT ").append(query.getFormName()).append(".id")
+                .append(" FROM ").append(query.getFormName())
+                .append(this.buildQuerySQL(query))
+                .append(this.buildBottomSQL(query));
+        final List<Values> recordsId = getExecutor().query(mainSQl.toString());
+
+        for (Populate populate : query.getFormsToPopulate()) {
+            StringBuilder populateQuerySQL = new StringBuilder();
+            populateQuerySQL.append("SELECT ")
+                    .append(!populate.getFields().isEmpty()
+                            ? populate.getFields().stream().map(field -> populate.getRelationship().getForm() + "." + field.getColumn()).collect(Collectors.joining(", "))
+                            : populate.getRelationship().getForm() + ".*"
+                    );
+
+            for (int i = 0; i < items.size(); i++) {
+                switch (populate.getRelationship().getRelationshipType()) {
+                    case ManyToOne -> {
+                        populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                                .append("INNER JOIN ").append(populate.getForm())
+                                .append(" ON ").append(populate.getForm()).append(".id")
+                                .append(" = ").append(populate.getRelationship().getForm()).append(".").append(populate.getRelationship().getColumnLink()).append("\n")
+                                .append("WHERE ").append(populate.getForm()).append(".id")
+                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
+                        items.get(i).set(populate.getRelationship().getForm(), populateRecords);
+                    }
+                    case OneToMany -> {}
+                }
+            }
+        }
+        return items;
+    }
+
     public List<Values> all(Operation query) {
         String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + query.getFormName()+ this.buildQuerySQL(query);
@@ -214,7 +268,7 @@ public class OperationEngine extends Data {
         if (items.isEmpty()) {
             return null;
         }
-        return items.getFirst();
+        return !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items).getFirst() : items.getFirst();
     }
 
     public int count(Operation query) {

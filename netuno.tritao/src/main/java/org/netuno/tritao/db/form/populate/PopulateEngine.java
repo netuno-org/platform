@@ -4,7 +4,6 @@ import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.db.form.Operation;
-import org.netuno.tritao.db.form.join.Relationship;
 import org.netuno.tritao.db.form.join.RelationshipType;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
