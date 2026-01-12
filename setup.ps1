@@ -1,4 +1,5 @@
 Clear-Host
+
 function show-netuno{
     Write-Host "
     _   _ ______ _______ _    _ _   _  ____  
@@ -7,186 +8,139 @@ function show-netuno{
    | .   |  __|    | |  | |  | | .   | |  | |
    | |\  | |____   | |  | |__| | |\  | |__| |
    |_| \_|______|  |_|   \____/|_| \_|\____/ 
-   " -ForegroundColor red
+   " -ForegroundColor Red
 }
 
 show-netuno
 
+# Silent checks
 $isChocoInstalled = Get-Command choco -ErrorAction SilentlyContinue
+$mvnInstalled     = Get-Command mvn   -ErrorAction SilentlyContinue
+$nodejsInstalled  = Get-Command node  -ErrorAction SilentlyContinue
+$javaCmd          = Get-Command java  -ErrorAction SilentlyContinue
 
-$javaVersion = Get-Command java | Select-Object -ExpandProperty Version | Select-Object -ExpandProperty Major
-$javaVersion = [Convert]::ToInt32($javaVersion)
-$javaVersion = ($javaVersion -ge 21)
+# Silent Java version check (GraalVM >= 25)
+$javaOk = $false
+if ($javaCmd) {
+    try {
+        $javaRaw = & java -version 2>&1 | Select-Object -First 1
+        if ($javaRaw -match 'version\s+"(\d+)\.(\d+)\.(\d+).*"') {
+            $javaMajor = [int]$matches[1]
+            $javaMinor = [int]$matches[2]
+            $javaPatch = [int]$matches[3]
 
-$mvnInstalled = Get-Command mvn -ErrorAction SilentlyContinue
-$nodejsInstalled = Get-Command node.exe -ErrorAction SilentlyContinue
+            if ($javaMajor -ge 25 -and $javaRaw -match 'GraalVM') {
+                $javaOk = $true
+            }
+        }
+    } catch {
+        $javaOk = $false
+    }
+} 
 
-$proguardIsInstalled = Join-Path -Path $PSScriptRoot -ChildPath "proguard"
-$proguardIsInstalled = Test-Path -Path $proguardIsInstalled -PathType Container
 
 Write-Host -ForegroundColor Yellow "Checking dependencies:`n"
 
-if (!$mvnInstalled) {
-    Write-Host "`t[Maven]" -ForegroundColor Red "Missing"
-} else {
-    Write-Host "`t[Maven]" -ForegroundColor Green "Installed"
-}
+Write-Host ("`t[Maven]  "  + ($(if ($mvnInstalled)  { "Installed" } else { "Missing" })))
+Write-Host ("`t[Java]   "  + ($(if ($javaOk)        { "Installed" } else { "Missing" })))
+Write-Host ("`t[NodeJS] "  + ($(if ($nodejsInstalled){ "Installed" } else { "Missing" })))
 
-if (!$javaVersion) {
-    Write-Host "`t[Java]" -ForegroundColor Red "Missing"
-} else {
-    Write-Host "`t[Java]" -ForegroundColor Green "Installed"
-}
+if (!$javaOk -or !$mvnInstalled -or !$nodejsInstalled) {
 
-if (!$nodejsInstalled) {
-    Write-Host "`t[NodeJS]" -ForegroundColor Red "Missing"
-} else {
-    Write-Host "`t[NodeJS]" -ForegroundColor Green "Installed"
-}
-
-if (!$proguardIsInstalled) {
-    Write-Host "`t[ProGuard]" -ForegroundColor Red "Missing"
-} else {
-    Write-Host "`t[ProGuard]" -ForegroundColor Green "Installed"
-}
-
-if (!$javaVersion -or !$mvnInstalled -or !$nodejsInstalled -or !$proguardIsInstalled) {
     Write-Host -ForegroundColor Yellow "`nWould you like to automatically install the missing dependencies?"
-    $installAutomatically = read-Host "(y - yes | n - no)" 
-    if($installAutomatically -eq "y" -or $installAutomatically -eq "Y"){
-        if (!$isChocoInstalled) {
-            Write-Host -ForegroundColor red "Chocolatey is not installed on your system and is required to install dependencies.`nDo you want to install Chocolatey now?" 
-            $installChoco = Read-Host -Prompt "(y - yes | n - no)" 
-            if ($installChoco -eq "y" -or $installChoco -eq "Y") {
-                Write-Host -ForegroundColor Yellow "Installing Chocolatey..."
-                Set-ExecutionPolicy Bypass -Scope Process -Force; `
-                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
-                iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-                Write-Host -ForegroundColor Green "Chocolatey has been installed successfully."
-            } else {
-                Write-Host -ForegroundColor Red "Chocolatey is required to install dependencies. Exiting script..."
-                exit
-            }
-        } else {
-            Write-Host -ForegroundColor Green "Chocolatey is already installed on your system."
-        }
+    $installAutomatically = Read-Host "(y - yes | n - no)"
 
-        if(!$javaVersion) {
-            choco install temurin21 --force -y
-        }
-
-        if(!$nodejsInstalled) {
-            choco install nodejs-lts --force -y
-        }
-
-        if(!$mvnInstalled) {
-            choco install maven --version=3.8.1 --force -y
-        }
-
-        if(!$proguardIsInstalled) {
-            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            $WebClient = New-Object System.Net.WebClient
-            
-            $WebClient.DownloadFile("https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.zip", "$PSScriptRoot\maven.zip")
-            Write-Host " Download Complete." -ForegroundColor green
-            
-            Write-Host ""
-            Write-Host " Extracting file..." -ForegroundColor red
-            Expand-Archive -LiteralPath "maven.zip" -DestinationPath "$netunoDir" -Force
-            Get-ChildItem -Path "$netunoDir" -Directory "apache-*" | Rename-Item -NewName "maven"
-            Write-Host " Extracting Complete." -ForegroundColor green
-
-
-            Write-Host ""
-            Write-Host " Adding Windows Environment variables..." -ForegroundColor red
-            
-            $mavenPath = "${netunoDir}\maven"
-            
-            [Environment]::SetEnvironmentVariable("M2_HOME", $mavenPath, "Machine")
-            [Environment]::SetEnvironmentVariable("MAVEN_HOME", $mavenPath, "Machine")
-            
-            $WebClient.DownloadFile("https://github.com/Guardsquare/proguard/releases/download/v7.4/proguard-7.4.0.zip", "$PSScriptRoot\proguard.zip")
-            Expand-Archive -LiteralPath "proguard.zip" -DestinationPath ".\" -Force
-            Get-ChildItem -Path "./" -Directory "proguard-*" | Rename-Item -NewName "proguard"
-            Remove-Item ".\proguard.zip" -Recurse -Confirm:$false -Force -ErrorAction Ignore
-            Get-ChildItem -Path ".\" -Directory "proguard-*" | Remove-Item -Force -ErrorAction Ignore -Confirm:$false
-        }
-
-        if(!$javaVersion -or !$mvnInstalled -or !$nodejsInstalled){
-            Write-Host -ForegroundColor yellow "`nThe installation is complete. Do you want to restart your computer?"
-            $restart = Read-Host "(y - yes | n - no)" 
-            if ($restart -eq "y" -or $restart -eq "Y") {
-                Restart-Computer
-            }
-        }
-    } else {
-        Write-Host -ForegroundColor Red "All dependencies is required. Exiting script..."
+    if ($installAutomatically -notin @("y","Y")) {
+        Write-Host -ForegroundColor Red "All dependencies are required. Exiting script..."
         exit
+    }
+
+    if (-not $isChocoInstalled) {
+        Write-Host -ForegroundColor Red "Chocolatey is not installed. It is required.`nInstall Chocolatey now?"
+        $installChoco = Read-Host "(y - yes | n - no)"
+
+        if ($installChoco -notin @("y","Y")) {
+            Write-Host -ForegroundColor Red "Chocolatey is required. Exiting script..."
+            exit
+        }
+
+        Write-Host -ForegroundColor Yellow "Installing Chocolatey..."
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        Write-Host -ForegroundColor Green "Chocolatey installed."
+    }
+
+    if (!$javaOk)        { choco install graalvm --version=25.0.1 -y }
+    if (!$nodejsInstalled){ choco install nodejs-lts --force -y }
+    if (!$mvnInstalled) { choco install maven --version=3.8.1 --force -y }
+
+    Write-Host -ForegroundColor Yellow "`nInstallation complete. Restart computer now?"
+    $restart = Read-Host "(y - yes | n - no)"
+
+    if ($restart -in @("y","Y")) {
+        Restart-Computer
     }
 }
 
-Write-Host -ForegroundColor yellow "`nAll dependencies are installed.`nContinuing with the script..."
+Write-Host -ForegroundColor Yellow "`nAll dependencies are installed.`nContinuing with the script..."
 Start-Sleep -Seconds 2
-
 
 do {
     Clear-Host
     show-netuno
-    Write-Host -ForegroundColor yellow "1. Setting Project."
-    Write-Host -ForegroundColor yellow "2. Generate Bundle."
-    Write-Host -ForegroundColor white "`nQ. Press Q to quit."
+
+    Write-Host -ForegroundColor Yellow "1. Setting Project."
+    Write-Host -ForegroundColor Yellow "2. Generate Bundle."
+    Write-Host -ForegroundColor White  "`nQ. Press Q to quit."
 
     $selection = Read-Host "Select option"
 
+    switch ($selection) {
 
-    switch ($selection)
-    {
         '1' {
-            Clear-Host
-            cd bundle
-            npm install
-            cd ..
+    Write-Host "`nNETUNO - Workspace Setup`n"
 
-            mvn clean
-            mvn install
-            mvn compile
+    # Unblock all PowerShell scripts
+    Get-ChildItem -Filter "*.ps1" | ForEach-Object {
+        Unblock-File $_.FullName -ErrorAction SilentlyContinue
+    }
 
-            Write-Host ""
-            Write-Host "Setting SymbolicLink ..."
+    Get-ChildItem -Path "bundle" -Filter "*.ps1" -Recurse | ForEach-Object {
+        Unblock-File $_.FullName -ErrorAction SilentlyContinue
+    }
 
-            if(!(Test-Path -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno")){
-                New-Item ".\bundle\base\core\web\WEB-INF\classes\org\netuno" -ItemType Directory
-            }
+    # Install npm dependencies
+    Push-Location "bundle"
+    npm install
+    Pop-Location
 
-            if(!(Test-Path -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno\proteu")){
-                New-Item -ItemType SymbolicLink -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno\proteu" -Target ".\netuno.proteu\target\classes\org\netuno\proteu"
-            }
+    # Set base path for Netuno classes (using old script path)
+    $basePath = ".\bundle\base\core\web\WEB-INF\classes\org\netuno"
+    New-Item -ItemType Directory -Path $basePath -Force | Out-Null
 
-            if(!(Test-Path -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno\tritao")){
-                New-Item -ItemType SymbolicLink -Path ".\bundle\base\core\web\WEB-INF\classes\org\netuno\tritao" -Target ".\netuno.tritao\target\classes\org\netuno\tritao"
-            }
+    Push-Location $basePath
 
-            Write-Host ""
-            Write-Host "Checking if NTFSSecurity module exists..."
-            if (Get-Module -ListAvailable -Name NTFSSecurity) {
-                Write-Host "Module exists, proceeding..."
-            }
-            else {
-                Write-Host "Module hasn't been found, running the install..."
-                Install-Module -Name NTFSSecurity -Force
-            }
+    # Proteu symbolic link
+    $proteuTarget = ".\netuno.proteu\target\classes\org\netuno\proteu"
+    if (-not (Test-Path "proteu")) {
+        New-Item -ItemType SymbolicLink -Name "proteu" -Target $proteuTarget
+    }
 
-            Write-Host ""
-            Write-Host "To update files permissions..."
-            $User = Read-Host -Prompt 'Enter your normal user: '
-            Get-ChildItem -Path . -Recurse -Force | Set-NTFSOwner -Account $User
-            Write-Host ""
-            pause
-
+    # Tritao symbolic link
+    $tritaoTarget = ".\netuno.tritao\target\classes\org\netuno\tritao"
+    if (-not (Test-Path "tritao")) {
+        New-Item -ItemType SymbolicLink -Name "tritao" -Target $tritaoTarget
+    }
+    
+    Pop-Location
         }
+
         '2' {
-            cd .\bundle
+            Push-Location "bundle"
             .\publish.ps1
+            Pop-Location
         }
     }
-}until ($selection -eq 'q')
+
+} until ($selection -eq 'q')

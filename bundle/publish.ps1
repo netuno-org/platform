@@ -1,77 +1,115 @@
-$PS3 = "Version Type: ";
-$VersionTypeOptions = @('Upgrade', 'Critical')
 
+# --- Revision Date ---
+$REVISION = Get-Date -Format "yyyy.MM.dd"
+Write-Host ""
 
-$isCritical = Read-Host "This update is Crititcal [u] - Upgrade, [c] - Critical"
-if ($isCritical -eq 'c') {
-    $VersionType = "Critical" 
-}else {
-    $VersionType = "Upgrade"
+# --- Publish Mode Selection ---
+$PublishModeOptions = @("Testing", "Stable")
+Write-Host "Publish Mode:"
+for ($i = 0; $i -lt $PublishModeOptions.Count; $i++) {
+    Write-Host "$($i+1)) $($PublishModeOptions[$i])"
 }
-
-
-Remove-Item "dist" -Force -ErrorAction Ignore 
-
-
-cd ..
-
+do {
+    $choice = Read-Host "Select an option (1-$($PublishModeOptions.Count))"
+} while (-not ($choice -match '^[1-2]$'))
+$PublishMode = if ($choice -eq 1) { "testing" } else { "stable" }
 Write-Host ""
-Write-Host "MVN Install"
-Write-Host ""
-./mvn-install.ps1
+
+# --- Version Type selection ---
+$VersionTypeOptions = @("Upgrade", "Critical")
+Write-Host "Version Type:"
+for ($i = 0; $i -lt $VersionTypeOptions.Count; $i++) {
+    Write-Host "$($i+1)) $($VersionTypeOptions[$i])"
+}
+do {
+    $choice = Read-Host "Select an option (1-$($VersionTypeOptions.Count))"
+} while (-not ($choice -match '^[1-2]$'))
+$VersionType = if ($choice -eq 1) { "upgrade" } else { "critical" }
+
+# --- Clean Previous build ---
+Remove-Item -Force -ErrorAction SilentlyContinue "./dist/netuno*.jar"
+Remove-Item -Force -ErrorAction SilentlyContinue "./dist/netuno*.zip"
+Remove-Item -Force -ErrorAction SilentlyContinue "./dist/netuno*.json"
+
+Set-Location ".."
 
 Write-Host ""
 Write-Host "MVN Package"
 Write-Host ""
-copy netuno.cli/pom-base.xml netuno.cli/pom.xml
-./mvn-package.ps1
 
-cd ./netuno.cli/protect
+Copy-Item "netuno.cli/pom-base.xml" "netuno.cli/pom.xml" -Force
 
-if (Test-Path -Path "out/proguard") {
-    rm -r "out/proguard"
-}
+& node "bundle/publish-mode.js" $PublishMode
 
-./run.ps1
-cd ../..
+& ./mvn-package.ps1
 
-Move-Item -Path "./netuno.cli/protect/out/proguard/netuno.jar" -Destination "./netuno.cli/protect/out/proguard/netuno-base.jar"
+& node "bundle/publish-mode.js"
 
-copy "./netuno.cli/pom-setup.xml" "./netuno.cli/pom.xml"
+# --- Build netuno cli ---
+New-Item -ItemType Directory -Force -Path "netuno.cli/out" | Out-Null
+Move-Item "netuno.cli/target/netuno-cli-*.jar" "netuno.cli/out/netuno.jar" -Force
 
-cd netuno.cli
-mvn clean
-mvn package
-cd ..
+New-Item -ItemType Directory -Force -Path "netuno.cli/out/core/lib" | Out-Null
+Remove-Item -Force -ErrorAction SilentlyContinue "netuno.cli/out/core/lib/*"
 
-cd ./netuno.cli/protect
-./run.ps1
-cd ../..
+Copy-Item "netuno.cli/target/core/lib/*" "netuno.cli/out/core/lib/" -Recurse -Force
 
-Move-Item -Path "./netuno.cli/protect/out/proguard/netuno.jar" -Destination "./netuno.cli/protect/out/proguard/netuno-setup.jar"
+Copy-Item "netuno.cli/pom-setup.xml" "netuno.cli/pom.xml" -Force
+& node "bundle/publish-mode.js" $PublishMode
 
-copy "./netuno.cli/pom-base.xml" "./netuno.cli/pom.xml"
+# --- build netuno web ---
+New-Item -ItemType Directory -Force -Path "netuno.tritao/out/temp" | Out-Null
+Set-Location "netuno.tritao/out"
 
-Move-Item -Path "./netuno.cli/protect/out/proguard/netuno-base.jar" -Destination "./netuno.cli/protect/out/proguard/netuno.jar"
+# --- Expand proteu jar ---
+$proteuJar = Get-ChildItem "./../../netuno.proteu/target/netuno-proteu-*.jar" -File -ErrorAction SilentlyContinue
+if (-not $proteuJar) { throw "Proteu JAR not found" }
 
-cd netuno.tritao/protect
-./run.ps1
-cd ../..
+$proteuZip = [System.IO.Path]::ChangeExtension($proteuJar.FullName, ".zip")
+Rename-Item $proteuJar.FullName $proteuZip -Force
+Expand-Archive -Path $proteuZip -DestinationPath "temp" -Force
 
-cd bundle
-npm install
-node index.js
-cd ..
+# --- Expand tritao jar ---
+$tritaoJar = Get-ChildItem "./../../netuno.tritao/target/netuno-tritao-*.jar" -File -ErrorAction SilentlyContinue
+if (-not $tritaoJar) { throw "Tritao JAR not found" }
 
-cd bundle/out
-Compress-Archive -Path netuno -DestinationPath netuno.zip
-cd ../..
+$tritaoZip = [System.IO.Path]::ChangeExtension($tritaoJar.FullName, ".zip")
+Rename-Item $tritaoJar.FullName $tritaoZip -Force
+Expand-Archive -Path $tritaoZip -DestinationPath "temp" -Force
 
-mkdir -p bundle/dist
+# --- Repack ---
+$webZip = "netuno-web-$REVISION.zip"
+$webJar = "netuno-web-$REVISION.jar"
 
-copy "./netuno.cli/protect/out/proguard/netuno-setup.jar" "./bundle/dist/netuno-setup.jar"
+Compress-Archive -Path "temp/*" -DestinationPath $webZip -Force
+Rename-Item -Path $webZip -NewName $webJar -Force
 
-Move-Item -Path "./bundle/out/netuno.zip" -Destination "./bundle/dist/netuno.zip"
-cd bundle
-node win.js type=$VersionType
-cd ..
+# --- Cleanup ---
+Remove-Item -Recurse -Force "temp"
+
+# --- Restore original filenames ---
+Rename-Item $proteuZip $proteuJar.FullName -Force
+Rename-Item $tritaoZip $tritaoJar.FullName -Force
+
+Set-Location "../.."
+
+& mvn --projects netuno.cli,netuno.psamata,netuno.library.doc -Drevision="$REVISION" -DskipTests=true clean package
+& node "./bundle/publish-mode.js"
+
+Move-Item "netuno.cli/target/netuno-setup.jar" "netuno.cli/out/netuno-setup.jar" -Force
+Copy-Item "netuno.cli/pom-base.xml" "netuno.cli/pom.xml" -Force
+
+Set-Location "bundle"
+& node "index.js" $REVISION
+Set-Location ".."
+
+# Prepare bundle/dist
+New-Item -ItemType Directory -Force -Path "bundle/dist" | Out-Null
+Copy-Item "netuno.cli/out/netuno-setup.jar" "bundle/dist/netuno-setup.jar" -Force
+Move-Item "bundle/out/netuno.zip" "bundle/dist/netuno.zip" -Force
+
+
+# Extract BuildVersion from JAR manifest
+$manifest = & ./unzip -p "bundle/out/netuno/netuno.jar" "META-INF/MANIFEST.MF"
+$BuildVersion = ($manifest | Select-String "Implementation-Build:" | ForEach-Object { ($_ -split " ")[1] }).Trim()
+
