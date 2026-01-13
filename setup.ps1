@@ -144,7 +144,9 @@ do {
 
         '1' {
             Write-Host -ForegroundColor Cyan "`nSetting up project..."
-            Start-Sleep -Seconds 1
+            Start-Sleep -Seconds 3
+
+            & ./mvn-package.ps1
 
             Get-ChildItem -Filter "*.ps1" | ForEach-Object {
                 Unblock-File $_.FullName -ErrorAction SilentlyContinue
