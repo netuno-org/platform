@@ -302,6 +302,9 @@
 <script>
   (function (netuno, $) {
     netuno.nameAutocompleteDev.load('managementForm', '_{util=requestuuid}');
+    $("#managementForm_parent").on("change", function () {
+      netuno.nameAutocompleteDev.execute('managementForm');
+    });
     $('#managementForm_buttonNew,#managementForm_buttonClear').on("click", function () {
       $('#managementForm_execute').val('new');
       $('#managementForm_uid').val('');
