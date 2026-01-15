@@ -260,17 +260,23 @@ netuno.nameAutocompleteDev = {
     netuno.nameAutocompleteDev.checkboxesIds.push(checkboxId)
     checkbox.prop("checked", localStorage.getItem("dev:name:autocomplete") isnt "false")
     $("\##{fieldsPrefix}_title").on("keyup", ()->
-      if localStorage.getItem("dev:name:autocomplete") is "false"
-        return
-      that = $(this)
-      fieldName = $("\##{fieldsPrefix}_name")
-      fieldName.val(S(that.val()).latinise().camelize().dasherize().slugify().replaceAll("-", "_").chompLeft("_").s)
-      fieldNameVal = fieldName.val()
-      if $("\##{fieldsPrefix}_type").length > 0 and $("\##{fieldsPrefix}_type").val() == "select"
-        endsWithId = fieldNameVal.indexOf("_id") == fieldNameVal.length - 3;
-        if !endsWithId
-          fieldName.val(fieldNameVal + "_id")
+      netuno.nameAutocompleteDev.execute(fieldsPrefix)
     )
+  execute: (fieldsPrefix)->
+    if localStorage.getItem("dev:name:autocomplete") is "false"
+      return false
+    fieldParentText = $("\##{fieldsPrefix}_parent option:selected").text()
+    fieldTitle = $("\##{fieldsPrefix}_title")
+    fieldName = $("\##{fieldsPrefix}_name")
+    fieldNameVal = S(fieldTitle.val()).latinise().camelize().dasherize().slugify().replaceAll("-", "_").chompLeft("_").s
+    if fieldParentText isnt ''
+      fieldNameVal = "#{fieldParentText}_#{fieldNameVal}"
+    fieldName.val(fieldNameVal)
+    if $("\##{fieldsPrefix}_type").length > 0 and $("\##{fieldsPrefix}_type").val() == "select"
+      endsWithId = fieldNameVal.indexOf("_id") == fieldNameVal.length - 3;
+      if !endsWithId
+        fieldName.val(fieldNameVal + "_id")
+    return true
   clearCheckboxesIds: ()->
     netuno.nameAutocompleteDev.checkboxesIds.forEach((checkboxId, i)->
       checkbox = $("\##{checkboxId}")

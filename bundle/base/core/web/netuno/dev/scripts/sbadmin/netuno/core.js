@@ -336,21 +336,29 @@
       netuno.nameAutocompleteDev.checkboxesIds.push(checkboxId);
       checkbox.prop("checked", localStorage.getItem("dev:name:autocomplete") !== "false");
       return $(`\#${fieldsPrefix}_title`).on("keyup", function() {
-        var endsWithId, fieldName, fieldNameVal, that;
-        if (localStorage.getItem("dev:name:autocomplete") === "false") {
-          return;
-        }
-        that = $(this);
-        fieldName = $(`\#${fieldsPrefix}_name`);
-        fieldName.val(S(that.val()).latinise().camelize().dasherize().slugify().replaceAll("-", "_").chompLeft("_").s);
-        fieldNameVal = fieldName.val();
-        if ($(`\#${fieldsPrefix}_type`).length > 0 && $(`\#${fieldsPrefix}_type`).val() === "select") {
-          endsWithId = fieldNameVal.indexOf("_id") === fieldNameVal.length - 3;
-          if (!endsWithId) {
-            return fieldName.val(fieldNameVal + "_id");
-          }
-        }
+        return netuno.nameAutocompleteDev.execute(fieldsPrefix);
       });
+    },
+    execute: function(fieldsPrefix) {
+      var endsWithId, fieldName, fieldNameVal, fieldParentText, fieldTitle;
+      if (localStorage.getItem("dev:name:autocomplete") === "false") {
+        return false;
+      }
+      fieldParentText = $(`\#${fieldsPrefix}_parent option:selected`).text();
+      fieldTitle = $(`\#${fieldsPrefix}_title`);
+      fieldName = $(`\#${fieldsPrefix}_name`);
+      fieldNameVal = S(fieldTitle.val()).latinise().camelize().dasherize().slugify().replaceAll("-", "_").chompLeft("_").s;
+      if (fieldParentText !== '') {
+        fieldNameVal = `${fieldParentText}_${fieldNameVal}`;
+      }
+      fieldName.val(fieldNameVal);
+      if ($(`\#${fieldsPrefix}_type`).length > 0 && $(`\#${fieldsPrefix}_type`).val() === "select") {
+        endsWithId = fieldNameVal.indexOf("_id") === fieldNameVal.length - 3;
+        if (!endsWithId) {
+          fieldName.val(fieldNameVal + "_id");
+        }
+      }
+      return true;
     },
     clearCheckboxesIds: function() {
       return netuno.nameAutocompleteDev.checkboxesIds.forEach(function(checkboxId, i) {
