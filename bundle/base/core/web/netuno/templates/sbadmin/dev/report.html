@@ -103,7 +103,7 @@
           <div class="col-lg-8">
               <div class="form-group">
                   <label for="managementReport_parent">_{&lang=netuno.dev.report.label.parent}</label>
-                  <select class="form-control" name="parent_id" id="managementReport_parent" allow-clear style="width: 100%;">
+                  <select class="form-control" name="parent_uid" id="managementReport_parent" allow-clear style="width: 100%;">
                       <option value="0"></option>
                       _{data=parent.items}
                   </select>
@@ -193,6 +193,9 @@
 <script>
   (function (netuno, $) {
     netuno.nameAutocompleteDev.load('managementReport', '_{util=requestuuid}');
+    $("#managementReport_parent").on("change", function () {
+      netuno.nameAutocompleteDev.execute('managementReport');
+    });
     $('#managementReport_buttonNew,#managementReport_buttonClear').on("click", function () {
       $('#managementReport_execute').val('new');
       $('#managementReport_uid').val('');
