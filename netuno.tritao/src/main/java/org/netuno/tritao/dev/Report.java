@@ -114,6 +114,9 @@ public class Report {
         List<Values> parentTables = Config.getDBBuilder(proteu).selectTable();
         String parentItems = "";
         for (Values t : parentTables) {
+            if (table != null && t.getInt("id") == table.getInt("id")) {
+                continue;
+            }
         	data.set("table.item.id", t.getString("id"));
             data.set("table.item.uid", t.getString("uid"));
         	data.set("table.item.selected", (table != null && t.getInt("id") == table.getInt("parent_id") ? " selected" : ""));
