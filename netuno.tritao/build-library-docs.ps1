@@ -1,27 +1,76 @@
-# Navigate up one directory
+# Stop on first error
+$ErrorActionPreference = "Stop"
+
+# Go to parent directory
 Set-Location ..
 
-# Run Maven install script
-& "./mvn-install.ps1"
+# Array de opções para doc.plainMarkdown
+$docOptions = @($false, $true)
 
-# Change to netuno.tritao directory
-Set-Location "netuno.tritao"
+foreach ($plain in $docOptions) {
 
-# Run Maven test
-mvn -Dtest=BuildLibraryTest test
+    Write-Host "Running Maven tests with -Ddoc.plainMarkdown=$plain"
 
-# Delete Older files for the English documentation
-Remove-Item "../../doc/docs/library/objects/*.md" -Force -ErrorAction SilentlyContinue
-Remove-Item "../../doc/docs/library/resources/*.md" -Force -ErrorAction SilentlyContinue
+    mvn `
+      -am `
+      -pl netuno.tritao `
+      "-Drevision=DEV" `
+      "-Dtest=BuildLibraryTest" `
+      "-Dsurefire.failIfNoSpecifiedTests=false" `
+      "-Ddoc.plainMarkdown=$plain" `
+      test
 
-# Delete Older files for the Portuguese documentation
-Remove-Item "../../doc/i18n/pt/docusaurus-plugin-content-docs/current/library/objects/*.md" -Force -ErrorAction SilentlyContinue
-Remove-Item "../../doc/i18n/pt/docusaurus-plugin-content-docs/current/library/resources/*.md" -Force -ErrorAction SilentlyContinue
+    Set-Location netuno.tritao
 
-# Copy new EN docs
-Copy-Item -Path "docs\EN\library\objects\*.md" -Destination "..\..\doc\docs\library\objects\" -Recurse -Force
-Copy-Item -Path "docs\EN\library\resources\*.md" -Destination "..\..\doc\docs\library\resources\" -Recurse -Force
+    if ($plain) {
+        $target = "../../doc/doc-plain/"
+    } else {
+        $target = "../../doc"
+    }
 
-# Copy new PT docs
-Copy-Item -Path "docs\PT\library\objects\*.md" -Destination "..\..\doc\i18n\pt\docusaurus-plugin-content-docs\current\library\objects\" -Recurse -Force
-Copy-Item -Path "docs\PT\library\resources\*.md" -Destination "..\..\doc\i18n\pt\docusaurus-plugin-content-docs\current\library\resources\" -Recurse -Force
+    Write-Host "Copying docs to $target"
+
+    function Remove-MdFiles($path) {
+        if (Test-Path $path) {
+            Remove-Item $path -Force
+        }
+    }
+
+    # Diretórios de destino
+    $dirs = @(
+        "$target/docs/library/objects",
+        "$target/docs/library/resources",
+        "$target/i18n/pt/docusaurus-plugin-content-docs/current/library/objects",
+        "$target/i18n/pt/docusaurus-plugin-content-docs/current/library/resources"
+    )
+
+    # Criar diretórios se não existirem
+    foreach ($dir in $dirs) {
+        if (-not (Test-Path $dir)) {
+            New-Item -ItemType Directory -Force -Path $dir | Out-Null
+        }
+    }
+
+    # Remover arquivos antigos
+    Remove-MdFiles "$target/docs/library/objects/*.md"
+    Remove-MdFiles "$target/docs/library/resources/*.md"
+    Remove-MdFiles "$target/i18n/pt/docusaurus-plugin-content-docs/current/library/objects/*.md"
+    Remove-MdFiles "$target/i18n/pt/docusaurus-plugin-content-docs/current/library/resources/*.md"
+
+    # Copiar arquivos
+    Copy-Item "docs/EN/library/objects/*.md" `
+              "$target/docs/library/objects/" `
+              -Force
+    Copy-Item "docs/EN/library/resources/*.md" `
+              "$target/docs/library/resources/" `
+              -Force
+
+    Copy-Item "docs/PT/library/objects/*.md" `
+              "$target/i18n/pt/docusaurus-plugin-content-docs/current/library/objects/" `
+              -Force
+    Copy-Item "docs/PT/library/resources/*.md" `
+              "$target/i18n/pt/docusaurus-plugin-content-docs/current/library/resources/" `
+              -Force
+
+    Set-Location ..
+}

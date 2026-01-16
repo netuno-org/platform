@@ -35,9 +35,12 @@ public class BuildLibraryTest {
 
     private String debugResource = ""; //"remote";
     private String debugObject = ""; //"RemoteResponse";
+    private final boolean plainMarkdown;
 
     public BuildLibraryTest() {
-
+        this.plainMarkdown = Boolean.parseBoolean(
+                System.getProperty("doc.plainMarkdown", "false")
+        );
     }
 
     @Test
@@ -98,7 +101,7 @@ public class BuildLibraryTest {
                         menuObjects.add(pathMenu);
                     }
                     LibraryContent docContent = new LibraryContent(lang, name, _class, false, objects, resources);
-                    var contents = docContent.generate();
+                    var contents = docContent.generate(plainMarkdown);
                     if (contents.getMarkdown().isEmpty()) {
                         continue;
                     }
@@ -124,7 +127,7 @@ public class BuildLibraryTest {
                         menuResources.add(pathMenu);
                     }
                     LibraryContent docContent = new LibraryContent(lang, resource.name(), _class, true, objects, resources);
-                    var contents = docContent.generate();
+                    var contents = docContent.generate(plainMarkdown);
                     if (contents.getMarkdown().isEmpty()) {
                         continue;
                     }
