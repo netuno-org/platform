@@ -166,7 +166,14 @@ public class LibraryContent {
         this.resources = resources;
     }
 
-    public GeneratedContents generate() throws Exception {
+    private static String span(boolean plain, String style, String content) {
+        if (plain) {
+            return content;
+        }
+        return "<span style={{" + style + "}}>" + content + "</span>";
+    }
+
+    public GeneratedContents generate(boolean plainMarkdown) throws Exception {
         LibraryDoc libraryDoc = null;
         try {
             libraryDoc = (LibraryDoc) _class.getAnnotation(LibraryDoc.class);
@@ -458,23 +465,22 @@ public class LibraryContent {
                 if (methodDoc == null || methodDoc.dependency().isEmpty()) {
                     contents.getMarkdown().append("#### ");
                     if (isResource) {
-                        contents.getMarkdown().append("<span style={{fontWeight: 'normal'}}>");
-                        contents.getMarkdown().append("_").append(name);
-                        contents.getMarkdown().append("</span>");
-                        contents.getMarkdown().append(".");
+                        contents.getMarkdown().append(
+                                span(plainMarkdown, "fontWeight: 'normal'", "_"+name)
+                        ).append(".");
                     }
-                    contents.getMarkdown().append("<span style={{color: '#008000'}}>");
-                    contents.getMarkdown().append(method.getName());
-                    contents.getMarkdown().append("</span>");
+                    contents.getMarkdown().append(
+                            span(plainMarkdown, "color: '#008000'", method.getName())
+                    );
                 } else {
                     contents.getMarkdown().append("#### ");
                     if (isResource) {
                         contents.getMarkdown().append("`_" + name + "." + methodDoc.dependency() + "()`");
                         contents.getMarkdown().append(".");
                     }
-                    contents.getMarkdown().append("<span style={{color: '#008000'}}>");
-                    contents.getMarkdown().append(method.getName());
-                    contents.getMarkdown().append("</span>");
+                    contents.getMarkdown().append(
+                            span(plainMarkdown, "color: '#008000'", method.getName())
+                    );
                 }
                 contents.getMarkdown().append("(");
                 contents.getTypeScriptDeclarations().append("\t\t").append("(");
@@ -530,13 +536,17 @@ public class LibraryContent {
                                     .set("parameterTranslationDoc", parameterTranslationDoc)
                                     .set("parameterName", parameterName)
                     );
-                    contents.getMarkdown().append("<span style={{color: '#FF8000'}}>");
-                    contents.getMarkdown().append(parameterName);
-                    contents.getMarkdown().append("</span>");
+
+                    contents.getMarkdown().append(
+                            span(plainMarkdown, "color: '#FF8000'", parameterName)
+                    );
+
                     contents.getMarkdown().append(": ");
-                    contents.getMarkdown().append("<span style={{fontWeight: 'normal', fontStyle: 'italic'}}>");
-                    contents.getMarkdown().append(type(contents, parameter.getType(), Type.Markdown));
-                    contents.getMarkdown().append("</span>");
+
+                    contents.getMarkdown().append(
+                            span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, parameter.getType(), Type.Markdown))
+                    );
+
                     contents.getTypeScriptDeclarations().append(
                             switch (parameterName) {
                                 case "function" -> "func";
@@ -555,9 +565,11 @@ public class LibraryContent {
                 }
                 contents.getMarkdown().append(")");
                 contents.getMarkdown().append(" : ");
-                contents.getMarkdown().append("<span style={{fontWeight: 'normal', fontStyle: 'italic'}}>");
-                contents.getMarkdown().append(type(contents, method.getReturnType(), Type.Markdown, true));
-                contents.getMarkdown().append("</span>");
+
+                contents.getMarkdown().append(
+                        span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, method.getReturnType(), Type.Markdown, true))
+                );
+
                 contents.getTypeScriptDeclarations().append("): ");
                 contents.getTypeScriptDeclarations().append(type(contents, method.getReturnType(), Type.TypeScript, true));
                 contents.getTypeScriptDeclarations().append(";\n");
