@@ -224,7 +224,16 @@ public class OperationEngine extends Data {
                         final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
                         items.get(i).set(populate.getRelationship().getForm(), populateRecords);
                     }
-                    case OneToMany -> {}
+                    case OneToMany -> {
+                        populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                                .append("INNER JOIN ").append(populate.getForm())
+                                .append(" ON ").append(populate.getForm()).append(".").append(populate.getRelationship().getColumnLink())
+                                .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
+                                .append("WHERE ").append(populate.getForm()).append(".id")
+                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        final Values populateRecord = getExecutor().queryFirst(populateQuerySQL.toString());
+                        items.get(i).set(populate.getRelationship().getForm(), populateRecord);
+                    }
                 }
             }
         }
