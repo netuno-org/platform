@@ -45,12 +45,12 @@
         <apache.velocity.version>2.4.1</apache.velocity.version>
         <classgraph.version>4.8.184</classgraph.version>
         <json.version>20251224</json.version>
-        <itext.version>9.4.0</itext.version>
+        <itext.version>9.5.0</itext.version>
         <pdfbox.version>3.0.6</pdfbox.version>
         <log4j.version>2.25.3</log4j.version>
         <oshi.version>6.9.2</oshi.version>
         <sshj.version>0.40.0</sshj.version>
-        <junit.version>6.0.1</junit.version>
+        <junit.version>6.0.2</junit.version>
     </properties>
 
     <dependencies>
