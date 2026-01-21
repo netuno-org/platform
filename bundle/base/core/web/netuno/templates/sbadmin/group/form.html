@@ -41,6 +41,12 @@
         <label for="netuno_group_form_group_name">_{&lang=netuno.group.mail}</label>
         <input type="text" name="mail" id="netuno_group_form_group_mail" value="_{&data=group.mail.value}" size="50" maxlength="50" class="form-control" placeholder="_{&lang=netuno.group.mail}">
     </div>
+    #if ($_auth.isDev())
+    <div class="form-group">
+        <label for="netuno_group_form_group_code">_{&lang=netuno.group.code}</label>
+        <input type="text" name="code" id="netuno_group_form_group_code" value="_{&data=group.code.value}" size="50" maxlength="50" class="form-control" placeholder="_{&lang=netuno.group.code}">
+    </div>
+    #end
     <div class="form-group">
         <label for="netuno_group_form_group_active">_{&lang=netuno.form.field.active.label}</label>
         <input type="checkbox" name="active" id="netuno_group_form_group_active" value="1" _{data=group.active.checked}>
