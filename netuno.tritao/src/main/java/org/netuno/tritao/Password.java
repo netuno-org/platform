@@ -77,7 +77,7 @@ public class Password {
             } else if (!proteu.getRequestPost().getString("newpassword").equals("")) {
                 Builder builder = Config.getDBBuilder(proteu, "default");
                 if (Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), proteu.getRequestPost().getString("verifypassword")).equals(user.getString("pass"))) {
-                    Config.getDBBuilder(proteu).updateUser(user.getString("id"), "", user.getString("user"), Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), proteu.getRequestPost().getString("newpassword")), user.getString("no_pass"), "", user.getString("group_id"), builder.booleanTrue());
+                    Config.getDBBuilder(proteu).updateUser(user.getString("id"), "", user.getString("user"), Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, user.getString("user"), proteu.getRequestPost().getString("newpassword")), user.getString("no_pass"), "", null, user.getString("group_id"), builder.booleanTrue());
                     TemplateBuilder.output(proteu, hili, "notification/password_success");
                 } else {
                     TemplateBuilder.output(proteu, hili, "notification/password_wrong");
