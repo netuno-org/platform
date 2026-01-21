@@ -488,19 +488,19 @@ public class Setup extends ManagerBase {
             
             Values groupDev = getBuilder().getGroupByNetuno("-2");
             if (groupDev == null) {
-                int groupDevId = getBuilder().insertGroup("Developer", "-2", "1", "", "1");
+                int groupDevId = getBuilder().insertGroup("Developer", "-2", "1", "", "", "1");
                 groupDev = new Values().set("id", groupDevId);
             }
             if (getBuilder().getUser("dev") == null) {
-                getBuilder().insertUser("Developer", "dev", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "dev", "dev"), getBuilder().booleanFalse(), "", groupDev.getString("id"), getBuilder().booleanTrue());
+                getBuilder().insertUser("Developer", "dev", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "dev", "dev"), getBuilder().booleanFalse(), "", "", groupDev.getString("id"), getBuilder().booleanTrue());
             }
             Values groupAdmin = getBuilder().getGroupByNetuno("-1");
             if (groupAdmin == null) {
-                int groupAdminId = getBuilder().insertGroup("Administrator", "-1", "1", "", "1");
+                int groupAdminId = getBuilder().insertGroup("Administrator", "-1", "1", "", "", "1");
                 groupAdmin = new Values().set("id", groupAdminId);
             }
             if (getBuilder().getUser("admin") == null) {
-                getBuilder().insertUser("Administrator", "admin", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "admin", "admin"), getBuilder().booleanFalse(), "", ""+ groupAdmin.getString("id"), getBuilder().booleanTrue());
+                getBuilder().insertUser("Administrator", "admin", Config.getPasswordBuilder(getProteu()).getCryptPassword(getProteu(), getHili(), "admin", "admin"), getBuilder().booleanFalse(), "", "", groupAdmin.getString("id"), getBuilder().booleanTrue());
             }
             if (checkExists.column("netuno_design", "search")) {
                 getExecutor().execute(
