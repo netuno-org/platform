@@ -40,6 +40,7 @@ public class Group {
     	if (!Auth.isAuthenticated(proteu, hili, Auth.Type.SESSION, true)) {
             return;
         }
+		Values loggedGroup = Auth.getGroup(proteu, hili);
     	if (proteu.getRequestAll().getString("service").equals("json")) {
 	    	String json = "";
 	        if (proteu.getRequestAll().hasKey("data_uid")) {
@@ -120,7 +121,14 @@ public class Group {
     	Values data = new Values();
     	boolean restore = false;
         if (proteu.getRequestAll().getString("execute").equals("save") && proteu.getRequestAll().getString("uid").isEmpty()) {
-        	int id = Config.getDBBuilder(proteu).insertGroup(proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getBoolean("active") ? "1" : "0");
+        	int id = Config.getDBBuilder(proteu).insertGroup(
+					proteu.getRequestAll().getString("name"),
+					proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0",
+					proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0",
+					proteu.getRequestAll().getString("mail"),
+					loggedGroup.getInt("netuno_group") == -2 ? proteu.getRequestAll().getString("code") : null,
+					proteu.getRequestAll().getBoolean("active") ? "1" : "0"
+			);
             if (id > 0) {
 				Values group = Config.getDBBuilder(proteu).getGroupById(Integer.toString(id));
             	proteu.getRequestAll().set("id", id);
@@ -134,8 +142,18 @@ public class Group {
         } else if (proteu.getRequestAll().getString("execute").equals("save") && !proteu.getRequestAll().getString("uid").isEmpty()) {
         	Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
 			if (group != null) {
+				if (loggedGroup.getInt("netuno_group") >= -1 && group.getInt("netuno_group") <= -2) {
+					return;
+				}
 				saveRules(proteu, hili, group);
-				if (Config.getDBBuilder(proteu).updateGroup(group.getString("id"), proteu.getRequestAll().getString("name"), proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0", proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0", proteu.getRequestAll().getString("mail"), proteu.getRequestAll().getBoolean("active") ? "1" : "0")) {
+				if (Config.getDBBuilder(proteu).updateGroup(
+						group.getString("id"),
+						proteu.getRequestAll().getString("name"),
+						proteu.getRequestAll().getString("admin").equals("1") ? "-1" : "0",
+						proteu.getRequestAll().getBoolean("login_allowed") ? "1" : "0",
+						proteu.getRequestAll().getString("mail"),
+						loggedGroup.getInt("netuno_group") == -2 ? proteu.getRequestAll().getString("code") : null,
+						proteu.getRequestAll().getBoolean("active") ? "1" : "0")) {
 					TemplateBuilder.output(proteu, hili, "group/notification/saved", data);
 				} else {
 					TemplateBuilder.output(proteu, hili, "group/notification/error_exists", data);
@@ -145,6 +163,9 @@ public class Group {
         } else if (proteu.getRequestAll().getString("execute").equals("delete") && !proteu.getRequestAll().getString("uid").isEmpty()) {
 			Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("uid"));
 			if (group != null) {
+				if (loggedGroup.getInt("netuno_group") >= -1 && group.getInt("netuno_group") <= -2) {
+					return;
+				}
                 Config.getDBBuilder(proteu).deleteGroupRules(group.getString("id"));
                 Config.getDBBuilder(proteu).deleteGroup(group.getString("id"));
                 TemplateBuilder.output(proteu, hili, "group/notification/deleted", data);
@@ -165,6 +186,7 @@ public class Group {
 			data.set("group.uid.value", proteu.getRequestAll().getString("uid"));
         	data.set("group.name.value", proteu.getRequestAll().getString("name"));
 			data.set("group.mail.value", proteu.getRequestAll().getString("mail"));
+			data.set("group.code.value", proteu.getRequestAll().getString("code"));
         	if (proteu.getRequestAll().getString("admin").equals("1")) {
         		data.set("group.admin.checked", "checked");
         	} else {
@@ -185,6 +207,7 @@ public class Group {
 			data.set("group.uid.value", group.getString("uid"));
         	data.set("group.name.value", group.getString("name"));
 			data.set("group.mail.value", group.getString("mail"));
+			data.set("group.code.value", group.getString("code"));
         	if (group.getString("netuno_group").equals("-1")) {
         		data.set("group.admin.checked", "checked");
         	} else {
