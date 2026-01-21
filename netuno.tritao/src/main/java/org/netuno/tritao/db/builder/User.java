@@ -217,7 +217,7 @@ public interface User extends BuilderBase {
         return getExecutor().query(sql).get(0).getInt("counter");
     }
 
-    default boolean updateUser(String id, String name, String user, String pass, String noPass, String mail, String group, String active) {
+    default boolean updateUser(String id, String name, String user, String pass, String noPass, String mail, String code, String group, String active) {
         Values data = new Values()
                 .set("id", id)
                 .set("name", name)
@@ -225,10 +225,14 @@ public interface User extends BuilderBase {
                 .set("pass", pass)
                 .set("no_pass", noPass)
                 .set("mail", mail)
+                .set("code", code)
                 .set("group_id", group)
                 .set("active", active);
         if (pass.isEmpty()) {
             data.unset("pass");
+        }
+        if (code == null) {
+            data.unset("code");
         }
         return updateUser(data);
     }
@@ -280,6 +284,9 @@ public interface User extends BuilderBase {
         if (values.hasKey("mail")) {
             update += ", " + getBuilder().escape("mail") + " = '" + DB.sqlInjection(values.getString("mail")) + "'";
         }
+        if (values.hasKey("code") && values.get("code") != null) {
+            update += ", " + getBuilder().escape("code") + " = '" + DB.sqlInjection(values.getString("code")) + "'";
+        }
         if (values.hasKey("group_id")) {
             update += ", group_id = " + DB.sqlInjectionInt(values.getString("group_id")) + "";
         }
@@ -291,9 +298,6 @@ public interface User extends BuilderBase {
         }
         if (values.hasKey("active")) {
             update += ", active = " + getBuilder().booleanValue(values.getBoolean("active")) + "";
-        }
-        if (values.hasKey("code")) {
-            update += ", " + getBuilder().escape("code") + " = '" + DB.sqlInjection(values.getString("code")) + "'";
         }
         if (values.hasKey("config")) {
             update += ", " + getBuilder().escape("config") + " = '" + DB.sqlInjection(values.getString("config")) + "'";
@@ -308,17 +312,21 @@ public interface User extends BuilderBase {
         return true;
     }
 
-    default int insertUser(String name, String user, String pass, String noPass, String mail, String group, String active) {
+    default int insertUser(String name, String user, String pass, String noPass, String mail, String code, String group, String active) {
         Values data = new Values()
                 .set("name", name)
                 .set("user", user)
                 .set("pass", pass)
                 .set("no_pass", noPass)
                 .set("mail", mail)
+                .set("code", code)
                 .set("group_id", group)
                 .set("active", active);
         if (pass.isEmpty()) {
             data.unset("pass");
+        }
+        if (code == null) {
+            data.unset("code");
         }
         return insertUser(data);
     }
