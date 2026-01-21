@@ -139,16 +139,19 @@ public interface Group extends BuilderBase {
         return getExecutor().query(sql);
     }
 
-    default boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String active) {
-        return updateGroup(
-                new Values()
-                        .set("id", id)
-                        .set("name", name)
-                        .set("netuno_group", netuno_group)
-                        .set("login_allowed", login_allowed)
-                        .set("mail", mail)
-                        .set("active", active)
-        );
+    default boolean updateGroup(String id, String name, String netuno_group, String login_allowed, String mail, String code, String active) {
+        Values data = new Values()
+                .set("id", id)
+                .set("name", name)
+                .set("netuno_group", netuno_group)
+                .set("login_allowed", login_allowed)
+                .set("mail", mail)
+                .set("code", code)
+                .set("active", active);
+        if (code == null) {
+            data.unset("code");
+        }
+        return updateGroup(data);
     }
 
     default boolean updateGroup(Values values) {
@@ -197,7 +200,7 @@ public interface Group extends BuilderBase {
         if (values.hasKey("active")) {
             update += ", active = " + getBuilder().booleanValue(values.getBoolean("active")) + "";
         }
-        if (values.hasKey("code")) {
+        if (values.hasKey("code") && values.get("code") != null) {
             update += ", " + getBuilder().escape("code") + " = '" + DB.sqlInjection(values.getString("code")) + "'";
         }
         if (values.hasKey("config")) {
@@ -213,15 +216,18 @@ public interface Group extends BuilderBase {
         return true;
     }
 
-    default int insertGroup(String name, String netuno_group, String login_allowed, String mail, String active) {
-        return insertGroup(
-                new Values()
-                        .set("name", name)
-                        .set("netuno_group", netuno_group)
-                        .set("login_allowed", login_allowed)
-                        .set("mail", mail)
-                        .set("active", active)
-        );
+    default int insertGroup(String name, String netuno_group, String login_allowed, String mail, String code, String active) {
+        Values data = new Values()
+                .set("name", name)
+                .set("netuno_group", netuno_group)
+                .set("login_allowed", login_allowed)
+                .set("mail", mail)
+                .set("code", code)
+                .set("active", active);
+        if (code == null) {
+            data.unset("code");
+        }
+        return insertGroup(data);
     }
 
     default int insertGroup(Values values) {
@@ -267,7 +273,7 @@ public interface Group extends BuilderBase {
         if (values.hasKey("active")) {
             data.set("active", values.getBoolean("active"));
         }
-        if (values.hasKey("code")) {
+        if (values.hasKey("code") && values.get("code") != null) {
             data.set("code", "'" + DB.sqlInjection(values.getString("code")) + "'");
         }
         if (values.hasKey("config")) {
