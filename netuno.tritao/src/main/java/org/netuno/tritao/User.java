@@ -42,6 +42,7 @@ public class User {
     	if (!Auth.isAuthenticated(proteu, hili, Auth.Type.SESSION, true)) {
             return;
         }
+		Values loggedGroup = Auth.getGroup(proteu, hili);
     	Lang lang = new Lang(proteu, hili);
     	if (proteu.getRequestAll().getString("service").equals("json")) {
 	    	String json = "";
@@ -149,14 +150,14 @@ public class User {
     	if (proteu.getRequestAll().getString("service").equals("form_rules")) {
 			Values user = Config.getDBBuilder(proteu).getUserByUId(proteu.getRequestAll().getString("uid"));
 			if (user != null) {
-				Values group = Config.getDBBuilder(proteu).getGroupByUId(user.getString("group_uid"));
+				Values group = Config.getDBBuilder(proteu).getGroupById(user.getString("group_id"));
 				proteu.getOutput().print(listTablesRules(proteu, hili, user, lang, group != null ? group.getString("id") : "0", "form", "0", 0));
 			}
     		return;
     	} else if (proteu.getRequestAll().getString("service").equals("report_rules")) {
 			Values user = Config.getDBBuilder(proteu).getUserByUId(proteu.getRequestAll().getString("uid"));
 			if (user != null) {
-				Values group = Config.getDBBuilder(proteu).getGroupByUId(user.getString("group_uid"));
+				Values group = Config.getDBBuilder(proteu).getGroupById(user.getString("group_id"));
 				proteu.getOutput().print(listTablesRules(proteu, hili, user, lang, group != null ? group.getString("id") : "0", "report", "0", 0));
 			}
     		return;
@@ -176,12 +177,16 @@ public class User {
     	boolean restore = false;
         if (proteu.getRequestAll().getString("execute").equals("save") && proteu.getRequestAll().getString("uid").isEmpty()) {
 			Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("group_uid"));
+			if (loggedGroup.getInt("netuno_group") >= -1 && group.getInt("netuno_group") <= -2) {
+				return;
+			}
         	int id = Config.getDBBuilder(proteu).insertUser(
         			proteu.getRequestAll().getString("name"), 
         			proteu.getRequestAll().getString("username"), 
         			proteu.getRequestAll().getString("password").isEmpty() ? "" : Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, proteu.getRequestAll().getString("username"), proteu.getRequestAll().getString("password")),
 					proteu.getRequestAll().getString("no_pass"),
 					proteu.getRequestAll().getString("mail"),
+					loggedGroup.getInt("netuno_group") == -2 ? proteu.getRequestAll().getString("code") : null,
 					group != null ? group.getString("id") : "0",
         			proteu.getRequestAll().getString("active"));
             if (id > 0) {
@@ -204,15 +209,19 @@ public class User {
         } else if (proteu.getRequestAll().getString("execute").equals("save") && !proteu.getRequestAll().getString("uid").isEmpty()) {
         	Values user = Config.getDBBuilder(proteu).getUserByUId(proteu.getRequestAll().getString("uid"));
 			if (user != null) {
+				Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("group_uid"));
+				if (loggedGroup.getInt("netuno_group") >= -1 && group.getInt("netuno_group") <= -2) {
+					return;
+				}
 				if (!user.getString("id").equals(Auth.getUser(proteu, hili, Auth.Type.SESSION).getString("id"))) {
 					saveRules(proteu, hili, user);
-					Values group = Config.getDBBuilder(proteu).getGroupByUId(proteu.getRequestAll().getString("group_uid"));
 					if (Config.getDBBuilder(proteu).updateUser(
 							user.getString("id"), proteu.getRequestAll().getString("name"),
 							proteu.getRequestAll().getString("username"),
 							proteu.getRequestAll().getString("password").isEmpty() ? "" : Config.getPasswordBuilder(proteu).getCryptPassword(proteu, hili, proteu.getRequestAll().getString("username"), proteu.getRequestAll().getString("password")),
 							proteu.getRequestAll().getString("no_pass"),
 							proteu.getRequestAll().getString("mail"),
+							loggedGroup.getInt("netuno_group") == -2 ? proteu.getRequestAll().getString("code") : null,
 							group != null ? group.getString("id") : "0",
 							proteu.getRequestAll().getString("active"))) {
 						Values dbUserProviderLDAP = Config.getDBBuilder(proteu).getAuthProviderUserByCode(user.getString("id"), "ldap");
@@ -236,6 +245,10 @@ public class User {
         } else if (proteu.getRequestAll().getString("execute").equals("delete") && !proteu.getRequestAll().getString("uid").isEmpty()) {
 			Values user = Config.getDBBuilder(proteu).getUserByUId(proteu.getRequestAll().getString("uid"));
 			if (user != null) {
+				Values group = Config.getDBBuilder(proteu).getGroupById(user.getString("group_id"));
+				if (loggedGroup.getInt("netuno_group") >= -1 && group.getInt("netuno_group") <= -2) {
+					return;
+				}
 				if (!user.getString("id").equals(Auth.getUser(proteu, hili, Auth.Type.SESSION).getString("id"))) {
 					java.io.File fileAvatar = new java.io.File(Config.getPathAppImages(proteu).concat("/avatar/")
 							.concat(Config.getDBKey(proteu)).concat("_")
@@ -271,6 +284,7 @@ public class User {
         	data.set("user.name.value", proteu.getRequestAll().getString("name"));
         	data.set("user.username.value", proteu.getRequestAll().getString("username"));
 			data.set("user.mail.value", proteu.getRequestAll().getString("mail"));
+			data.set("user.code.value", proteu.getRequestAll().getString("code"));
         	data.set("user.group_id.value", proteu.getRequestAll().getString("group_id"));
 			data.set("user.group_uid.value", proteu.getRequestAll().getString("group_uid"));
 			data.set("user.password.validation", "");
@@ -290,6 +304,7 @@ public class User {
 				data.set("user.no_pass.checked", "");
 			}
 			data.set("user.mail.value", user.getString("mail"));
+			data.set("user.code.value", user.getString("code"));
         	data.set("user.group_id.value", user.getString("group_id"));
 			Values group = Config.getDBBuilder(proteu).getGroupById(user.getString("group_id"));
 			if (group != null) {
