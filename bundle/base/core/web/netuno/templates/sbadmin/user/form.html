@@ -52,6 +52,12 @@
         <label for="netuno_user_form_user_mail">_{&lang=netuno.user.mail}</label>
         <input type="text" name="mail" id="netuno_user_form_user_mail" value="_{&data=user.mail.value}" size="50" maxlength="250" class="form-control" placeholder="_{&lang=netuno.user.mail}">
     </div>
+    #if ($_auth.isDev())
+    <div class="form-group">
+        <label for="netuno_user_form_user_code">_{&lang=netuno.user.code}</label>
+        <input type="text" name="code" id="netuno_user_form_user_code" value="_{&data=user.code.value}" size="50" maxlength="50" class="form-control" placeholder="_{&lang=netuno.user.code}">
+    </div>
+    #end
     <div class="form-group">
         <label for="netuno_user_form_user_group">_{&lang=netuno.user.group}</label>
         <select name="group_uid" id="netuno_user_form_user_group" value="_{data=user.group_uid.value}" netuno-select-service="Group_{netuno-config=extension}?service=json&no_devs=true" validation="required" style="width: 100%;">
