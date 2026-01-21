@@ -1035,6 +1035,14 @@ public class Auth extends ResourceBase {
                     )
             }
     )
+    public boolean isAttemptsEnabled() {
+        return attemptsEnabled();
+    }
+
+    public Auth setAttemptsEnabled(boolean enabled) {
+        return attemptsEnabled(enabled);
+    }
+
     public boolean attemptsEnabled() {
         return Config.getAuthAttemptsEnabled(getProteu());
     }
@@ -1067,6 +1075,14 @@ public class Auth extends ResourceBase {
                     )
             }
     )
+    public int isAttemptsInterval() {
+        return attemptsInterval();
+    }
+
+    public Auth setAttemptsInterval(int attemptsInterval) {
+        return attemptsInterval(attemptsInterval);
+    }
+
     public int attemptsInterval() {
         return Config.getAuthAttemptsInterval(getProteu());
     }
@@ -1108,6 +1124,14 @@ public class Auth extends ResourceBase {
         return this;
     }
 
+    public boolean isAltchaEnabled() {
+        return altchaEnabled();
+    }
+
+    public Auth setAltchaEnabled(boolean enabled) {
+        return altchaEnabled(enabled);
+    }
+
     public boolean altchaEnabled() {
         return altchaEnabled;
     }
@@ -1115,6 +1139,14 @@ public class Auth extends ResourceBase {
     public Auth altchaEnabled(boolean enabled) {
         this.altchaEnabled = enabled;
         return this;
+    }
+
+    public boolean isAltchaAdminEnabled() {
+        return altchaAdminEnabled();
+    }
+
+    public Auth setAltchaAdminEnabled(boolean enabled) {
+        return altchaAdminEnabled(enabled);
     }
 
     public boolean altchaAdminEnabled() {
@@ -1149,6 +1181,14 @@ public class Auth extends ResourceBase {
             )
         }
     )
+    public boolean isJWTEnabled() {
+        return jwtEnabled();
+    }
+
+    public Auth setJWTEnabled(boolean enabled) {
+        return jwtEnabled(enabled);
+    }
+
     public boolean jwtEnabled() {
         return jwtEnabled;
     }
@@ -1158,9 +1198,17 @@ public class Auth extends ResourceBase {
         return this;
     }
 
+    public SecretKey getJWTKey() {
+        return jwtKey();
+    }
+
     public SecretKey jwtKey() {
         final String JWT_KEY = "netuno$"+ Config.getApp(getProteu()) +"$auth$jwt$key";
         return org.netuno.proteu.Config.getConfig().get(JWT_KEY, SecretKey.class);
+    }
+
+    public Auth setJWTSignIn(int userId, Values contextData) {
+        return jwtSignIn(userId, contextData);
     }
 
     public Auth jwtSignIn(int userId, Values contextData) {
@@ -1170,6 +1218,10 @@ public class Auth extends ResourceBase {
         resource(User.class).load();
         resource(Group.class).load();
         return this;
+    }
+
+    public Values getJWTSignInData() {
+        return jwtSignInData();
     }
 
     public Values jwtSignInData() {
@@ -1306,6 +1358,10 @@ public class Auth extends ResourceBase {
         return jwtAccessExpires;
     }
 
+    public int getJWTAccessExpires() {
+        return jwtAccessExpires();
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
@@ -1322,6 +1378,10 @@ public class Auth extends ResourceBase {
     )
     public int jwtRefreshExpires() {
         return jwtRefreshExpires;
+    }
+
+    public int getJWTRefreshExpires() {
+        return jwtRefreshExpires();
     }
 
 
