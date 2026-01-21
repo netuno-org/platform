@@ -1360,9 +1360,9 @@ public class Operation {
         return this;
     }
 
-    public Operation getForm(Operation operation) {
-        this.populateEngine.checkForm(operation.getFormName());
-        this.formsToPopulate.add(this.populateEngine.buildPopulate(this.getFormName(), operation));
+    public Operation getForm(Operation formToLink) {
+        this.populateEngine.checkForm(formToLink.getFormName());
+        this.formsToPopulate.add(this.populateEngine.buildPopulate(this.getFormName(), formToLink));
         return this;
     }
 

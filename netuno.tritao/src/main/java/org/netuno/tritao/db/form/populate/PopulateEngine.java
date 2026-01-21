@@ -9,34 +9,38 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class PopulateEngine extends TableBuilderResourceBase {
     public PopulateEngine(Proteu proteu, Hili hili) {super(proteu, hili);}
 
-    public Populate buildPopulate(String formName, Operation operation) {
+    public Populate buildPopulate(String formName, Operation formToLink) {
         RelationshipPopulate relationship = new RelationshipPopulate();
-        relationship.setForm(operation.getFormName());
-        Populate populate = new Populate(formName, relationship, operation.getFieldsToGet());
-        populate.setRelationship(buildRelation(formName, relationship));
-        return populate;
+        relationship.setForm(formToLink.getFormName());
+        Populate populate = new Populate(formName, relationship, formToLink.getFieldsToGet());
+        return buildRelation(populate);
     }
 
-    public RelationshipPopulate buildRelation(String form, RelationshipPopulate relationship) {
-        var linkBetween = getLinkBetween(form, relationship.getForm());
+    public Populate buildRelation(Populate populate) {
+        final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
 
-        if(linkBetween != null) {
-            String column = linkBetween.getString("name");
-            relationship.setColumnLink(column).setRelationshipType(RelationshipType.OneToMany);
-            return relationship;
+        if(oneToManyLink != null) {
+            String column = oneToManyLink.getString("name");
+            populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.OneToMany);
+            return populate;
         } else {
-            linkBetween = getLinkBetween(relationship.getForm(), form);
-            if(linkBetween != null) {
-                String column = linkBetween.getString("name");
-                relationship.setColumnLink(column).setRelationshipType(RelationshipType.ManyToOne);
-                return relationship;
+            final Values manyToOneLink = getManyToOneLink(populate.getForm(), populate.getRelationship().getForm());
+            if(manyToOneLink != null) {
+                String column = manyToOneLink.getString("name");
+                populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.ManyToOne);
+                return populate;
             } else {
-                throw new IllegalArgumentException("There is no link between the forms " + form + " and " + relationship.getForm());
+                final Values manyToManyLink = getManyToManyLink(populate.getForm(), populate.getRelationship().getForm());
+                if (manyToManyLink != null) {
+
+                }
+                throw new IllegalArgumentException("There is no link between the forms " + populate.getForm() + " and " + populate.getRelationship().getForm());
             }
         }
     }
@@ -64,7 +68,7 @@ public class PopulateEngine extends TableBuilderResourceBase {
         return value.split(":")[0];
     }
 
-    public Values getLinkBetween(String form, String formToLink) {
+    public Values getOneToManyLink(String form, String formToLink) {
         List<Values> componentsOfTheForm = getSelectComponents(form);
         for (Values value : componentsOfTheForm) {
             String properties = value.getString("properties");
@@ -72,6 +76,27 @@ public class PopulateEngine extends TableBuilderResourceBase {
                 return value;
             }
         }
+        return null;
+    }
+
+    public Values getManyToOneLink(String form, String formToLink) {
+        List<Values> componentsOfTheForm = getSelectComponents(formToLink);
+        for (Values value : componentsOfTheForm) {
+            String properties = value.getString("properties");
+            if (form.equals(this.extractFormOfTheLink(properties))) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    private Values getManyToManyLink(String form, String formToLink) {
+        List<Values> multiselectComponents = getAllComponents(formToLink).stream().filter(
+                component -> Objects.requireNonNull(component.get("type")).toString().equalsIgnoreCase("multiselect")).toList();
+        for (Values values : multiselectComponents) {
+            String properties = values.getString("properties");
+        }
+
         return null;
     }
 }
