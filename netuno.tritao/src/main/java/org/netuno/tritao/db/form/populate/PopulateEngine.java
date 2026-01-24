@@ -23,7 +23,7 @@ public class PopulateEngine extends TableBuilderResourceBase {
     }
 
     public Populate buildRelation(Populate populate) {
-        final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
+         final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
 
         if(oneToManyLink != null) {
             String column = oneToManyLink.getString("name");
@@ -38,7 +38,12 @@ public class PopulateEngine extends TableBuilderResourceBase {
             } else {
                 final Values manyToManyLink = getManyToManyLink(populate.getForm(), populate.getRelationship().getForm());
                 if (manyToManyLink != null) {
-
+                    populate.getRelationship()
+                            .setColumnLink(manyToManyLink.getString("link"))
+                            .setColumnReference(manyToManyLink.getString("reference"))
+                            .setFormLink(manyToManyLink.getString("formLink"))
+                            .setRelationshipType(RelationshipType.ManyToMany);
+                    return populate;
                 }
                 throw new IllegalArgumentException("There is no link between the forms " + populate.getForm() + " and " + populate.getRelationship().getForm());
             }
@@ -59,6 +64,15 @@ public class PopulateEngine extends TableBuilderResourceBase {
         }
         return selectComponents.stream().filter(
                 values -> values.get("type").toString().equalsIgnoreCase("select")).collect(Collectors.toList());
+    }
+
+    public List<Values> getMultiselectComponents(String formName) {
+        List<Values> selectComponents = getAllComponents(formName);
+        if (selectComponents == null) {
+            throw new UnsupportedOperationException("No forms found with the name " + formName);
+        }
+        return selectComponents.stream().filter(
+                values -> values.get("type").toString().equalsIgnoreCase("multiselect")).collect(Collectors.toList());
     }
 
     public String extractFormOfTheLink(String properties) {
@@ -91,10 +105,23 @@ public class PopulateEngine extends TableBuilderResourceBase {
     }
 
     private Values getManyToManyLink(String form, String formToLink) {
-        List<Values> multiselectComponents = getAllComponents(formToLink).stream().filter(
-                component -> Objects.requireNonNull(component.get("type")).toString().equalsIgnoreCase("multiselect")).toList();
+        List<Values> multiselectComponents = getMultiselectComponents(form);
         for (Values values : multiselectComponents) {
             String properties = values.getString("properties");
+            String multiselectFormLink = extractFormOfTheLink(properties);
+            List<Values> selectComponents = getSelectComponents(multiselectFormLink);
+            for (Values selectComponent : selectComponents) {
+                String selectFormLink = extractFormOfTheLink(selectComponent.getString("properties"));
+                if (selectFormLink.equals(formToLink)) {
+                    JSONObject jsonObject = new JSONObject(properties);
+                    String link = jsonObject.getJSONObject("LINK").getString("value").split(":")[1];
+                    String reference = jsonObject.getJSONObject("REFERENCE").getString("value").split(":")[1];
+                    return Values.newMap()
+                            .set("link", link)
+                            .set("reference", reference)
+                            .set("formLink", multiselectFormLink);
+                }
+            }
         }
 
         return null;
