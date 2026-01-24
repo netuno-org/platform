@@ -1366,6 +1366,12 @@ public class Operation {
         return this;
     }
 
+    public Operation getForm(Operation formToLink, String alias) {
+        this.populateEngine.checkForm(formToLink.getFormName());
+        this.formsToPopulate.add(this.populateEngine.buildPopulate(this.getFormName(), formToLink).setAlias(alias));
+        return this;
+    }
+
     public Values insert() {
         final var data = linkEngine.fieldToValues(this.fieldsToSet);
         if (data.values().stream().anyMatch(object -> object instanceof Values)) {

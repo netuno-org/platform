@@ -224,7 +224,9 @@ public class OperationEngine extends Data {
                                 .append("WHERE ").append(populate.getForm()).append(".id")
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
                         final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
-                        items.get(i).set(populate.getRelationship().getForm(), populateRecords);
+                        items.get(i).set(
+                                (populate.getAlias() != null && !populate.getAlias().isEmpty() && !populate.getAlias().isBlank()) ? populate.getAlias() : populate.getRelationship().getForm(),
+                                populateRecords);
                     }
                     case OneToMany -> {
                         populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
@@ -234,7 +236,9 @@ public class OperationEngine extends Data {
                                 .append("WHERE ").append(populate.getForm()).append(".id")
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
                         final Values populateRecord = getExecutor().queryFirst(populateQuerySQL.toString());
-                        items.get(i).set(populate.getRelationship().getForm(), populateRecord);
+                        items.get(i).set(
+                                (populate.getAlias() != null && !populate.getAlias().isEmpty() && !populate.getAlias().isBlank()) ? populate.getAlias() : populate.getRelationship().getForm(),
+                                populateRecord);
                     }
                     case ManyToMany -> {
                         populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
@@ -244,7 +248,9 @@ public class OperationEngine extends Data {
                                 .append("WHERE ").append(populate.getRelationship().getFormLink()).append(".").append(populate.getRelationship().getColumnReference())
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
                         final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
-                        items.get(i).set(populate.getRelationship().getForm(), populateRecords);
+                        items.get(i).set(
+                                (populate.getAlias() != null && !populate.getAlias().isEmpty() && !populate.getAlias().isBlank()) ? populate.getAlias() : populate.getRelationship().getForm(),
+                                populateRecords);
                     }
                 }
             }

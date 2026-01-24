@@ -9,6 +9,7 @@ import java.util.List;
 
 public class Populate {
     private String form;
+    private String alias;
     private RelationshipPopulate relationship;
     private List<Field> fields = new ArrayList<>();
 
@@ -26,6 +27,15 @@ public class Populate {
 
     public Populate setForm(String form) {
         this.form = form;
+        return this;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public Populate setAlias(String alias) {
+        this.alias = alias;
         return this;
     }
 

@@ -23,7 +23,7 @@ public class PopulateEngine extends TableBuilderResourceBase {
     }
 
     public Populate buildRelation(Populate populate) {
-         final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
+        final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
 
         if(oneToManyLink != null) {
             String column = oneToManyLink.getString("name");
