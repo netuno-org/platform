@@ -371,7 +371,7 @@ public class DB {
      * @return new batch created.
      * @throws SQLException SQL Exception
      */
-    public synchronized DBBatch batch() throws SQLException {
+    public DBBatch batch() throws SQLException {
         return new DBBatch(this);
     }
     
@@ -381,7 +381,7 @@ public class DB {
      * @return new batch created.
      * @throws SQLException SQL Exception
      */
-    public synchronized DBBatch batch(final String sql) throws SQLException {
+    public DBBatch batch(final String sql) throws SQLException {
         return new DBBatch(this, sql);
     }
 
@@ -391,7 +391,7 @@ public class DB {
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public synchronized List<Values> query(final String query) throws SQLException {
+    public List<Values> query(final String query) throws SQLException {
         return executeQuery(getKey(), con, query);
     }
     /**
@@ -400,7 +400,7 @@ public class DB {
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public synchronized List<Values> executeQuery(final String query
+    public List<Values> executeQuery(final String query
     ) throws SQLException {
         return executeQuery(getKey(), con, query);
     }
@@ -412,7 +412,7 @@ public class DB {
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static synchronized List<Values> query(final String key, final Connection con, final String query) throws SQLException {
+    public static List<Values> query(final String key, final Connection con, final String query) throws SQLException {
         return executeQuery(key, con, query, null);
     }
     /**
@@ -423,7 +423,7 @@ public class DB {
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static synchronized List<Values> executeQuery(final String key, final Connection con, final String query) throws SQLException {
+    public static List<Values> executeQuery(final String key, final Connection con, final String query) throws SQLException {
         return executeQuery(key, con, query, null);
     }
     /**
@@ -433,7 +433,7 @@ public class DB {
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public synchronized List<Values> query(final String query, final Object... params) throws SQLException {
+    public List<Values> query(final String query, final Object... params) throws SQLException {
         return DB.executeQuery(getKey(), con, query, params);
     }
     /**
@@ -443,7 +443,7 @@ public class DB {
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public synchronized List<Values> executeQuery(final String query, final Object... params) throws SQLException {
+    public List<Values> executeQuery(final String query, final Object... params) throws SQLException {
         return DB.executeQuery(getKey(), con, query, params);
     }
     /**
@@ -454,7 +454,7 @@ public class DB {
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static synchronized List<Values> query(final String key,final Connection con, final String query, final Object... params) throws SQLException {
+    public static List<Values> query(final String key,final Connection con, final String query, final Object... params) throws SQLException {
         return DB.executeQuery(key, con, query, params);
     }
     /**
@@ -466,7 +466,7 @@ public class DB {
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static synchronized List<Values> executeQuery(final String key, final Connection con, final String query, final Object... params) throws SQLException {
+    public static List<Values> executeQuery(final String key, final Connection con, final String query, final Object... params) throws SQLException {
         logger.trace(key + " >> Executing SQL Query: "+ query);
         List<Values> datasource = new ArrayList<Values>();
         PreparedStatement stat = null;
@@ -495,7 +495,7 @@ public class DB {
         return datasource;
     }
 
-    /*public static synchronized List<Values> executeQuery(final Connection con, final String query, final Values params) throws SQLException {
+    /*public static List<Values> executeQuery(final Connection con, final String query, final Values params) throws SQLException {
         List<Values> datasource = new ArrayList<Values>();
         PreparedStatement stat = null;
         ResultSet rs = null;
