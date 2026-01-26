@@ -135,7 +135,7 @@ public class DB extends ResourceBase {
             logger.trace(e);
             throw new ErrorException(getProteu(), getHili(), "Database connection failed!");
         }
-        dbOps = new org.netuno.psamata.DB(connection);
+        dbOps = new org.netuno.psamata.DB(key, connection);
         return dbOps;
     }
 
@@ -200,7 +200,7 @@ public class DB extends ResourceBase {
         DB _db = new DB(getProteu(), getHili());
         _db.key = key;
         try {
-            _db.dbOps = new org.netuno.psamata.DB(Config.getDBExecutor(getProteu(), key).getConnection());
+            _db.dbOps = new org.netuno.psamata.DB(key, Config.getDBExecutor(getProteu(), key).getConnection());
         } catch (Throwable e) {
             throw new ErrorException(getProteu(), getHili(), "Database connection failed!", e);
         }
