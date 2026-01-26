@@ -53,9 +53,12 @@ public class DBExecutor {
         this.key = key;
     }
 
+    public String getKey() {
+        return Config.getDBKey(proteu, key);
+    }
+
     public Connection getConnection() throws SQLException {
-        String dbName = Config.getDBNamingBase(proteu, key)
-                + Config.getDBKey(proteu, key);
+        String dbName = Config.getDBNamingBase(proteu, key) + getKey();
         DBConnection dbConnectionClosed = null;
         for (DBConnection dbConnection : dbConnections) {
             if (dbConnection.getDb().equals(dbName)) {
@@ -82,10 +85,10 @@ public class DBExecutor {
             }
         } catch (Exception e) {
             logger.trace(e);
-            throw new DBError(e).setLogError("Connection to " + Config.getDBKey(proteu, key));
+            throw new DBError(e).setLogError("Connection to " + getKey());
         }
         try {
-            logger.info(Config.getDBKey(proteu, key) + " new connection");
+            logger.info(getKey() + " new connection");
             javax.naming.InitialContext ctx = new javax.naming.InitialContext();
             Object ds = ctx.lookup(dbName);
             java.lang.reflect.Method method = ds.getClass().getMethod(
@@ -98,24 +101,25 @@ public class DBExecutor {
             }
             return con;
         } catch (Exception e) {
-            throw new DBError(e).setLogError("Connection to " + Config.getDBKey(proteu, key));
+            throw new DBError(e).setLogError("Connection to " + getKey());
         }
     }
 
     public List<Values> query(String sql, Object... params) {
         try {
+            logger.trace("Executing query in " + getKey() + ": "+ sql);
             Connection con = getConnection();
             List<Values> result = null;
             if (params != null) {
-                result = DB.executeQuery(con, sql, params);
+                result = DB.executeQuery(getKey(), con, sql, params);
             } else {
-                result = DB.executeQuery(con, sql);
+                result = DB.executeQuery(getKey(), con, sql);
             }
-            logger.info(Config.getDBKey(proteu, key) + " query executed: " + sql);
+            logger.trace("Query executed in " + getKey() + ": "+ sql);
             return result;
         } catch (Exception e) {
-            logger.trace("Query executing on " + Config.getDBKey(proteu, key), e);
-            throw new DBError(e).setLogError("Query executing on " + Config.getDBKey(proteu, key) + ": " + sql);
+            logger.trace("Query execution failed in " + getKey(), e);
+            throw new DBError(e).setLogError("Query execution failed in " + getKey() + ": " + sql);
         }
     }
 
@@ -132,14 +136,15 @@ public class DBExecutor {
     }
 
     public int execute(String sql, Object... params) {
+        logger.trace("Executing command in " + getKey() + ": "+ sql);
         try {
             Connection con = getConnection();
-            int result = DB.execute(con, sql, params);
-            logger.info(Config.getDBKey(proteu, key) + " query executed: " + sql);
+            int result = DB.execute(getKey(), con, sql, params);
+            logger.trace("Command executed in " + getKey() + ": "+ sql);
             return result;
         } catch (Exception e) {
-            logger.trace("Query executing on " + Config.getDBKey(proteu, key), e);
-            throw new DBError(e).setLogError("Query executing on " + Config.getDBKey(proteu, key) + ": " + sql);
+            logger.trace("Command execution failed in " + getKey(), e);
+            throw new DBError(e).setLogError("Command execution failed in " + getKey() + ": " + sql);
         }
     }
 
@@ -148,13 +153,14 @@ public class DBExecutor {
     }
 
     public int insert(String sql, Object... params) {
+        logger.trace("Executing insert in " + getKey() + ": "+ sql);
         try {
             Connection con = getConnection();
-            int result = DB.insert(con, sql, params);
-            logger.info(Config.getDBKey(proteu, key) + " query inserted: " + sql);
+            int result = DB.insert(getKey(), con, sql, params);
+            logger.trace("Insert executed in " + getKey() + ": "+ sql);
             return result;
         } catch (Exception e) {
-            throw new DBError(e).setLogError("Query inserting on " + Config.getDBKey(proteu, key) + ": " + sql);
+            throw new DBError(e).setLogError("Insert execution failed in " + getKey() + ": " + sql);
         }
     }
 
@@ -175,7 +181,7 @@ public class DBExecutor {
                     logger.debug(dbConn.getDb() + " connection closed");
                 }
             } catch (Throwable t) {
-                logger.warn("Connection closing on " + db, t);
+                logger.warn("Connection closing in " + db, t);
             }
         }
         for (DBConnection dbConn : dbConnsClosed) {
