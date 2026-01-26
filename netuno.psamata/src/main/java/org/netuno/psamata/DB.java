@@ -17,6 +17,9 @@
 
 package org.netuno.psamata;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.sql.*;
 import java.sql.Date;
@@ -33,6 +36,13 @@ import java.util.*;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class DB {
+    private static Logger logger = LogManager.getLogger(DB.class);
+
+    /**
+     * Key.
+     */
+    private String key = "";
+
     /**
      * Connection.
      */
@@ -64,9 +74,15 @@ public class DB {
      * @param connection DB Connection
      * @throws SQLException Create Statement Exception
      */
-    public DB(final Connection connection) {
+    public DB(final String key, final Connection connection) {
+        this.key = key;
         this.con = connection;
     }
+
+    public String getKey() {
+        return key;
+    }
+
     /**
      * Sql Injection.
      * @param text Text
@@ -376,7 +392,7 @@ public class DB {
      * @throws SQLException SQL Exception
      */
     public synchronized List<Values> query(final String query) throws SQLException {
-        return executeQuery(con, query);
+        return executeQuery(getKey(), con, query);
     }
     /**
      * Execute Query.
@@ -386,27 +402,29 @@ public class DB {
      */
     public synchronized List<Values> executeQuery(final String query
     ) throws SQLException {
-        return executeQuery(con, query);
+        return executeQuery(getKey(), con, query);
     }
     /**
      * Execute Query.
+     * @param key Key
      * @param con Connection
      * @param query Query
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static synchronized List<Values> query(final Connection con, final String query) throws SQLException {
-        return executeQuery(con, query, null);
+    public static synchronized List<Values> query(final String key, final Connection con, final String query) throws SQLException {
+        return executeQuery(key, con, query, null);
     }
     /**
      * Execute Query.
+     * @param key Key
      * @param con Connection
      * @param query Query
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static synchronized List<Values> executeQuery(final Connection con, final String query) throws SQLException {
-        return executeQuery(con, query, null);
+    public static synchronized List<Values> executeQuery(final String key, final Connection con, final String query) throws SQLException {
+        return executeQuery(key, con, query, null);
     }
     /**
      * Execute Query.
@@ -416,7 +434,7 @@ public class DB {
      * @throws SQLException SQL Exception
      */
     public synchronized List<Values> query(final String query, final Object... params) throws SQLException {
-        return DB.executeQuery(con, query, params);
+        return DB.executeQuery(getKey(), con, query, params);
     }
     /**
      * Execute Query.
@@ -426,27 +444,30 @@ public class DB {
      * @throws SQLException SQL Exception
      */
     public synchronized List<Values> executeQuery(final String query, final Object... params) throws SQLException {
-        return DB.executeQuery(con, query, params);
+        return DB.executeQuery(getKey(), con, query, params);
     }
     /**
      * Execute Query.
+     * @param key Key
      * @param query Query
      * @param params Parameters
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static synchronized List<Values> query(final Connection con, final String query, final Object... params) throws SQLException {
-        return DB.executeQuery(con, query, params);
+    public static synchronized List<Values> query(final String key,final Connection con, final String query, final Object... params) throws SQLException {
+        return DB.executeQuery(key, con, query, params);
     }
     /**
      * Execute Query.
+     * @param key Key
      * @param con Connection
      * @param query Query
      * @param params Parameters
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static synchronized List<Values> executeQuery(final Connection con, final String query, final Object... params) throws SQLException {
+    public static synchronized List<Values> executeQuery(final String key, final Connection con, final String query, final Object... params) throws SQLException {
+        logger.trace(key + " >> Executing SQL Query: "+ query);
         List<Values> datasource = new ArrayList<Values>();
         PreparedStatement stat = null;
         ResultSet rs = null;
@@ -540,17 +561,7 @@ public class DB {
      * @throws SQLException SQL Exception
      */
     public final int execute(final String query) throws SQLException {
-        return DB.execute(con, query);
-    }
-    /**
-     * Execute Update Query.
-     * @param con Connection
-     * @param sql Query
-     * @return Result
-     * @throws SQLException SQL Exception
-     */
-    public static int execute(final Connection con, final String sql) throws SQLException {
-        return execute(con, sql, null);
+        return DB.execute(getKey(), con, query);
     }
     /**
      * Execute Update Query.
@@ -560,17 +571,30 @@ public class DB {
      * @throws SQLException SQL Exception
      */
     public int execute(final String sql, final Object... params) throws SQLException {
-        return DB.execute(con, sql, params);
+        return DB.execute(getKey(), con, sql, params);
     }
     /**
      * Execute Update Query.
+     * @param key Key
+     * @param con Connection
+     * @param sql Query
+     * @return Result
+     * @throws SQLException SQL Exception
+     */
+    public static int execute(final String key, final Connection con, final String sql) throws SQLException {
+        return execute(key, con, sql, null);
+    }
+    /**
+     * Execute Update Query.
+     * @param key Key
      * @param con Connection
      * @param sql Query
      * @param params Parameters
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static int execute(final Connection con, final String sql, final Object... params) throws SQLException {
+    public static int execute(final String key, final Connection con, final String sql, final Object... params) throws SQLException {
+        logger.trace(key +" >> Executing SQL Command: "+ sql);
     	PreparedStatement stat = con.prepareStatement(sql);
         if (params != null) {
             prepareStatementParams(stat, params);
@@ -587,17 +611,7 @@ public class DB {
      * @throws SQLException SQL Exception
      */
     public final int insert(final String query) throws SQLException {
-        return DB.insert(con, query);
-    }
-    /**
-     * Execute Insert Query.
-     * @param con Connection
-     * @param sql Query
-     * @return Result
-     * @throws SQLException SQL Exception
-     */
-    public static int insert(final Connection con, final String sql) throws SQLException {
-        return insert(con, sql, null);
+        return DB.insert(getKey(), con, query);
     }
     /**
      * Execute Insert Query.
@@ -607,17 +621,30 @@ public class DB {
      * @throws SQLException SQL Exception
      */
     public int insert(final String sql, final Object... params) throws SQLException {
-        return DB.insert(con, sql, params);
+        return DB.insert(getKey(), con, sql, params);
     }
     /**
      * Execute Insert Query.
+     * @param key Key
+     * @param con Connection
+     * @param sql Query
+     * @return Result
+     * @throws SQLException SQL Exception
+     */
+    public static int insert(final String key, final Connection con, final String sql) throws SQLException {
+        return insert(key, con, sql, null);
+    }
+    /**
+     * Execute Insert Query.
+     * @param key Key
      * @param con Connection
      * @param sql Query
      * @param params Parameters
      * @return Result
      * @throws SQLException SQL Exception
      */
-    public static int insert(final Connection con, final String sql, final Object... params) throws SQLException {
+    public static int insert(final String key, final Connection con, final String sql, final Object... params) throws SQLException {
+        logger.trace(key + " >> Executing SQL Insert: "+ sql);
         PreparedStatement stat = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         if (params != null) {
             prepareStatementParams(stat, params);
@@ -798,25 +825,6 @@ public class DB {
             if (preparedStat != null) {
                 preparedStat.close();
             }
-        }
-
-        @Override
-        protected void finalize() throws Throwable {
-            /*
-            GC TEST
-            if (stat != null) {
-                if (!stat.isClosed()) {
-                    this.close();
-                }
-                this.stat = null;
-            }
-            if (preparedStat != null) {
-                if (!preparedStat.isClosed()) {
-                    this.close();
-                }
-                this.preparedStat = null;
-            }
-            */
         }
     }
 }
