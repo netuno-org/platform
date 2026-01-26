@@ -30,7 +30,6 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     data.getString("table_id"),
                     DB.sqlInjection(data.getString("name"))
             );
-            DB db = new DB(getExecutor().getConnection());
             if (rsTableDesign.isEmpty()) {
                 List<Values> rsTable = selectTable(data.getString("table_id"), "", "", data.getBoolean("report"));
                 Values table = rsTable.getFirst();
@@ -159,7 +158,6 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 } else if (getProteu().getRequestAll().getString("type").equals("group")) {
                     getProteu().getRequestAll().set("link", "netuno_group:name");
                 }
-                DB db = new DB(getExecutor().getConnection());
                 getProteu().getRequestAll().set("properties", getComponentPropertiesFromRequestAll());
                 if (!getProteu().getRequestAll().getBoolean("report")) {
                     org.netuno.tritao.com.Component comNew = Config.getNewComponent(getProteu(), getHili(),
@@ -293,7 +291,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
 
                 values.set("firebase", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("firebase")) + "'");
 
-                db.execute("update netuno_design set "
+                getExecutor().execute("update netuno_design set "
                         + values.toString(", ", " = ",
                         new Values().set("booleanTrue", getBuilder().booleanTrue()).set("booleanFalse",
                                 getBuilder().booleanFalse()))
@@ -317,7 +315,6 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 Values field = rsTableDesignField.getFirst();
                 List<Values> rsTable = selectTable(getProteu().getRequestGet().getString("netuno_table_id"), "", "");
                 Values table = rsTable.getFirst();
-                DB db = new DB(getExecutor().getConnection());
                 if (!getProteu().getRequestAll().getBoolean("report")) {
                     org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
                             field.getString("type"));
@@ -335,7 +332,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                         new Column(this).drop(table.getString("name"), data.getName());
                     }
                 }
-                db.execute("delete from netuno_design where id = " + field.getString("id") + ";");
+                getExecutor().execute("delete from netuno_design where id = " + field.getString("id") + ";");
 
                 new org.netuno.tritao.resource.Setup(getProteu(), getHili()).autoCreateSchema();
 
@@ -423,8 +420,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
 
     default void updateTableFieldXY(String fieldId, int x, int y) {
         try {
-            DB db = new DB(getExecutor().getConnection());
-            db.execute("update netuno_design set x = " + x + ", y = " + y
+            getExecutor().execute("update netuno_design set x = " + x + ", y = " + y
                     + " where id = " + DB.sqlInjectionInt(fieldId)
                     + ";");
         } catch (Exception e) {
