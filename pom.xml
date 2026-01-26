@@ -29,7 +29,7 @@
         <jetty.version>12.1.5</jetty.version>
         <picocli.version>4.7.7</picocli.version>
         <jansi.version>2.4.2</jansi.version>
-        <progressbar.version>0.10.1</progressbar.version>
+        <progressbar.version>0.10.2</progressbar.version>
         <emoji.version>5.1.1</emoji.version>
         <quartz.version>2.5.2</quartz.version>
         <lucene.version>10.3.2</lucene.version>
