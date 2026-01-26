@@ -205,7 +205,6 @@ public interface TableOperations extends BuilderBase, TableSelect, TableDesignSe
     default boolean deleteTable() {
         boolean result = false;
         try {
-            DB db = new DB(getExecutor().getConnection());
             List<Values> rsTableTritao = selectTable(getProteu().getRequestAll().getString("id"), "", "");
             if (rsTableTritao.size() == 1) {
                 Values table = rsTableTritao.get(0);
@@ -215,8 +214,8 @@ public interface TableOperations extends BuilderBase, TableSelect, TableDesignSe
                     new Table(getBuilder()).rename(table.getString("name"), trashName);
                     new Sequence(getBuilder()).rename(table.getString("name") + "_id", trashName + "_id");
                 }
-                db.execute("delete from netuno_table where id = " + table.getString("id") + ";");
-                db.execute("delete from netuno_design where table_id = " + table.getString("id") + ";");
+                getExecutor().execute("delete from netuno_table where id = " + table.getString("id") + ";");
+                getExecutor().execute("delete from netuno_design where table_id = " + table.getString("id") + ";");
 
                 new org.netuno.tritao.resource.Setup(getProteu(), getHili()).autoCreateSchema();
 
