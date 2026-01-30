@@ -350,15 +350,6 @@ public class App implements MainArg {
         AppPath.copyApp(appPath, AppPath.CONFIG, "_production.js");
         AppPath.copyApp(appPath, AppPath.CONFIG, "icon.png");
 
-        /*
-        AppPath.copyBase("."+
-                File.separator +"dbs"+
-                File.separator + dbName +".mv.db", AppPath.DBS, "app.mv.db");
-        AppPath.copyBase("."+
-                File.separator +"dbs"+
-                File.separator + dbName +".trace.db", AppPath.DBS, "app.trace.db");
-         */
-
         AppPath.copyApp(appPath, AppPath.PUBLIC_IMAGES, "logo.png");
         AppPath.copyApp(appPath, AppPath.PUBLIC_IMAGES, "logo-main.png");
         AppPath.copyApp(appPath, AppPath.PUBLIC_IMAGES, "logo-dev.png");
