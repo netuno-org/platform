@@ -925,11 +925,67 @@ public class App extends ResourceBase {
         return settings;
     }
 
-
 	public Values getSettings() {
 		return settings();
 	}
-    
+
+	@MethodDoc(translations = {
+			@MethodTranslationDoc(
+					language = LanguageDoc.PT,
+					description = "Fornece o objeto de manipulação de arquivos para o caminho dentro da aplicação.",
+					howToUse = {
+							@SourceCodeDoc(
+									type = SourceCodeTypeDoc.JavaScript,
+									code = "// Cria a pasta temp na raíz da app.\n"+
+											"_app.path(\"temp\").mkdir()"
+							)
+					}),
+			@MethodTranslationDoc(
+					language = LanguageDoc.EN,
+					description = "Provides the file manipulation object for the path within the application.",
+					howToUse = {
+							@SourceCodeDoc(
+									type = SourceCodeTypeDoc.JavaScript,
+									code = "// Create the temp folder in the app's root directory.\n"+
+											"_app.path(\"temp\").mkdir()"
+							)
+					})
+	},
+			parameters = {
+					@ParameterDoc(name = "path", translations = {
+							@ParameterTranslationDoc(
+									language=LanguageDoc.PT,
+									name = "caminho",
+									description = "Caminho relativo do arquivo ou pasta dentro da aplicação."
+							),
+							@ParameterTranslationDoc(
+									language=LanguageDoc.EN,
+									description = "Relative path of the file or folder within the application."
+							)
+					})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna o objeto de manipulação para o caminho."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns the manipulation object to the path."
+					)
+			}
+	)
+	public File getPath(String path) {
+		return path(path);
+	}
+
+	public File path(String path) {
+		return new File(
+				SafePath.fileSystemPath(path),
+				Config.getPathAppBase(getProteu())
+		);
+	}
+
     @MethodDoc(translations = {
     		@MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -1126,6 +1182,7 @@ public class App extends ResourceBase {
         }
         return file;
     }
+
 	@MethodDoc(
 			translations = {
 					@MethodTranslationDoc(
@@ -1171,14 +1228,5 @@ public class App extends ResourceBase {
                 Config.getPathAppBase(getProteu())
         );
         return file.exists() && file.isDirectory();
-    }
-    
-    @Override
-    protected final void finalize() throws Throwable {
-		/*
-		GC TEST
-    	config = null;
-    	settings = null;
-		*/
     }
 }
