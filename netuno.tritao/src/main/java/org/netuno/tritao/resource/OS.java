@@ -18,22 +18,17 @@
 package org.netuno.tritao.resource;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.netuno.library.doc.LanguageDoc;
-import org.netuno.library.doc.LibraryDoc;
-import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
+import org.netuno.psamata.io.SafePath;
+import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.netuno.library.doc.MethodDoc;
-import org.netuno.library.doc.MethodTranslationDoc;
-import org.netuno.library.doc.ParameterDoc;
-import org.netuno.library.doc.ParameterTranslationDoc;
-import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.psamata.io.File;
 import org.netuno.tritao.resource.util.ResourceException;
 
@@ -219,6 +214,60 @@ public class OS extends ResourceBase {
         } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
             return false;
         }
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Fornece o objeto de manipulação de arquivos para o caminho no sistema.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Cria a estrutura de pastas na raíz do sistema.\n"+
+                                            "_os.path(\"/tmp/netuno\").mkdirs()"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Provides the file manipulation object for the path in the system.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Creates the folder structure in the system root.\n"+
+                                            "_os.path(\"/tmp/netuno\").mkdirs()"
+                            )
+                    })
+    },
+            parameters = {
+                    @ParameterDoc(name = "path", translations = {
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.PT,
+                                    name = "caminho",
+                                    description = "Caminho relativo do arquivo ou pasta dentro da aplicação."
+                            ),
+                            @ParameterTranslationDoc(
+                                    language=LanguageDoc.EN,
+                                    description = "Relative path of the file or folder within the application."
+                            )
+                    })
+            },
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Retorna o objeto de manipulação para o caminho."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Returns the manipulation object to the path."
+                    )
+            }
+    )
+    public File getPath(String path) {
+        return path(path);
+    }
+
+    public File path(String path) {
+        return new File(path);
     }
     
     @MethodDoc(translations = {
