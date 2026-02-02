@@ -31,9 +31,9 @@ import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.ImageTools;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.crypto.RandomString;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.util.FileSafeness;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -249,29 +249,13 @@ public class Image extends ComponentBase {
                     deleteImageFile(oldValue);
                 }
                 if (file != null && file.available() > 0) {
-                    String fileBaseName = FilenameUtils.getBaseName(file.getName());
-                    String fileExt = FilenameUtils.getExtension(file.getName()).toLowerCase();
-                    String fileName;
-                    String fileFullName;
-                    RandomString randomString = new RandomString(8);
-                    while (true) {
-                        fileName = fileBaseName + "-" + randomString.next() + "." + fileExt;
-                        fileFullName = path + fileName;
-                        Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), fileFullName);
-                        Files.createDirectories(filePath.getParent());
-                        if (!Files.exists(filePath)) {
-                            break;
-                        }
-                    }
-                    if (file.isJail()) {
-                        file.save(Config.getPathAppStorageDatabase(getProteu()).substring(Config.getPathAppBase(getProteu()).length()) + File.separator + fileFullName);
-                    } else {
-                        file.save(Config.getPathAppStorageDatabase(getProteu()) + File.separator + fileFullName);
-                    }
+                    var storageFilePath = FileSafeness.appStorageSave(getProteu(), path, file);
+                    final var fileName = storageFilePath.fileName();
+                    final var fileExt = storageFilePath.extension();
                     getValues().set(fieldName, fileName);
                     if (fileExt.equals("png") || fileExt.equals("gif") || fileExt.equals("jpg") || fileExt.equals("jpeg")) {
                         String filePath = Config.getPathAppStorageDatabase(getProteu()) + File.separator;
-                        try (ImageTools imgTools = new ImageTools(filePath + fileFullName)) {
+                        try (ImageTools imgTools = new ImageTools(filePath + storageFilePath.filePath())) {
                             if (imgTools.getHeight() > 400 || imgTools.getWidth() > 400) {
                                 if (imgTools.getHeight() > imgTools.getWidth()) {
                                     imgTools.resize(0, 400);
@@ -294,7 +278,7 @@ public class Image extends ComponentBase {
                     }
                     getValues().set(requestName + ":value", fileName);
                     getValues().set(requestName + ":new", fileName);
-                    getValues().set(requestName + ":path", fileFullName);
+                    getValues().set(requestName + ":path", storageFilePath.filePath());
                 }
             } catch (IOException e) {
                 throw new Error(e);
