@@ -120,6 +120,19 @@ public class File implements IO {
         contentType = fileContentType;
     }
 
+    private String buildFullPath(String physicalPath, String jail, String path) {
+        if (!jail.isEmpty()) {
+            path = SafePath.fileSystemPath(path);
+        }
+        if (!physicalPath.isEmpty()) {
+            return physicalPath;
+        } else if (!jail.isEmpty() && !path.isEmpty()) {
+            return jail + java.io.File.separator + path;
+        } else {
+            return "";
+        }
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
@@ -311,6 +324,9 @@ public class File implements IO {
                 .replaceAll("[^a-zA-Z0-9.\\-]", "_");
         String lastWithSeparator = "";
         String newPath = path;
+        if (!physicalPath.isEmpty()) {
+            newPath = physicalPath;
+        }
         if (newPath.endsWith(java.io.File.separator)) {
             lastWithSeparator = java.io.File.separator;
             newPath = newPath.substring(0, newPath.length() - 1);
@@ -333,8 +349,23 @@ public class File implements IO {
         if (!newPath.contains(java.io.File.separator) && !newPath.contains("\\") && !newPath.contains("/")) {
             newPath = "";
         }
-        path = newPath + newName + lastWithSeparator;
-        return true;
+        newPath += newName + lastWithSeparator;
+
+        String newFullPath = buildFullPath(!physicalPath.isEmpty() ? newPath : "", jail, physicalPath.isEmpty() && !path.isEmpty() ? newPath : "");
+
+        java.io.File newFullPathFile = new java.io.File(newFullPath);
+        if (!newFullPathFile.exists() && exists()) {
+            boolean result = new java.io.File(getFullPath()).renameTo(newFullPathFile);
+            if (result) {
+                if (!physicalPath.isEmpty()) {
+                    physicalPath = newPath;
+                } else if (!jail.isEmpty() && !path.isEmpty()) {
+                    path = newPath;
+                }
+            }
+            return result;
+        }
+        return false;
     }
     
     /**
@@ -464,13 +495,7 @@ public class File implements IO {
     }, parameters = {
     }, returns = {})
     public final String getFullPath() {
-        if (!physicalPath.isEmpty()) {
-            return physicalPath;
-        } else if (!jail.isEmpty() && !path.isEmpty()) {
-            return jail + java.io.File.separator + path;
-        } else {
-            return "";
-        }
+        return buildFullPath(physicalPath, jail, path);
     }
     
     public String baseName() {
@@ -1247,7 +1272,7 @@ public class File implements IO {
     	if (!jail.isEmpty()) {
             path = SafePath.fileSystemPath(path);
         }
-        java.io.File f = new java.io.File(path);
+        java.io.File f = new java.io.File(fullPath());
         return f.exists();
     }
 }
