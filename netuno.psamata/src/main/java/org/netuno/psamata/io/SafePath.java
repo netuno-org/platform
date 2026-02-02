@@ -23,42 +23,42 @@ package org.netuno.psamata.io;
  */
 public class SafePath {
 
-    private static String OS = System.getProperty("os.name");
+    // private static String OS = System.getProperty("os.name");
 
     public static String path(String path) {
         path = path.replace("\\", "/");
         while (true) {
-            if (path.indexOf("./") != -1) {
+            if (path.contains("./")) {
                 path = path.replace("./", "/");
-            } else if (path.indexOf("//") != -1) {
+            } else if (path.contains("//")) {
                 path = path.replace("//", "/");
-            } else if (path.indexOf("~/") != -1) {
+            } else if (path.contains("~/")) {
                 path = path.replace("~/", "/");
-            } else if (path.indexOf(":") != -1 && !OS.startsWith("Windows")) {
+            } else if (path.contains(":")) { // && !OS.startsWith("Windows")
                 path = path.replace(":", "");
-            } else if (path.indexOf("*") != -1) {
+            } else if (path.contains("*")) {
                 path = path.replace("*", "");
-            } else if (path.indexOf("?") != -1) {
+            } else if (path.contains("?")) {
                 path = path.replace("?", "");
-            } else if (path.indexOf("\"") != -1) {
+            } else if (path.contains("\"")) {
                 path = path.replace("\"", "");
-            } else if (path.indexOf("'") != -1) {
+            } else if (path.contains("'")) {
                 path = path.replace("'", "");
-            } else if (path.indexOf("<") != -1) {
+            } else if (path.contains("<")) {
                 path = path.replace("<", "");
-            } else if (path.indexOf(">") != -1) {
+            } else if (path.contains(">")) {
                 path = path.replace(">", "");
-            } else if (path.indexOf("|") != -1) {
+            } else if (path.contains("|")) {
                 path = path.replace("|", "");
-            } else if (path.indexOf("+") != -1) {
+            } else if (path.contains("+")) {
                 path = path.replace("+", "");
-            } else if (path.indexOf("%") != -1) {
+            } else if (path.contains("%")) {
                 path = path.replace("%", "");
-            } else if (path.indexOf("#") != -1) {
+            } else if (path.contains("#")) {
                 path = path.replace("#", "");
-            } else if (path.indexOf("&") != -1) {
+            } else if (path.contains("&")) {
                 path = path.replace("&", "");
-            } else if (path.indexOf(";") != -1) {
+            } else if (path.contains(";")) {
                 path = path.replace(";", "");
             } else {
                 break;
