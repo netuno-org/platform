@@ -29,9 +29,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.crypto.RandomString;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.util.FileSafeness;
 import org.netuno.tritao.util.TemplateBuilder;
 
 /**
@@ -199,29 +199,14 @@ public class File extends ComponentBase {
                         getValues().set(fieldName + ":old", oldValue);
                         deleteFile(oldValue);
                     }
-                    String fileBaseName = FilenameUtils.getBaseName(file.getName());
-                    String fileExt = FilenameUtils.getExtension(file.getName()).toLowerCase();
-                    String fileName;
-                    String fileFullName;
-                    RandomString randomString = new RandomString(8);
-                    while (true) {
-                        fileName = fileBaseName + "-" + randomString.next() + "." + fileExt;
-                        fileFullName = path + fileName;
-                        Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), fileFullName);
-                        Files.createDirectories(filePath.getParent());
-                        if (!Files.exists(filePath)) {
-                            break;
-                        }
-                    }
-                    if (file.isJail()) {
-                        file.save(Config.getPathAppStorageDatabase(getProteu()).substring(Config.getPathAppBase(getProteu()).length()) + java.io.File.separator + fileFullName);
-                    } else {
-                        file.save(Config.getPathAppStorageDatabase(getProteu()) + java.io.File.separator + fileFullName);
-                    }
+
+                    var storageFilePath = FileSafeness.appStorageSave(getProteu(), path, file);
+                    final var fileName = storageFilePath.fileName();
+
                     getValues().set(fieldName, fileName);
                     getValues().set(requestName + ":value", fileName);
                     getValues().set(requestName + ":new", fileName);
-                    getValues().set(requestName + ":path", fileFullName);
+                    getValues().set(requestName + ":path", storageFilePath.filePath());
                 }
             } catch (IOException e) {
                 throw new Error(e);
