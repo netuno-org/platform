@@ -29,6 +29,7 @@ import org.netuno.psamata.*;
 import java.util.Calendar;
 
 import org.netuno.psamata.io.Buffer;
+import org.netuno.psamata.io.File;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.SafePath;
 
@@ -45,15 +46,15 @@ public class HTTP implements AutoCloseable {
     private Values requestPost;
     private Values responseHead;
     private Values responseCookie;
-    private org.netuno.psamata.io.InputStream in = null;
-    private Values responseClientHttp;
+    private InputStream in = null;
+    private final Values responseClientHttp;
     private String[] Head = null;
     
     /**
      * Build Http, come of the client
      * @param in Data input of the client
      */
-    public HTTP(org.netuno.psamata.io.InputStream in) throws ProteuException {
+    public HTTP(InputStream in) throws ProteuException {
         try {
             this.in = in;
             String HEADrequest = "";
@@ -75,14 +76,14 @@ public class HTTP implements AutoCloseable {
                     break;
                 }
             }
-            String[] clientHttpLines = clientHttp.toString().replace('\r', '\n').replace((CharSequence)"\n\n", (CharSequence)"\n").split("\n");
+            String[] clientHttpLines = clientHttp.toString().replace('\r', '\n').replace("\n\n", "\n").split("\n");
             Head = clientHttpLines[0].split(" ");
             if (Head.length < 3) {
                 throw new ProteuException("HTTP Head: [ "+ clientHttp.toString() + " ] is invalid.");
             }
             clientHttp.append("\n");
             HEADrequest += "Method: " + Head[0] + "\n";
-            if (Head[1].indexOf("?") >= 0) {
+            if (Head[1].contains("?")) {
                 HEADrequest += "URL: " + Head[1].substring(0, Head[1].indexOf("?")) + "\n";
             } else {
                 HEADrequest += "URL: " + Head[1] + "\n";
@@ -120,14 +121,14 @@ public class HTTP implements AutoCloseable {
             requestCookie  = new Values(requestHead.getString("Cookie"), "; ", "=");
             requestGet = new Values();
             requestPost = new Values();
-            if (Head[1].indexOf("?") >= 0) {
+            if (Head[1].contains("?")) {
                 logger.info("HTTP form method is Get.");
                 getForm();
             }
             if (requestHead.getString("Method").equals("POST")) {
-                int length = Integer.valueOf(requestHead.getString("Content-Length")).intValue();
+                int length = Integer.parseInt(requestHead.getString("Content-Length"));
                 if (length <= Config.getFormLimit()) {
-                    if (requestHead.getString("Content-Type").indexOf("multipart/form-data;") > -1) {
+                    if (requestHead.getString("Content-Type").contains("multipart/form-data;")) {
                         logger.info("HTTP form method is Post Multipart.");
                         buildPostMultipart(in, requestHead, requestPost);
                     } else {
@@ -169,15 +170,15 @@ public class HTTP implements AutoCloseable {
                 }
                 for (int y = x+1; y < formFields.length; y++) {
                     if (formFields[y].indexOf("=") > 0 && field.equals(formFields[y].substring(0, formFields[y].indexOf("=")))) {
-                        if (formFields[y].indexOf("=") > -1 && formFields[y].indexOf("=") < formFields[y].length()) {
-                            finalFormData += "," + formFields[y].substring(formFields[y].indexOf("=") + 1, formFields[y].length());
+                        if (formFields[y].contains("=") && formFields[y].indexOf("=") < formFields[y].length()) {
+                            finalFormData += "," + formFields[y].substring(formFields[y].indexOf("=") + 1);
                             x++;
                         }
                     }
                 }
                 finalFormData += "&";
             }
-            if (!finalFormData.equals("")) {
+            if (!finalFormData.isEmpty()) {
                 return finalFormData.substring(0, finalFormData.length()-1);
             } else {
                 return "";
@@ -188,16 +189,16 @@ public class HTTP implements AutoCloseable {
     }
 
     private void getForm() {
-        String form = Head[1].substring(Head[1].indexOf("?") + 1, Head[1].length());
+        String form = Head[1].substring(Head[1].indexOf("?") + 1);
         requestGet = new Values(buildForm(form), "&", "=", getCharset(requestHead));
     }
 
     private void formPost() throws Exception {
-        int length = Integer.parseInt(""+requestHead.getString("Content-Length"));
+        int length = Integer.parseInt(requestHead.getString("Content-Length"));
         String form = "";
         for (int x = 0; x < length; x++) {
-            char letra = (char)in.read();
-            form += letra;
+            char c = (char)in.read();
+            form += c;
         }
         requestPost = new Values(buildForm(form), "&", "=", getCharset(requestHead));
     }
@@ -209,7 +210,7 @@ public class HTTP implements AutoCloseable {
      * @param requestPost Request POST entries
      * @throws java.lang.Exception Exception
      */
-    public static synchronized void buildPostMultipart(org.netuno.psamata.io.InputStream in, Values requestHead, Values requestPost) throws Exception {
+    public static synchronized void buildPostMultipart(InputStream in, Values requestHead, Values requestPost) throws Exception {
     	DataSource httpMultipartDataSource = new HttpMultipartDataSource(in, requestHead.getString("Content-Type"));
     	MimeMultipart mimeMultipart = new MimeMultipart(httpMultipartDataSource);
     	
@@ -234,24 +235,23 @@ public class HTTP implements AutoCloseable {
 	    	}
 	    	String fieldName = fieldContentDisposition.getString("name").replace("\"", "");
 	    	String fieldFileName = fieldContentDisposition.getString("filename").replace("\"", "");
-	    	if (fieldContentType != null
-	    			&& fieldFileName.length() > 0) {
-	    		String fileName = org.netuno.psamata.io.File.getSequenceName(tempPath, SafePath.fileName(fieldFileName));
+	    	if (fieldContentType != null && !fieldFileName.isEmpty()) {
+	    		String fileName = File.getSequenceName(tempPath, SafePath.fileName(fieldFileName));
                 java.io.File ioFile = new java.io.File(tempPath, fileName);
                 try (java.io.OutputStream fileOutput = new java.io.FileOutputStream(ioFile)) {
                     new Buffer().copy(bodyPart.getInputStream(), fileOutput);
                 }
-                org.netuno.psamata.io.File file = new org.netuno.psamata.io.File(ioFile.getAbsolutePath()).setContentType(fieldContentType);
+                File file = new File(ioFile.getAbsolutePath()).setContentType(fieldContentType);
                 Object value = requestPost.get(fieldName);
                 if (fieldName.endsWith("[]")) {
-                    if (value != null && value.getClass().isArray() && value.getClass().isInstance(new org.netuno.psamata.io.File[0])) {
-                        org.netuno.psamata.io.File[] oldFiles = (org.netuno.psamata.io.File[])value;
-                        org.netuno.psamata.io.File[] newFiles = new org.netuno.psamata.io.File[oldFiles.length + 1];
+                    if (value != null && value.getClass().isArray() && value.getClass().isInstance(new File[0])) {
+                        File[] oldFiles = (File[])value;
+                        File[] newFiles = new File[oldFiles.length + 1];
                         System.arraycopy(oldFiles, 0, newFiles, 0, oldFiles.length);
                         newFiles[oldFiles.length] = file;
                         requestPost.set(fieldName, newFiles);
                     } else {
-                        requestPost.set(fieldName, new org.netuno.psamata.io.File[] { file });
+                        requestPost.set(fieldName, new File[] { file });
                     }
                 } else {
                     requestPost.set(fieldName, file);
@@ -278,8 +278,8 @@ public class HTTP implements AutoCloseable {
     }
     
     private static class HttpMultipartDataSource implements DataSource {
-        private String contentType;
-        private java.io.InputStream inputStream;
+        private final String contentType;
+        private final java.io.InputStream inputStream;
         public HttpMultipartDataSource(java.io.InputStream inputStream, String contentType) throws java.io.IOException {
             this.inputStream = new java.io.SequenceInputStream(new java.io.ByteArrayInputStream("\n".getBytes()), inputStream);
             this.contentType = contentType;
@@ -447,7 +447,7 @@ public class HTTP implements AutoCloseable {
     }
 
     public static void clearUploadFolder() {
-        new org.netuno.psamata.io.File(
+        new File(
             new java.io.File(
                 Config.getUpload()
             ).getAbsolutePath()
@@ -455,7 +455,7 @@ public class HTTP implements AutoCloseable {
     }
 
     public static void clearRequestUploadFolder() {
-        new org.netuno.psamata.io.File(
+        new File(
             new java.io.File(
                 Config.getUpload(),
                 Thread.currentThread().getName()
