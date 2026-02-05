@@ -49,7 +49,7 @@ public interface TableSelect extends BuilderBase {
         if (data.hasKey("name") && !data.getString("name").isEmpty()) {
             where += " and name = '" + DB.sqlInjection(data.getString("name")) + "'";
         }
-        if (data.hasKey("uid") && !data.getString("uid").isEmpty()) {
+        if (data.hasKey("uid") && !data.getString("uid").isEmpty() && !data.getString("uid").equals("0")) {
             where += " and uid = '" + DB.sqlInjection(data.getString("uid")) + "'";
         }
         if (where.indexOf(" and ") < 0) {
