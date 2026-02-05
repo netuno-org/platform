@@ -18,8 +18,12 @@
         </select>
     </div>
     <hr>
+
+    #if($data.getString("group.uid.value").isEmpty())
+    <h2>_{&lang=netuno.group.add}</h2><br>
+    #end
+
     <div class="form-group">
-        <h2>_{&lang=netuno.group.add}</h2><br>
         <label for="netuno_group_form_group_name">_{&lang=netuno.group.name}</label>
         <input type="text" name="name" id="netuno_group_form_group_name" value="_{&data=group.name.value}" size="50" maxlength="50" class="form-control" placeholder="_{&lang=netuno.group.name}" validation="required">
     </div>
@@ -169,8 +173,9 @@
 
         netuno.com.select.callbackForFieldId('netuno_group_form_group_uid', 'changed', function () {
             var that = $('#netuno_group_form_group_uid');
-            if (netuno.com.select.netunoGroupChanged == that.val()) {
-                return;
+            if (that.val() !== null && that.val() !== '' && !that.val().match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)) {
+                that.empty().trigger("change");
+                return
             }
             form.off("submit");
             form.ajaxForm({
