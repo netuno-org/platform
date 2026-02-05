@@ -58,7 +58,7 @@ public interface TableOperations extends BuilderBase, TableSelect, TableDesignSe
             List<Values> rsParentTable = null;
             if (data.getInt("parent_id") > 0) {
                 rsParentTable = Config.getDBBuilder(getProteu()).selectTable(data.getString("parent_id"));
-            } else if (data.get("parent_uid") != null && !data.getString("parent_uid").isEmpty()) {
+            } else if (data.get("parent_uid") != null && !data.getString("parent_uid").isEmpty() && !data.getString("uid").equals("0")) {
                 rsParentTable = Config.getDBBuilder(getProteu()).selectTable("", "",
                         data.getString("parent_uid"));
             }
