@@ -19,7 +19,9 @@
     </div>
     <hr>
 
+    #if($data.getString("user.uid.value").isEmpty())
     <h2>_{&lang=netuno.user.add}</h2> <br>
+    #end
     
     <div class="form-group">
         <label for="netuno_user_form_user_name">_{&lang=netuno.user.name}</label>
@@ -521,7 +523,8 @@
 
         netuno.com.select.callbackForFieldId('netuno_user_form_user_uid', 'changed', function () {
             var that = $('#netuno_user_form_user_uid');
-            if (netuno.com.select.netunoUserChanged == that.val()) {
+            if (that.val() !== null && that.val() !== '' && !that.val().match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)) {
+                that.val("").trigger("change")
                 return;
             }
             form.off("submit");
