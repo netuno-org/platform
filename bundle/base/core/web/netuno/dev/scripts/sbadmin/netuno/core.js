@@ -80,6 +80,16 @@
     return netuno.loadDevLinks(navbarNav);
   };
 
+  netuno.uidFieldEnsureValue = function(container) {
+    var uid;
+    uid = container.find("select[name=\"uid\"]");
+    if (uid.length === 1 && (uid.val() != null) && uid.val() !== "" && !uid.val().match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/g)) {
+      uid.val("").trigger("change");
+      return false;
+    }
+    return true;
+  };
+
   netuno.loadDevMenu = function() {
     return $.ajax({
       type: 'POST',
@@ -120,6 +130,9 @@
   netuno.loadDevFormField = function(name, uid) {
     var container;
     container = $(`\#netuno_form_design_${name}`);
+    if (!netuno.uidFieldEnsureValue(container)) {
+      return false;
+    }
     $.ajax({
       type: 'POST',
       url: `${netuno.config.urlAdmin}dev/FormDesign${netuno.config.extension}`,
@@ -167,6 +180,9 @@
   netuno.loadDevReportField = function(name, uid) {
     var container;
     container = $(`\#netuno_report_design_${name}`);
+    if (!netuno.uidFieldEnsureValue(container)) {
+      return false;
+    }
     $.ajax({
       type: 'POST',
       url: `${netuno.config.urlAdmin}dev/ReportDesign${netuno.config.extension}`,
@@ -233,6 +249,9 @@
     var container, form;
     container = $(`\#${containerId}`);
     form = $(`#${formId}`);
+    if (!netuno.uidFieldEnsureValue(form)) {
+      return false;
+    }
     if (form.validate().valid() === false) {
       form.ajaxForm().submit();
     }

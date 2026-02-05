@@ -65,6 +65,13 @@ netuno.menuDev = (menu)->
   containers.append(containersHtml)
   netuno.loadDevLinks(navbarNav)
 
+netuno.uidFieldEnsureValue = (container) ->
+  uid = container.find("select[name=\"uid\"]")
+  if uid.length is 1 and uid.val()? and uid.val() isnt "" and !uid.val().match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/g)
+    uid.val("").trigger("change")
+    return false
+  return true
+
 netuno.loadDevMenu = () ->
   $.ajax(
     type: 'POST'
@@ -92,6 +99,8 @@ netuno.loadDevForm = (name) ->
 
 netuno.loadDevFormField = (name, uid) ->
   container = $("\#netuno_form_design_#{ name }")
+  if !netuno.uidFieldEnsureValue(container)
+    return false
   $.ajax(
     type: 'POST'
     url: "#{ netuno.config.urlAdmin }dev/FormDesign#{ netuno.config.extension }"
@@ -126,6 +135,8 @@ netuno.loadDevReport = (name) ->
 
 netuno.loadDevReportField = (name, uid) ->
   container = $("\#netuno_report_design_#{ name }")
+  if !netuno.uidFieldEnsureValue(container)
+    return false
   $.ajax(
     type: 'POST'
     url: "#{ netuno.config.urlAdmin }dev/ReportDesign#{ netuno.config.extension }"
@@ -179,6 +190,8 @@ netuno.loadDevLinks = (container)->
 netuno.submitDev = (containerId, formId, validation, callback) ->
   container =  $("\##{ containerId }")
   form = $("##{ formId }")
+  if !netuno.uidFieldEnsureValue(form)
+    return false
   if form.validate().valid() is false
     form.ajaxForm().submit()
   if validation is false or form.validate().valid()
