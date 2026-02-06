@@ -23,7 +23,7 @@ package org.netuno.tritao.sandbox;
  * @param path Path of the script folder.
  * @param fileName Script file name.
  * @param content Source content of the entire script.
- * @param error If are executing an error.
+ * @param silentError If are executing an error.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public record ScriptSourceCode(
@@ -32,12 +32,16 @@ public record ScriptSourceCode(
         String path,
         String fileName,
         String content,
-        boolean error) {
+        boolean silentError) {
     public String fullPath() {
         return path + "/" + fileName + "." + extension;
     }
 
     public ScriptSourceCode clone(String fileName, String content) {
-        return new ScriptSourceCode(null, extension, path, fileName, content, error);
+        return new ScriptSourceCode(null, extension, path, fileName, content, silentError);
+    }
+
+    public ScriptSourceCode cloneSub(String extension, String id, String content) {
+        return new ScriptSourceCode(null, extension, path, this.fileName() +"~("+ id +")", content, true);
     }
 }
