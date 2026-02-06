@@ -220,7 +220,7 @@ public class MultiSelect extends ComponentBase {
 
     public Component onSaved() {
         super.onSaved();
-        if (getHili().sandbox().isScriptsRunning()) {
+        if (getHili().sandbox().isScriptRunning()) {
             return this;
         }
         Values currentItem = Config.getDBBuilder(getProteu()).getItemByUId(getTableData().getString("name"), getValuesUid());
