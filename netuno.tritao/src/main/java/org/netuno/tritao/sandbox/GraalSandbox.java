@@ -82,7 +82,7 @@ public class GraalSandbox implements Scriptable {
     }
 
     @Override
-    public void run(ScriptSourceCode script, Values bindings) throws Exception {
+    public Object run(ScriptSourceCode script, Values bindings) throws Exception {
         String lang = getGraalLanguage(script.extension());
         bindings.forEach((k, v) -> graalRunner.set(lang, k.toString(), v));
         String source = script.content();
@@ -91,9 +91,9 @@ public class GraalSandbox implements Scriptable {
             source = matcher.replaceAll("// $1");
         }
         if (script.scriptFile() == null) {
-            graalRunner.eval(lang, script.content());
+            return graalRunner.eval(lang, script.content());
         } else {
-            graalRunner.eval(lang, script.scriptFile(), source);
+            return graalRunner.eval(lang, script.scriptFile(), source);
         }
     }
 
