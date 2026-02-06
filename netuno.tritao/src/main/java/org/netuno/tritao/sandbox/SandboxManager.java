@@ -70,7 +70,7 @@ public class SandboxManager {
 
     private final Values bindings = new Values();
 
-    private final List<ScriptSourceCode> scriptSourceCodeStack = new ArrayList<>();
+    private final List<ScriptSourceCode> scriptSourceCodesRunning = new ArrayList<>();
 
     private final List<Scriptable> scriptablesRunning = new ArrayList<>();
 
@@ -123,10 +123,14 @@ public class SandboxManager {
     }
 
     public Scriptable currentSandbox() {
-        return currentSandbox;
+        return scriptablesRunning.getLast();
     }
 
-    public boolean isScriptsRunning() {
+    public ScriptSourceCode currentScript() {
+        return scriptSourceCodesRunning.getLast();
+    }
+
+    public boolean isScriptRunning() {
         return !scriptablesRunning.isEmpty();
     }
 
@@ -200,8 +204,8 @@ public class SandboxManager {
         new Debugger(
                 Config.getApp(getProteu()),
                 this,
-                scriptSourceCodeStack.getLast(),
-                scriptablesRunning.getLast()
+                currentScript(),
+                currentSandbox()
         ).pause();
     }
 
@@ -240,6 +244,20 @@ public class SandboxManager {
         return runScript(path, scriptName, preserveContext, false, true);
     }
 
+    public ScriptResult runScriptCode(String id, String extension, String code, Values bindings) {
+        ScriptSourceCode scriptSourceCode = null;
+        if (isScriptRunning()) {
+            scriptSourceCode = currentScript().cloneSub(extension, id, code);
+        } else {
+            scriptSourceCode = new ScriptSourceCode(null, extension, "[internal]", "~("+ id +")", code, false);
+        }
+        return runScript(
+                scriptSourceCode,
+                getSandbox(extension),
+                bindings
+        );
+    }
+
     public ScriptResult runScript(String path, String scriptName) {
         return runScript(path, scriptName, false, false, false);
     }
@@ -252,7 +270,7 @@ public class SandboxManager {
         path = SafePath.fileSystemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(path + "/" + file);
         if (onlyExists && scriptPath == null) {
-            return ScriptResult.withSuccess();
+            return ScriptResult.withSuccess(null);
         }
         Optional<Scriptable> scriptable = Optional.empty();
         Optional<ScriptSourceCode> scriptSourceCode = Optional.empty();
@@ -315,12 +333,10 @@ public class SandboxManager {
                     if (scriptable.isEmpty()) {
                         throw new Exception("This script "+ file +"."+ scriptExtension +" is not supported.");
                     } else {
-                        scriptSourceCodeStack.add(scriptSourceCode.get());
-                        scriptablesRunning.add(scriptable.get());
                         return runScript(scriptSourceCode.get(), scriptable.get());
                     }
                 } else {
-                    return ScriptResult.withSuccess();
+                    return ScriptResult.withSuccess(null);
                 }
             } else {
                 throw new Exception("This script file was not found.");
@@ -392,25 +408,32 @@ public class SandboxManager {
                 if (!preserveContext && scriptable.isPresent()) {
                     scriptable.get().resetContext();
                 }
-                if (!scriptablesRunning.isEmpty()) {
-                    scriptablesRunning.removeLast();
-                }
-                if (!scriptSourceCodeStack.isEmpty()) {
-                    scriptSourceCodeStack.removeLast();
-                }
             }
         }
     }
 
     public ScriptResult runScript(ScriptSourceCode script, Scriptable sandbox) {
-        Throwable throwable = null;
+        return runScript(script, sandbox, null);
+    }
+
+    private ScriptResult runScript(ScriptSourceCode script, Scriptable sandbox, Values bindings) {
         try {
-            //ThreadMonitor threadMonitor = new ThreadMonitor(Config.getMaxCPUTime(), Config.getMaxMemory());
-            //threadMonitor.setThreadToMonitor(Thread.currentThread());
-            //threadMonitor.run();
-            currentSandbox = sandbox;
-            sandbox.run(script, loadBindings(script));
-            //threadMonitor.stopMonitor();
+            scriptSourceCodesRunning.add(script);
+            scriptablesRunning.add(sandbox);
+            Object result = null;
+            Throwable throwable = null;
+            try {
+                //ThreadMonitor threadMonitor = new ThreadMonitor(Config.getMaxCPUTime(), Config.getMaxMemory());
+                //threadMonitor.setThreadToMonitor(Thread.currentThread());
+                //threadMonitor.run();
+                currentSandbox = sandbox;
+                if (bindings == null || bindings.isEmpty()) {
+                    result = sandbox.run(script, loadBindings(script));
+                } else {
+                    bindings.merge(loadBindings(script));
+                    result = sandbox.run(script, bindings);
+                }
+                //threadMonitor.stopMonitor();
             /*RunScriptThread runScriptThread = new RunScriptThread(engine, script);
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.execute(runScriptThread);
@@ -420,19 +443,19 @@ public class SandboxManager {
             if (throwable == null) {
                 throwable = timeKiller.getThrowable();
             }*/
-        } catch (Throwable t) {
-            throwable = t;
-        } finally {
-            currentSandbox = null;
-        }
-        if (throwable != null) {
-            if (scriptRequestErrorExecuted) {
-                return ScriptResult.withError(throwable);
+            } catch (Throwable t) {
+                throwable = t;
+            } finally {
+                currentSandbox = null;
             }
-            int errorLineNumber = -1;
-            int errorColumnNumber = -1;
-            if (throwable.getClass().getName().equals(PolyglotException.class.getName())) {
-                try {
+            if (throwable != null) {
+                if (scriptRequestErrorExecuted) {
+                    return ScriptResult.withError(throwable);
+                }
+                int errorLineNumber = -1;
+                int errorColumnNumber = -1;
+                if (throwable.getClass().getName().equals(PolyglotException.class.getName())) {
+                    try {
                     /*
                     PolyglotException scriptException = (PolyglotException)throwable;
                     SourceSection sourceSection = scriptException.getSourceLocation();
@@ -444,60 +467,64 @@ public class SandboxManager {
                         throwable = scriptException.asHostException();
                     }
                     */
-                    Object sourceSection = throwable.getClass().getMethod("getSourceLocation").invoke(throwable);
-                    if (sourceSection != null) {
-                        errorLineNumber = (int)sourceSection.getClass().getMethod("getStartLine").invoke(sourceSection);
-                        errorColumnNumber = (int)sourceSection.getClass().getMethod("getStartColumn").invoke(sourceSection);
-                    } else {
-                        for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
-                            try {
-                                Class.forName(stackTraceElement.getClassName());
-                            } catch (Exception e) {
-                                if (Path.of(stackTraceElement.getFileName()).toAbsolutePath().startsWith(
-                                        Path.of(Config.getPathAppBase(getProteu())).toAbsolutePath()
-                                )) {
-                                    errorLineNumber = stackTraceElement.getLineNumber();
-                                    break;
+                        Object sourceSection = throwable.getClass().getMethod("getSourceLocation").invoke(throwable);
+                        if (sourceSection != null) {
+                            errorLineNumber = (int) sourceSection.getClass().getMethod("getStartLine").invoke(sourceSection);
+                            errorColumnNumber = (int) sourceSection.getClass().getMethod("getStartColumn").invoke(sourceSection);
+                        } else {
+                            for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
+                                try {
+                                    Class.forName(stackTraceElement.getClassName());
+                                } catch (Exception e) {
+                                    if (Path.of(stackTraceElement.getFileName()).toAbsolutePath().startsWith(
+                                            Path.of(Config.getPathAppBase(getProteu())).toAbsolutePath()
+                                    )) {
+                                        errorLineNumber = stackTraceElement.getLineNumber();
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        boolean isHostException = (boolean) throwable.getClass().getMethod("isHostException").invoke(throwable);
+                        if (isHostException) {
+                            throwable = (Throwable) throwable.getClass().getMethod("asHostException").invoke(throwable);
+                        }
+                    } catch (Exception e) {
+                        logger.trace("Fail to process the GraalVM exception.", e);
                     }
-                    boolean isHostException = (boolean)throwable.getClass().getMethod("isHostException").invoke(throwable);
-                    if (isHostException) {
-                        throwable = (Throwable) throwable.getClass().getMethod("asHostException").invoke(throwable);
-                    }
-                } catch (Exception e) {
-                    logger.trace("Fail to process the GraalVM exception.", e);
+                } else if (throwable instanceof ScriptException scriptException) {
+                    errorLineNumber = scriptException.getLineNumber();
+                    errorColumnNumber = scriptException.getColumnNumber();
                 }
-            } else if (throwable instanceof ScriptException scriptException) {
-                errorLineNumber = scriptException.getLineNumber();
-                errorColumnNumber = scriptException.getColumnNumber();
+                String errorMessage = getErrorMessage(throwable);
+                String errorInnerMessages = getErrorInnerMessages(throwable.getCause());
+                logger.fatal("\n" +
+                        "\n#" +
+                        "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " " + Config.getApp(proteu) +
+                        "\n#" +
+                        "\n# " + EmojiParser.parseToUnicode(":boom:") + " SCRIPT EXECUTION" +
+                        "\n#" +
+                        "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") + " " + script.path() +
+                        "\n# " + EmojiParser.parseToUnicode(":stop_sign:") + " " + script.fileName() + "." + script.extension() + (errorLineNumber > -1 ? ":" + errorLineNumber + (errorColumnNumber > -1 ? ":" + errorColumnNumber : "") : "") +
+                        "\n#" +
+                        "\n# " + errorMessage +
+                        (errorInnerMessages.isEmpty() ? "" : "\n# " + errorInnerMessages) +
+                        "\n"
+                );
+                logger.debug(throwable.getMessage(), throwable);
+                if (script.fileName().equals("_request_error")) {
+                    scriptRequestErrorExecuted = true;
+                }
+                if (!script.silentError()) {
+                    onError(script, getErrorMessage(throwable), errorLineNumber, errorColumnNumber, throwable);
+                }
+                return ScriptResult.withError(throwable);
             }
-            String errorMessage = getErrorMessage(throwable);
-            String errorInnerMessages = getErrorInnerMessages(throwable.getCause());
-            logger.fatal("\n" +
-                    "\n#" +
-                    "\n# " + EmojiParser.parseToUnicode(":sparkles:") + " "+ Config.getApp(proteu) +
-                    "\n#" +
-                    "\n# "+ EmojiParser.parseToUnicode(":boom:") +" SCRIPT EXECUTION" +
-                    "\n#" +
-                    "\n# " + EmojiParser.parseToUnicode(":open_file_folder:") +" "+ script.path() +
-                    "\n# " + EmojiParser.parseToUnicode(":stop_sign:") +" "+ script.fileName() +"."+ script.extension() + (errorLineNumber > -1 ? ":" + errorLineNumber + (errorColumnNumber > -1 ? ":" + errorColumnNumber : "") : "" ) +
-                    "\n#" +
-                    "\n# " + errorMessage +
-                    (errorInnerMessages.isEmpty() ? "" : "\n# " + errorInnerMessages) +
-                    "\n"
-            );
-            logger.debug(throwable.getMessage(), throwable);
-            if (script.fileName().equals("_request_error")) {
-                scriptRequestErrorExecuted = true;
-            }
-            if (!script.error()) {
-                onError(script, getErrorMessage(throwable), errorLineNumber, errorColumnNumber, throwable);
-            }
-            return ScriptResult.withError(throwable);
+            return ScriptResult.withSuccess(result);
+        } finally {
+            scriptSourceCodesRunning.removeLast();
+            scriptablesRunning.removeLast();
         }
-        return ScriptResult.withSuccess();
     }
 
     public String getErrorMessage(Throwable t) {
