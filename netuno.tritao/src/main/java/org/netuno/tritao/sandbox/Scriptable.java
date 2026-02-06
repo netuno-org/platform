@@ -29,7 +29,7 @@ public interface Scriptable {
 
     void stop();
 
-    void run(ScriptSourceCode script, Values bindings) throws Exception;
+    Object run(ScriptSourceCode script, Values bindings) throws Exception;
 
     Object get(ScriptSourceCode script, String name);
 
