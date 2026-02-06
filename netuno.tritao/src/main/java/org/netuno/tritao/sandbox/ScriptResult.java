@@ -81,16 +81,16 @@ public class ScriptResult {
         return this;
     }
 
-    public ScriptResult onSuccess(Runnable func) {
+    public ScriptResult onSuccess(Consumer<Object> func) {
         if (isSuccess()) {
-            func.run();
+            func.accept(result);
         }
         return this;
     }
     
     public ScriptResult onSuccess(Value function) {
         if (isSuccess()) {
-            function.execute();
+            function.execute(result);
         }
         return this;
     }
