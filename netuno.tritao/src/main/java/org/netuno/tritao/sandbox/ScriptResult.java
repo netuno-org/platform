@@ -44,8 +44,8 @@ import java.util.function.Consumer;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class ScriptResult {
-    private Object result = null;
-    private Throwable error = null;
+    public Object result = null;
+    public Throwable error = null;
 
     private ScriptResult(Object result) {
         this.result = result;
@@ -65,6 +65,10 @@ public class ScriptResult {
 
     public Object get() {
         return result;
+    }
+
+    public Throwable error() {
+        return error;
     }
 
     public ScriptResult onError(Consumer<Throwable> func) {
