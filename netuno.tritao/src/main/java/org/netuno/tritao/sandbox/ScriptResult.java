@@ -44,9 +44,12 @@ import java.util.function.Consumer;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class ScriptResult {
+    private Object result = null;
     private Throwable error = null;
 
-    private ScriptResult() { }
+    private ScriptResult(Object result) {
+        this.result = result;
+    }
 
     private ScriptResult(Throwable error) {
         this.error = error;
@@ -60,28 +63,32 @@ public class ScriptResult {
         return isError() == false;
     }
 
-    public ScriptResult whenError(Consumer<Throwable> func) {
+    public Object get() {
+        return result;
+    }
+
+    public ScriptResult onError(Consumer<Throwable> func) {
         if (isError()) {
             func.accept(error);
         }
         return this;
     }
     
-    public ScriptResult whenError(Value function) {
+    public ScriptResult onError(Value function) {
         if (isError()) {
             function.execute(error);
         }
         return this;
     }
 
-    public ScriptResult whenSucceed(Runnable func) {
+    public ScriptResult onSuccess(Runnable func) {
         if (isSuccess()) {
             func.run();
         }
         return this;
     }
     
-    public ScriptResult whenSucceed(Value function) {
+    public ScriptResult onSuccess(Value function) {
         if (isSuccess()) {
             function.execute();
         }
@@ -92,7 +99,7 @@ public class ScriptResult {
         return new ScriptResult(error);
     }
 
-    protected static ScriptResult withSuccess() {
-        return new ScriptResult();
+    protected static ScriptResult withSuccess(Object result) {
+        return new ScriptResult(result);
     }
 }
