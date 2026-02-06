@@ -73,14 +73,15 @@ public abstract class JSR223GenericSandbox implements Scriptable {
     }
 
     @Override
-    public void run(ScriptSourceCode script, Values bindings) throws Exception {
+    public Object run(ScriptSourceCode script, Values bindings) throws Exception {
         loadBindings(bindings);
         executor = Executors.newCachedThreadPool().submit(() -> {
             return engine.eval(script.content());
         });
         try {
-            executor.get();
+            return executor.get();
         } catch (CancellationException e) { }
+        return null;
     }
 
     @Override
