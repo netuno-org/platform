@@ -72,7 +72,7 @@ public class DebugContext implements AutoCloseable {
         Event.add(getEventPrefix() +":execute", (v) -> {
             AtomicReference<String> errorMessage = new AtomicReference<>();
             ScriptResult result = execute(v.getString("code"))
-                    .whenError((t) -> {
+                    .onError((t) -> {
                         errorMessage.set(t.getMessage());
                     });
             return Values.newMap()
