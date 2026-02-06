@@ -33,6 +33,7 @@ import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.sandbox.ScriptResult;
+import org.netuno.tritao.sandbox.ScriptSourceCode;
 
 /**
  * Execution - Resource
@@ -276,6 +277,54 @@ public class Exec extends ResourceBaseValues {
     }
     public ScriptResult service(String path) throws ResourceException {
         return service(path, true);
+    }
+
+    public ScriptResult js(String id, String code, Values bindings) {
+        return getHili().sandbox().runScriptCode(id, "js", code, bindings);
+    }
+
+    public ScriptResult js(String id, String code) {
+        return js(id, code, null);
+    }
+
+    public ScriptResult py(String id, String code, Values bindings) {
+        return getHili().sandbox().runScriptCode(id, "py", code, bindings);
+    }
+
+    public ScriptResult py(String id, String code) {
+        return py(id, code, null);
+    }
+
+    public ScriptResult rb(String id, String code, Values bindings) {
+        return getHili().sandbox().runScriptCode(id, "rb", code, bindings);
+    }
+
+    public ScriptResult rb(String id, String code) {
+        return rb(id, code, null);
+    }
+
+    public ScriptResult kts(String id, String code, Values bindings) {
+        return getHili().sandbox().runScriptCode(id, "kts", code, bindings);
+    }
+
+    public ScriptResult kts(String id, String code) {
+        return kts(id, code, null);
+    }
+
+    public ScriptResult groovy(String id, String code, Values bindings) {
+        return getHili().sandbox().runScriptCode(id, "groovy", code, bindings);
+    }
+
+    public ScriptResult groovy(String id, String code) {
+        return groovy(id, code, null);
+    }
+
+    public ScriptResult cj(String id, String code, Values bindings) {
+        return getHili().sandbox().runScriptCode(id, "cj", code, bindings);
+    }
+
+    public ScriptResult cj(String id, String code) {
+        return cj(id, code, null);
     }
     
     @MethodDoc(translations = {
