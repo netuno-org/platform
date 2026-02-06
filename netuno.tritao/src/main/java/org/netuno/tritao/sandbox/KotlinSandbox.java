@@ -39,7 +39,7 @@ public class KotlinSandbox extends JSR223GenericSandbox {
     }
 
     @Override
-    public void run(ScriptSourceCode script, Values bindings) throws Exception {
+    public Object run(ScriptSourceCode script, Values bindings) throws Exception {
         loadBindings(bindings);
         /*
         // LOAD SCRIPT BINDGINGS AS CONSTANTS
@@ -67,6 +67,6 @@ public class KotlinSandbox extends JSR223GenericSandbox {
         resourcesBindings += "\n\n";
         getEngine().eval(resourcesBindings);
         */
-        getEngine().eval(script.content());
+        return getEngine().eval(script.content());
     }
 }
