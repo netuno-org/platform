@@ -277,7 +277,7 @@ public class Service {
         if (scriptPath != null) {
             return hili.sandbox()
                     .runScript(Config.getPathAppCore(proteu), file)
-                    .whenError((t) -> {
+                    .onError((t) -> {
                         proteu.setResponseHeader(Proteu.HTTPStatus.InternalServerError500);
                         if (!file.equals("_service_error")) {
                             hili.event().run(EventId.SERVICE_ERROR_BEFORE, Values.newMap().set("error", t));
@@ -322,7 +322,7 @@ public class Service {
         if (scriptPath != null) {
             return hili.sandbox()
                     .runScript(Config.getPathAppServices(proteu), file)
-                    .whenError((t) -> {
+                    .onError((t) -> {
                         proteu.setResponseHeader(Proteu.HTTPStatus.InternalServerError500);
                         try {
                             for (Function<Object[], Object> func : proteu.getConfig().getValues("_exec:service:onError", Values.newList()).list(Function.class)) {
