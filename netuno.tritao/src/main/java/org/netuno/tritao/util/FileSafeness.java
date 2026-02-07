@@ -75,12 +75,14 @@ public class FileSafeness {
         if (!parentPath.endsWith(java.io.File.separator)) {
             parentPath += java.io.File.separator;
         }
-        String baseName = cleanBaseName(FilenameUtils.getBaseName(fileName));
+        String originalBaseName = cleanBaseName(FilenameUtils.getBaseName(fileName));
+        String finalBaseName = "";
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         RandomString randomString = new RandomString(8);
         String filePath = "";
         while (true) {
-            fileName = baseName + "-" + randomString.next() + "." + extension;
+            finalBaseName = originalBaseName + "-" + randomString.next();
+            fileName = finalBaseName + "." + extension;
             filePath = parentPath + fileName;
             Path systemPath = Paths.get(Config.getPathAppStorageDatabase(proteu), filePath);
             Files.createDirectories(systemPath.getParent());
@@ -88,7 +90,7 @@ public class FileSafeness {
                 break;
             }
         }
-        return new FilePath(fileName, baseName, extension, filePath);
+        return new FilePath(fileName, finalBaseName, extension, filePath);
     }
 
     public record FilePath(String fileName, String baseName, String extension, String filePath) {}
