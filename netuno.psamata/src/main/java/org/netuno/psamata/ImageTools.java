@@ -62,6 +62,10 @@ public class ImageTools implements AutoCloseable {
      * Output JPEG Compression Quality
      */
     private float jpegCompression = 0.75f;
+
+    static {
+        javax.imageio.ImageIO.scanForPlugins();
+    }
     
     public ImageTools(int width, int height) {
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -82,6 +86,9 @@ public class ImageTools implements AutoCloseable {
      */
     public ImageTools(final ImageInputStream in) throws IOException {
         image = ImageIO.read(in);
+        if (image == null) {
+            throw new IOException("Failed to read the image stream.");
+        }
         resetGraphics();
     }
     /**
@@ -131,6 +138,9 @@ public class ImageTools implements AutoCloseable {
 
     private void initInputStream(InputStream in) throws IOException {
         image = ImageIO.read(ImageIO.createImageInputStream(in));
+        if (image == null) {
+            throw new IOException("Failed to read the image stream.");
+        }
         resetGraphics();
     }
 
@@ -139,6 +149,9 @@ public class ImageTools implements AutoCloseable {
         try {
             in = new FileImageInputStream(path);
             image = ImageIO.read(in);
+            if (image == null) {
+                throw new IOException("Failed to read the image file: "+ path);
+            }
             resetGraphics();
         } catch (IOException ioe) {
             throw ioe;
@@ -563,7 +576,9 @@ public class ImageTools implements AutoCloseable {
                 writer.write(null, new IIOImage(target, null, null), writerParam);
                 writer.dispose();
         	} else {
-        		ImageIO.write(image, type, out);
+        		if (!ImageIO.write(image, type, out)) {
+                    throw new IOException("Failed to write image file of type "+ type + ".");
+                }
         	}
         } catch (IOException ioe) {
             throw ioe;
