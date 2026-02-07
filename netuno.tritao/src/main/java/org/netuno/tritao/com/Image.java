@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +45,15 @@ import org.netuno.tritao.util.TemplateBuilder;
 public class Image extends ComponentBase {
 
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(Image.class);
+
+    private static final List<String> INPUT_EXTENSIONS = List.of("png", "gif", "jpg", "jpeg", "webp");
+    private static final Map<String, String> OUTPUT_EXTENSIONS = Map.of(
+            "png", "png",
+            "gif", "gif",
+            "jpg", "jpg",
+            "jpeg", "jpg",
+            "webp", "jpg"
+    );
 
     private String value = "";
 
@@ -104,8 +115,7 @@ public class Image extends ComponentBase {
             getDesignData().set("com.image.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             if (value != null && !value.isEmpty()) {
                 String fileExt = FilenameUtils.getExtension(value);
-                if (fileExt.equals("jpg") || fileExt.equals("jpeg")
-                        || fileExt.equals("png") || fileExt.equals("gif")) {
+                if (INPUT_EXTENSIONS.contains(fileExt)) {
                     String tableName = getTableData().getString("name");
                     String fieldName = getDesignData().getString("name");
                     String databasePath = tableName + File.separator + fieldName + File.separator;
@@ -114,13 +124,20 @@ public class Image extends ComponentBase {
                     Path filePath = Paths.get(Config.getPathAppStorageDatabase(getProteu()), databasePath + value);
                     if (!Files.isDirectory(filePath) && Files.exists(filePath)) {
                         String path = FilenameUtils.getPath(databasePath);
-                        try (org.netuno.psamata.ImageTools imgToolsForm = new org.netuno.psamata.ImageTools(Config.getPathAppStorageDatabase(getProteu()) + "/" + path + fileName + "___form." + fileExt)) {
-                            getDesignData().set("com.image.form.width", imgToolsForm.getWidth() / 2);
-                            getDesignData().set("com.image.form.height", imgToolsForm.getHeight() / 2);
+                        Path filePathForm = Paths.get(Config.getPathAppStorageDatabase(getProteu()), path + fileName + "___form." + fileExt);
+                        if (Files.exists(filePathForm)) {
+                            try (org.netuno.psamata.ImageTools imgToolsForm = new org.netuno.psamata.ImageTools(filePathForm.toFile())) {
+                                getDesignData().set("com.image.form.width", imgToolsForm.getWidth() / 2);
+                                getDesignData().set("com.image.form.height", imgToolsForm.getHeight() / 2);
+                            } catch (Exception e) {
+                                logger.debug("Failed to process the form image: "+ filePathForm, e);
+                            }
                         }
-                        try (org.netuno.psamata.ImageTools imgTools = new org.netuno.psamata.ImageTools(Config.getPathAppStorageDatabase(getProteu()) + "/" + path + fileName + "." + fileExt)) {
+                        try (org.netuno.psamata.ImageTools imgTools = new org.netuno.psamata.ImageTools(filePath.toFile())) {
                             getDesignData().set("com.image.width", imgTools.getWidth());
                             getDesignData().set("com.image.height", imgTools.getHeight());
+                        } catch (Exception e) {
+                            logger.debug("Failed to process the image: "+ filePath, e);
                         }
                         getDesignData().set("com.image.extension", fileExt);
                         DecimalFormat decimalFormat = new DecimalFormat("0.00");
@@ -158,8 +175,7 @@ public class Image extends ComponentBase {
     public String getHtmlValue() {
         if (value != null && !value.isEmpty()) {
             String fileExt = FilenameUtils.getExtension(value);
-            if (fileExt.equals("jpg") || fileExt.equals("jpeg")
-                    || fileExt.equals("png") || fileExt.equals("gif")) {
+            if (INPUT_EXTENSIONS.contains(fileExt)) {
                 try {
                     String tableName = getTableData().getString("name");
                     String fieldName = getDesignData().getString("name");
@@ -180,14 +196,20 @@ public class Image extends ComponentBase {
                         try (ImageTools imgToolsSearch = new ImageTools(fileImageSearch)) {
                             getDesignData().set("com.image.search.width", imgToolsSearch.getWidth() / 2);
                             getDesignData().set("com.image.search.height", imgToolsSearch.getHeight() / 2);
+                        } catch (Exception e) {
+                            logger.debug("Failed to process the search image: "+ fileImageSearch, e);
                         }
                         try (ImageTools imgToolsForm = new ImageTools(fileImageForm)) {
                             getDesignData().set("com.image.form.width", imgToolsForm.getWidth() / 2);
                             getDesignData().set("com.image.form.height", imgToolsForm.getHeight() / 2);
+                        } catch (Exception e) {
+                            logger.debug("Failed to process the form image: "+ fileImageForm, e);
                         }
                         try (ImageTools imgTools = new ImageTools(fileImage)) {
                             getDesignData().set("com.image.width", imgTools.getWidth());
                             getDesignData().set("com.image.height", imgTools.getHeight());
+                        } catch (Exception e) {
+                            logger.debug("Failed to process the image: "+ fileImage, e);
                         }
                         getDesignData().set("com.image.uid", getValues().getString(getValuesPrefix() + "uid"));
                         getDesignData().set("com.image.extension", fileExt);
@@ -242,20 +264,38 @@ public class Image extends ComponentBase {
                 if (getDatabaseValues() != null) {
                     oldValue = databaseValues.getString(fieldName);
                 }
-                String path = tableName + File.separator + fieldName + File.separator;
+                String fieldPath = tableName + File.separator + fieldName + File.separator;
                 getValues().getString(fieldName + ":value");
                 if (!oldValue.isEmpty()) {
                     getValues().set(fieldName + ":old", oldValue);
                     deleteImageFile(oldValue);
                 }
                 if (file != null && file.available() > 0) {
-                    var storageFilePath = FileSafeness.appStorageSave(getProteu(), path, file);
-                    final var fileName = storageFilePath.fileName();
+                    String baseStoragePath = Config.getPathAppStorageDatabase(getProteu()) + File.separator;
+                    final var storageFilePath = FileSafeness.appStorageSave(getProteu(), fieldPath, file);
                     final var fileExt = storageFilePath.extension();
-                    getValues().set(fieldName, fileName);
-                    if (fileExt.equals("png") || fileExt.equals("gif") || fileExt.equals("jpg") || fileExt.equals("jpeg")) {
-                        String filePath = Config.getPathAppStorageDatabase(getProteu()) + File.separator;
-                        try (ImageTools imgTools = new ImageTools(filePath + storageFilePath.filePath())) {
+                    final var outExt = OUTPUT_EXTENSIONS.get(fileExt);
+                    final var outFilePath = fieldPath + storageFilePath.baseName() +"."+ outExt;
+                    final var outFullPathIO = Paths.get(baseStoragePath, outFilePath);
+                    if (!fileExt.equalsIgnoreCase(outExt)) {
+                        if (fileExt.equalsIgnoreCase("jpeg") && outExt.equalsIgnoreCase("jpg")) {
+                            Files.move(
+                                    Paths.get(baseStoragePath, storageFilePath.filePath()),
+                                    outFullPathIO
+                            );
+                        } else {
+                            try (ImageTools imgTools = new ImageTools(baseStoragePath + storageFilePath.filePath())) {
+                                imgTools.save(outFullPathIO.toFile(), outExt);
+                            } catch (Exception e) {
+                                throw new Error(e);
+                            }
+                            Files.deleteIfExists(Paths.get(Config.getPathAppStorageDatabase(getProteu()), storageFilePath.filePath()));
+                        }
+                    }
+                    final var outFileName = storageFilePath.baseName() + "."+ outExt;
+                    getValues().set(fieldName, outFileName);
+                    if (INPUT_EXTENSIONS.contains(fileExt)) {
+                        try (ImageTools imgTools = new ImageTools(outFullPathIO.toFile())) {
                             if (imgTools.getHeight() > 400 || imgTools.getWidth() > 400) {
                                 if (imgTools.getHeight() > imgTools.getWidth()) {
                                     imgTools.resize(0, 400);
@@ -263,7 +303,7 @@ public class Image extends ComponentBase {
                                     imgTools.resize(400, 0);
                                 }
                             }
-                            imgTools.save(Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + FilenameUtils.getBaseName(fileName) + "___form." + fileExt, fileExt);
+                            imgTools.save(baseStoragePath + fieldPath + storageFilePath.baseName() + "___form." + outExt, outExt);
                             if (imgTools.getHeight() > 200 || imgTools.getWidth() > 200) {
                                 if (imgTools.getHeight() > imgTools.getWidth()) {
                                     imgTools.resize(0, 200);
@@ -271,14 +311,14 @@ public class Image extends ComponentBase {
                                     imgTools.resize(200, 0);
                                 }
                             }
-                            imgTools.save(Config.getPathAppStorageDatabase(getProteu()) + File.separator + path + FilenameUtils.getBaseName(fileName) + "___search." + fileExt, fileExt);
+                            imgTools.save(baseStoragePath + fieldPath + storageFilePath.baseName() + "___search." + outExt, outExt);
                         } catch (Exception e) {
                             throw new Error(e);
                         }
                     }
-                    getValues().set(requestName + ":value", fileName);
-                    getValues().set(requestName + ":new", fileName);
-                    getValues().set(requestName + ":path", storageFilePath.filePath());
+                    getValues().set(requestName + ":value", outFileName);
+                    getValues().set(requestName + ":new", outFileName);
+                    getValues().set(requestName + ":path", outFilePath);
                 }
             } catch (IOException e) {
                 throw new Error(e);
