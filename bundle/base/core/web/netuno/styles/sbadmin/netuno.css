@@ -78,6 +78,14 @@ body {
     margin-top: 20px;
 }
 
+.netuno-report-result {
+    margin-top: 20px;
+}
+
+.netuno-report-result iframe {
+    border: 1px solid #aaa;
+}
+
 .netuno-user-providers-container > div:first-child {
     margin-top: 20px;
     margin-bottom: 20px;
