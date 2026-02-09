@@ -1,7 +1,7 @@
 <div id="_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}">
 </div>
 <script>
-     (function () {
+     (function ($) {
          const Text = function Text({value, useSign}) {
              const inputSign = this.ref();
              const btnSign = this.ref();
@@ -43,6 +43,9 @@
                      'data-mask-reverse': "_{data=com.text.mask.reverse}",
                      'data-mask-selectonfocus': "_{data=com.text.mask.selectonfocus}",
                      'data-type': "_{data=com.text.type}",
+                     onKeyPress: ()=> {
+                         $(input.current).closest("div.has-error").removeClass("has-error")
+                     },
                      onChange: ()=> {
                          if (input.current.getAttribute('validation') === 'numeric') {
                              input.current.value = input.current.value.trim();
@@ -65,5 +68,5 @@
                  useSign: '_{data=com.text.sign}' === 'true'
              }
          );
-     })();
+     })($);
 </script>
