@@ -195,7 +195,7 @@ public class Service {
             ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeServiceConfiguration);
             hili.event().run(EventId.SERVICE_CONFIG);
             hili.event().run(EventId.SERVICE_CONFIG_SCRIPT_BEFORE);
-            if (service.core("_service_config")) {
+            if (runCoreScript(proteu, hili, "_service_config")) {
                 hili.event().run(EventId.SERVICE_CONFIG_SCRIPT_AFTER);
                 ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterServiceConfiguration);
                 hili.event().run(EventId.SERVICE_CONFIG_AFTER);
@@ -226,7 +226,7 @@ public class Service {
                 ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeServiceConfiguration);
                 hili.event().run(EventId.SERVICE_START);
                 hili.event().run(EventId.SERVICE_START_SCRIPT_BEFORE);
-                service.core("_service_start");
+                runCoreScript(proteu, hili, "_service_start");
                 hili.event().run(EventId.SERVICE_START_SCRIPT_AFTER);
                 ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterServiceConfiguration);
                 hili.event().run(EventId.SERVICE_START_AFTER);
@@ -249,7 +249,7 @@ public class Service {
                     ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeServiceConfiguration);
                     hili.event().run(EventId.SERVICE_END);
                     hili.event().run(EventId.SERVICE_END_SCRIPT_BEFORE);
-                    service.core("_service_end");
+                    runCoreScript(proteu, hili, "_service_end");
                     hili.event().run(EventId.SERVICE_END_SCRIPT_AFTER);
                     ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterServiceConfiguration);
                     hili.event().run(EventId.SERVICE_END_AFTER);
@@ -272,7 +272,7 @@ public class Service {
         }
     }
 
-    public boolean core(String file) {
+    public static boolean runCoreScript(Proteu proteu, Hili hili, String file) {
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(proteu) + "/" + file);
         if (scriptPath != null) {
             return hili.sandbox()
@@ -283,7 +283,7 @@ public class Service {
                             hili.event().run(EventId.SERVICE_ERROR_BEFORE, Values.newMap().set("error", t));
                             hili.event().run(EventId.SERVICE_ERROR);
                             hili.event().run(EventId.SERVICE_ERROR_SCRIPT_BEFORE, Values.newMap().set("error", t));
-                            core("_service_error");
+                            runCoreScript(proteu, hili, "_service_error");
                             hili.event().run(EventId.SERVICE_ERROR_SCRIPT_AFTER, Values.newMap().set("error", t));
                             hili.event().run(EventId.SERVICE_ERROR_AFTER, Values.newMap().set("error", t));
                         }
@@ -332,7 +332,7 @@ public class Service {
                             hili.event().run(EventId.SERVICE_ERROR_BEFORE, Values.newMap().set("error", t));
                             hili.event().run(EventId.SERVICE_ERROR);
                             hili.event().run(EventId.SERVICE_ERROR_SCRIPT_BEFORE, Values.newMap().set("error", t));
-                            core("_service_error");
+                            runCoreScript(proteu, hili, "_service_error");
                             hili.event().run(EventId.SERVICE_ERROR_SCRIPT_AFTER, Values.newMap().set("error", t));
                             hili.event().run(EventId.SERVICE_ERROR_AFTER, Values.newMap().set("error", t));
                         }
