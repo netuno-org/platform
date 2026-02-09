@@ -140,6 +140,7 @@ public class Setup extends ManagerBase {
                     table.newColumn().setName("big").setType(Column.Type.BOOLEAN).setDefault(),
                     table.newColumn().setName("parent_id").setType(Column.Type.INT).setDefault(),
                     table.newColumn().setName("reorder").setType(Column.Type.INT).setNotNull(true).setDefault(),
+                    table.newColumn().setName("report_behaviour").setType(Column.Type.INT).setNotNull(false).setDefault(),
                     table.newColumn().setName("firebase").setType(Column.Type.VARCHAR).setDefault()
             );
             index.create("netuno_table", "group_id");
