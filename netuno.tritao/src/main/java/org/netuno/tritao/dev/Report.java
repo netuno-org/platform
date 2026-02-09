@@ -125,6 +125,8 @@ public class Report {
         }
     	data.set("parent.items", parentItems);
 
+        data.set("behaviour.value", table != null ? table.getInt("report_behaviour", 0) : 0);
+
         String optionsUser = "";
         for (Values user : Config.getDBBuilder(proteu).selectUserSearch("")) {
             data.set("option.value", user.getString("uid"));
