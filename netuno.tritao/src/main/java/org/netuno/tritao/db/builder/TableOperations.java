@@ -87,6 +87,9 @@ public interface TableOperations extends BuilderBase, TableSelect, TableDesignSe
                     rsParentTable != null && rsParentTable.size() == 1 ? rsParentTable.get(0).getString("id")
                             : (data.getInt("parent_id") > 0 ? data.getInt("parent_id") + "" : "0")
             );
+            if (data.getBoolean("report")) {
+                values.set("report_behaviour", data.getInt("behaviour", 0));
+            }
             values.set("user_id", user != null ? user.getString("id") : "0");
             values.set("group_id", group != null ? group.getString("id") : "0");
             values.set("show_id", data.getBoolean("show_id"));
@@ -175,6 +178,9 @@ public interface TableOperations extends BuilderBase, TableSelect, TableDesignSe
             values.set("description", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("description")) + "'");
             values.set("parent_id",
                     rsParentTable != null && rsParentTable.size() == 1 ? rsParentTable.get(0).getString("id") : "0");
+            if (getProteu().getRequestAll().getBoolean("report")) {
+                values.set("report_behaviour", getProteu().getRequestAll().getInt("behaviour", 0));
+            }
             values.set("user_id", user != null ? user.getString("id") : "0");
             values.set("group_id", group != null ? group.getString("id") : "0");
             values.set("show_id", getProteu().getRequestAll().getBoolean("show_id"));
