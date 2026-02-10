@@ -73,95 +73,92 @@ public class Report {
 		if (!Rule.getRule(proteu, hili, tableId).haveAccess()) {
             return;
         }
-        if (rowTable != null) {
-
-            if (proteu.getRequestAll().getString("netuno_action").equalsIgnoreCase("uid")) {
-                proteu.outputJSON(
-                        new Values().set("uid", rowTable.getString("uid"))
-                );
-                return;
-            }
-
-            proteu.getRequestAll().set("netuno_table_id", tableId);
-            proteu.getRequestAll().set("netuno_table_uid", rowTable.getString("uid"));
-            proteu.getRequestAll().set("netuno_report_id", tableId);
-            proteu.getRequestAll().set("netuno_report_uid", rowTable.getString("uid"));
-            proteu.getConfig().set("netuno_report", "true");
-            boolean controlActive = rowTable.getBoolean("control_active");
-            tableName = rowTable.getString("name");
-            proteu.getConfig().set("netuno_report_name", tableName);
-            proteu.getConfig().set("netuno_form_name", tableName);
-            proteu.getConfig().set("netuno_table_type", "report");
-            proteu.getConfig().set("netuno_form_mode", "report");
-
-            List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTable.getString("id"));
-
-            TemplateBuilder.output(proteu, hili, "report/head", rowTable);
-            TemplateBuilder.output(proteu, hili, "form/head");
-            int rsCount = 0;
-            int y = 1;
-            int quebra = 0;
-            for (int i = 0; i < rsDesignXY.size(); i++) {
-                Values rowTritaoDesignXY = rsDesignXY.get(i);
-                if (!Rule.hasDesignFieldViewAccess(proteu, hili, rowTritaoDesignXY)) {
-                    continue;
-                }
-                Component comp = Config.getNewComponent(proteu, hili, rowTritaoDesignXY.getString("type"));
-                comp.setProteu(proteu);
-                comp.setDesignData(rowTritaoDesignXY);
-                comp.setTableData(rowTable);
-                comp.setMode(Component.Mode.ReportForm);
-                if (!comp.isRenderSearchForm()) {
-                    continue;
-                }
-                if (quebra != 0) {
-                    if (rowTritaoDesignXY.getInt("y") >= quebra) {
-                        TemplateBuilder.output(proteu, hili, "form/break");
-                        quebra = 0;
-                    }
-                }
-                if (rsCount == 0) {
-                    y = rowTritaoDesignXY.getInt("y");
-                }
-                if (y < rowTritaoDesignXY.getInt("y")) {
-                    TemplateBuilder.output(proteu, hili, "form/line_break");
-                    y = rowTritaoDesignXY.getInt("y");
-                }
-                if (rowTritaoDesignXY.getInt("rowspan") <= 0) {
-                    rowTritaoDesignXY.set("rowspan", "");
-                } else {
-                    quebra = rowTritaoDesignXY.getInt("rowspan") + rowTritaoDesignXY.getInt("y");
-                }
-                if (rowTritaoDesignXY.getInt("colspan") <= 0) {
-                    rowTritaoDesignXY.set("colspan", "");
-                }
-                if (rowTritaoDesignXY.getString("tdwidth").equals("")) {
-                    rowTritaoDesignXY.set("tdwidth", "");
-                }
-                if (rowTritaoDesignXY.getString("tdheight").equals("")) {
-                    rowTritaoDesignXY.set("tdheight", "");
-                }
-                TemplateBuilder.output(proteu, hili, "form/component_start", rowTritaoDesignXY);
-                comp.render();
-                TemplateBuilder.output(proteu, hili, "form/component_end", rowTritaoDesignXY);
-                rsCount++;
-            }
-            if (controlActive) {
-                TemplateBuilder.output(proteu, hili, "form/line_break");
-                Values valuesEmpty = new Values();
-                TemplateBuilder.output(proteu, hili, "form/component_start", valuesEmpty);
-                Active comActive = new Active(proteu, hili);
-                comActive.setProteu(proteu);
-                comActive.setDesignData(valuesEmpty);
-                comActive.setTableData(rowTable);
-                comActive.setMode(Component.Mode.SearchForm);
-                comActive.setOn();
-                comActive.render();
-                TemplateBuilder.output(proteu, hili, "form/component_end", valuesEmpty);
-            }
-            TemplateBuilder.output(proteu, hili, "form/foot");
-            TemplateBuilder.output(proteu, hili, "report/buttons");
-            TemplateBuilder.output(proteu, hili, "report/foot");
+        if (proteu.getRequestAll().getString("netuno_action").equalsIgnoreCase("uid")) {
+            proteu.outputJSON(
+                    new Values().set("uid", rowTable.getString("uid"))
+            );
+            return;
         }
+
+        proteu.getRequestAll().set("netuno_table_id", tableId);
+        proteu.getRequestAll().set("netuno_table_uid", rowTable.getString("uid"));
+        proteu.getRequestAll().set("netuno_report_id", tableId);
+        proteu.getRequestAll().set("netuno_report_uid", rowTable.getString("uid"));
+        proteu.getConfig().set("netuno_report", "true");
+        boolean controlActive = rowTable.getBoolean("control_active");
+        tableName = rowTable.getString("name");
+        proteu.getConfig().set("netuno_report_name", tableName);
+        proteu.getConfig().set("netuno_form_name", tableName);
+        proteu.getConfig().set("netuno_table_type", "report");
+        proteu.getConfig().set("netuno_form_mode", "report");
+
+        List<Values> rsDesignXY = Config.getDBBuilder(proteu).selectTableDesignXY(rowTable.getString("id"));
+
+        TemplateBuilder.output(proteu, hili, "report/head", rowTable);
+        TemplateBuilder.output(proteu, hili, "form/head");
+        int rsCount = 0;
+        int y = 1;
+        int quebra = 0;
+        for (int i = 0; i < rsDesignXY.size(); i++) {
+            Values rowTritaoDesignXY = rsDesignXY.get(i);
+            if (!Rule.hasDesignFieldViewAccess(proteu, hili, rowTritaoDesignXY)) {
+                continue;
+            }
+            Component comp = Config.getNewComponent(proteu, hili, rowTritaoDesignXY.getString("type"));
+            comp.setProteu(proteu);
+            comp.setDesignData(rowTritaoDesignXY);
+            comp.setTableData(rowTable);
+            comp.setMode(Component.Mode.ReportForm);
+            if (!comp.isRenderSearchForm()) {
+                continue;
+            }
+            if (quebra != 0) {
+                if (rowTritaoDesignXY.getInt("y") >= quebra) {
+                    TemplateBuilder.output(proteu, hili, "form/break");
+                    quebra = 0;
+                }
+            }
+            if (rsCount == 0) {
+                y = rowTritaoDesignXY.getInt("y");
+            }
+            if (y < rowTritaoDesignXY.getInt("y")) {
+                TemplateBuilder.output(proteu, hili, "form/line_break");
+                y = rowTritaoDesignXY.getInt("y");
+            }
+            if (rowTritaoDesignXY.getInt("rowspan") <= 0) {
+                rowTritaoDesignXY.set("rowspan", "");
+            } else {
+                quebra = rowTritaoDesignXY.getInt("rowspan") + rowTritaoDesignXY.getInt("y");
+            }
+            if (rowTritaoDesignXY.getInt("colspan") <= 0) {
+                rowTritaoDesignXY.set("colspan", "");
+            }
+            if (rowTritaoDesignXY.getString("tdwidth").equals("")) {
+                rowTritaoDesignXY.set("tdwidth", "");
+            }
+            if (rowTritaoDesignXY.getString("tdheight").equals("")) {
+                rowTritaoDesignXY.set("tdheight", "");
+            }
+            TemplateBuilder.output(proteu, hili, "form/component_start", rowTritaoDesignXY);
+            comp.render();
+            TemplateBuilder.output(proteu, hili, "form/component_end", rowTritaoDesignXY);
+            rsCount++;
+        }
+        if (controlActive) {
+            TemplateBuilder.output(proteu, hili, "form/line_break");
+            Values valuesEmpty = new Values();
+            TemplateBuilder.output(proteu, hili, "form/component_start", valuesEmpty);
+            Active comActive = new Active(proteu, hili);
+            comActive.setProteu(proteu);
+            comActive.setDesignData(valuesEmpty);
+            comActive.setTableData(rowTable);
+            comActive.setMode(Component.Mode.SearchForm);
+            comActive.setOn();
+            comActive.render();
+            TemplateBuilder.output(proteu, hili, "form/component_end", valuesEmpty);
+        }
+        TemplateBuilder.output(proteu, hili, "form/foot");
+        TemplateBuilder.output(proteu, hili, "report/buttons");
+        TemplateBuilder.output(proteu, hili, "report/foot");
     }    
 }
