@@ -18,11 +18,14 @@
 package org.netuno.tritao;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.script.ScriptRunner;
 import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.event.EventId;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.util.Rule;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -70,17 +73,50 @@ public class ReportBuilder {
             return;
         }
 
-        if (rowTable != null) {
-            proteu.getRequestAll().set("netuno_table_id", tableId);
-            proteu.getRequestAll().set("netuno_table_uid", rowTable.getString("uid"));
-            proteu.getRequestAll().set("netuno_report_id", tableId);
-            proteu.getRequestAll().set("netuno_report_uid", rowTable.getString("uid"));
-            proteu.getConfig().set("netuno_report", "true");
-            proteu.getConfig().set("_report", "true");
-            tableName = rowTable.getString("name");
-            proteu.getConfig().set("netuno_report_name", tableName);
-            proteu.getConfig().set("_report_name", tableName);
-            TemplateBuilder.outputReport(proteu, hili, tableName, rowTable);
+        proteu.getRequestAll().set("netuno_table_id", tableId);
+        proteu.getRequestAll().set("netuno_table_uid", rowTable.getString("uid"));
+        proteu.getRequestAll().set("netuno_report_id", tableId);
+        proteu.getRequestAll().set("netuno_report_uid", rowTable.getString("uid"));
+        proteu.getConfig().set("netuno_report", "true");
+        proteu.getConfig().set("_report", "true");
+        tableName = rowTable.getString("name");
+        proteu.getConfig().set("netuno_report_name", tableName);
+        proteu.getConfig().set("_report_name", tableName);
+
+        String scriptPath = null;
+        if (ScriptRunner.searchScriptFile(Config.getPathAppReports(proteu) + "/" + tableName) != null) {
+            scriptPath = tableName;
+        } else if (ScriptRunner.searchScriptFile(Config.getPathAppReports(proteu) + "/" + tableName +".post") != null) {
+            scriptPath = tableName +".post";
+        } else if (ScriptRunner.searchScriptFile(Config.getPathAppReports(proteu) + "/" + tableName +".get") != null) {
+            scriptPath = tableName +".get";
+        } else if (ScriptRunner.searchScriptFile(Config.getPathAppReports(proteu) + "/" + tableName +"/post") != null) {
+            scriptPath = tableName +"/post";
+        } else if (ScriptRunner.searchScriptFile(Config.getPathAppReports(proteu) + "/" + tableName +"/get") != null) {
+            scriptPath = tableName +"/get";
         }
+        if (scriptPath != null) {
+            final var scriptFilePath = scriptPath;
+            hili.sandbox()
+                    .runScript(Config.getPathAppReports(proteu), scriptFilePath)
+                    .onError((t) -> {
+                        proteu.setResponseHeader(Proteu.HTTPStatus.InternalServerError500);
+                        try {
+                            for (Function<Object[], Object> func : proteu.getConfig().getValues("_exec:service:onError", Values.newList()).list(Function.class)) {
+                                func.apply(new Object[] {t, scriptFilePath});
+                            }
+                        } finally {
+                            hili.event().run(EventId.SERVICE_ERROR_BEFORE, Values.newMap().set("error", t));
+                            hili.event().run(EventId.SERVICE_ERROR);
+                            hili.event().run(EventId.SERVICE_ERROR_SCRIPT_BEFORE, Values.newMap().set("error", t));
+                            Service.runCoreScript(proteu, hili, "_service_error");
+                            hili.event().run(EventId.SERVICE_ERROR_SCRIPT_AFTER, Values.newMap().set("error", t));
+                            hili.event().run(EventId.SERVICE_ERROR_AFTER, Values.newMap().set("error", t));
+                        }
+                    })
+                    .isSuccess();
+            return;
+        }
+        TemplateBuilder.outputReport(proteu, hili, tableName, rowTable);
 	}
 }
