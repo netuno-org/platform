@@ -351,23 +351,44 @@ netuno.loadReport = (container) ->
 netuno.buildReport = (report) ->
   report = $(report) unless report instanceof jQuery
   container = report.parents("[netuno-report][netuno-report-uid]:first")
-  containerResult = container.children("[netuno-report-result=#{ container.attr('netuno-report-name') }]")
-  containerForm = container.find("form[name=netuno_report_#{ container.attr('netuno-report-name') }_form]:first")
-  netuno.unmask containerForm
-  containerForm.ajaxForm().submit()
-  if containerForm.validate().valid()
-    netuno.mask containerForm
-    containerForm.ajaxForm(
-      url: "#{ netuno.config.urlAdmin }ReportBuilder#{ netuno.config.extension }"
-      iframe: false
-      success: (response) ->
-        containerResult.html(response)
-        netuno.contentLoaded(containerResult)
-    ).submit()
-    return true
-  else
-    netuno.mask containerForm
-    return false
+  reportName = container.attr('netuno-report-name')
+  result = container.children("[netuno-report-result=#{ reportName }]")
+  form = container.find("form[name=netuno_report_#{ reportName }_form]:first")
+  behaviour = form.find("input[name=netuno_report_behaviour]").val()
+  netuno.unmask form
+  form.ajaxForm().submit()
+  if form.validate().valid()
+    result.empty()
+    if behaviour == "0"
+      form.ajaxForm(
+        url: "#{ netuno.config.urlAdmin }ReportBuilder#{ netuno.config.extension }"
+        iframe: false
+        success: (response) ->
+          result.html(response)
+          netuno.contentLoaded(result)
+      ).submit()
+    else if behaviour == "1"
+      form.ajaxFormUnbind()
+      form.attr("action", "#{ netuno.config.urlAdmin }ReportBuilder#{ netuno.config.extension }?#{form.serialize()}")
+        .attr("method", "GET")
+        .attr("target", "_blank")
+        .removeAttr("enctype")
+      form.submit()
+    else if behaviour == "2" or behaviour == "3"
+      time = new Date().getTime()
+      reportIframeID = "netuno_report_#{reportName}_result_#{time}"
+      if behaviour == "2"
+        result.append("<iframe name=\"#{reportIframeID}\" style=\"width: 100%; height: calc(100vh - 140px);\" scrolling=\"auto\" frameborder=\"false\">")
+      else if behaviour == "3"
+        result.append("<iframe name=\"#{reportIframeID}\" style=\"display: none;\">")
+      form.ajaxFormUnbind()
+      form.attr("action", "#{ netuno.config.urlAdmin }ReportBuilder#{ netuno.config.extension }?#{form.serialize()}")
+        .attr("method", "GET")
+        .attr("target", reportIframeID)
+        .removeAttr("enctype")
+      form.submit()
+  netuno.mask form
+  return false
 
 netuno.loadValidation = (form) ->
   form = $(form) unless form instanceof jQuery
@@ -1058,7 +1079,11 @@ netuno.com['multiselect'] =
 
 netuno.com['date'] =
   load: (fieldId, container, callback) ->
-    $("\##{ fieldId }").on('change', callback).datepicker({
+    $("\##{ fieldId }").on('change', ()->
+      $(this).closest("div.has-error").removeClass("has-error")
+      if callback
+        callback()
+    ).datepicker({
       format: "yyyy-mm-dd",
       autoclose: true,
       todayHighlight: true,
@@ -1068,7 +1093,11 @@ netuno.com['date'] =
 
 netuno.com['time'] =
   load: (fieldId, container, callback) ->
-    control = $("\##{ fieldId }").on('change', callback).clockpicker({
+    control = $("\##{ fieldId }").on('change', ()->
+      $(this).closest("div.has-error").removeClass("has-error")
+      if callback
+        callback()
+    ).clockpicker({
       autoclose: true,
       placement: 'top'
     })

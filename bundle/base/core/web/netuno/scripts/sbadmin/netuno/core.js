@@ -462,30 +462,47 @@
   };
 
   netuno.buildReport = function(report) {
-    var container, containerForm, containerResult;
+    var behaviour, container, form, reportIframeID, reportName, result, time;
     if (!(report instanceof jQuery)) {
       report = $(report);
     }
     container = report.parents("[netuno-report][netuno-report-uid]:first");
-    containerResult = container.children(`[netuno-report-result=${container.attr('netuno-report-name')}]`);
-    containerForm = container.find(`form[name=netuno_report_${container.attr('netuno-report-name')}_form]:first`);
-    netuno.unmask(containerForm);
-    containerForm.ajaxForm().submit();
-    if (containerForm.validate().valid()) {
-      netuno.mask(containerForm);
-      containerForm.ajaxForm({
-        url: `${netuno.config.urlAdmin}ReportBuilder${netuno.config.extension}`,
-        iframe: false,
-        success: function(response) {
-          containerResult.html(response);
-          return netuno.contentLoaded(containerResult);
+    reportName = container.attr('netuno-report-name');
+    result = container.children(`[netuno-report-result=${reportName}]`);
+    form = container.find(`form[name=netuno_report_${reportName}_form]:first`);
+    behaviour = form.find("input[name=netuno_report_behaviour]").val();
+    netuno.unmask(form);
+    form.ajaxForm().submit();
+    if (form.validate().valid()) {
+      result.empty();
+      if (behaviour === "0") {
+        form.ajaxForm({
+          url: `${netuno.config.urlAdmin}ReportBuilder${netuno.config.extension}`,
+          iframe: false,
+          success: function(response) {
+            result.html(response);
+            return netuno.contentLoaded(result);
+          }
+        }).submit();
+      } else if (behaviour === "1") {
+        form.ajaxFormUnbind();
+        form.attr("action", `${netuno.config.urlAdmin}ReportBuilder${netuno.config.extension}?${form.serialize()}`).attr("method", "GET").attr("target", "_blank").removeAttr("enctype");
+        form.submit();
+      } else if (behaviour === "2" || behaviour === "3") {
+        time = new Date().getTime();
+        reportIframeID = `netuno_report_${reportName}_result_${time}`;
+        if (behaviour === "2") {
+          result.append(`<iframe name=\"${reportIframeID}\" style=\"width: 100%; height: calc(100vh - 140px);\" scrolling=\"auto\" frameborder=\"false\">`);
+        } else if (behaviour === "3") {
+          result.append(`<iframe name=\"${reportIframeID}\" style=\"display: none;\">`);
         }
-      }).submit();
-      return true;
-    } else {
-      netuno.mask(containerForm);
-      return false;
+        form.ajaxFormUnbind();
+        form.attr("action", `${netuno.config.urlAdmin}ReportBuilder${netuno.config.extension}?${form.serialize()}`).attr("method", "GET").attr("target", reportIframeID).removeAttr("enctype");
+        form.submit();
+      }
     }
+    netuno.mask(form);
+    return false;
   };
 
   netuno.loadValidation = function(form) {
@@ -1333,7 +1350,12 @@
 
   netuno.com['date'] = {
     load: function(fieldId, container, callback) {
-      return $(`\#${fieldId}`).on('change', callback).datepicker({
+      return $(`\#${fieldId}`).on('change', function() {
+        $(this).closest("div.has-error").removeClass("has-error");
+        if (callback) {
+          return callback();
+        }
+      }).datepicker({
         format: "yyyy-mm-dd",
         autoclose: true,
         todayHighlight: true,
@@ -1346,7 +1368,12 @@
   netuno.com['time'] = {
     load: function(fieldId, container, callback) {
       var control;
-      control = $(`\#${fieldId}`).on('change', callback).clockpicker({
+      control = $(`\#${fieldId}`).on('change', function() {
+        $(this).closest("div.has-error").removeClass("has-error");
+        if (callback) {
+          return callback();
+        }
+      }).clockpicker({
         autoclose: true,
         placement: 'top'
       });
