@@ -969,11 +969,11 @@ public class File implements IO {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Apaga o ficheiro do caminho inserido.",
+                    description = "Apaga o arquivo ou a pasta se estiver vazia.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Deletes the file of the inserted file",
+                    description = "Delete the file or folder if it is empty.",
                     howToUse = {})
     }, parameters = {
     }, returns = {})
@@ -987,11 +987,11 @@ public class File implements IO {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Apaga um determinado ficheiro/diretorio e recursivamente todos os subs.",
+                    description = "Elimina tudo que estiver dentro da pasta, incluindo todas as subpastas e arquivos.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Deletes a file/directory and recursive all the subs",
+                    description = "Delete everything inside the folder, including all subfolders and files.",
                     howToUse = {})
     }, parameters = {
     }, returns = {})
@@ -1002,15 +1002,30 @@ public class File implements IO {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Apaga um determinado ficheiro/diretorio pela extensão do ficheiro.",
+                    description = "Apaga todos os arquivos dentro da estrutura da pasta incluindo as subpastas.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Deletes a file/directory by the file extension",
+                    description = "Deletes all files within the folder structure including subfolders.",
                     howToUse = {})
     }, parameters = {
     }, returns = {})
-    public final boolean deleteAll(String extension) {
+    public final boolean deleteAllFiles() {
+        return FileUtils.delete(fullPath(), FileRecursionLevel.ALL, false, "");
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Elimina todos os arquivos pela extensão, dentro da estrutura da pasta incluindo as subpastas.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Delete all files by extension, within the folder structure including subfolders.",
+                    howToUse = {})
+    }, parameters = {
+    }, returns = {})
+    public final boolean deleteAllFiles(String extension) {
         return FileUtils.delete(fullPath(), FileRecursionLevel.ALL, false, extension);
     }
     
@@ -1020,11 +1035,11 @@ public class File implements IO {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Apaga um determinado ficheiro/diretório e recursivamente todos os subs.",
+                    description = "Apaga apenas os arquivos dentro da pasta, e não apaga os arquivos em subpastas.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Deletes a file/directory and recursive all the subs",
+                    description = "It only deletes files within the folder; it does not delete files in subfolders.",
                     howToUse = {})
     }, parameters = {
     }, returns = {})
@@ -1035,11 +1050,11 @@ public class File implements IO {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Apaga ficheiros designados pela extensão inserida e recursivamente nas subpastas.",
+                    description = "Apaga apenas arquivos com a extensão dentro da pasta, e não apaga nenhum arquivo em subpastas.",
                     howToUse = {}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Deletes a file of a inserted extension and recursive all the subs",
+                    description = "It only deletes files with the extension within the folder, and does not delete any files in subfolders.",
                     howToUse = {})
     }, parameters = {
             @ParameterDoc(name = "stringExtension", translations = {
