@@ -120,6 +120,9 @@ public class FileUtils {
                 return f.delete();
             }
             if (f.isDirectory()) {
+                if (recursive == FileRecursionLevel.NONE) {
+                    return f.delete();
+                }
                 if (recursive == FileRecursionLevel.ALL) {
                     for (java.io.File subFile : f.listFiles()) {
                         if (subFile.isFile()) {
