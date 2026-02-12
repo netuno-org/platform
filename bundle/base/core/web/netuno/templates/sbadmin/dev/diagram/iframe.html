@@ -43,11 +43,20 @@
 #foreach($table in $data.get("tables"))
 [#if($table.getInt("links_count")<5)<links$table.getInt("links_count")>#else<links5>#end $table.getString("name")|id: int &#key&#star; #foreach($field in $table.get("fields")); $field.getString("name"): $field.getString("type") #if($field.getBoolean("unique"))&#key#end#if($field.getBoolean("mandatory"))&#star#end#end]
 #end
+#if (($_req.getInt("reorganize", 0) == 1) || ($_req.getInt("reorganize", 0) == 3) || ($_req.getInt("reorganize", 0) == 5) || ($_req.getInt("reorganize", 0) == 7))
+#foreach($link in $data.get("linksFrom"))
+[<state> $link.getString("field")] (o--o) [$link.getString("from")]
+#end
+#foreach($link in $data.get("linksTo"))
+[$link.getString("to")] o<-:> [$link.getString("field")]
+#end
+#else
 #foreach($link in $data.get("linksFrom"))
 [$link.getString("from")] (o--o) [<state> $link.getString("field")]
 #end
 #foreach($link in $data.get("linksTo"))
 [$link.getString("field")] <:->o [$link.getString("to")]
+#end
 #end
 </script>
 
