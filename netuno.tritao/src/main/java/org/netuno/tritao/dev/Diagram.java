@@ -42,12 +42,25 @@ public class Diagram {
         }
         if (proteu.getRequestAll().getString("action").equals("iframe")) {
             proteu.setResponseHeaderNoCache();
+            final int reorganize = proteu.getRequestAll().getInt("reorganize");
+
             Values data = new Values();
 
-            List<Values> tables = Config.getDBBuilder(proteu).selectTable();
+            List<Values> allTables = Config.getDBBuilder(proteu).selectTable();
+            List<Values> tables = new ArrayList<>();
             List<Values> links = new ArrayList<>();
             List<Values> linksFrom = new ArrayList<>();
             List<Values> linksTo = new ArrayList<>();
+            if (!proteu.getRequestAll().getString("form_uid").isEmpty()) {
+                for (Values table : allTables) {
+                    if (table.getString("uid").equals(proteu.getRequestAll().getString("form_uid"))) {
+                        tables.add(table);
+                        loadChildTables(tables, allTables, table);
+                    }
+                }
+            } else {
+                tables = allTables;
+            }
             for (Values table : tables) {
                 List<Values> fields = Config.getDBBuilder(proteu).selectTableDesign(table.getString("id"), "");
                 int linksCount = 0;
@@ -59,6 +72,9 @@ public class Diagram {
                         Parameter parameter = com.getConfiguration().getParameters().get(key);
                         if (parameter.getType() == ParameterType.LINK && parameter.getKey().equalsIgnoreCase("LINK")) {
                             String toTable = Link.getTableName(parameter.getValue());
+                            if (tables.stream().noneMatch((t) -> t.getString("name").equals(toTable))) {
+                                continue;
+                            }
                             Values link = new Values();
                             link.set("field", field.getString("name"));
                             link.set("from", table.getString("name"));
@@ -101,6 +117,13 @@ public class Diagram {
             tables.sort((l1, l2) -> {
                 Values l1Counter = tablesLinksCounter.getValues(l1.getString("name"));
                 Values l2Counter = tablesLinksCounter.getValues(l2.getString("name"));
+                if (reorganize == 2 || reorganize == 3) {
+                    return Integer.compare(l1Counter.getInt("toCount"), l2Counter.getInt("toCount"));
+                } else if (reorganize == 4 || reorganize == 5) {
+                    return Integer.compare(l1Counter.getInt("fromCount"), l2Counter.getInt("fromCount"));
+                } else if (reorganize == 6 || reorganize == 7) {
+                    return Integer.compare(l1Counter.getInt("toCount"), l2Counter.getInt("fromCount"));
+                }
                 return Integer.compare(l1Counter.getInt("fromCount"), l2Counter.getInt("toCount"));
             });
 
@@ -112,6 +135,27 @@ public class Diagram {
             return;
         }
         Values data = new Values();
+        List<Values> tables = Config.getDBBuilder(proteu).selectTable();
+        String baseTablesItems = "";
+        for (Values table : tables) {
+            if (tables.stream().noneMatch((t) -> t.getInt("parent_id") == table.getInt("id"))) {
+                continue;
+            }
+            data.set("table.item.id", table.getString("id"));
+            data.set("table.item.uid", table.getString("uid"));
+            data.set("table.item.name", table.getString("name"));
+            baseTablesItems = baseTablesItems.concat(TemplateBuilder.getOutput(proteu, hili, "dev/diagram/main_base_table_item", data));
+        }
+        data.set("baseTablesItems", baseTablesItems);
         TemplateBuilder.output(proteu, hili, "dev/diagram/main", data);
+    }
+
+    public static void loadChildTables(List<Values> tables, List<Values> allTables, Values parent) {
+        for (Values t : allTables) {
+            if (t.getInt("parent_id") == parent.getInt("id")) {
+                tables.add(t);
+                loadChildTables(tables, allTables, t);
+            }
+        }
     }
 }
