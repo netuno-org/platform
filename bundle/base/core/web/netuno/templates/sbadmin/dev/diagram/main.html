@@ -1,5 +1,24 @@
+<div class="row" style="margin-top: 10px;">
+    <div class="col-xs-6 col-sm-8">
+        <div class="form-group">
+            <label for="diagram_base_form">_{&lang=netuno.dev.diagram.label.parent}</label>
+            <select class="form-control" name="base_form_uid" id="diagram_base_form" allow-clear style="width: 100%;">
+                <option value="0"></option>
+                _{data=baseTablesItems}
+            </select>
+        </div>
+    </div>
+    <div class="col-xs-6 col-sm-4">
+        <div class="form-group" style="text-align: right;">
+            <label for="diagram_reorganize_button">&nbsp;</label><br/>
+            <button id="diagram_reorganize_button" type="button" class="btn btn-default">
+                _{&lang=netuno.dev.diagram.button.reorganize}
+            </button>
+        </div>
+    </div>
+</div>
 
-<iframe id="diagram" src="Diagram_{netuno-config=extension}?action=iframe" style="width: 100%; height: 100%;"></iframe>
+<iframe id="diagram" src="Diagram_{netuno-config=extension}?action=iframe" style="width: 100%; height: calc(100% - 100px);"></iframe>
 
 <script>
     (function (netuno, $) {
@@ -27,6 +46,25 @@
         });
         diagram.on("load", function() {
             return diagram.fadeIn("slow");
+        })
+
+        var formUid = "";
+        var reorganize = 0;
+        $("#diagram_base_form").on("change", function () {
+            formUid = $(this).val();
+            changeDiagramUrl();
         });
+        $("#diagram_reorganize_button").on("click", function () {
+            reorganize++;
+            if (reorganize >= 8) {
+                reorganize = 0;
+            }
+            changeDiagramUrl();
+        });
+
+        function changeDiagramUrl() {
+            diagram.attr("src", "Diagram_{netuno-config=extension}?action=iframe&form_uid="+ formUid +"&reorganize="+ reorganize);
+        }
+
     })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
 </script>
