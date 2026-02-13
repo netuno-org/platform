@@ -23,7 +23,7 @@ package org.netuno.psamata.io;
  */
 public class SafePath {
 
-    // private static String OS = System.getProperty("os.name");
+    private static String OS = System.getProperty("os.name");
 
     public static String path(String path) {
         path = path.replace("\\", "/");
@@ -34,8 +34,20 @@ public class SafePath {
                 path = path.replace("//", "/");
             } else if (path.contains("~/")) {
                 path = path.replace("~/", "/");
-            } else if (path.contains(":")) { // && !OS.startsWith("Windows")
-                path = path.replace(":", "");
+            } else if (path.contains(":")) {
+                if (OS.startsWith("Windows")) {
+                    String driver = "";
+                    if (path.indexOf(":") == 1 && path.length() > 2) {
+                        driver = path.substring(0, 2);
+                        path = path.substring(2);
+                    }
+                    path = path.replace(":", "");
+                    if (!driver.isEmpty()) {
+                        path = driver + path;
+                    }
+                } else {
+                    path = path.replace(":", "");
+                }
             } else if (path.contains("*")) {
                 path = path.replace("*", "");
             } else if (path.contains("?")) {
