@@ -40,17 +40,17 @@ public class FileSystemPath {
             } else if (storage.isFileSystemServer()) {
                 path = Config.getPathAppFileSystemServer(proteu);
             }
-            if (storage.path() != null && !storage.path().isEmpty()) {
+            if (storage.subpath() != null && !storage.subpath().isEmpty()) {
                 path += File.separator +
-                        SafePath.fileSystemPath(storage.path());
+                        SafePath.fileSystemPath(storage.subpath());
             }
         } else if (storage.isDatabase()) {
-            if (storage.path() != null && !storage.path().isEmpty()) {
+            if (storage.subpath() != null && !storage.subpath().isEmpty()) {
                 path = Config.getPathAppStorageDatabase(proteu);
                 path += File.separator +
                         SafePath.path(storage.getBase().substring("database/".length())) +
                         File.separator +
-                        SafePath.fileSystemPath(storage.path());
+                        SafePath.fileSystemPath(storage.subpath());
             }
         }
         return path;
