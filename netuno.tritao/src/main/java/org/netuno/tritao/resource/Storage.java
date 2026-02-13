@@ -54,7 +54,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
                 title = "Storage",
-                introduction = "Recursos de gestão de ficheiros da aplicação que ficam na pasta `storage`.",
+                introduction = "Recursos de gestão de arquivos da aplicação que ficam na pasta `storage`.",
                 howToUse = { }
         ),
         @LibraryTranslationDoc(
@@ -74,27 +74,27 @@ public class Storage extends ResourceBase implements IO {
 
     private boolean hasFile = false;
     
-    private String base = null;
-    private String path = null;
+    public String base = null;
+    public String subpath = null;
 
     public Storage(Proteu proteu, Hili hili) {
         super(proteu, hili);
     }
 
-    public Storage(Proteu proteu, Hili hili, String base, String path) {
+    public Storage(Proteu proteu, Hili hili, String base, String subpath) {
         super(proteu, hili);
-        base = base.toLowerCase();
+        this.base = base.toLowerCase();
         if (setBase(base)) {
-            this.path = SafePath.path(path);
+            this.subpath = SafePath.path(subpath);
         }
     }
 
-    public Storage(Proteu proteu, Hili hili, String base, String path, String file) {
+    public Storage(Proteu proteu, Hili hili, String base, String subpath, String file) {
         super(proteu, hili);
         base = base.toLowerCase();
         if (setBase(base)) {
         	this.hasFile = true;
-            this.path = (path != null && !path.isEmpty() ? SafePath.path(path) + "/" : "") + SafePath.fileName(file);
+            this.subpath = (subpath != null && !subpath.isEmpty() ? SafePath.path(subpath) + "/" : "") + SafePath.fileName(file);
         }
     }
 
@@ -301,7 +301,7 @@ public class Storage extends ResourceBase implements IO {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Inicia um novo storage para a pasta onde ficam os ficheiros de uma tabela que representa um formulário.",
+                description = "Inicia um novo storage para a pasta onde ficam os arquivos de uma tabela que representa um formulário.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
@@ -338,7 +338,7 @@ public class Storage extends ResourceBase implements IO {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Inicia um novo storage para a pasta onde ficam os ficheiros de uma coluna específica de uma tabela que representa um campo de um formulário.",
+                description = "Inicia um novo storage para a pasta onde ficam os arquivos de uma coluna específica de uma tabela que representa um campo de um formulário.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
@@ -387,7 +387,7 @@ public class Storage extends ResourceBase implements IO {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Inicia um novo storage para um caminho específico onde ficam os ficheiros de uma coluna específica de uma tabela que representa um campo de um formulário.",
+                description = "Inicia um novo storage para um caminho específico onde ficam os arquivos de uma coluna específica de uma tabela que representa um campo de um formulário.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
@@ -418,12 +418,12 @@ public class Storage extends ResourceBase implements IO {
                         description = "Column name which is also the same as the field name on the form."
                 )
             }),
-            @ParameterDoc(name = "path",
+            @ParameterDoc(name = "subpath",
             translations = {
                 @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        name = "caminho",
-                        description = "Caminho adicional relativo, normalmente é o nome do ficheiro mas pode ser um caminho mais complexo."
+                        name = "subcaminho",
+                        description = "Caminho adicional relativo, normalmente é o nome do arquivos mas pode ser um caminho mais complexo."
                 ),
                 @ParameterTranslationDoc(
                         language = LanguageDoc.EN,
@@ -440,15 +440,15 @@ public class Storage extends ResourceBase implements IO {
                 description = "New storage started for the specific path from a column in a database table."
         )
     })
-    public Storage database(String table, String column, String path) {
-        Storage storage = new Storage(getProteu(), getHili(), "database/"+ table +"/"+ column, path);
+    public Storage database(String table, String column, String subpath) {
+        Storage storage = new Storage(getProteu(), getHili(), "database/"+ table +"/"+ column, subpath);
         return storage;
     }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Inicia um novo storage para um caminho específico onde ficam os ficheiros de uma coluna específica de uma tabela que representa um campo de um formulário.",
+                description = "Inicia um novo storage para um caminho específico onde ficam os arquivos de uma coluna específica de uma tabela que representa um campo de um formulário.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
@@ -479,12 +479,12 @@ public class Storage extends ResourceBase implements IO {
                         description = "Column name which is also the same as the field name on the form."
                 )
             }),
-            @ParameterDoc(name = "path",
+            @ParameterDoc(name = "subpath",
             translations = {
                 @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        name = "caminho",
-                        description = "Caminho adicional relativo, normalmente é o nome do ficheiro mas pode ser um caminho mais complexo."
+                        name = "subcaminho",
+                        description = "Caminho adicional relativo, normalmente é o nome do arquivo mas pode ser um caminho mais complexo."
                 ),
                 @ParameterTranslationDoc(
                         language = LanguageDoc.EN,
@@ -495,8 +495,8 @@ public class Storage extends ResourceBase implements IO {
             translations = {
                 @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        name = "nomeFicheiro",
-                        description = "Possibilidade de adicionar o nome do ficheiro a parte caso haja uma estrutura de caminho muito complexa, muito pouco usual."
+                        name = "nomeArquivo",
+                        description = "Possibilidade de adicionar o nome do arquivo a parte caso haja uma estrutura de caminho muito complexa, muito pouco usual."
                 ),
                 @ParameterTranslationDoc(
                         language = LanguageDoc.EN,
@@ -513,8 +513,8 @@ public class Storage extends ResourceBase implements IO {
                 description = "New storage started for the specific path from a column in a database table."
         )
     })
-    public Storage database(String table, String column, String path, String fileName) {
-        Storage storage = new Storage(getProteu(), getHili(), "database/"+ table +"/"+ column, path, fileName);
+    public Storage database(String table, String column, String subpath, String fileName) {
+        Storage storage = new Storage(getProteu(), getHili(), "database/"+ table +"/"+ column, subpath, fileName);
         return storage;
     }
 
@@ -540,12 +540,12 @@ public class Storage extends ResourceBase implements IO {
                         description = "Name of the folder inside the `storage/filesystem`, it will usually be public, private or server."
                 )
             }),
-            @ParameterDoc(name = "path",
+            @ParameterDoc(name = "subpath",
             translations = {
                 @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        name = "caminho",
-                        description = "Caminho adicional relativo, normalmente é o nome do ficheiro mas pode ser um caminho mais complexo."
+                        name = "subcaminho",
+                        description = "Caminho adicional relativo, normalmente é o nome do arquivo mas pode ser um caminho mais complexo."
                 ),
                 @ParameterTranslationDoc(
                         language = LanguageDoc.EN,
@@ -562,8 +562,8 @@ public class Storage extends ResourceBase implements IO {
                 description = "New storage started for the specific path from the storage filesystem."
         )
     })
-    public Storage filesystem(String folder, String path) {
-        Storage storage = new Storage(getProteu(), getHili(), "filesystem/"+ folder, path);
+    public Storage filesystem(String folder, String subpath) {
+        Storage storage = new Storage(getProteu(), getHili(), "filesystem/"+ folder, subpath);
         return storage;
     }
 
@@ -589,12 +589,12 @@ public class Storage extends ResourceBase implements IO {
                         description = "Name of the folder inside the `storage/filesystem`, it will usually be public, private or server."
                 )
             }),
-            @ParameterDoc(name = "path",
+            @ParameterDoc(name = "subpath",
             translations = {
                 @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        name = "caminho",
-                        description = "Caminho adicional relativo, normalmente é o nome do ficheiro mas pode ser um caminho mais complexo."
+                        name = "subcaminho",
+                        description = "Caminho adicional relativo, normalmente é o nome do arquivo mas pode ser um caminho mais complexo."
                 ),
                 @ParameterTranslationDoc(
                         language = LanguageDoc.EN,
@@ -605,8 +605,8 @@ public class Storage extends ResourceBase implements IO {
             translations = {
                 @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        name = "nomeFicheiro",
-                        description = "Possibilidade de adicionar o nome do ficheiro a parte caso haja uma estrutura de caminho muito complexa."
+                        name = "nomeArquivo",
+                        description = "Possibilidade de adicionar o nome do arquivo a parte caso haja uma estrutura de caminho muito complexa."
                 ),
                 @ParameterTranslationDoc(
                         language = LanguageDoc.EN,
@@ -623,32 +623,32 @@ public class Storage extends ResourceBase implements IO {
                 description = "New storage started for the specific path from the storage filesystem."
         )
     })
-    public Storage filesystem(String folder, String path, String fileName) {
-        Storage storage = new Storage(getProteu(), getHili(), "filesystem/" + folder, path, fileName);
+    public Storage filesystem(String folder, String subpath, String fileName) {
+        Storage storage = new Storage(getProteu(), getHili(), "filesystem/" + folder, subpath, fileName);
         return storage;
     }
 
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Obtém o caminho do storage que está sendo utilizado.",
+                description = "Obtém o subcaminho do storage que está sendo utilizado.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Gets the path of the storage being used.",
+                description = "Gets the subpath of the storage being used.",
                 howToUse = { })
     }, parameters = { }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "O caminho do storage."
+                description = "O subcaminho do storage."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The path of the storage."
+                description = "The subpath of the storage."
         )
     })
-    public String path() {
-        return path;
+    public String subpath() {
+        return subpath;
     }
 
     @MethodDoc(translations = {
@@ -696,7 +696,26 @@ public class Storage extends ResourceBase implements IO {
     public String absolutePath() {
         return FileSystemPath.absoluteFromStorage(getProteu(), this);
     }
-    
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Garante que o caminho de pastas no storage existe, caso não exista será criado.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Ensures that the folder path exists in the storage; if it doesn't, it will be created.",
+                    howToUse = { })
+    }, parameters = { }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A própria instância do storage."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The storage instance itself."
+            )
+    })
     public Storage ensurePath() throws ResourceException {
     	java.nio.file.Path filePath = Paths.get(absolutePath());
     	try {
@@ -733,16 +752,16 @@ public class Storage extends ResourceBase implements IO {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto de manipulação de ficheiro do storage que está sendo utilizado.",
+                description = "Objeto de manipulação do arquivo existente no storage que está sendo utilizado.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "File manipulation object of the storage being used.",
+                description = "Object for manipulating the file located in the storage being used.",
                 howToUse = { })
     }, parameters = { }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Permite interagir com o ficheiro fisicamente."
+                description = "Permite interagir com o arquivo fisicamente."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
@@ -766,7 +785,7 @@ public class Storage extends ResourceBase implements IO {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Guarda o ficheiro no caminho do storage atual.",
+                description = "Salva o arquivo no caminho do storage atual.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
@@ -777,8 +796,8 @@ public class Storage extends ResourceBase implements IO {
         translations = {
             @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    name = "ficheiro",
-                    description = "Ficheiro que será guardado no `storage` atual."
+                    name = "arquivo",
+                    description = "Arquivo que será salvado no `storage` atual."
             ),
             @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
@@ -797,7 +816,7 @@ public class Storage extends ResourceBase implements IO {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Verifica se é um ficheiro.",
+                description = "Verifica se é um arquivo.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
@@ -806,11 +825,11 @@ public class Storage extends ResourceBase implements IO {
     }, parameters = { }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Se é um ficheiro."
+                description = "Se é um arquivo."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "If it is a file."
+                description = "If is a file."
         )
     })
     public boolean isFile() {
@@ -824,11 +843,11 @@ public class Storage extends ResourceBase implements IO {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Objeto de manipulação de pasta do storage que está sendo utilizado.",
+                description = "Objeto de manipulação da pasta existente no storage que está sendo utilizado.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Folder manipulation object of the storage being used.",
+                description = "Object for manipulating the folder located in the storage being used.",
                 howToUse = { })
     }, parameters = { }, returns = {
         @ReturnTranslationDoc(
@@ -870,7 +889,7 @@ public class Storage extends ResourceBase implements IO {
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "If it is a folder."
+                description = "If is a folder."
         )
     })
     public boolean isFolder() {
@@ -879,6 +898,33 @@ public class Storage extends ResourceBase implements IO {
                 Config.getPathAppBase(getProteu())
         );
         return file.exists() && file.isDirectory();
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém o objeto de manipulação para o caminho no storage que está sendo utilizado.",
+                    howToUse = { }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Retrieves the manipulation object for the path in storage that is being used.",
+                    howToUse = { })
+    }, parameters = { }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Permite interagir com a caminho fisicamente."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "It allows to interact with the path physically."
+            )
+    })
+    public File path() {
+        File path = new File(
+                FileSystemPath.absoluteFromStorage(getProteu(), this),
+                Config.getPathAppBase(getProteu())
+        );
+        return path;
     }
     
     @MethodDoc(translations = {
@@ -1120,7 +1166,7 @@ public class Storage extends ResourceBase implements IO {
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Obtém a extensão do ficheiro.",
+                description = "Obtém a extensão do arquivo.",
                 howToUse = { }),
         @MethodTranslationDoc(
                 language = LanguageDoc.EN,
@@ -1129,7 +1175,7 @@ public class Storage extends ResourceBase implements IO {
     }, parameters = { }, returns = {
         @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "A extensão do ficheiro."
+                description = "A extensão do arquivo."
         ),
         @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
@@ -1144,7 +1190,7 @@ public class Storage extends ResourceBase implements IO {
             translations = {
                 @MethodTranslationDoc(
                         language = LanguageDoc.PT,
-                        description = "Verifica se o nome ficheiro contém a extensão.",
+                        description = "Verifica se o nome arquivo contém a extensão.",
                         howToUse = { }),
                 @MethodTranslationDoc(
                         language = LanguageDoc.EN,
@@ -1152,10 +1198,11 @@ public class Storage extends ResourceBase implements IO {
                         howToUse = { })
             },
             parameters = {
-                @ParameterDoc(name = "charset", translations = {
+                @ParameterDoc(name = "extension", translations = {
                         @ParameterTranslationDoc(
                                 language = LanguageDoc.PT,
-                                description = "Extensão no nome do ficheiro."
+                                name = "extensao",
+                                description = "Extensão no nome do arquivo."
                         ),
                         @ParameterTranslationDoc(
                                 language = LanguageDoc.EN,
@@ -1166,7 +1213,7 @@ public class Storage extends ResourceBase implements IO {
             returns = {
                 @ReturnTranslationDoc(
                         language = LanguageDoc.PT,
-                        description = "Se o ficheiro contém a extensão definida."
+                        description = "Se o arquivo contém a extensão definida."
                 ),
                 @ReturnTranslationDoc(
                         language = LanguageDoc.EN,
@@ -1182,7 +1229,7 @@ public class Storage extends ResourceBase implements IO {
             translations = {
                 @MethodTranslationDoc(
                         language = LanguageDoc.PT,
-                        description = "Gera um novo storage a partir do storage atual mas para um ficheiro com um nome randómico e que ainda não exista e assim possa ser guardado sem conflitos.",
+                        description = "Gera um novo storage a partir do storage atual mas para um arquivo com um nome randómico e que ainda não exista e assim possa ser salvado sem conflitos.",
                         howToUse = { }),
                 @MethodTranslationDoc(
                         language = LanguageDoc.EN,
@@ -1190,10 +1237,11 @@ public class Storage extends ResourceBase implements IO {
                         howToUse = { })
             },
             parameters = {
-                @ParameterDoc(name = "charset", translations = {
+                @ParameterDoc(name = "extension", translations = {
                         @ParameterTranslationDoc(
                                 language = LanguageDoc.PT,
-                                description = "Extensão no nome do ficheiro."
+                                name = "extensao",
+                                description = "Extensão no nome do arquivo."
                         ),
                         @ParameterTranslationDoc(
                                 language = LanguageDoc.EN,
@@ -1204,7 +1252,7 @@ public class Storage extends ResourceBase implements IO {
             returns = {
                 @ReturnTranslationDoc(
                         language = LanguageDoc.PT,
-                        description = "Novo storage para um novo ficheiro com um nome randómico inexistente."
+                        description = "Novo storage para um novo arquivo com um nome randómico inexistente."
                 ),
                 @ReturnTranslationDoc(
                         language = LanguageDoc.EN,
@@ -1216,7 +1264,7 @@ public class Storage extends ResourceBase implements IO {
     	while (true) {
             Random random = resource(Random.class);
             String fileName = random.initString() +"."+ extension;
-            Storage storage = new Storage(getProteu(), getHili(), base, path, fileName);
+            Storage storage = new Storage(getProteu(), getHili(), base, subpath, fileName);
             if (!storage.file().exists()) {
                 return storage;
             }
