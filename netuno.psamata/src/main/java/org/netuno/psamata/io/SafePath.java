@@ -34,19 +34,17 @@ public class SafePath {
                 path = path.replace("//", "/");
             } else if (path.contains("~/")) {
                 path = path.replace("~/", "/");
-            } else if (path.contains(":")) {
-                if (OS.startsWith("Windows")) {
-                    String driver = "";
-                    if (path.indexOf(":") == 1 && path.length() > 2) {
-                        driver = path.substring(0, 2);
-                        path = path.substring(2);
-                    }
-                    path = path.replace(":", "");
-                    if (!driver.isEmpty()) {
-                        path = driver + path;
-                    }
-                } else {
-                    path = path.replace(":", "");
+            } else if (!OS.startsWith("Windows") && path.contains(":")) {
+                path = path.replace(":", "");
+            } else if (OS.startsWith("Windows") && path.lastIndexOf(":") > 1) {
+                String driver = "";
+                if (path.indexOf(":") == 1) {
+                    driver = path.substring(0, 2);
+                    path = path.substring(2);
+                }
+                path = path.replace(":", "");
+                if (!driver.isEmpty()) {
+                    path = driver + path;
                 }
             } else if (path.contains("*")) {
                 path = path.replace("*", "");
