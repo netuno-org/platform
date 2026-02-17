@@ -2,6 +2,9 @@ package org.netuno.tritao.db.form.where;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 
@@ -473,6 +476,15 @@ public class Where {
     }
     public Where equals(Time time) {
         return this.equal(time);
+    }
+    public Where equals(LocalDateTime localDateTime) {
+        return this.equal(localDateTime);
+    }
+    public Where equals(LocalDate localDate) {
+        return this.equal(localDate);
+    }
+    public Where equals(LocalTime localTime) {
+        return this.equal(localTime);
     }
 
     @MethodDoc(
