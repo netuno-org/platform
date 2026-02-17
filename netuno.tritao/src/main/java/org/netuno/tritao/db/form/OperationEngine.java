@@ -16,6 +16,7 @@ import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -112,7 +113,9 @@ public class OperationEngine extends Data {
 
     public String objectToValue(Object object) {
         return switch (object) {
-            case String s -> "'" + DB.sqlInjection(s) + "'";
+            case String string -> "'" + DB.sqlInjection(string) + "'";
+            case UUID uuid -> "'" + uuid + "'";
+            case Number number -> number.toString();
             default -> object.toString();
         };
     }
