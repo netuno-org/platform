@@ -16,6 +16,7 @@ import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -117,6 +118,7 @@ public class OperationEngine extends Data {
             case UUID uuid -> "'" + uuid + "'";
             case Number number -> number.toString();
             case Timestamp timestamp -> "'" + timestamp + "'";
+            case Time time -> "'" + time + "'";
             default -> object.toString();
         };
     }
