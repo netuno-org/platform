@@ -116,6 +116,7 @@ public class OperationEngine extends Data {
             case String string -> "'" + DB.sqlInjection(string) + "'";
             case UUID uuid -> "'" + uuid + "'";
             case Number number -> number.toString();
+            case Timestamp timestamp -> "'" + timestamp + "'";
             default -> object.toString();
         };
     }
