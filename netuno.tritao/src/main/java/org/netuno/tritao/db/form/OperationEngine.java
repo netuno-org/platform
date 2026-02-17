@@ -16,8 +16,10 @@ import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,6 +123,7 @@ public class OperationEngine extends Data {
             case Timestamp timestamp -> "'" + timestamp + "'";
             case Time time -> "'" + time + "'";
             case LocalDateTime localDateTime -> "'" + Timestamp.valueOf(localDateTime) + "'";
+            case LocalDate localDate -> "'" + Date.valueOf(localDate) + "'";
             default -> object.toString();
         };
     }
