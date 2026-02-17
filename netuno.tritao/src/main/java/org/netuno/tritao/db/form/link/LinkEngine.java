@@ -12,9 +12,11 @@ import org.netuno.tritao.db.form.join.RelationshipType;
 import org.netuno.tritao.resource.util.ResourceException;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -184,6 +186,9 @@ public class LinkEngine extends TableBuilderResourceBase {
                 }
                 case LocalTime localTimeValue -> {
                     values.set(field.getColumn(), Time.valueOf(localTimeValue));
+                }
+                case LocalDate localDate -> {
+                    values.set(field.getColumn(), Date.valueOf(localDate));
                 }
                 case Instant instantValue -> {
                     values.set(field.getColumn(), Timestamp.from(instantValue));
