@@ -1,5 +1,7 @@
 package org.netuno.tritao.db.form.where;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.*;
 
 
@@ -465,6 +467,12 @@ public class Where {
     }
     public Where equals(UUID uid) {
         return this.equal(uid);
+    }
+    public Where equals(Timestamp timestamp) {
+        return this.equal(timestamp);
+    }
+    public Where equals(Time time) {
+        return this.equal(time);
     }
 
     @MethodDoc(
