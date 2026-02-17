@@ -6,6 +6,7 @@ package org.netuno.tritao.db.form.where;
  */
 public enum RelationalOperatorType {
     Equals,
+    NotEquals,
     StartsWith,
     EndsWith,
     Contains,
