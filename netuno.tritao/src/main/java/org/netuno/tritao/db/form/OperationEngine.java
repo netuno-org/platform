@@ -21,6 +21,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -124,6 +125,7 @@ public class OperationEngine extends Data {
             case Time time -> "'" + time + "'";
             case LocalDateTime localDateTime -> "'" + Timestamp.valueOf(localDateTime) + "'";
             case LocalDate localDate -> "'" + Date.valueOf(localDate) + "'";
+            case LocalTime localTime -> "'" + Time.valueOf(localTime) + "'";
             default -> object.toString();
         };
     }
