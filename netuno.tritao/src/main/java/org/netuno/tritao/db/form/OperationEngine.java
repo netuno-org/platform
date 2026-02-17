@@ -18,6 +18,7 @@ import org.netuno.tritao.resource.util.ResourceException;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -119,6 +120,7 @@ public class OperationEngine extends Data {
             case Number number -> number.toString();
             case Timestamp timestamp -> "'" + timestamp + "'";
             case Time time -> "'" + time + "'";
+            case LocalDateTime localDateTime -> "'" + Timestamp.valueOf(localDateTime) + "'";
             default -> object.toString();
         };
     }
