@@ -463,6 +463,9 @@ public class Where {
     public Where equals(Boolean value) {
         return this.equal(value);
     }
+    public Where equals(UUID uid) {
+        return this.equal(uid);
+    }
 
     @MethodDoc(
         translations = {
