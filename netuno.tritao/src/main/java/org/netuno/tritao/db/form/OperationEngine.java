@@ -123,6 +123,7 @@ public class OperationEngine extends Data {
             case Number number -> number.toString();
             case Timestamp timestamp -> "'" + timestamp + "'";
             case Time time -> "'" + time + "'";
+            case Date date -> "'" + date + "'";
             case LocalDateTime localDateTime -> "'" + Timestamp.valueOf(localDateTime) + "'";
             case LocalDate localDate -> "'" + Date.valueOf(localDate) + "'";
             case LocalTime localTime -> "'" + Time.valueOf(localTime) + "'";
