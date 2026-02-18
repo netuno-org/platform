@@ -184,6 +184,9 @@ public class LinkEngine extends TableBuilderResourceBase {
                 case Time timeValue -> {
                     values.set(field.getColumn(), timeValue);
                 }
+                case Date date -> {
+                    values.set(field.getColumn(), date);
+                }
                 case LocalTime localTimeValue -> {
                     values.set(field.getColumn(), Time.valueOf(localTimeValue));
                 }
