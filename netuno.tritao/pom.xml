@@ -409,7 +409,7 @@
         <dependency>
             <groupId>org.apache.bcel</groupId>
             <artifactId>bcel</artifactId>
-            <version>6.11.0</version>
+            <version>6.12.0</version>
         </dependency>
         <dependency>
             <groupId>cajuscript</groupId>
@@ -533,7 +533,7 @@
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
-            <version>9.7.0</version>
+            <version>9.7.1</version>
         </dependency>
         <dependency>
             <groupId>com.rabbitmq</groupId>

@@ -16,6 +16,12 @@ import org.netuno.tritao.db.form.where.Where;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.ResourceException;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -112,7 +118,15 @@ public class OperationEngine extends Data {
 
     public String objectToValue(Object object) {
         return switch (object) {
-            case String s -> "'" + DB.sqlInjection(s) + "'";
+            case String string -> "'" + DB.sqlInjection(string) + "'";
+            case UUID uuid -> "'" + uuid + "'";
+            case Number number -> number.toString();
+            case Timestamp timestamp -> "'" + timestamp + "'";
+            case Time time -> "'" + time + "'";
+            case Date date -> "'" + date + "'";
+            case LocalDateTime localDateTime -> "'" + Timestamp.valueOf(localDateTime) + "'";
+            case LocalDate localDate -> "'" + Date.valueOf(localDate) + "'";
+            case LocalTime localTime -> "'" + Time.valueOf(localTime) + "'";
             default -> object.toString();
         };
     }
@@ -121,6 +135,7 @@ public class OperationEngine extends Data {
 //        getHili().resource().get(org.netuno.tritao.resource.DB.class).isPostgreSQL();
         return switch (relationOperator.getOperatorType()) {
             case Equals -> " " + table+"."+column + " = " + this.objectToValue(relationOperator.getValue());
+            case NotEquals -> " " + table+"."+column + " != " + this.objectToValue(relationOperator.getValue());
             case StartsWith ->
                     " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
             case EndsWith ->

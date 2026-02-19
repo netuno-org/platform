@@ -26,7 +26,7 @@
         <sun.jakarta.mail.version>2.0.2</sun.jakarta.mail.version>
         <jakarta.mail.version>2.1.4</jakarta.mail.version>
         <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
-        <jetty.version>12.1.5</jetty.version>
+        <jetty.version>12.1.6</jetty.version>
         <picocli.version>4.7.7</picocli.version>
         <jansi.version>2.4.2</jansi.version>
         <progressbar.version>0.10.2</progressbar.version>
@@ -48,7 +48,7 @@
         <itext.version>9.5.0</itext.version>
         <pdfbox.version>3.0.6</pdfbox.version>
         <log4j.version>2.25.3</log4j.version>
-        <oshi.version>6.9.2</oshi.version>
+        <oshi.version>6.9.3</oshi.version>
         <sshj.version>0.40.0</sshj.version>
         <twelvemonkeys.version>3.13.0</twelvemonkeys.version>
         <junit.version>6.0.2</junit.version>

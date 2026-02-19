@@ -1,5 +1,11 @@
 package org.netuno.tritao.db.form.where;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 
@@ -462,6 +468,38 @@ public class Where {
 
     public Where equals(Boolean value) {
         return this.equal(value);
+    }
+
+    public Where equals(UUID uid) {
+        return this.equal(uid);
+    }
+
+    public Where equals(Timestamp timestamp) {
+        return this.equal(timestamp);
+    }
+
+    public Where equals(Time time) {
+        return this.equal(time);
+    }
+
+    public Where equals(Date date) {
+        return this.equal(date);
+    }
+
+    public Where equals(LocalDateTime localDateTime) {
+        return this.equal(localDateTime);
+    }
+
+    public Where equals(LocalDate localDate) {
+        return this.equal(localDate);
+    }
+
+    public Where equals(LocalTime localTime) {
+        return this.equal(localTime);
+    }
+
+    public Where notEquals(Object value) {
+        return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
     }
 
     @MethodDoc(
