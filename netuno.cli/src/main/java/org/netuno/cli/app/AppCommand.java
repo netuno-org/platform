@@ -63,7 +63,7 @@ public class AppCommand {
                     if (cmd.indexOf(" ") > 0) {
                         executable = cmd.substring(0, cmd.indexOf(" "));
                     }
-                    if (executable.equals("npm") || executable.equals("pnpm") || executable.equals("yarn")) {
+                    if (executable.equals("npm") || executable.equals("bun") || executable.equals("pnpm") || executable.equals("yarn")) {
                         System.out.println(OS.consoleOutput("   @|green "+ appConfig.getString("name") +"/"+ path +":|@ @|yellow Please wait... running "+ executable.toUpperCase() +" for the first time. |@"));
                         System.out.println();
                         String installCommand = command.getString("install", executable +" install");
