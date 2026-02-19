@@ -98,12 +98,6 @@ public class Server implements MainArg {
 
     @CommandLine.Option(names = { "-l", "launch" }, paramLabel = "true", description = "Launch link in browser.")
     protected boolean launch = true;
-
-    @CommandLine.Option(names = { "-n", "npm" }, paramLabel = "true", description = "Run 'npm start' into the App to auto build the frontend.")
-    protected boolean npm = false;
-    
-    @CommandLine.Option(names = { "-y", "yarn" }, paramLabel = "true", description = "Run 'yarn start' into the App to auto build the frontend.")
-    protected boolean yarn = false;
     
     @CommandLine.Option(names = { "-v", "code" }, paramLabel = "true", description = "Start the code server.")
     protected boolean code = false;
