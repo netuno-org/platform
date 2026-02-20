@@ -137,6 +137,51 @@ it means the **ClassGraph** library is missing.
 
 The published Netuno version will be generated in `bundle/dist/netuno*` which is based on the final output generated in `bundle/out/netuno`.
 
+## Build
+
+The build script executes the Maven phases: clean and package.
+
+### Windows Commands
+
+```sh
+ $ ./build.ps1
+```
+
+### Linux or Mac Commands
+
+```sh
+ $ ./build.sh
+```
+
+## Run
+
+Look at how to run directly with Maven.
+
+Short server initialization:
+
+```sh
+mvn validate -Pcli-server -Drevision=DEV -Dapp=demo
+```
+
+Full arguments:
+
+```sh
+mvn validate -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base"
+```
+
+Your apps in a relative path:
+
+```sh
+mvn validate -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base apps=../../netuno/apps"
+```
+
+Your apps in an absolute path:
+
+```sh
+mvn validate -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base apps=/srv/netuno/apps"
+```
+
+> Remember to change app=demo to your app name.
 
 ## Run/Debug With IntelliJ IDEA Community Edition
 
