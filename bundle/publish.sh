@@ -56,7 +56,7 @@ cp netuno.cli/pom-base.xml netuno.cli/pom.xml
 
 node bundle/publish-mode.js "$PublishMode"
 
-./mvn-package.sh
+./build.sh
 
 node bundle/publish-mode.js
 

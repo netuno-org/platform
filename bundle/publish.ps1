@@ -67,7 +67,7 @@ Copy-Item "netuno.cli/pom-base.xml" "netuno.cli/pom.xml" -Force
 
 & node "bundle/publish-mode.js" $PublishMode
 
-& ./mvn-package.ps1
+& ./build.ps1
 
 & node "bundle/publish-mode.js"
 
