@@ -278,7 +278,7 @@
                         <version>3.6.3</version>
                         <executions>
                             <execution>
-                                <phase>validate</phase>
+                                <phase>test</phase>
                                 <goals>
                                     <goal>java</goal>
                                 </goals>
@@ -308,7 +308,7 @@
                         <version>3.6.3</version>
                         <executions>
                             <execution>
-                                <phase>validate</phase>
+                                <phase>test</phase>
                                 <goals>
                                     <goal>java</goal>
                                 </goals>
