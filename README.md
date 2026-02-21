@@ -160,19 +160,19 @@ Look at how to run directly with Maven.
 Short server initialization:
 
 ```sh
-mvn validate -Pcli-server -Drevision=DEV -Dapp=demo
+mvn test -Pcli-server -Dapp=demo -Drevision=DEV -Dmaven.test.skip=true
 ```
 
 Full arguments:
 
 ```sh
-mvn validate -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base"
+mvn test -Pcli -Dexec.args="server app=demo home=bundle/base" -Drevision=DEV -Dmaven.test.skip=true
 ```
 
 Your apps in a relative path:
 
 ```sh
-mvn validate -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base apps=../../netuno/apps"
+mvn test -Pcli -Dexec.args="server app=demo home=bundle/base apps=../../netuno/apps" -Drevision=DEV -Dmaven.test.skip=true
 ```
 
 Your apps in an absolute path:
