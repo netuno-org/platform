@@ -64,6 +64,10 @@ To install the Netuno Platform, please, follow the:
 
 Continue with the steps below if you want to compile from scratch and change the Netuno Platform, then start cloning this repository.
 
+Make sure to use the GraalVM JDK as your Java environment:
+
+- [GraalVM with Java 25](https://github.com/graalvm/graalvm-ce-builds/releases/tag/jdk-25.0.2)
+
 ## Linux or Mac
 
 Allow permission to execute:
@@ -76,7 +80,6 @@ Run the setup script:
 ```sh
  $ ./setup.sh
 ```
-
 
 ## Windows
 
@@ -178,7 +181,7 @@ mvn test -Pcli -Dexec.args="server app=demo home=bundle/base apps=../../netuno/a
 Your apps in an absolute path:
 
 ```sh
-mvn validate -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base apps=/srv/netuno/apps"
+mvn test -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base apps=/srv/netuno/apps"
 ```
 
 > Remember to change app=demo to your app name.
@@ -219,7 +222,7 @@ Configure the fields like this:
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/idea-run-debug-configurations.png" width="525"/>
 
 Make sure of:
-- [GraalVM with Java 17](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.0)
+- [GraalVM with Java 25](https://github.com/graalvm/graalvm-ce-builds/releases/tag/jdk-25.0.2)
 - Module is `netuno-cli`
 - Main class is `org.netuno.cli.Main`
 - Working directory is `bundle/base`
