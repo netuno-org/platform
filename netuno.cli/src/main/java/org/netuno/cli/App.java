@@ -71,21 +71,43 @@ public class App implements MainArg {
     @CommandLine.Option(names = { "-S", "silent" }, paramLabel = "Avoid inputs", description = "Without inputs and confirmations.")
     protected boolean silent = false;
 
-    @CommandLine.Option(names = { "-c", "config" }, paramLabel = "Configure the App", description = "Configure the app with the default install configuration.")
-    protected String config = "";
+    @CommandLine.Option(names = { "-r", "reconfig" }, paramLabel = "Reconfigure the App", description = "Configure the app with the default configuration.")
+    protected boolean reconfig = false;
 
     @CommandLine.Option(names = { "-g", "github" }, paramLabel = "GitHub App Install", description = "Install application from a GitHub repository.")
     protected String github = "";
 
+    @CommandLine.Option(names = { "home" }, paramLabel = "home", description = "Change the default home folder.")
+    protected String home = Config.getHome();
+
+    @CommandLine.Option(names = { "apps" }, paramLabel = "apps", description = "Change the default apps home folder.")
+    protected String appsHome = Config.getAppsHome();
+
+    @CommandLine.Option(names = { "core" }, paramLabel = "core", description = "Change the default core home folder.")
+    protected String coreHome = Config.getCoreHome();
+
+    @CommandLine.Option(names = { "logs" }, paramLabel = "logs", description = "Change the default logs folder.")
+    protected String logsHome = Config.getLogsHome();
+
+    @CommandLine.Option(names = { "config" }, paramLabel = "config", description = "Configuration script name.")
+    protected String configScriptName = Config.getConfigScriptName();
+
     public void run() throws Exception {
+        Config.setConfigScriptName(configScriptName);
+        Config.setHome(home);
+        Config.setAppsHome(appsHome);
+        Config.setCoreHome(coreHome);
+        Config.setLogsHome(logsHome);
+
         GraalVMSetup.checkAndSetup();
         if (!ConfigScript.run()) {
             return;
         }
+
         System.err.println();
         System.err.println();
-        if (!config.isEmpty()) {
-            AppInstall.config(config);
+        if (reconfig) {
+            AppInstall.config(name);
             System.exit(0);
         }
         if (!github.isEmpty()) {
