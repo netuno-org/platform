@@ -49,6 +49,12 @@ public final class Config {
 
     public static final String OS = System.getProperty("os.name").toLowerCase();
 
+    public static final String HOME_DEFAULT = ".";
+    public static final String APPS_HOME_DEFAULT = Path.of(HOME_DEFAULT, "apps").toString();
+    public static final String CORE_HOME_DEFAULT = Path.of(HOME_DEFAULT, "core").toString();
+    public static final String LOGS_HOME_DEFAULT = Path.of(HOME_DEFAULT, "logs").toString();
+    public static final String CONFIG_SCRIPT_NAME_DEFAULT = Path.of(HOME_DEFAULT, "config").toString();
+
     /**
      * Configuration.
      */
@@ -62,17 +68,25 @@ public final class Config {
      */
     public static String env = "development";
     /**
-     * Apps Root.
+     * Home folder.
      */
-    public static String appsHome = "apps";
+    public static String home = HOME_DEFAULT;
     /**
-     * Core Root.
+     * Apps home folder.
      */
-    public static String coreHome = "core";
+    public static String appsHome = APPS_HOME_DEFAULT;
     /**
-     * Web Root.
+     * Core home folder.
      */
-    public static String webHome = Path.of(coreHome, "web").toString();
+    public static String coreHome = CORE_HOME_DEFAULT;
+    /**
+     * Logs home folder.
+     */
+    public static String logsHome = LOGS_HOME_DEFAULT;
+    /**
+     * Config script file.
+     */
+    public static String configScriptName = CONFIG_SCRIPT_NAME_DEFAULT;
     /**
      * Language.
      */
@@ -234,7 +248,7 @@ public final class Config {
     public static int codeServerPort = 9088;
     public static boolean codeServerEnabled = false;
     public static String codeServerAuth = "none";
-    
+
     public static String getName() {
         if (name == null || name.isEmpty()) {
             name = "local";
@@ -366,12 +380,37 @@ public final class Config {
     public static void setDownloadLogsAllowed(boolean downloadLogsAllowed) {
         Config.downloadLogsAllowed = downloadLogsAllowed;
     }
+
+    public static String getHome() {
+        return home;
+    }
+
+    public static void setHome(String home) {
+        Config.home = home;
+        if (!home.equals(HOME_DEFAULT)) {
+            if (getAppsHome().equals(APPS_HOME_DEFAULT)) {
+                setAppsHome(Path.of(getHome(), "apps").toString());
+            }
+            if (getCoreHome().equals(CORE_HOME_DEFAULT)) {
+                setCoreHome(Path.of(getHome(), "core").toString());
+            }
+            if (getLogsHome().equals(LOGS_HOME_DEFAULT)) {
+                setLogsHome(Path.of(getHome(), "logs").toString());
+            }
+            if (getConfigScriptName().equals(CONFIG_SCRIPT_NAME_DEFAULT)) {
+                setConfigScriptName(Path.of(getHome(), "config").toString());
+            }
+        }
+    }
     
     public static String getAppsHome() {
         return appsHome;
     }
 
     public static void setAppsHome(String appsHome) {
+        if (appsHome.equals(APPS_HOME_DEFAULT)) {
+            return;
+        }
         Config.appsHome = appsHome;
     }
     
@@ -380,15 +419,32 @@ public final class Config {
     }
 
     public static void setCoreHome(String coreHome) {
+        if (coreHome.equals(CORE_HOME_DEFAULT)) {
+            return;
+        }
         Config.coreHome = coreHome;
     }
 
-    public static String getWebHome() {
-        return webHome;
+    public static String getLogsHome() {
+        return logsHome;
     }
 
-    public static void setWebHome(String webHome) {
-        Config.webHome = webHome;
+    public static void setLogsHome(String logsHome) {
+        if (logsHome.equals(LOGS_HOME_DEFAULT)) {
+            return;
+        }
+        Config.logsHome = logsHome;
+    }
+
+    public static String getConfigScriptName() {
+        return configScriptName;
+    }
+
+    public static void setConfigScriptName(String configScriptName) {
+        if (configScriptName.equals(CONFIG_SCRIPT_NAME_DEFAULT)) {
+            return;
+        }
+        Config.configScriptName = configScriptName;
     }
 
     public static String getLanguage() {
