@@ -39,3 +39,5 @@ protect/proguard/*
 \#*\#
 .\#*
 
+/src/main/java/org/netuno/tritao/event/test
+
