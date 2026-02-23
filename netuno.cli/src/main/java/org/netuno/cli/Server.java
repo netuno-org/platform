@@ -17,6 +17,8 @@
 
 package org.netuno.cli;
 
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.session.DefaultSessionCacheFactory;
 import org.eclipse.jetty.session.FileSessionDataStoreFactory;
@@ -45,6 +47,7 @@ import picocli.CommandLine;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
@@ -72,7 +75,7 @@ import org.netuno.psamata.net.Remote;
 public class Server implements MainArg {
     private static Logger logger = LogManager.getLogger(Server.class);
 
-    @CommandLine.Option(names = { "-m", "name" }, paramLabel = "local", description = "Force to use this application.")
+    @CommandLine.Option(names = { "-n", "name" }, paramLabel = "local", description = "Server instance name.")
     protected String name = Config.getName();
     
     @CommandLine.Option(names = { "-a", "app" }, paramLabel = "demo", description = "Force to use this application.")
@@ -84,14 +87,20 @@ public class Server implements MainArg {
     @CommandLine.Option(names = { "-p", "port" }, paramLabel = "9000", description = "Change the default port from 9000.")
     protected int port = Config.getPort();
 
-    @CommandLine.Option(names = { "-x", "apps" }, paramLabel = "apps", description = "Change the default apps home folder.")
+    @CommandLine.Option(names = { "home" }, paramLabel = "home", description = "Change the default home folder.")
+    protected String home = Config.getHome();
+
+    @CommandLine.Option(names = { "apps" }, paramLabel = "apps", description = "Change the default apps home folder.")
     protected String appsHome = Config.getAppsHome();
 
-    @CommandLine.Option(names = { "-c", "core" }, paramLabel = "core", description = "Change the default core home folder.")
+    @CommandLine.Option(names = { "core" }, paramLabel = "core", description = "Change the default core home folder.")
     protected String coreHome = Config.getCoreHome();
 
-    @CommandLine.Option(names = { "-w", "web" }, paramLabel = "web", description = "Change the default web home folder.")
-    protected String webHome = Config.getWebHome();
+    @CommandLine.Option(names = { "logs" }, paramLabel = "logs", description = "Change the default logs folder.")
+    protected String logsHome = Config.getLogsHome();
+
+    @CommandLine.Option(names = { "config" }, paramLabel = "config", description = "Configuration script name.")
+    protected String configScriptName = Config.getConfigScriptName();
 
     @CommandLine.Option(names = { "-s", "secret" }, paramLabel = "NULL", description = "Server remote management secret.")
     protected String secret = null;
@@ -107,75 +116,36 @@ public class Server implements MainArg {
     private Values appConfig = null;
     
     public void run() {
-        boolean nameConfigOverride = this.name.equals(Config.getName());
-        boolean hostConfigOverride = this.host.equals(Config.getHost());
-        boolean portConfigOverride = this.port == Config.getPort();
-        boolean appsHomeConfigOverride = this.appsHome.equals(Config.getAppsHome());
-        boolean coreHomeConfigOverride = this.coreHome.equals(Config.getCoreHome());
-        boolean webHomeConfigOverride = this.webHome.equals(Config.getWebHome());
-        GraalVMSetup.checkAndSetup();
-        if (!ConfigScript.run()) {
-            logger.fatal("Script of the global configuration was not found.");
-            return;
-        }
-        if (nameConfigOverride) {
-            this.name = Config.getName();
-        }
-        if (hostConfigOverride) {
-            this.host = Config.getHost();
-        }
-        if (portConfigOverride) {
-            this.port = Config.getPort();
-        }
-        if (appsHomeConfigOverride) {
-            this.appsHome = Config.getAppsHome();
-        }
-        if (coreHomeConfigOverride) {
-            this.coreHome = Config.getCoreHome();
-        }
-        if (webHomeConfigOverride) {
-            this.webHome = Config.getWebHome();
-        }
         try {
+            Config.setConfigScriptName(configScriptName);
+            Config.setHome(home);
+            Config.setAppsHome(appsHome);
+            Config.setCoreHome(coreHome);
+            Config.setLogsHome(logsHome);
+
             Config.setName(name);
             
             Config.setHost(host);
             Config.setPort(port);
-            
-            Config.setWebHome(webHome);
-            
-            Config.setAppsHome(appsHome);
-            
-            Config.setCoreHome(coreHome);
-            
-            Path pathWebAppsHome = Paths.get(Config.getWebHome() + File.separator + "apps");
-            Path pathAppsHome = Paths.get(Config.getAppsHome());
-            if (Files.exists(pathWebAppsHome)) {
-                if (!Files.exists(pathAppsHome)) {
-                    Files.move(pathWebAppsHome, pathAppsHome, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
-                } else {
-                    try (Stream<Path> webAppsHomePaths = Files.list(pathWebAppsHome)) {
-                        webAppsHomePaths.filter((f) -> Files.isDirectory(f))
-                                .forEach(
-                                (f) -> {
-                                    if (f.getFileName().toString().equals("demo")) {
-                                        org.netuno.psamata.io.FileUtils.deleteAll(f.toString());
-                                    } else {
-                                        Path pathAppNewHome = Paths.get(Config.getAppsHome(), f.getFileName().toString());
-                                        try {
-                                            Files.move(f, pathAppNewHome, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
-                                        } catch (Exception e) {
-                                            logger.fatal("Fail to move from "+ f.toString() +" to "+ pathAppNewHome.toString() +".", e);
-                                        }
-                                    }
-                                }
-                        );
-                    } catch (IOException e) {
-                        logger.fatal("Fail to move web/apps to new home folder.", e);
-                    }
+
+            String logConfigFile = Path.of(Config.getLogsHome(), "log.xml").toString();
+            if (Files.exists(Path.of(logConfigFile))) {
+                System.setProperty("log4j2.configurationFile", logConfigFile);
+                try {
+                    ConfigurationSource source = new ConfigurationSource(new FileInputStream(logConfigFile));
+                    Configurator.initialize(null, source);
+                    Configurator.reconfigure();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
+            GraalVMSetup.checkAndSetup();
+            if (!ConfigScript.run()) {
+                logger.fatal("Script of the global configuration was not found.");
+                return;
+            }
+            
             Config.loadAppConfigs();
             
             App.setup();
@@ -225,7 +195,7 @@ public class Server implements MainArg {
                 server.addBean(new QueuedThreadPool(Config.getThreadPoolMax(), Config.getThreadPoolMin(), Config.getThreadPoolIdleTimeout()));
             }
             RequestLogWriter requestLogWriter = new RequestLogWriter();
-            requestLogWriter.setFilename("logs/requests-yyyy_MM_dd.log");
+            requestLogWriter.setFilename(Path.of(Config.getLogsHome(), "requests-yyyy_MM_dd.log").toString());
             requestLogWriter.setFilenameDateFormat("yyyy_MM_dd");
             requestLogWriter.setTimeZone("GMT");
             requestLogWriter.setRetainDays(30);
@@ -254,7 +224,7 @@ public class Server implements MainArg {
             // A whole host of other configurations are available, ranging from
             // configuring to support annotation scanning in the webapp (through
             // PlusConfiguration) to choosing where the webapp will unpack itself.
-            WebAppContext webapp = new WebAppContext(Config.getWebHome(), "/");
+            WebAppContext webapp = new WebAppContext(Path.of(Config.getCoreHome(), "web").toString(), "/");
             List<String> allExtraJars = new ArrayList<>();
             for (String extraLib : Config.getExtraLibs()) {
                 if (!Files.exists(Path.of(extraLib))) {
@@ -514,7 +484,7 @@ class CheckServerStartedRunnable implements Runnable {
                             password = new RandomString(36).next();
                             env.add("PASSWORD="+ password);
                         }
-                        File homeCode = new File(new File(Config.getWebHome(),"WEB-INF"), "code-server");
+                        File homeCode = Path.of(Config.getCoreHome(), "web", "WEB-INF", "code-server").toFile();
                         if (new File(homeCode, "package.json").exists()
                                 && !new File(homeCode, "node_modules").exists()) {
                             System.out.println(OS.consoleOutput("   @|green Code Server :|@ @|yellow Please wait... running NPM Install for the first time. |@"));
