@@ -24,7 +24,7 @@ public class H2Exportation {
             Config.loadAppConfigs();
         }
         var id = LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYYMMddHHmmss"));
-        var fileIdPath = Path.of(Constants.ROOT_PATH, H2DatabaseMigration.FILE_ID);
+        var fileIdPath = Path.of(Config.getHome(), H2DatabaseMigration.FILE_ID);
         try {
             var ids = H2DatabaseMigration.getIDs();
             var dataIDs = new Values();

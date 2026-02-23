@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.Config;
+import org.netuno.cli.setup.Constants;
 import org.netuno.psamata.io.GlobFileVisitor;
 
 public enum H2Version {
@@ -23,7 +24,7 @@ public enum H2Version {
 
     public Path getJAR() {
         try {
-            return GlobFileVisitor.find(Path.of(Config.getWebHome(), "WEB-INF", "lib"), "glob:**/"+ fileName);
+            return GlobFileVisitor.find(Path.of(Config.getCoreHome(), Constants.WEB_FOLDER, "WEB-INF", "lib"), "glob:**/"+ fileName);
         } catch (IOException e) {
             logger.debug("Fail to find the H2Database: "+ fileName, e);
         }

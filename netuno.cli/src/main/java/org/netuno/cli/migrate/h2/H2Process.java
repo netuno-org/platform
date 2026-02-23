@@ -19,6 +19,7 @@ package org.netuno.cli.migrate.h2;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.cli.Config;
 import org.netuno.cli.setup.Constants;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.os.ProcessLauncher;
@@ -51,9 +52,9 @@ class H2Process {
                 break;
         }
         System.out.println();
-        Path directory = Path.of(Constants.ROOT_PATH).relativize(processInfo.dbPath().getParent());
+        Path directory = Path.of(Config.getHome()).relativize(processInfo.dbPath().getParent());
         String[] command = new String[]{
-                Path.of(".", Constants.GRAALVM_FOLDER, "bin", "java").toAbsolutePath().toString(),
+                Path.of(Config.getCoreHome(), Constants.GRAALVM_FOLDER, "bin", "java").toAbsolutePath().toString(),
                 "-cp",
                 version.getJAR().toAbsolutePath().toString(),
                 "org.h2.tools.Shell",
