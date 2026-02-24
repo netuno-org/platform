@@ -16,6 +16,16 @@
 
 <form id="formQuery" name="formQuery" method="post" action="Query_{netuno-config=extension}">
   <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-6">
+      <div class="form-group">
+        <label for="managementQueryDB">_{&lang=netuno.dev.query.label.db}</label>
+        <select class="form-control" name="db" id="managementQueryDB" style="width: 100%;">
+          _{data=db.items}
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-lg-12">
       <div class="form-group">
         <label for="managementQueryCommands">_{&lang=netuno.dev.query.label.commands}</label>
