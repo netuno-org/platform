@@ -43,6 +43,17 @@ public class Query {
         if (proteu.getRequestPost().getString("action").equalsIgnoreCase("history")) {
             List<Values> items = Config.getDBBuilder(proteu).queryHistoryList(proteu.getRequestPost().getInt("page", 0));
             Values data = new Values();
+            Values appDB = proteu.getConfig().getValues("_app:config").getValues("db");
+            for (Values item : items) {
+                if (item.getString("db").isEmpty()) {
+                    item.set("db", "default");
+                }
+                String dbKey = item.getString("db");
+                Values db = appDB.getValues(dbKey);
+                if (db != null) {
+                    item.set("db", dbKey +" ( "+ db.getString("engine") +" : "+ db.getString("name") +" )");
+                }
+            }
             data.set("items", items);
             TemplateBuilder.output(proteu, hili, "dev/query/history", data);
             return;
@@ -72,12 +83,32 @@ public class Query {
             TemplateBuilder.output(proteu, hili, "dev/query/stored", data);
             return;
         }
+        String commandDBInfo = "";
+        String dbItems = "";
         Values data = new Values();
+        Values appDB = proteu.getConfig().getValues("_app:config").getValues("db");
+        for (String dbKey : appDB.keys()) {
+            Values db = appDB.getValues(dbKey);
+            String dbItemText = dbKey +" ( "+ db.getString("engine") +" : "+ db.getString("name") +" )";
+            data.set("db.item.value", dbKey);
+            data.set("db.item.text", dbItemText);
+            if ((proteu.getRequestPost().getString("db").isEmpty() && dbKey.equalsIgnoreCase("default"))
+                    || (!proteu.getRequestPost().getString("db").isEmpty() && proteu.getRequestPost().getString("db").equalsIgnoreCase(dbKey))) {
+                data.set("db.item.selected", " selected");
+                commandDBInfo = dbItemText;
+            } else {
+                data.set("db.item.selected", "");
+            }
+            dbItems = dbItems.concat(TemplateBuilder.getOutput(proteu, hili, "dev/query/db_item", data));
+        }
+        data.set("db.items", dbItems);
         TemplateBuilder.output(proteu, hili, "dev/query/form", data);
-        if (!proteu.getRequestPost().getString("query").equals("")) {
+        if (!proteu.getRequestPost().getString("db").isEmpty() && !proteu.getRequestPost().getString("query").isEmpty()) {
+            String dbKey = proteu.getRequestPost().getString("db");
             String[] lines = proteu.getRequestPost().getString("query").split("\\n\\s*\\;{2,}\\s*\\n");
             for (String line : lines) {
                 try {
+                    data.set("command.db", commandDBInfo);
                     if (line.trim().toLowerCase().startsWith("select") || line.trim().toLowerCase().startsWith("script")) {
                         data.set("command.line", line.trim());
                         String selectResultTable = TemplateBuilder.getOutput(proteu, hili, "dev/query/select_table_head", data);
@@ -87,7 +118,7 @@ public class Query {
                         long time = java.lang.System.currentTimeMillis();
                         boolean hadError = false;
                         try {
-                            stat = Config.getDBExecutor(proteu).getConnection().createStatement();
+                            stat = Config.getDBExecutor(proteu, dbKey).getConnection().createStatement();
                             rs = stat.executeQuery(line);
                             selectResultTable = selectResultTable.concat("<tr>");
                             for (int x = 1; x <= rs.getMetaData().getColumnCount(); x++) {
@@ -137,23 +168,31 @@ public class Query {
                         if (!hadError) {
                             Config.getDBBuilder(proteu).queryHistoryInsert(
                                     Values.newMap()
+                                            .set("db", dbKey)
                                             .set("command", line)
                                             .set("count", count)
                                             .set("time", time)
                             );
-                        	TemplateBuilder.output(proteu, hili, "dev/query/select", data);
+                        	TemplateBuilder.output(proteu, hili, "dev/query/result_select", data);
                         }
                     } else {
                         Statement stat = null;
                         long time = java.lang.System.currentTimeMillis();
                         try {
                         	data.set("command.line", line.trim());
-                        	stat = Config.getDBExecutor(proteu).getConnection().createStatement();
+                        	stat = Config.getDBExecutor(proteu, dbKey).getConnection().createStatement();
                             int count = stat.executeUpdate(line);
                             data.set("command.result", "");
                             data.set("command.total", count);
                             data.set("command.time", java.lang.System.currentTimeMillis() - time);
-                            TemplateBuilder.output(proteu, hili, "dev/query/generic", data);
+                            Config.getDBBuilder(proteu).queryHistoryInsert(
+                                    Values.newMap()
+                                            .set("db", dbKey)
+                                            .set("command", line)
+                                            .set("count", count)
+                                            .set("time", time)
+                            );
+                            TemplateBuilder.output(proteu, hili, "dev/query/result_generic", data);
                         } catch (SQLException e) {
                             printError(proteu, hili, e, data);
                         } finally {
@@ -167,10 +206,6 @@ public class Query {
                 }
             }
         }
-        proteu.getOutput().println("    </td>");
-        proteu.getOutput().println("  </tr>");
-        proteu.getOutput().println("</table>");
-        proteu.getOutput().println("</form>");
     }
 
     private static void printError(Proteu proteu, Hili hili, Exception e, Values data) throws Exception {
@@ -182,6 +217,6 @@ public class Query {
         	stack = stack.concat(ste.toString() +"\n");
         }
     	data.set("stack", stack);
-    	TemplateBuilder.output(proteu, hili, "dev/query/error", data);
+    	TemplateBuilder.output(proteu, hili, "dev/query/result_error", data);
     }
 }
