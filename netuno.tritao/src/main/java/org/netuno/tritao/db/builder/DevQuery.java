@@ -28,6 +28,11 @@ public interface DevQuery extends BuilderBase {
     default void queryHistoryInsert(Values values) {
         Values data = new Values();
         data.set("uid", "'" + UUID.randomUUID() + "'");
+        if (values.hasKey("db")) {
+            data.set("db", "'" + DB.sqlInjection(values.getString("db")) + "'");
+        } else {
+            data.set("db", "'default'");
+        }
         data.set("moment", getBuilder().getCurrentTimeStampFunction());
         if (values.hasKey("command")) {
             data.set("command", "'" + DB.sqlInjection(values.getString("command")) + "'");
