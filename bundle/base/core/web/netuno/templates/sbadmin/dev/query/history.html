@@ -1,6 +1,7 @@
 #set( $formatDateStart = $_time.simpleDateFormat("yyyy-MM-dd HH:mm:ss") )
 #foreach($item in $data.get('items'))
     <div style="margin: 20px 0;">
+        <p>$item.getString('db')</p>
         <pre>$item.getString('command')</pre>
         <div class="row" style="padding: 0 10px;">
             <div class="col-xs-6">
