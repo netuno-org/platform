@@ -431,6 +431,7 @@ public class Setup extends ManagerBase {
             table.create("netuno_query_history",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
+                    table.newColumn().setName("db").setType(Column.Type.VARCHAR).setNotNull(true).setDefault(),
                     table.newColumn().setName("moment").setType(Column.Type.TIMESTAMP).setNotNull(true).setDefault(),
                     table.newColumn().setName("command").setType(Column.Type.TEXT).setNotNull(true).setDefault(),
                     table.newColumn().setName("count").setType(Column.Type.INT).setNotNull(true).setDefault(),
