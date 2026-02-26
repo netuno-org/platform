@@ -19,9 +19,7 @@ package org.netuno.tritao.doc;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,7 +45,7 @@ import org.netuno.tritao.resource.Resource;
 import org.netuno.tritao.resource.Storage;
 
 public class LibraryContent {
-    private enum Type {
+    private enum FormatType {
         Markdown,
         TypeScript;
     }
@@ -97,6 +95,9 @@ public class LibraryContent {
             }
             if (type.endsWith("[]")) {
                 type = type.substring(0, type.length() - 2);
+            }
+            if (type.indexOf("<") < type.lastIndexOf(">")) {
+                type = type.substring(0, type.indexOf("<")) + type.substring(type.lastIndexOf(">") + 1);
             }
             String[] types = type.split("\\s\\|\\s");
             for (String t : types) {
@@ -487,6 +488,7 @@ public class LibraryContent {
                 boolean firstParameter = true;
                 Values parameters = new Values();
                 String parametersWithoutDoc = "";
+                java.lang.reflect.Type[] parameterTypes = method.getGenericParameterTypes();
                 for (int parameterCounter = 0; parameterCounter < method.getParameterCount(); parameterCounter++) {
                     Parameter parameter = methodParameters[parameterCounter];
                     if (!firstParameter) {
@@ -544,7 +546,7 @@ public class LibraryContent {
                     contents.getMarkdown().append(": ");
 
                     contents.getMarkdown().append(
-                            span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, parameter.getType(), Type.Markdown))
+                            span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, parameterTypes[parameterCounter], FormatType.Markdown))
                     );
 
                     contents.getTypeScriptDeclarations().append(
@@ -557,7 +559,7 @@ public class LibraryContent {
                             }
                     );
                     contents.getTypeScriptDeclarations().append(": ");
-                    contents.getTypeScriptDeclarations().append(type(contents, parameter.getType(), Type.TypeScript));
+                    contents.getTypeScriptDeclarations().append(type(contents, parameterTypes[parameterCounter], FormatType.TypeScript));
                     firstParameter = false;
                 }
                 if (!parametersWithoutDoc.isEmpty()) {
@@ -567,11 +569,11 @@ public class LibraryContent {
                 contents.getMarkdown().append(" : ");
 
                 contents.getMarkdown().append(
-                        span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, method.getReturnType(), Type.Markdown, true))
+                        span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, method.getGenericReturnType(), FormatType.Markdown))
                 );
 
                 contents.getTypeScriptDeclarations().append("): ");
-                contents.getTypeScriptDeclarations().append(type(contents, method.getReturnType(), Type.TypeScript, true));
+                contents.getTypeScriptDeclarations().append(type(contents, method.getGenericReturnType(), FormatType.TypeScript));
                 contents.getTypeScriptDeclarations().append(";\n");
                 if (methodTranslationDoc != null) {
                     contents.getMarkdown().append("\n");
@@ -613,13 +615,13 @@ public class LibraryContent {
                         String parameterName = _parameter.getString("parameterName", parameter.getName());
                         ParameterTranslationDoc parameterTranslationDoc = (ParameterTranslationDoc) _parameter.get("parameterTranslationDoc");
                         if (parameterTranslationDoc == null) {
-                            contents.getMarkdown().append("| **" + parameterName + "** | _" + type(contents, parameter.getType(), Type.Markdown) + "_ |   |\n");
+                            contents.getMarkdown().append("| **" + parameterName + "** | _" + type(contents, parameter.getType(), FormatType.Markdown) + "_ |   |\n");
                         } else {
                             String[] lines = parameterTranslationDoc.description().split("\n");
                             boolean firstLine = true;
                             for (String line : lines) {
                                 if (firstLine) {
-                                    contents.getMarkdown().append("| **" + parameterName + "** | _" + type(contents, parameter.getType(), Type.Markdown) + "_ | " + line + " |\n");
+                                    contents.getMarkdown().append("| **" + parameterName + "** | _" + type(contents, parameter.getType(), FormatType.Markdown) + "_ | " + line + " |\n");
                                 } else {
                                     contents.getMarkdown().append("|   |   | " + line + " |\n");
                                 }
@@ -635,7 +637,7 @@ public class LibraryContent {
                     contents.getMarkdown().append("##### Retorno\n");
                 }
                 contents.getMarkdown().append("\n");
-                contents.getMarkdown().append("( _" + (type(contents, method.getReturnType(), Type.Markdown, true)) + "_ )\n");
+                contents.getMarkdown().append("( _" + (type(contents, method.getReturnType(), FormatType.Markdown)) + "_ )\n");
                 if (returnTranslationDoc != null) {
                     contents.getMarkdown().append("\n");
                     contents.getMarkdown().append(returnTranslationDoc.description());
@@ -659,187 +661,225 @@ public class LibraryContent {
         return contents;
     }
 
-    private String type(GeneratedContents contents, Class<?> cls, Type type) {
-        return type(contents, cls, type, false);
-    }
-
-    private String type(GeneratedContents contents, Class<?> cls, Type type, boolean isReturn) {
-        String content = "";
-        if (cls == null) {
-            content = "void";
-        } else {
-            String clsName = cls.getName();
-            boolean objectTypeArray = false;
-            switch (clsName) {
-                case "java.lang.String" -> {
-                    return "string";
-                }
-                case "java.lang.Character", "C" -> {
-                    return "char";
-                }
-                case "java.lang.Byte", "B" -> {
-                    return "byte";
-                }
-                case "java.lang.Short", "S" -> {
-                    return "short";
-                }
-                case "java.lang.Integer", "I" -> {
-                    return "int";
-                }
-                case "java.lang.Long", "Long" -> {
-                    return "long";
-                }
-                case "java.lang.Float", "Float" -> {
-                    return "float";
-                }
-                case "java.lang.Double", "Double" -> {
-                    return "double";
-                }
+    private String type(GeneratedContents contents, Type type, FormatType formatType) throws ClassNotFoundException {
+        switch (type.getTypeName()) {
+            case "void" -> {
+                return "void";
             }
-            if (clsName.equals("[B")) {
-                content = switch (type) {
-                    case Markdown -> "byte[]";
-                    case TypeScript -> "number[]";
-                };
-            } else if (clsName.equals("[S")) {
-                content = switch (type) {
-                    case Markdown -> "short[]";
-                    case TypeScript -> "number[]";
-                };
-            } else if (clsName.equals("[I")) {
-                content = switch (type) {
-                    case Markdown -> "int[]";
-                    case TypeScript -> "number[]";
-                };
-            } else if (clsName.equals("[J")) {
-                content = switch (type) {
-                    case Markdown -> "long[]";
-                    case TypeScript -> "number[]";
-                };
-            } else if (clsName.equals("[F")) {
-                content = switch (type) {
-                    case Markdown -> "float[]";
-                    case TypeScript -> "number[]";
-                };
-            } else if (clsName.equals("[D")) {
-                content = switch (type) {
-                    case Markdown -> "double[]";
-                    case TypeScript -> "number[]";
-                };
-            } else if (clsName.equals("[Z")) {
-                content = "boolean[]";
-            } else if (clsName.equals("[C")) {
-                content = switch (type) {
-                    case Markdown -> "char[]";
-                    case TypeScript -> "string[]";
-                };
-            } else if (clsName.startsWith("[L")) {
-                clsName = clsName.substring(2, clsName.length() - 1);
+            case "java.lang.String", "String" -> {
+                return "string";
+            }
+            case "java.lang.Character", "C", "char" -> {
+                return "char";
+            }
+            case "java.lang.Byte", "B", "byte" -> {
+                return "byte";
+            }
+            case "java.lang.Short", "S", "short" -> {
+                return "short";
+            }
+            case "java.lang.Integer", "I", "int" -> {
+                return "int";
+            }
+            case "java.lang.Long", "Long", "long" -> {
+                return "long";
+            }
+            case "java.lang.Float", "Float", "float" -> {
+                return "float";
+            }
+            case "java.lang.Double", "Double", "double" -> {
+                return "double";
+            }
+            case "java.lang.Boolean", "Boolean", "boolean" -> {
+                return "boolean";
+            }
+        }
+        String content = switch (type.getTypeName()) {
+            case "java.lang.String[]", "String[]" -> "string[]";
+            case "[C", "java.lang.Character[]", "char[]" -> "char[]";
+            case "[B", "java.lang.Byte[]", "byte[]" -> "byte[]";
+            case "[S", "java.lang.Short[]", "short[]" -> "short[]";
+            case "[I", "java.lang.Integer[]", "int[]" -> "int[]";
+            case "[J", "java.lang.Long[]", "long[]" -> "long[]";
+            case "[F", "java.lang.Float[]", "float[]" -> "float[]";
+            case "[D", "java.lang.Double[]", "double[]" -> "double[]";
+            case "[Z", "java.lang.Boolean[]", "boolean[]" -> "boolean[]";
+            default -> "";
+        };
+        if (!content.isEmpty()) {
+            return content;
+        }
+        boolean objectTypeArray = false;
+        String clsName = type.getTypeName();
+        if (clsName.equals("?")) {
+            return switch (formatType) {
+                case Markdown -> "?";
+                case TypeScript -> "any";
+            };
+        }
+        if (clsName.equals("[L")) {
+            clsName = clsName.substring(2, clsName.length() - 1);
+            objectTypeArray = true;
+        } else if (clsName.endsWith("[]")) {
+            clsName = clsName.substring(0, clsName.length() - 2);
+            objectTypeArray = true;
+        }
+        if (clsName.contains("<")) {
+            clsName = clsName.substring(0, clsName.indexOf("<"));
+            if (formatType == FormatType.TypeScript
+                && (
+                    clsName.equals(java.util.Collection.class.getName())
+                    || clsName.equals(java.util.List.class.getName())
+                    || clsName.equals(java.util.ArrayList.class.getName())
+                    || clsName.equals(java.util.LinkedList.class.getName())
+                    || clsName.equals(java.util.Vector.class.getName())
+                    || clsName.equals(java.util.Stack.class.getName())
+                    || clsName.equals(java.util.Set.class.getName())
+                    || clsName.equals(java.util.HashSet.class.getName())
+                    || clsName.equals(java.util.LinkedHashSet.class.getName())
+                    || clsName.equals(java.util.SortedSet.class.getName())
+                    || clsName.equals(java.util.TreeSet.class.getName()))) {
+                clsName = type.getTypeName().substring(
+                        type.getTypeName().indexOf("<") + 1,
+                        type.getTypeName().lastIndexOf(">")
+                );
                 objectTypeArray = true;
             }
-            if (cls.getName().equals(java.io.InputStream.class.getName())) {
-                cls = InputStream.class;
-                clsName = cls.getName();
-            } else if (cls.getName().equals(java.io.OutputStream.class.getName())) {
-                cls = OutputStream.class;
-                clsName = cls.getName();
-            }
-            if (content.isEmpty()) {
-                List<Class> resourcesTypes = new ArrayList<>();
-                List<Class> objectsTypes = new ArrayList<>();
-                boolean appendBaseClass = false;
-                if (resourcesTypes.isEmpty() && objectsTypes.isEmpty()) {
-                    if (cls.isInterface()) {
-                        if (!clsName.equals(Map.class.getName())
-                                && !cls.getName().equals(Iterable.class.getName())) {
-                            for (Class c : resources) {
-                                if (cls.isAssignableFrom(c)) {
-                                    resourcesTypes.add(c);
-                                }
-                            }
-                        }
-                        for (Class c : objects) {
-                            if (cls.isAssignableFrom(c)) {
-                                objectsTypes.add(c);
-                            }
-                        }
-                        appendBaseClass = true;
-                    } else {
-                        for (Class _class : resources) {
-                            if (_class.getName().equals(clsName)) {
-                                resourcesTypes.add(_class);
-                            }
-                        }
-                        for (Class _class : objects) {
-                            if (_class.getName().equals(clsName)) {
-                                objectsTypes.add(_class);
-                            }
-                        }
-                    }
-                }
-                for (Class _class : resourcesTypes) {
-                    if (!content.isEmpty()) {
-                        content += switch (type) {
-                            case Markdown -> " &#124; ";
-                            case TypeScript -> " | ";
-                        };
-                    }
-                    Resource resource = (Resource) _class.getAnnotation(Resource.class);
-                    if (type == Type.Markdown) {
-                        content += "[" + _class.getSimpleName() + "](/docs/library/resources/" + resource.name() + ")";
-                        if (objectTypeArray) {
-                            content += "[]";
-                        }
-                    } else if (type == Type.TypeScript) {
-                        if (clsName.equals(contents.getCls().getName())) {
-                            content += _class.getSimpleName();
-                        } else {
-                            contents.addTypeScriptImportResource(resource.name(), _class.getSimpleName());
-                            content += "typeof _"+ resource.name();
-                        }
-                        if (objectTypeArray) {
-                            content += "[]";
-                        }
-                    }
-                }
-                for (Class _class : objectsTypes) {
-                    if (!content.isEmpty()) {
-                        content += switch (type) {
-                            case Markdown -> " &#124; ";
-                            case TypeScript -> " | ";
-                        };
-                    }
-                    if (type == Type.Markdown) {
-                        content += "[" + _class.getSimpleName() + "](/docs/library/objects/" + _class.getSimpleName() + ")";
-                        if (objectTypeArray) {
-                            content += "[]";
-                        }
-                    } else if (type == Type.TypeScript) {
-                        if (!clsName.equals(contents.getCls().getName())) {
-                            contents.addTypeScriptImportObject(_class.getSimpleName());
-                        }
-                        content += _class.getSimpleName();
-                        if (objectTypeArray) {
-                            content += "[]";
-                        }
-                    }
-                }
-                if (appendBaseClass && !content.isEmpty()) {
-                    content += " | " + clsName;
-                }
-            }
-            if (content.isEmpty()) {
-                content = switch (type) {
-                    case Markdown -> clsName;
-                    case TypeScript -> clsName;
-                    //case TypeScript -> clsName.contains(".") ? "any | "+ clsName : clsName;
+        }
+        Class<?> cls = null;
+        if (clsName.equals(java.io.InputStream.class.getName())) {
+            cls = InputStream.class;
+            clsName = cls.getTypeName();
+        } else if (clsName.equals(java.io.OutputStream.class.getName())) {
+            cls = OutputStream.class;
+            clsName = cls.getName();
+        }
+        if (content.isEmpty()) {
+            try {
+                cls = Class.forName(clsName);
+            } catch (java.lang.ClassNotFoundException e) {
+                content = switch (formatType) {
+                    case Markdown -> "?";
+                    case TypeScript -> "any";
                 };
                 if (objectTypeArray) {
                     content += "[]";
                 }
+                return content;
+            }
+            List<Class> resourcesTypes = new ArrayList<>();
+            List<Class> objectsTypes = new ArrayList<>();
+            boolean appendBaseClass = false;
+            if (cls.isInterface()) {
+                if (!clsName.equals(Map.class.getName())
+                        && !cls.getName().equals(Iterable.class.getName())) {
+                    for (Class c : resources) {
+                        if (cls.isAssignableFrom(c)) {
+                            resourcesTypes.add(c);
+                        }
+                    }
+                }
+                for (Class c : objects) {
+                    if (cls.isAssignableFrom(c)) {
+                        objectsTypes.add(c);
+                    }
+                }
+                appendBaseClass = true;
+            } else {
+                for (Class _class : resources) {
+                    if (_class.getName().equals(clsName)) {
+                        resourcesTypes.add(_class);
+                    }
+                }
+                for (Class _class : objects) {
+                    if (_class.getName().equals(clsName)) {
+                        objectsTypes.add(_class);
+                    }
+                }
+            }
+            for (Class _class : resourcesTypes) {
+                if (!content.isEmpty()) {
+                    content += switch (formatType) {
+                        case Markdown -> " &#124; ";
+                        case TypeScript -> " | ";
+                    };
+                }
+                Resource resource = (Resource) _class.getAnnotation(Resource.class);
+                if (formatType == FormatType.Markdown) {
+                    content += "[" + _class.getSimpleName() + "](/docs/library/resources/" + resource.name() + ")";
+                    if (objectTypeArray) {
+                        content += "[]";
+                    }
+                } else if (formatType == FormatType.TypeScript) {
+                    if (clsName.equals(contents.getCls().getName())) {
+                        content += _class.getSimpleName();
+                    } else {
+                        contents.addTypeScriptImportResource(resource.name(), _class.getSimpleName());
+                        content += "typeof _"+ resource.name();
+                    }
+                    if (objectTypeArray) {
+                        content += "[]";
+                    }
+                }
+            }
+            for (Class _class : objectsTypes) {
+                if (!content.isEmpty()) {
+                    content += switch (formatType) {
+                        case Markdown -> " &#124; ";
+                        case TypeScript -> " | ";
+                    };
+                }
+                if (formatType == FormatType.Markdown) {
+                    content += "[" + _class.getSimpleName() + "](/docs/library/objects/" + _class.getSimpleName() + ")";
+                    if (objectTypeArray) {
+                        content += "[]";
+                    }
+                } else if (formatType == FormatType.TypeScript) {
+                    if (!clsName.equals(contents.getCls().getName())) {
+                        contents.addTypeScriptImportObject(_class.getSimpleName());
+                    }
+                    content += _class.getSimpleName();
+                    if (objectTypeArray) {
+                        content += "[]";
+                    }
+                }
+            }
+            if (appendBaseClass && !content.isEmpty()) {
+                content += " | " + clsName;
             }
         }
-        if (type == Type.TypeScript) {
+        if (content.isEmpty()) {
+            content = switch (formatType) {
+                case Markdown -> clsName;
+                case TypeScript -> clsName;
+                //case TypeScript -> clsName.contains(".") ? "any | "+ clsName : clsName;
+            };
+            if (formatType == FormatType.Markdown && type instanceof ParameterizedType pt) {
+                Type[] actualTypes = pt.getActualTypeArguments();
+                if (actualTypes.length > 0) {
+                    content += switch (formatType) {
+                        case Markdown -> "&lt;";
+                        case TypeScript -> "<";
+                    };
+                    boolean first = true;
+                    for (Type actualType : pt.getActualTypeArguments()) {
+                        if (!first) {
+                            content += ", ";
+                        }
+                        content += type(contents, actualType, formatType);
+                        first = false;
+                    }
+                    content += switch (formatType) {
+                        case Markdown -> "&gt;";
+                        case TypeScript -> ">";
+                    };
+                }
+            }
+            if (objectTypeArray) {
+                content += "[]";
+            }
+        }
+        if (formatType == FormatType.TypeScript) {
             contents.loadTypeScriptNamespace(content);
         }
         return content;
