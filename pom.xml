@@ -52,7 +52,7 @@
         <oshi.version>6.9.3</oshi.version>
         <sshj.version>0.40.0</sshj.version>
         <twelvemonkeys.version>3.13.0</twelvemonkeys.version>
-        <junit.version>6.0.2</junit.version>
+        <junit.version>6.0.3</junit.version>
     </properties>
 
     <dependencies>
