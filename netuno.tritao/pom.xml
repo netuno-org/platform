@@ -261,6 +261,10 @@
                     <groupId>org.quartz-scheduler</groupId>
                     <artifactId>quartz</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
