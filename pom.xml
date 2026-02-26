@@ -23,6 +23,7 @@
         <apache.commons-text.version>1.15.0</apache.commons-text.version>
         <apache.commons-lang3.version>3.20.0</apache.commons-lang3.version>
         <apache.commons-io.version>2.21.0</apache.commons-io.version>
+        <apache.commons-net.version>3.12.0</apache.commons-net.version>
         <sun.jakarta.mail.version>2.0.2</sun.jakarta.mail.version>
         <jakarta.mail.version>2.1.4</jakarta.mail.version>
         <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
