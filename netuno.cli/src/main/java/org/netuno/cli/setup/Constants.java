@@ -29,11 +29,6 @@ public class Constants {
 
     public static String GRAALVM_FOLDER = "graalvm";
 
-    public static String ROOT_PATH = ".";
-
-    public static String CORE_FOLDER = "core";
-
     public static String WEB_FOLDER = "web";
 
-    public static String CORE_PATH = Path.of(ROOT_PATH, "core").toString();
 }

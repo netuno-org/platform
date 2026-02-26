@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.cli.Config;
 import org.netuno.cli.utils.OS;
 import org.netuno.psamata.net.Download;
 import org.netuno.psamata.os.ProcessLauncher;
@@ -53,11 +54,11 @@ public class GraalVMSetup {
 
     public static void checkAndSetup(String graalVMVersion) {
         try {
-            if (!graalCheck(Constants.CORE_PATH, graalVMVersion)) {
+            if (!graalCheck(Config.getCoreHome(), graalVMVersion)) {
                 System.out.println();
                 System.out.println();
                 System.out.println(OS.consoleOutput("@|red Setting up the GraalVM is required.|@ "));
-                execute(Constants.CORE_PATH, graalVMVersion);
+                execute(Config.getCoreHome(), graalVMVersion);
                 System.out.println();
                 System.out.println(OS.consoleOutput("@|green GraalVM has been successfully updated.|@ "));
                 System.out.println();
@@ -117,8 +118,7 @@ public class GraalVMSetup {
     }
 
     public static void execute(String path, String graalVMVersion) throws IOException, InterruptedException {
-        String graalVMFolderName = "graalvm";
-        File graalVMFolder = new File(path, graalVMFolderName);
+        File graalVMFolder = new File(path, Constants.GRAALVM_FOLDER);
         int installGraalVM = 0;
         if (graalCheck(path, graalVMVersion)) {
             installGraalVM = 1;
@@ -221,7 +221,7 @@ public class GraalVMSetup {
                 System.out.print(OS.consoleOutput("Extracting @|yellow GraalVM|@ . "));
                 if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
                     int strip = SystemUtils.IS_OS_MAC ? 3 : 1;
-                    new File(path, graalVMFolderName).mkdirs();
+                    new File(path, Constants.GRAALVM_FOLDER).mkdirs();
                     ProcessLauncher processLauncher = new ProcessLauncher();
                     processLauncher.directory(path);
                     processLauncher.onParallel((pt)-> {
@@ -232,7 +232,7 @@ public class GraalVMSetup {
                     });
                     processLauncher.outputLineConsumer(System.out::println);
                     processLauncher.errorOutputLineConsumer(System.err::println);
-                    ProcessLauncher.Result result = processLauncher.execute("tar -xzf " + graalVMFileName + " --strip " + strip + " -C " + graalVMFolderName);
+                    ProcessLauncher.Result result = processLauncher.execute("tar -xzf " + graalVMFileName + " --strip " + strip + " -C " + Constants.GRAALVM_FOLDER);
                     try {
                         if (result.exitCode() != 0) {
                             if (new File(path, graalVMFileName).delete() && installGraalVM == 0) {

@@ -111,7 +111,7 @@ public class H2DatabaseMigration {
     }
 
     protected static Optional<Path> getIDsFilePath() {
-        var fileIdPath = Path.of(Constants.ROOT_PATH, FILE_ID);
+        var fileIdPath = Path.of(Config.getHome(), FILE_ID);
         if (!Files.exists(fileIdPath)) {
             return Optional.empty();
         }

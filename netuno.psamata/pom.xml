@@ -72,7 +72,7 @@
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
-            <version>3.12.0</version>
+            <version>${apache.commons-net.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>

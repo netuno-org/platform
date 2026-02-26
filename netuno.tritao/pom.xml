@@ -563,6 +563,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>${apache.commons-net.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

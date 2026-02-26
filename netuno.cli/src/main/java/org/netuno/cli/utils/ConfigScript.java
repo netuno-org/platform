@@ -39,9 +39,9 @@ public class ConfigScript {
 
     public static boolean loadEnv() {
         ScriptRunner.addExtensions("js");
-        String path = ScriptRunner.searchScriptFile("config");
+        String path = ScriptRunner.searchScriptFile(Config.getConfigScriptName());
         if (path != null) {
-            Path pathConfigScript = Path.of(Constants.ROOT_PATH, path);
+            Path pathConfigScript = Path.of(path);
             if (Files.exists(pathConfigScript)) {
                 try {
                     String contentConfigScript = Files.readString(pathConfigScript);
@@ -68,7 +68,7 @@ public class ConfigScript {
 
     public static boolean run() {
         ScriptRunner.addExtensions("js");
-        String path = ScriptRunner.searchScriptFile("config");
+        String path = ScriptRunner.searchScriptFile(Config.getConfigScriptName());
         if (path != null) {
             if (GraalRunner.isGraal() && path.toLowerCase().endsWith(".js")) {
                 try (GraalRunner graalRunner = new GraalRunner("js")
@@ -86,7 +86,7 @@ public class ConfigScript {
                 logger.warn("The configuration script "+ path +" is not supported.");
             }
         } else {
-            logger.warn("Configuration script not found in: ./config.js");
+            logger.warn("Configuration script not found in: "+ Config.getConfigScriptName() +".js");
         }
         return false;
     }

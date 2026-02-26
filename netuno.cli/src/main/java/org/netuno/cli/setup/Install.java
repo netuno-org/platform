@@ -55,11 +55,9 @@ import org.apache.logging.log4j.Logger;
 @CommandLine.Command(name = "install", helpCommand = true, description = "Installation of the Netuno platform.")
 public class Install implements MainArg {
     private static Logger logger = LogManager.getLogger(Install.class);
-
-    private static String graalVMVersion = Constants.GRAALVM_VERSION;
     
-    @CommandLine.Option(names = { "-p", "path" }, paramLabel = "path", description = "Path to install.")
-    protected String path = Constants.ROOT_PATH;
+    @CommandLine.Option(names = { "home" }, paramLabel = "home", description = "Home path to install.")
+    protected String path = Config.getHome();
 
     @CommandLine.Option(names = { "-f", "force" }, paramLabel = "force", description = "Force override all local changes.")
     protected boolean force = false;
@@ -85,8 +83,9 @@ public class Install implements MainArg {
     private final String checksumFileName = ".checksum.json";
 
     public void run() throws IOException, InterruptedException {
+        Config.setHome(path);
         System.out.println();
-        System.out.println(OS.consoleOutput("@|cyan All will set up into "+ (path.equals(Constants.ROOT_PATH) ? "this current directory." : path +"/") +" |@ "));
+        System.out.println(OS.consoleOutput("@|cyan All will set up into "+ (path.equals(Config.HOME_DEFAULT) ? "this current directory." : path +"/") +" |@ "));
         System.out.println();
         try (Scanner scanner = new Scanner(System.in)) {
             if (remove) {
@@ -158,13 +157,13 @@ public class Install implements MainArg {
         }
 
         if (graal) {
-            File coreFolder = new File(path, Constants.CORE_FOLDER);
+            File coreFolder = new File(Config.getCoreHome());
             if ((!coreFolder.exists() && !coreFolder.mkdir()) || (coreFolder.exists() && !coreFolder.isDirectory())) {
                 String message = "Failed to install, unable to create the core folder.";
                 logger.error(message);
                 throw new Error(message);
             }
-            GraalVMSetup.execute(coreFolder.toString(), graalVMVersion);
+            GraalVMSetup.execute(coreFolder.toString(), Constants.GRAALVM_VERSION);
         }
 
         ConfigScript.loadEnv();
@@ -441,7 +440,7 @@ public class Install implements MainArg {
                     }
                 }
                 String webWEBINFlib = new File(
-                        new File(path, Constants.CORE_FOLDER),
+                        Config.getCoreHome(),
                         (Constants.WEB_FOLDER +"/WEB-INF/lib").replace("/", File.separator)
                 ).getAbsolutePath()
                         .replace(File.separator +"."+ File.separator, File.separator);

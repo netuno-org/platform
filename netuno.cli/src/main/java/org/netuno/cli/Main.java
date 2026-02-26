@@ -54,24 +54,6 @@ public final class Main implements Runnable {
     static {
         System.setProperty("idea.use.native.fs.for.win", "false");
         System.setProperty("idea.io.use.nio2", "true");
-
-        String logConfigFile = "logs/log.xml";
-        if (Files.exists(Path.of("logs/log.xml"))) {
-            System.setProperty("log4j2.configurationFile", logConfigFile);
-            try {
-                ConfigurationSource source = new ConfigurationSource(new FileInputStream(logConfigFile));
-                Configurator.initialize(null, source);
-                Configurator.reconfigure();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        /*try {
-            Class.forName("org.h2.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new Error(e);
-        }*/
     }
 
     @CommandLine.Option(names = {"-v", "--version", "version"}, versionHelp = true, description = "display version info")

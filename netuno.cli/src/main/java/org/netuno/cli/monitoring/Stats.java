@@ -23,6 +23,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.cli.Config;
 import org.netuno.cli.MainArg;
 import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
@@ -101,10 +103,10 @@ public class Stats implements MainArg {
     }
     
     public static String getLogFilePath() {
-        return "logs/stats-"
+        return Path.of(Config.getLogsHome(), "stats-"
                 + new java.sql.Date(System.currentTimeMillis())
                         .toString().replaceAll("-", "_")
-                + ".log";
+                + ".log").toString();
     }
     
     private static double processCpuLoad() throws Exception {

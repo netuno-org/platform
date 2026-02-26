@@ -23,6 +23,7 @@
         <apache.commons-text.version>1.15.0</apache.commons-text.version>
         <apache.commons-lang3.version>3.20.0</apache.commons-lang3.version>
         <apache.commons-io.version>2.21.0</apache.commons-io.version>
+        <apache.commons-net.version>3.12.0</apache.commons-net.version>
         <sun.jakarta.mail.version>2.0.2</sun.jakarta.mail.version>
         <jakarta.mail.version>2.1.4</jakarta.mail.version>
         <jakarta.servlet.version>6.1.0</jakarta.servlet.version>
@@ -37,7 +38,7 @@
         <jython.version>2.7.4</jython.version>
         <groovy.version>5.0.4</groovy.version>
         <jruby.version>10.0.3.0</jruby.version>
-        <kotlin.version>2.3.0</kotlin.version>
+        <kotlin.version>2.3.10</kotlin.version>
         <arrow.version>2.2.1.1</arrow.version>
         <jjwt.version>0.13.0</jjwt.version>
         <apache.poi.version>5.5.1</apache.poi.version>
@@ -50,8 +51,8 @@
         <log4j.version>2.25.3</log4j.version>
         <oshi.version>6.9.3</oshi.version>
         <sshj.version>0.40.0</sshj.version>
-        <twelvemonkeys.version>3.13.0</twelvemonkeys.version>
-        <junit.version>6.0.2</junit.version>
+        <twelvemonkeys.version>3.13.1</twelvemonkeys.version>
+        <junit.version>6.0.3</junit.version>
     </properties>
 
     <dependencies>
