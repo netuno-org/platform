@@ -22,26 +22,19 @@ import jakarta.websocket.server.ServerEndpoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
-import org.netuno.cli.App;
-import org.netuno.cli.Config;
 import org.netuno.psamata.Event;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.net.Remote;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
 
 /**
  * Development WebSocket Endpoint controller.
  * 
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@ClientEndpoint
 @ServerEndpoint(value = "/ws-dev/")
 public class DevEndpoint {
     private static Logger logger = LogManager.getLogger(DevEndpoint.class);

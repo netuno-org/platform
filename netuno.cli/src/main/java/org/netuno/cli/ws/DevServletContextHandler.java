@@ -23,12 +23,11 @@ import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
-import org.eclipse.jetty.ee10.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
+import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee11.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Handler;
 import org.netuno.cli.Config;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.crypto.RandomString;
 import org.netuno.psamata.net.LocalHosts;
 
 import java.util.*;
@@ -40,7 +39,7 @@ import java.util.*;
  */
 public class DevServletContextHandler extends ServletContextHandler {
 
-    private static Logger logger = LogManager.getLogger(DevServletContextHandler.class);
+    private static final Logger logger = LogManager.getLogger(DevServletContextHandler.class);
 
     public DevServletContextHandler(String app, List<String> hosts, Values wsConfig, int options) throws ServletException, DeploymentException {
         super(wsConfig.getString("url"), options);
@@ -48,70 +47,28 @@ public class DevServletContextHandler extends ServletContextHandler {
         this.setVirtualHosts(hosts);
 
         JakartaWebSocketServletContainerInitializer.configure(this, (servletContext, wsContainer) -> {
-            // This lambda will be called at the appropriate place in the
-            // ServletContext initialization phase where you can initialize
-            // and configure  your websocket container.
-            // Configure defaults for container
-            wsContainer.addEndpoint(new ServerEndpointConfig() {
-                @Override
-                public Class<?> getEndpointClass() {
-                    return DevEndpoint.class;
-                }
-
-                @Override
-                public String getPath() {
-                    return "/";
-                }
-
-                @Override
-                public List<String> getSubprotocols() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public List<Extension> getExtensions() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public Configurator getConfigurator() {
-                    return new Configurator() {
-                        @Override
-                        public void modifyHandshake(ServerEndpointConfig endpointConfig, HandshakeRequest request, HandshakeResponse response) {
-                            endpointConfig.getUserProperties().put("app", app);
-                            endpointConfig.getUserProperties().put("config", wsConfig);
-                            List<String> host = request.getHeaders().get("Host");
-                            if (host != null && host.size() > 0) {
-                                endpointConfig.getUserProperties().put("host", host.get(0));
+            wsContainer.addEndpoint(
+                ServerEndpointConfig.Builder.create(DevEndpoint.class, "/")
+                        .configurator(new ServerEndpointConfig.Configurator() {
+                            @Override
+                            public void modifyHandshake(ServerEndpointConfig endpointConfig, HandshakeRequest request, HandshakeResponse response) {
+                                endpointConfig.getUserProperties().put("app", app);
+                                endpointConfig.getUserProperties().put("config", wsConfig);
+                                List<String> host = request.getHeaders().get("Host");
+                                if (host != null && host.size() > 0) {
+                                    endpointConfig.getUserProperties().put("host", host.get(0));
+                                }
+                                List<String> cookie = request.getHeaders().get("Cookie");
+                                if (cookie != null && cookie.size() > 0) {
+                                    endpointConfig.getUserProperties().put("cookie", cookie.get(0));
+                                }
                             }
-                            List<String> cookie = request.getHeaders().get("Cookie");
-                            if (cookie != null && cookie.size() > 0) {
-                                endpointConfig.getUserProperties().put("cookie", cookie.get(0));
-                            }
-                        }
-                    };
-                }
-
-                @Override
-                public List<Class<? extends Encoder>> getEncoders() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public List<Class<? extends Decoder>> getDecoders() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public Map<String, Object> getUserProperties() {
-                    return new HashMap<>();
-                }
-            });
+                        })
+                        .build()
+            );
             wsContainer.setAsyncSendTimeout(wsConfig.getLong("sendTimeout", 60000));
             wsContainer.setDefaultMaxSessionIdleTimeout(wsConfig.getLong("idleTimeout", 60000 * 1440));
             wsContainer.setDefaultMaxTextMessageBufferSize(wsConfig.getInt("maxText", 1048576));
-            // Add WebSocket endpoint to javax.websocket layer
-            wsContainer.addEndpoint(DevEndpoint.class);
         });
     }
     
@@ -144,7 +101,9 @@ public class DevServletContextHandler extends ServletContextHandler {
                 continue;
             }
             List<String> hosts = new ArrayList<>();
-            hosts.add(app + ".local.netu.no");
+            hosts.add(app.replace("_", "-") + ".local.netu.no");
+            hosts.add(app.replace("_", "-") + ".localhost");
+            hosts.add(app.replace("_", "-") + ".local");
             String defaultHost = wsConfig.getString("host");
             if (!defaultHost.isEmpty()) {
                 hosts.add(defaultHost);
