@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
-import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
@@ -47,7 +46,6 @@ import org.netuno.psamata.net.Remote;
  * 
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@ClientEndpoint
 @ServerEndpoint(value = "/ws-events")
 public class WSEndpoint {
     private static Logger logger = LogManager.getLogger(WSEndpoint.class);

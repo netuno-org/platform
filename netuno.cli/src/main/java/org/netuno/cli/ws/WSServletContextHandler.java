@@ -18,22 +18,15 @@
 package org.netuno.cli.ws;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import jakarta.servlet.ServletException;
-import jakarta.websocket.Decoder;
-import jakarta.websocket.DeploymentException;
-import jakarta.websocket.Encoder;
-import jakarta.websocket.Extension;
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.ee10.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
+import org.eclipse.jetty.ee11.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee11.servlet.ServletContextHandler;
 import org.netuno.cli.Config;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.net.LocalHosts;
@@ -45,92 +38,50 @@ import org.netuno.psamata.net.LocalHosts;
  */
 public class WSServletContextHandler extends ServletContextHandler {
     
-    private static Logger logger = LogManager.getLogger(WSServletContextHandler.class);
+    private static final Logger logger = LogManager.getLogger(WSServletContextHandler.class);
     
-    public WSServletContextHandler(String app, List<String> hosts, Values config, int options) throws ServletException, DeploymentException {
+    public WSServletContextHandler(String app, List<String> hosts, Values config, int options) {
         super(config.getString("public"), options);
 
         this.setVirtualHosts(hosts);
 
         JakartaWebSocketServletContainerInitializer.configure(this, (servletContext, wsContainer) -> {
-            // This lambda will be called at the appropriate place in the
-            // ServletContext initialization phase where you can initialize
-            // and configure  your websocket container.
-            // Configure defaults for container
-            wsContainer.addEndpoint(new ServerEndpointConfig() {
-                @Override
-                public Class<?> getEndpointClass() {
-                    return WSEndpoint.class;
-                }
-
-                @Override
-                public String getPath() {
-                    return config.getString("path");
-                }
-
-                @Override
-                public List<String> getSubprotocols() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public List<Extension> getExtensions() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public ServerEndpointConfig.Configurator getConfigurator() {
-                    return new ServerEndpointConfig.Configurator() {
-                        @Override
-                        public void modifyHandshake(ServerEndpointConfig endpointConfig, HandshakeRequest request, HandshakeResponse response) {
-                            endpointConfig.getUserProperties().put("app", app);
-                            endpointConfig.getUserProperties().put("url", config.getString("public"));
-                            endpointConfig.getUserProperties().put("config", config);
-                            List<String> host = request.getHeaders().get("Host");
-                            if (host != null && !host.isEmpty()) {
-                                endpointConfig.getUserProperties().put("host", host.get(0));
-                            }
-                            List<String> cookie = request.getHeaders().get("Cookie");
-                            if (cookie != null && !cookie.isEmpty()) {
-                                endpointConfig.getUserProperties().put("cookie", cookie.get(0));
-                            }
-                            List<String> authorization = request.getHeaders().get("Authorization");
-                            if (authorization != null && !authorization.isEmpty()) {
-                                endpointConfig.getUserProperties().put("authorization", authorization.get(0));
-                            } else {
-                                for (String authKey : List.of("Authorization", "authorization", "Auth", "auth")) {
-                                    authorization = request.getParameterMap().get(authKey);
-                                    if (authorization != null && !authorization.isEmpty()) {
-                                        endpointConfig.getUserProperties().put("authorization", "Bearer "+ authorization.get(0));
-                                        break;
+            wsContainer.addEndpoint(
+                    ServerEndpointConfig.Builder.create(WSEndpoint.class, config.getString("path"))
+                            .configurator(new ServerEndpointConfig.Configurator() {
+                                @Override
+                                public void modifyHandshake(ServerEndpointConfig endpointConfig, HandshakeRequest request, HandshakeResponse response) {
+                                    endpointConfig.getUserProperties().put("app", app);
+                                    endpointConfig.getUserProperties().put("url", config.getString("public"));
+                                    endpointConfig.getUserProperties().put("config", config);
+                                    List<String> host = request.getHeaders().get("Host");
+                                    if (host != null && !host.isEmpty()) {
+                                        endpointConfig.getUserProperties().put("host", host.get(0));
                                     }
+                                    List<String> cookie = request.getHeaders().get("Cookie");
+                                    if (cookie != null && !cookie.isEmpty()) {
+                                        endpointConfig.getUserProperties().put("cookie", cookie.get(0));
+                                    }
+                                    List<String> authorization = request.getHeaders().get("Authorization");
+                                    if (authorization != null && !authorization.isEmpty()) {
+                                        endpointConfig.getUserProperties().put("authorization", authorization.get(0));
+                                    } else {
+                                        for (String authKey : List.of("Authorization", "authorization", "Auth", "auth")) {
+                                            authorization = request.getParameterMap().get(authKey);
+                                            if (authorization != null && !authorization.isEmpty()) {
+                                                endpointConfig.getUserProperties().put("authorization", "Bearer "+ authorization.get(0));
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    logger.debug("WS Connection Handshake: "+ new Values(endpointConfig.getUserProperties()).toJSON(4));
                                 }
-                            }
-                            logger.debug("WS Connection Handshake: "+ new Values(endpointConfig.getUserProperties()).toJSON(4));
-                        }
-                    };
-                }
-
-                @Override
-                public List<Class<? extends Encoder>> getEncoders() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public List<Class<? extends Decoder>> getDecoders() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public Map<String, Object> getUserProperties() {
-                    return new HashMap<>();
-                }
-            });
+                            })
+                            .build()
+            );
             wsContainer.setAsyncSendTimeout(config.getLong("sendTimeout", 60000));
             wsContainer.setDefaultMaxSessionIdleTimeout(config.getLong("idleTimeout", 300000));
             wsContainer.setDefaultMaxTextMessageBufferSize(config.getInt("maxText", 1048576));
-            // Add WebSocket endpoint to javax.websocket layer
-            wsContainer.addEndpoint(WSEndpoint.class);
         });
     }
     
