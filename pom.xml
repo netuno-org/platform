@@ -38,7 +38,7 @@
         <jython.version>2.7.4</jython.version>
         <groovy.version>5.0.4</groovy.version>
         <jruby.version>10.0.2.0</jruby.version>
-        <kotlin.version>2.3.0</kotlin.version>
+        <kotlin.version>2.3.10</kotlin.version>
         <arrow.version>2.2.1.1</arrow.version>
         <jjwt.version>0.13.0</jjwt.version>
         <apache.poi.version>5.5.1</apache.poi.version>
