@@ -18,7 +18,7 @@ You can follow to not lose the news, tips, and tutorials:
 
 [Netuno.org](https://www.netuno.org/) is the official website.
 
-![Overview](https://raw.githubusercontent.com/netuno-org/platform/main/docs/overview.png)
+![Overview](https://raw.githubusercontent.com/netuno-org/platform/main/docs/images/overview.png)
 
 Find more in [netuno.org](https://www.netuno.org/)
 
@@ -35,7 +35,7 @@ Documentation highlights:
 
 ## Polyglot Low-Code Web Applications
 
-![Application Architecture](https://raw.githubusercontent.com/netuno-org/platform/main/docs/app-architecture.png)
+![Application Architecture](https://raw.githubusercontent.com/netuno-org/platform/main/docs/images/app-architecture.png)
 
 Netuno is written in Java and runs in GraalVM to facilitate web application development, it currently suppports the following programming languages:
 
