@@ -4,7 +4,7 @@
 
 Quickly build applications adapted to your business logic.
 
-In here you can find the source of all the Netuno core capabilities, such as CLI and Web Server.
+In here you can find the source of all the Netuno core capabilities, such as the CLI and the Web Server.
 
 Join [Netuno’s Discord](https://discord.gg/4sfXG6YWFu) for help and to know more, you are welcome.
 
@@ -51,14 +51,14 @@ Netuno is written in Java and runs in GraalVM to facilitate web application deve
 
 ## Build Requirements
 
-- Linux, macOS and Windows;
+- Linux, macOS, and Windows;
 - Maven
 - NodeJS
-- Java 11
+- Java 25
 
 ## Setup
 
-To install the Netuno Platform, please, follow the:
+To install the Netuno Platform, please follow the:
 
 ### ➡️  [Get Started](https://doc.netuno.org/docs/en/installation/)
 
@@ -100,14 +100,15 @@ Depending on the dependencies, it will ask if you allow restarting the computer,
 After installation and following the steps indicated by the script, run option 1 to configure the project and option 2 to generate a bundle.
 
 
-## Fix ClassGraph Error
+####  Fix ClassGraph Error
+
 If you see the error:
+
 ```java.lang.NoClassDefFoundError: io/github/classgraph/ClassGraph```
-it means the **ClassGraph** library is missing.
 
----
+It means the **ClassGraph** library is missing.
 
-### Solution
+#### Solution
 
 1. **Download the library**  
    Get the `.jar` file from:  
@@ -115,9 +116,11 @@ it means the **ClassGraph** library is missing.
 
 2. **Install the library**  
    Place the downloaded `.jar` in:  
-	```.\bundle\base\web\WEB-INF\lib```
+   ```.\bundle\base\web\WEB-INF\lib```
 
 ## Bundle
+
+It is mandatory to generate the bundle files because, in the process, the `bundle/base/core/web/WEB-INF/lib` will be loaded with all Java web dependencies, and it is necessary to run the source code locally.
 
 ### Windows Commands
 
@@ -129,7 +132,8 @@ it means the **ClassGraph** library is missing.
  $ ./publish.ps1
 ```
 
-### Linux or Mac Commands
+### Linux or macOS Commands
+
 ```sh
  $ cd bundle
 ```
@@ -138,7 +142,7 @@ it means the **ClassGraph** library is missing.
  $ ./publish.sh
 ```
 
-The published Netuno version will be generated in `bundle/dist/netuno*` which is based on the final output generated in `bundle/out/netuno`.
+The published Netuno version will be generated in `bundle/dist/netuno*`, which is based on the final output generated in `bundle/out/netuno`.
 
 ## Build
 
@@ -185,4 +189,3 @@ mvn test -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base apps
 ```
 
 > Remember to change app=demo to your app name.
-
