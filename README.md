@@ -189,3 +189,11 @@ mvn test -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base apps
 ```
 
 > Remember to change app=demo to your app name.
+
+---
+
+## Project Setup for Java IDEs
+
+How to configure the source code to run in a Java IDE:
+
+- [IntelliJ IDEA](https://github.com/cajuscript/cajuscript/blob/main/docs/IntelliJ-IDEA.md)
