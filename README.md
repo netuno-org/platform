@@ -196,4 +196,4 @@ mvn test -Pcli -Drevision=DEV -Dexec.args="server app=demo home=bundle/base apps
 
 How to configure the source code to run in a Java IDE:
 
-- [IntelliJ IDEA](https://github.com/cajuscript/cajuscript/blob/main/docs/IntelliJ-IDEA.md)
+- [IntelliJ IDEA](https://github.com/netuno-org/platform/blob/main/docs/IntelliJ-IDEA.md)
