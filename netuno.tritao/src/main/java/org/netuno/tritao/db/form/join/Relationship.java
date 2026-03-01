@@ -29,6 +29,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class Relationship {
     private String tableName;
+    private String alias;
     private String column;
     private RelationshipType type = RelationshipType.ManyToOne;
     private Map<String, Join> subRelations = new HashMap<>();
@@ -46,6 +47,13 @@ public class Relationship {
 
     public Relationship(String tableName, String column, RelationshipType type) {
         this.tableName = tableName;
+        this.column = column;
+        this.type = type;
+    }
+
+    public Relationship(String tableName, String alias, String column, RelationshipType type) {
+        this.tableName = tableName;
+        this.alias = alias;
         this.column = column;
         this.type = type;
     }
@@ -118,6 +126,15 @@ public class Relationship {
     )
     public Relationship setTableName(String tableName) {
         this.tableName = tableName;
+        return this;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public Relationship setAlias(String alias) {
+        this.alias = alias;
         return this;
     }
 

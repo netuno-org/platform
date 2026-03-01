@@ -4633,6 +4633,10 @@ public class DB extends ResourceBase {
         return new Relationship(tableName, column, RelationshipType.ManyToOne);
     }
 
+    public Relationship manyToOne(String tableName, String alias, String column) {
+        return new Relationship(tableName, alias, column, RelationshipType.ManyToOne);
+    }
+
     public Relationship manyToOne(String tableName, String column, org.netuno.tritao.db.form.where.Where where) {
         return new Relationship(tableName, column, where, RelationshipType.ManyToOne);
     }
@@ -4687,6 +4691,10 @@ public class DB extends ResourceBase {
     )
     public Relationship oneToMany(String tableName, String column) {
         return new Relationship(tableName, column, RelationshipType.OneToMany);
+    }
+
+    public Relationship oneToMany(String tableName, String alias, String column) {
+        return new Relationship(tableName, alias, column, RelationshipType.OneToMany);
     }
 
     public Relationship oneToMany(String tableName, String column, org.netuno.tritao.db.form.where.Where where) {
