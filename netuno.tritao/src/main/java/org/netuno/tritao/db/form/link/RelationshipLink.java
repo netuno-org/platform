@@ -26,10 +26,16 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class RelationshipLink {
     private String formLink;
+    private String alias;
     private Map<String, Link> subLinks = new HashMap<>();
 
     public RelationshipLink(String formLink) {
         this.formLink = formLink;
+    }
+
+    public RelationshipLink(String formLink, String alias) {
+        this.formLink = formLink;
+        this.alias = alias;
     }
 
     public RelationshipLink(String formLink, Link subLink) {
@@ -106,6 +112,15 @@ public class RelationshipLink {
     )
     public RelationshipLink setFormLink(String formLink) {
         this.formLink = formLink;
+        return this;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public RelationshipLink setAlias(String alias) {
+        this.alias = alias;
         return this;
     }
 

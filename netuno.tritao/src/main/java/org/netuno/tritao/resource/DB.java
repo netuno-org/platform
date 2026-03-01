@@ -4838,6 +4838,10 @@ public class DB extends ResourceBase {
         return new Link(new RelationshipLink(formLink));
     }
 
+    public Link link(String formLink, String alias) {
+        return new Link(new RelationshipLink(formLink, alias));
+    }
+
     public Link link(String formLink, org.netuno.tritao.db.form.where.Where where) {
         return new Link(new RelationshipLink(formLink), where);
     }

@@ -39,6 +39,7 @@ public class LinkEngine extends TableBuilderResourceBase {
         join.setRelation(this.buildRelation(link.getForm(),link.getRelationLink()));
         join.setTable(link.getForm());
         join.setJoinType(link.getJoinType());
+
         if (link.getWhere() != null) {
             join.setWhere(link.getWhere().setTable(link.getRelationLink().getFormLink()));
         }
@@ -110,7 +111,7 @@ public class LinkEngine extends TableBuilderResourceBase {
         Values linkBetween = getLinkBetween(form, subLink.getFormLink());
         if (linkBetween != null) { //ManyToOne Relation
             String column = linkBetween.getString("name");
-            Relationship relation = new Relationship(subLink.getFormLink(), column, RelationshipType.ManyToOne);
+            Relationship relation = new Relationship(subLink.getFormLink(), subLink.getAlias(), column, RelationshipType.ManyToOne);
             for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                 Link link = linkEntry.getValue();
                 relation.getSubRelations().put(subLink.getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
@@ -120,7 +121,7 @@ public class LinkEngine extends TableBuilderResourceBase {
             linkBetween = getLinkBetween(subLink.getFormLink(), form);
             if (linkBetween != null) {
                 String column = linkBetween.getString("name");
-                Relationship relation = new Relationship(subLink.getFormLink(), column, RelationshipType.OneToMany);
+                Relationship relation = new Relationship(subLink.getFormLink(), subLink.getAlias(), column, RelationshipType.OneToMany);
                 for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                     Link link = linkEntry.getValue();
                     relation.getSubRelations().put(subLink.getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
