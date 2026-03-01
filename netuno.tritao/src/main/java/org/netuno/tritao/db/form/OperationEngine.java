@@ -82,10 +82,11 @@ public class OperationEngine extends Data {
 
     public String buildRelation(Relationship relation, String table) {
         String relationSQL = "";
-        relationSQL = relation.getTableName() + " ON ";
+        relationSQL = (relation.getAlias() != null ? relation.getTableName() + " " + relation.getAlias() : relation.getTableName()) + " ON ";
+        String finalRelationName = relation.getAlias() != null && !relation.getAlias().isEmpty() && !relation.getAlias().isBlank() ? relation.getAlias() : relation.getTableName();
         switch (relation.getType()) {
-            case ManyToOne -> relationSQL += table+"."+relation.getColumn() + " = " + relation.getTableName()+".id";
-            case OneToMany -> relationSQL += relation.getTableName()+"."+relation.getColumn() + " = " + table+".id";
+            case ManyToOne -> relationSQL += table+"."+relation.getColumn() + " = " + finalRelationName+".id";
+            case OneToMany -> relationSQL += finalRelationName+"."+relation.getColumn() + " = " + table+".id";
         }
         for(Map.Entry<String, Join> subRelationEntry : relation.getSubRelations().entrySet()) {
             Join join = subRelationEntry.getValue();
