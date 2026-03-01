@@ -1376,6 +1376,11 @@ public class Operation {
         return operationalEngine.insert(linkEngine.fieldToValues(this.fieldsToSet), this);
     }
 
+    public Values insertAndReturn() {
+        linkEngine.checkForm(this.formName);
+        return operationalEngine.insertAndReturn(linkEngine.fieldToValues(this.fieldsToSet), this);
+    }
+
     public Values update() {
         final var data = linkEngine.fieldToValues(this.fieldsToSet);
         if (data.values().stream().anyMatch(object -> object instanceof Values)) {
