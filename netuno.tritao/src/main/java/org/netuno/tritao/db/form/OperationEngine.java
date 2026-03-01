@@ -505,6 +505,20 @@ public class OperationEngine extends Data {
         return new Values().set("id", dataItem.getId());
     }
 
+    public Values insertAndReturn(Values data, Operation query) {
+        if (data == null || data.isEmpty()) {
+            throw new ResourceException("Data values cannot be null or empty");
+        }
+        DataItem dataItem = getBuilder().insert(query.getFormName(), validDataValues(data));
+        checkDataItemErrors(dataItem, "insert");
+        StringBuilder selectSQL = new StringBuilder();
+        selectSQL
+                .append(buildSelectSQL(query)).append(query.getFormName())
+                .append("\nWHERE ").append(query.getFormName())
+                .append(".id = ").append(dataItem.getId());
+        return getExecutor().queryFirst(selectSQL.toString());
+    }
+
     public Values cascadeInsert(Values insertLinks, Values data, Operation query) {
         var newRecords = new Values();
         DataItem formMainDataItem = getBuilder().insert(query.getFormName(), validDataValues(data));
