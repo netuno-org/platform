@@ -49,7 +49,7 @@
         <itext.version>9.5.0</itext.version>
         <pdfbox.version>3.0.6</pdfbox.version>
         <log4j.version>2.25.3</log4j.version>
-        <oshi.version>6.9.3</oshi.version>
+        <oshi.version>6.10.0</oshi.version>
         <sshj.version>0.40.0</sshj.version>
         <twelvemonkeys.version>3.13.1</twelvemonkeys.version>
         <junit.version>6.0.3</junit.version>
