@@ -26,6 +26,7 @@ import org.netuno.tritao.hili.Hili;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -1081,6 +1082,48 @@ public class Convert extends ResourceBase {
     public Exception toException(Object o) {
         return (java.lang.Exception)o;
     }
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Obtém o objeto que representa um tipo de codificação de caracteres do Java.",
+							howToUse = {}
+					),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Retrieves the object that represents a Java character encoding type.",
+							howToUse = {}
+					),
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "name", translations = {
+							@ParameterTranslationDoc(
+									language = LanguageDoc.PT,
+									name = "nome",
+									description = "Nome ou código do tipo de codificação de caracteres."
+							),
+							@ParameterTranslationDoc(
+									language = LanguageDoc.EN,
+									description = "Name or code of the character encoding type."
+							)
+					})
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Retorna o objeto que representa um tipo de codificação de caracteres."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Returns the object that represents a character encoding type."
+					)
+			}
+	)
+	public Charset toCharset(String name) {
+		return Charset.forName(name);
+	}
 
     @MethodDoc(
     		translations = {
