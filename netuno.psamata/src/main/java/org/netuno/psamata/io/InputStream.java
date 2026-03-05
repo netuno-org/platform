@@ -62,12 +62,28 @@ public class InputStream extends java.io.InputStream {
      * @throws IOException Reader Exception
      */
     public final String readAll() throws IOException {
-        return new Buffer().readString(in);
+        return readAll(in, Charset.defaultCharset());
+    }
+
+    public final String readAll(String charset) throws IOException {
+        return readAll(in, Charset.forName(charset));
+    }
+
+    public final String readAll(Charset charset) throws IOException {
+        return new Buffer().readString(in, charset);
     }
 
     public final String readAllAndClose() throws IOException {
+        return readAllAndClose(Charset.defaultCharset());
+    }
+
+    public final String readAllAndClose(String charset) throws IOException {
+        return readAllAndClose(Charset.forName(charset));
+    }
+
+    public final String readAllAndClose(Charset charset) throws IOException {
         try {
-            return readAll();
+            return readAll(charset);
         } finally {
             close();
         }
@@ -129,7 +145,7 @@ public class InputStream extends java.io.InputStream {
      * @throws IOException Reader Exception
      */
     public static String readAll(final java.io.InputStream in) throws IOException {
-        return new Buffer().readString(in);
+        return readAll(in, Charset.defaultCharset());
     }
     /**
      * Read all.
@@ -138,6 +154,15 @@ public class InputStream extends java.io.InputStream {
      * @throws IOException Reader Exception
      */
     public static String readAll(final java.io.InputStream in, String charset) throws IOException {
+        return readAll(in, Charset.forName(charset));
+    }
+    /**
+     * Read all.
+     * @param in Input Stream
+     * @return Content
+     * @throws IOException Reader Exception
+     */
+    public static String readAll(final java.io.InputStream in, Charset charset) throws IOException {
         return new Buffer().readString(in, charset);
     }
     /**
@@ -148,18 +173,16 @@ public class InputStream extends java.io.InputStream {
      */
     public static String readAll(final Reader r) throws IOException {
         StringBuffer result = new StringBuffer();
-        synchronized (r) {
-            char[] buf = new char[1024];
-            int len = buf.length;
-            while (len <= 0 || len == buf.length) {
-                len = r.read(buf);
-                if (len <= 0) {
-                    break;
-                }
-                char[] chars = new char[len];
-                System.arraycopy(buf, 0, chars, 0, len);
-                result.append(new String(chars));
+        char[] buf = new char[1024];
+        int len = buf.length;
+        while (len <= 0 || len == buf.length) {
+            len = r.read(buf);
+            if (len <= 0) {
+                break;
             }
+            char[] chars = new char[len];
+            System.arraycopy(buf, 0, chars, 0, len);
+            result.append(new String(chars));
         }
         return result.toString();
     }
@@ -173,30 +196,36 @@ public class InputStream extends java.io.InputStream {
     public static String readLine(java.io.InputStream in) throws IOException {
         StringBuffer line = new StringBuffer();
         int c = 0;
-        synchronized (in) {
-            while ((c = in.read()) > 0) {
-                if (c == '\n') {
-                    break;
-                } else if (c == '\r') {
-                    int c2 = in.read();
-                    if ((c2 != '\n') && (c2 > 0)) {
-                        if (!(in instanceof PushbackInputStream)) {
-                            in = new PushbackInputStream(in);
-                        }
-                        ((PushbackInputStream) in).unread(c2);
+        while ((c = in.read()) > 0) {
+            if (c == '\n') {
+                break;
+            } else if (c == '\r') {
+                int c2 = in.read();
+                if ((c2 != '\n') && (c2 > 0)) {
+                    if (!(in instanceof PushbackInputStream)) {
+                        in = new PushbackInputStream(in);
                     }
-                    break;
+                    ((PushbackInputStream) in).unread(c2);
                 }
-                line.append((char) c);
+                break;
             }
+            line.append((char) c);
         }
         if (c <= 0) {
             return !line.toString().equals("") ? line.toString() : null;
         }
         return line.toString();
     }
+
+    public static String readFromFile(java.io.File path) throws IOException {
+        return readFromFile(path, Charset.defaultCharset());
+    }
+
+    public static String readFromFile(java.io.File path, String charset) throws IOException {
+        return readFromFile(path, Charset.forName(charset));
+    }
     
-    public static synchronized String readFromFile(java.io.File path, String charset) throws IOException {
+    public static String readFromFile(java.io.File path, Charset charset) throws IOException {
         java.io.InputStream inputFile = null;
         try {
         	inputFile = new FileInputStream(path);
@@ -208,23 +237,27 @@ public class InputStream extends java.io.InputStream {
         }
     }
 
-    public static String readFromFile(java.io.File path) throws IOException {
-        return readFromFile(path, null);
-    }
-
     public static String readFromFile(java.nio.file.Path path) throws IOException {
-        return readFromFile(path.toFile(), null);
-    }
-
-    public static String readFromFile(String path) throws IOException {
-        return readFromFile(new java.io.File(path), null);
+        return readFromFile(path.toFile(), Charset.defaultCharset());
     }
 
     public static String readFromFile(java.nio.file.Path path, String charset) throws IOException {
+        return readFromFile(path.toFile(), Charset.forName(charset));
+    }
+
+    public static String readFromFile(java.nio.file.Path path, Charset charset) throws IOException {
         return readFromFile(path.toFile(), charset);
     }
 
+    public static String readFromFile(String path) throws IOException {
+        return readFromFile(new java.io.File(path), Charset.defaultCharset());
+    }
+
     public static String readFromFile(String path, String charset) throws IOException {
+        return readFromFile(new java.io.File(path), Charset.forName(charset));
+    }
+
+    public static String readFromFile(String path, Charset charset) throws IOException {
         return readFromFile(new java.io.File(path), charset);
     }
     
@@ -287,19 +320,23 @@ public class InputStream extends java.io.InputStream {
     public final String readString() throws IOException {
 	    return readString(Charset.defaultCharset());
     }
-    
-    public final String readStringAndClose() throws IOException {
-	    try {
-           return readString();
-        } finally {
-            close();
-        }
+
+    public final String readString(String charset) throws IOException {
+        return readString(Charset.forName(charset));
     }
 
-    public final synchronized String readString(Charset charset) throws IOException {
+    public final String readString(Charset charset) throws IOException {
         StringWriter writer = new StringWriter();
         IOUtils.copy(this, writer, charset);
         return writer.toString();
+    }
+
+    public final String readStringAndClose() throws IOException {
+        return readStringAndClose(Charset.defaultCharset());
+    }
+
+    public final String readStringAndClose(String charset) throws IOException {
+        return readStringAndClose(Charset.forName(charset));
     }
     
     public final String readStringAndClose(Charset charset) throws IOException {
