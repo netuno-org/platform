@@ -29,6 +29,7 @@ import org.netuno.tritao.hili.Hili;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import org.netuno.library.doc.MethodDoc;
@@ -60,7 +61,7 @@ import org.netuno.tritao.resource.util.ResourceException;
 })
 public class Out extends ResourceBase {
 
-    public int jsonIdentFactor = 0;
+    public int jsonIndentFactor = 0;
     public boolean jsonHTMLEscape = false;
     public List<OutputStream> mirrors = null;
 
@@ -302,6 +303,16 @@ public class Out extends ResourceBase {
         return this;
     }
 
+    public Out println(String line, String charset) throws IOException {
+        getProteu().getOutput().println(line, charset);
+        return this;
+    }
+
+    public Out println(String line, Charset charset) throws IOException {
+        getProteu().getOutput().println(line, charset);
+        return this;
+    }
+
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
@@ -338,13 +349,13 @@ public class Out extends ResourceBase {
         return this;
     }
 
-    public Out println(int i) throws IOException {
-        getProteu().getOutput().println(i);
+    public Out println(short s) throws IOException {
+        getProteu().getOutput().println(s);
         return this;
     }
 
-    public Out println(short s) throws IOException {
-        getProteu().getOutput().println(s);
+    public Out println(int i) throws IOException {
+        getProteu().getOutput().println(i);
         return this;
     }
 
@@ -469,6 +480,66 @@ public class Out extends ResourceBase {
         return this;
     }
 
+    public Out printlnAndClose(String line) throws IOException {
+        getProteu().getOutput().printlnAndClose(line);
+        return this;
+    }
+
+    public Out printlnAndClose(String line, String charset) throws IOException {
+        getProteu().getOutput().printlnAndClose(line, charset);
+        return this;
+    }
+
+    public Out printlnAndClose(String line, Charset charset) throws IOException {
+        getProteu().getOutput().printlnAndClose(line, charset);
+        return this;
+    }
+
+    public Out printlnAndClose(byte v) throws IOException {
+        getProteu().getOutput().printlnAndClose(v);
+        return this;
+    }
+
+    public Out printlnAndClose(short v) throws IOException {
+        getProteu().getOutput().printlnAndClose(v);
+        return this;
+    }
+
+    public Out printlnAndClose(int v) throws IOException {
+        getProteu().getOutput().printlnAndClose(v);
+        return this;
+    }
+
+    public Out printlnAndClose(long v) throws IOException {
+        getProteu().getOutput().printlnAndClose(v);
+        return this;
+    }
+
+    public Out printlnAndClose(float v) throws IOException {
+        getProteu().getOutput().printlnAndClose(v);
+        return this;
+    }
+
+    public Out printlnAndClose(double v) throws IOException {
+        getProteu().getOutput().printlnAndClose(v);
+        return this;
+    }
+
+    public Out printlnAndClose(char v) throws IOException {
+        getProteu().getOutput().printlnAndClose(v);
+        return this;
+    }
+
+    public Out printlnAndClose(boolean v) throws IOException {
+        getProteu().getOutput().printlnAndClose(v);
+        return this;
+    }
+
+    public Out printlnAndClose(Object line) throws IOException {
+        getProteu().getOutput().printlnAndClose(line.toString());
+        return this;
+    }
+
     @MethodDoc(translations = {
         @MethodTranslationDoc(
                 language = LanguageDoc.PT,
@@ -500,8 +571,18 @@ public class Out extends ResourceBase {
                 description = "Current data output."
         )
     })
-    public Out print(String line) throws IOException {
-        getProteu().getOutput().print(line);
+    public Out print(String text) throws IOException {
+        getProteu().getOutput().print(text);
+        return this;
+    }
+
+    public Out print(String text, String charset) throws IOException {
+        getProteu().getOutput().print(text, charset);
+        return this;
+    }
+
+    public Out print(String text, Charset charset) throws IOException {
+        getProteu().getOutput().print(text, charset);
         return this;
     }
 
@@ -667,13 +748,83 @@ public class Out extends ResourceBase {
                 description = "Current data output."
         )
     })
-    public Out print(Object line) throws IOException {
-        getProteu().getOutput().print(line.toString());
+    public Out print(Object text) throws IOException {
+        getProteu().getOutput().print(text.toString());
         return this;
     }
 
-    public Out printf(final String format, Object... objects) throws IOException {
+    public Out printAndClose(String text) throws IOException {
+        getProteu().getOutput().printAndClose(text);
+        return this;
+    }
+
+    public Out printAndClose(String text, String charset) throws IOException {
+        getProteu().getOutput().printAndClose(text, charset);
+        return this;
+    }
+
+    public Out printAndClose(String text, Charset charset) throws IOException {
+        getProteu().getOutput().printAndClose(text, charset);
+        return this;
+    }
+
+    public Out printAndClose(byte v) throws IOException {
+        getProteu().getOutput().printAndClose(v);
+        return this;
+    }
+
+    public Out printAndClose(short v) throws IOException {
+        getProteu().getOutput().printAndClose(v);
+        return this;
+    }
+
+    public Out printAndClose(int v) throws IOException {
+        getProteu().getOutput().printAndClose(v);
+        return this;
+    }
+
+    public Out printAndClose(long v) throws IOException {
+        getProteu().getOutput().printAndClose(v);
+        return this;
+    }
+
+    public Out printAndClose(float v) throws IOException {
+        getProteu().getOutput().printAndClose(v);
+        return this;
+    }
+
+    public Out printAndClose(double v) throws IOException {
+        getProteu().getOutput().printAndClose(v);
+        return this;
+    }
+
+    public Out printAndClose(char v) throws IOException {
+        getProteu().getOutput().printAndClose(v);
+        return this;
+    }
+
+    public Out printAndClose(boolean v) throws IOException {
+        getProteu().getOutput().printAndClose(v);
+        return this;
+    }
+
+    public Out printAndClose(Object text) throws IOException {
+        getProteu().getOutput().printAndClose(text.toString());
+        return this;
+    }
+
+    public Out printf(final String format, final Object... objects) throws IOException {
         getProteu().getOutput().printf(format, objects);
+        return this;
+    }
+
+    public Out printf(final String format, final String charset, final Object... objects) throws IOException {
+        getProteu().getOutput().printf(format, charset, objects);
+        return this;
+    }
+
+    public Out printf(final String format, final Charset charset, final Object... objects) throws IOException {
+        getProteu().getOutput().printf(format, charset, objects);
         return this;
     }
 
@@ -1708,8 +1859,8 @@ public class Out extends ResourceBase {
                     description = "Returns the value of the JSON indentation factor."
             )
     })
-    public int jsonIdentFactor() {
-        return this.jsonIdentFactor;
+    public int jsonIndentFactor() {
+        return this.jsonIndentFactor;
     }
 
     @MethodDoc(translations = {
@@ -1731,8 +1882,8 @@ public class Out extends ResourceBase {
                     description = "Returns the value of the JSON indentation factor."
             )
     })
-    public int getJSONIdentFactor() {
-        return jsonIdentFactor();
+    public int getJSONIndentFactor() {
+        return jsonIndentFactor();
     }
 
     @MethodDoc(translations = {
@@ -1767,8 +1918,8 @@ public class Out extends ResourceBase {
                     description = "Returns the Out object itself"
             )
     })
-    public Out jsonIdentFactor(int jsonIdentFactor) {
-        this.jsonIdentFactor = jsonIdentFactor;
+    public Out jsonIndentFactor(int jsonIndentFactor) {
+        this.jsonIndentFactor = jsonIndentFactor;
         return this;
     }
 
@@ -1816,8 +1967,8 @@ public class Out extends ResourceBase {
                     description = "Returns the Out object itself"
             )
     })
-    public Out setJSONIdentFactor(int jsonIdentFactor) {
-        return jsonIdentFactor(jsonIdentFactor);
+    public Out setJSONIndentFactor(int jsonIndentFactor) {
+        return jsonIndentFactor(jsonIndentFactor);
     }
 
     @MethodDoc(translations = {
@@ -2019,7 +2170,7 @@ public class Out extends ResourceBase {
     })
 
     public Out json(Values json) throws IOException, ProteuException {
-        getProteu().outputJSON(json, jsonHTMLEscape, jsonIdentFactor);
+        getProteu().outputJSON(json, jsonHTMLEscape, jsonIndentFactor);
         return this;
     }
 
@@ -2055,7 +2206,7 @@ public class Out extends ResourceBase {
     })
 
     public Out json(Map json) throws IOException, ProteuException {
-        getProteu().outputJSON(new Values(json), jsonHTMLEscape, jsonIdentFactor);
+        getProteu().outputJSON(new Values(json), jsonHTMLEscape, jsonIndentFactor);
         return this;
     }
 
@@ -2091,7 +2242,7 @@ public class Out extends ResourceBase {
     })
 
     public Out json(List<Values> json) throws IOException, ProteuException {
-        getProteu().outputJSON(json, jsonHTMLEscape, jsonIdentFactor);
+        getProteu().outputJSON(json, jsonHTMLEscape, jsonIndentFactor);
         return this;
     }
 
