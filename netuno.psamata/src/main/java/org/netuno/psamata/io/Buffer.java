@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 
 /**
  * Efficient implementation with NIO to read or even copy data between streams, 
@@ -61,15 +62,15 @@ public class Buffer {
         this.length = length;
     }
 
-    public synchronized void copy(java.io.InputStream in, java.io.OutputStream out) throws IOException {
+    public void copy(java.io.InputStream in, java.io.OutputStream out) throws IOException {
         copy(in, out, -1, -1);
     }
     
-    public synchronized void copy(java.io.InputStream in, java.io.OutputStream out, long skip) throws IOException {
+    public void copy(java.io.InputStream in, java.io.OutputStream out, long skip) throws IOException {
         copy(in, out, skip, -1);
     }
     
-    public synchronized void copy(java.io.InputStream in, java.io.OutputStream out, long skip, long size) throws IOException {
+    public void copy(java.io.InputStream in, java.io.OutputStream out, long skip, long size) throws IOException {
         long position = 0;
         if (skip >= 0) {
             in.skip(skip);
@@ -110,21 +111,21 @@ public class Buffer {
         }
     }
 
-    public synchronized byte[] readBytes(java.io.InputStream in) throws IOException {
+    public byte[] readBytes(java.io.InputStream in) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         new Buffer().copy(in, baos);
         return baos.toByteArray();
     }
 
     public String readString(java.io.InputStream in) throws IOException {
-        return readString(in, null);
+        return readString(in, Charset.defaultCharset());
     }
 
-    public synchronized String readString(java.io.InputStream in, String charset) throws IOException {
-        if (charset != null && !charset.isEmpty()) {
-            return new String(readBytes(in), charset);
-        } else {
-            return new String(readBytes(in));
-        }
+    public String readString(java.io.InputStream in, String charset) throws IOException {
+        return readString(in, Charset.forName(charset));
+    }
+
+    public String readString(java.io.InputStream in, Charset charset) throws IOException {
+        return new String(readBytes(in), charset);
     }
 }
