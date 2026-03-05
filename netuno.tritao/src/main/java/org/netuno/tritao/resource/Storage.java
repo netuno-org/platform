@@ -723,7 +723,7 @@ public class Storage extends ResourceBase implements IO {
     	} catch (IOException e) {
     		throw new ResourceException("storage.ensurePath("+ absolutePath() +")", e);
     	}
-	return this;
+	    return this;
     }
 
     @MethodDoc(translations = {

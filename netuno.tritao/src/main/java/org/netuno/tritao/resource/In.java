@@ -74,8 +74,24 @@ public class In extends ResourceBase {
         return getProteu().getInput().readAll();
     }
 
+    public String readAll(String charset) throws IOException {
+        return getProteu().getInput().readAll(charset);
+    }
+
+    public String readAll(Charset charset) throws IOException {
+        return getProteu().getInput().readAll(charset);
+    }
+
     public String readAllAndClose() throws IOException {
         return getProteu().getInput().readAllAndClose();
+    }
+
+    public String readAllAndClose(String charset) throws IOException {
+        return getProteu().getInput().readAllAndClose(charset);
+    }
+
+    public String readAllAndClose(Charset charset) throws IOException {
+        return getProteu().getInput().readAllAndClose(charset);
     }
 
     public byte[] readAllBytes() throws IOException {
@@ -130,12 +146,20 @@ public class In extends ResourceBase {
         return getProteu().getInput().readString();
     }
 
-    public String readStringAndClose() throws IOException {
-        return getProteu().getInput().readStringAndClose();
+    public String readString(String charset) throws IOException {
+        return getProteu().getInput().readString(charset);
     }
 
     public String readString(Charset charset) throws IOException {
         return getProteu().getInput().readString(charset);
+    }
+
+    public String readStringAndClose() throws IOException {
+        return getProteu().getInput().readStringAndClose();
+    }
+
+    public String readStringAndClose(String charset) throws IOException {
+        return getProteu().getInput().readStringAndClose(charset);
     }
 
     public String readStringAndClose(Charset charset) throws IOException {
