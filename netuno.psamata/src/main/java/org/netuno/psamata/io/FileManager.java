@@ -74,7 +74,7 @@ public class FileManager implements AutoCloseable {
         streams.clear();
     }
 
-    public static synchronized FileManager get() {
+    public static FileManager get() {
         String threadName = Thread.currentThread().getName();
         if (managers.containsKey(threadName)) {
             return managers.get(threadName);
@@ -84,7 +84,7 @@ public class FileManager implements AutoCloseable {
         return fileManager;
     }
 
-    public static synchronized void clear() {
+    public static void clear() {
         String threadName = Thread.currentThread().getName();
         if (managers.containsKey(threadName)) {
             try {
