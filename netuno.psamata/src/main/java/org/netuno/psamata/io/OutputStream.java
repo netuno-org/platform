@@ -24,6 +24,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import org.netuno.library.doc.LanguageDoc;
@@ -146,11 +147,21 @@ public class OutputStream extends java.io.OutputStream {
 
     /**
      * Print, write string.
-     * @param bytes String
+     * @param text String
      * @throws IOException Write exception
      */
-    public final OutputStream print(final String bytes) throws IOException {
-        writeBytes(bytes);
+    public final OutputStream print(final String text) throws IOException {
+        print(text, Charset.defaultCharset());
+        return this;
+    }
+
+    public final OutputStream print(final String text, final String charset) throws IOException {
+        print(text, Charset.forName(charset));
+        return this;
+    }
+
+    public final OutputStream print(final String text, final Charset charset) throws IOException {
+        writeBytes(text, charset);
         return this;
     }
 
@@ -244,9 +255,35 @@ public class OutputStream extends java.io.OutputStream {
         return this;
     }
 
-    public final OutputStream printAndClose(final String bytes) throws IOException {
+    public final OutputStream printAndClose(final String text) throws IOException {
+        return printAndClose(text, Charset.defaultCharset());
+    }
+
+    public final OutputStream printAndClose(final String text, final String charset) throws IOException {
+        return printAndClose(text, Charset.forName(charset));
+    }
+
+    public final OutputStream printAndClose(final String text, final Charset charset) throws IOException {
         try {
-            print(bytes);
+            print(text, charset);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final byte v) throws IOException {
+        try {
+            print(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printAndClose(final short v) throws IOException {
+        try {
+            print(v);
         } finally {
             close();
         }
@@ -262,7 +299,7 @@ public class OutputStream extends java.io.OutputStream {
         return this;
     }
 
-    public final OutputStream printAndClose(final short v) throws IOException {
+    public final OutputStream printAndClose(final long v) throws IOException {
         try {
             print(v);
         } finally {
@@ -281,15 +318,6 @@ public class OutputStream extends java.io.OutputStream {
     }
 
     public final OutputStream printAndClose(final double v) throws IOException {
-        try {
-            print(v);
-        } finally {
-            close();
-        }
-        return this;
-    }
-
-    public final OutputStream printAndClose(final long v) throws IOException {
         try {
             print(v);
         } finally {
@@ -327,11 +355,19 @@ public class OutputStream extends java.io.OutputStream {
 
     /**
      * Write String line.
-     * @param bytes Text of the line
+     * @param text Text of the line
      * @throws IOException Write exception
      */
-    public final OutputStream println(final String bytes) throws IOException {
-        writeBytes(bytes + "\n");
+    public final OutputStream println(final String text) throws IOException {
+        return println(text, Charset.defaultCharset());
+    }
+
+    public final OutputStream println(final String text, final String charset) throws IOException {
+        return println(text, Charset.forName(charset));
+    }
+
+    public final OutputStream println(final String text, final Charset charset) throws IOException {
+        writeBytes(text + "\n", charset);
         return this;
     }
 
@@ -434,9 +470,35 @@ public class OutputStream extends java.io.OutputStream {
         return this;
     }
 
-    public final OutputStream printlnAndClose(final String bytes) throws IOException {
+    public final OutputStream printlnAndClose(final String text) throws IOException {
+        return printlnAndClose(text, Charset.defaultCharset());
+    }
+
+    public final OutputStream printlnAndClose(final String text, final String charset) throws IOException {
+        return printlnAndClose(text, Charset.forName(charset));
+    }
+
+    public final OutputStream printlnAndClose(final String text, final Charset charset) throws IOException {
         try {
-            println(bytes);
+            println(text, charset);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final byte v) throws IOException {
+        try {
+            println(v);
+        } finally {
+            close();
+        }
+        return this;
+    }
+
+    public final OutputStream printlnAndClose(final short v) throws IOException {
+        try {
+            println(v);
         } finally {
             close();
         }
@@ -452,7 +514,7 @@ public class OutputStream extends java.io.OutputStream {
         return this;
     }
 
-    public final OutputStream printlnAndClose(final short v) throws IOException {
+    public final OutputStream printlnAndClose(final long v) throws IOException {
         try {
             println(v);
         } finally {
@@ -479,15 +541,6 @@ public class OutputStream extends java.io.OutputStream {
         return this;
     }
 
-    public final OutputStream printlnAndClose(final long v) throws IOException {
-        try {
-            println(v);
-        } finally {
-            close();
-        }
-        return this;
-    }
-
     public final OutputStream printlnAndClose(final char v) throws IOException {
         try {
             println(v);
@@ -506,86 +559,30 @@ public class OutputStream extends java.io.OutputStream {
         return this;
     }
 
-    public final OutputStream printf(final String format, Object... objects) throws IOException {
-        writeBytes(String.format(format, objects));
+    public final OutputStream printf(final String format, final Object... objects) throws IOException {
+        return printf(format, Charset.defaultCharset(), objects);
+    }
+
+    public final OutputStream printf(final String format, final String charset, final Object... objects) throws IOException {
+        return printf(format, Charset.forName(charset), objects);
+    }
+
+    public final OutputStream printf(final String format, final Charset charset, final Object... objects) throws IOException {
+        writeBytes(String.format(format, objects), charset);
         return this;
     }
 
-    public final OutputStream printfAndClose(final String format, Object... objects) throws IOException {
-        try {
-            printf(format, objects);
-        } finally {
-            close();
-        }
-        return this;
+    public final OutputStream printfAndClose(final String format, final Object... objects) throws IOException {
+        return printfAndClose(format, Charset.defaultCharset(), objects);
     }
-    
-    public final OutputStream writeAndClose(final String bytes) throws IOException {
-        try {
-            print(bytes);
-        } finally {
-            close();
-        }
-        return this;
+
+    public final OutputStream printfAndClose(final String format, final String charset, final Object... objects) throws IOException {
+        return printfAndClose(format, Charset.forName(charset), objects);
     }
-    
-    public final OutputStream writeAndClose(final int v) throws IOException {
+
+    public final OutputStream printfAndClose(final String format, final Charset charset, final Object... objects) throws IOException {
         try {
-            print(v);
-        } finally {
-            close();
-        }
-        return this;
-    }
-    
-    public final OutputStream writeAndClose(final short v) throws IOException {
-        try {
-            print(v);
-        } finally {
-            close();
-        }
-        return this;
-    }
-    
-    public final OutputStream writeAndClose(final float v) throws IOException {
-        try {
-            print(v);
-        } finally {
-            close();
-        }
-        return this;
-    }
-    
-    public final OutputStream writeAndClose(final double v) throws IOException {
-        try {
-            print(v);
-        } finally {
-            close();
-        }
-        return this;
-    }
-    
-    public final OutputStream writeAndClose(final long v) throws IOException {
-        try {
-            print(v);
-        } finally {
-            close();
-        }
-        return this;
-    }
-    
-    public final OutputStream writeAndClose(final char v) throws IOException {
-        try {
-            print(v);
-        } finally {
-            close();
-        }
-        return this;
-    }
-    
-    public final OutputStream writeAndClose(final boolean v) throws IOException {
-        try {
-            print(v);
+            printf(format, charset, objects);
         } finally {
             close();
         }
@@ -794,37 +791,42 @@ public class OutputStream extends java.io.OutputStream {
     }
     /**
      * Write string bytes.
-     * @param s String to write
+     * @param text String to write
      * @throws IOException Write exception
      */
-    public final OutputStream writeBytes(final String s) throws IOException {
+    public final OutputStream writeBytes(final String text) throws IOException {
+        return writeBytes(text, Charset.defaultCharset());
+    }
+
+    public final OutputStream writeBytes(final String text, final String charset) throws IOException {
+        return writeBytes(text, Charset.forName(charset));
+    }
+
+    public final OutputStream writeBytes(final String text, final Charset charset) throws IOException {
         start();
         if (!isEnabled()) {
             return this;
         }
-        int len = s.length();
-        for (int i = 0 ; i < len ; i++) {
-            for (java.io.OutputStream mirror : mirrors) {
-                mirror.write((byte)s.charAt(i));
-            }
-            out.write((byte)s.charAt(i));
-            length++;
+        byte[] bytes = text.getBytes(charset);
+        for (java.io.OutputStream mirror : mirrors) {
+            mirror.write(bytes);
         }
+        out.write(bytes);
         return this;
     }
     /**
      * Write string chars.
-     * @param s String to write
+     * @param text String to write
      * @throws IOException Write exception
      */
-    public final OutputStream writeChars(final String s) throws IOException {
+    public final OutputStream writeChars(final String text) throws IOException {
         start();
         if (!isEnabled()) {
             return this;
         }
-        int len = s.length();
+        int len = text.length();
         for (int i = 0 ; i < len ; i++) {
-            int v = s.charAt(i);
+            int v = text.charAt(i);
             for (java.io.OutputStream mirror : mirrors) {
                 mirror.write((v >>> 8) & 0xFF);
                 mirror.write((v >>> 0) & 0xFF);
