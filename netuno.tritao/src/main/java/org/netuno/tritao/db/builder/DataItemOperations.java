@@ -362,7 +362,11 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
         if (dataItem.getStatusType() == DataItem.StatusType.Error) {
             return;
         }
-        dataItem.setStatus(DataItem.Status.Updated);
+        if (dataItem.isInsert()) {
+            dataItem.setStatus(DataItem.Status.Inserted);
+        } else {
+            dataItem.setStatus(DataItem.Status.Updated);
+        }
         dataItem.setCounter(getExecutor().execute("update "
                 .concat(getBuilder().escape(table.getString("name")))
                 .concat(" set ").concat(update).concat(" where id = ").concat(DB.sqlInjectionInt(dataItem.getId()))));
