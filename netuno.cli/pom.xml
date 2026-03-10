@@ -31,7 +31,7 @@
             <artifactId>netuno-psamata</artifactId>
             <version>${revision}</version>
             <type>jar</type>
-	        <scope>compile</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>info.picocli</groupId>
@@ -106,7 +106,7 @@
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
             <version>${oshi.version}</version>
-	    </dependency>
+        </dependency>
 
         <!-- GRAALVM -->
         <dependency>
