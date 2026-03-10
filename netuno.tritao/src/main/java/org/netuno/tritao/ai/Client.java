@@ -3,9 +3,11 @@ package org.netuno.tritao.ai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.jetbrains.kotlin.serialization.js.ast.JsAstProtoBuf;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
@@ -433,14 +435,57 @@ public class Client {
 
         for (Values serverConfig : configs.listOfValues()) {
             System.out.println(serverConfig.toJSON());
-            McpClientTransport transport = buildTransport();
 
-            McpSyncClient client = McpClient.sync(transport).build();
+            McpClientTransport transport = buildTransport(serverConfig);
+            if (transport == null) {
+                // TODO: CREATE ERROR WARNING
+                return;
+            }
+            try (McpSyncClient client = McpClient.sync(transport).build()) {
+                c
+            }
         }
     }
 
-    private McpClientTransport buildTransport(){
+    private McpClientTransport buildTransport(Values values){
         McpClientTransport transport = null;
+
+        String type = values.getString("type");
+
+        if (type == null || type.isBlank()) {
+            logger.error("MCP server config is missing required 'type' field: {}", values.toJSON());
+            return null;
+        }
+
+
+        if (type.equalsIgnoreCase("remote")) {
+            String url = values.getString("url");
+            if (url == null || url.isBlank()) {
+                logger.error("MCP 'remote' transport requires a 'url' field.");
+                return null;
+            }
+            String normalizedUrl = normalizeUrl(url);
+            if (normalizedUrl == null) {
+                logger.error("MCP remote transport has invalid URL: {}", url);
+                return null;
+            }
+
+            HttpClientSseClientTransport.Builder builder = HttpClientSseClientTransport.builder(normalizedUrl);
+            Values headers = values.getValues("headers");
+            if (headers != null && !headers.isEmpty()) {
+                builder.customizeRequest(req -> {
+                    for (String key : headers.keys()) {
+                        req.header(key, headers.getString(key));
+                    }
+                });
+            }
+
+            logger.info("MCP remote SSE transport → {}", normalizedUrl);
+            return builder.build();
+
+        } else if (type.equalsIgnoreCase("stdio")) {
+            // TODO: IMPLEMENT WITH stdio
+        }
 
         return transport;
     }
