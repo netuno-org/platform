@@ -284,7 +284,6 @@
         }
 
         // --- Stream core logic ---
-
         private void streamInternal(String model, Values messages, Values options, Consumer<Values> onToken) {
 
             if (!isInitialized()) {
@@ -320,8 +319,8 @@
                     }
                 }
 
-                try (var stream = instance().chat().completions().createStreaming(builder.build()).stream()) {
-                    stream.forEach(chunk -> {
+                try (var streamingResponse = instance().chat().completions().createStreaming(builder.build())) {
+                    streamingResponse.stream().forEach(chunk -> {
                         try {
                             String json = mapper.writeValueAsString(chunk);
                             Values chunkValues = Values.fromJSON(json);
@@ -331,17 +330,14 @@
                                 onToken.accept(chunkValues);
                             }
                         } catch (Exception e) {
-                            logger.error("Failed to serialize stream chunk for provider '{}'.", this.settings.provider, e);
+                            logger.error(
+                                    "Failed to serialize stream chunk for provider '{}'.",
+                                    this.settings.provider, e
+                            );
                         }
-                                //chunk.choices().forEach(choice ->
-                                //        choice.delta().content().ifPresent(token -> {
-                                //            if (onToken != null) {
-                                //                onToken.accept(token);
-                                //            }
-                                //        })
-                                // );
                     });
                 }
+
             } catch (Exception e) {
                 if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
                     logger.error(
