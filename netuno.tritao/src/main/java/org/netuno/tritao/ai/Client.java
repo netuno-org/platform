@@ -3,11 +3,17 @@ package org.netuno.tritao.ai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
+import com.openai.models.chat.completions.*;
+import com.openai.models.embeddings.CreateEmbeddingResponse;
+import com.openai.models.embeddings.EmbeddingCreateParams;
+import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
+import io.modelcontextprotocol.client.transport.ServerParameters;
+import io.modelcontextprotocol.client.transport.StdioClientTransport;
+import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
+import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.jetbrains.kotlin.serialization.js.ast.JsAstProtoBuf;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
@@ -20,12 +26,6 @@ import java.util.function.Consumer;
 
 import com.openai.models.models.Model;
 import com.openai.models.models.ModelListPage;
-import com.openai.models.chat.completions.ChatCompletion;
-import com.openai.models.chat.completions.ChatCompletionCreateParams;
-import com.openai.models.chat.completions.ChatCompletionMessageParam;
-import com.openai.models.chat.completions.ChatCompletionUserMessageParam;
-import com.openai.models.chat.completions.ChatCompletionSystemMessageParam;
-import com.openai.models.chat.completions.ChatCompletionAssistantMessageParam;
 
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.McpSyncClient;
@@ -39,13 +39,25 @@ public class Client {
 
         private Values mcp;
         private Values tools;
-        private List<McpSyncClient> mcpClients = new ArrayList<>();
+
+        private final List<McpSyncClient> mcpClients = new ArrayList<>();
+        private final Map<String, McpToolBinding> toolBindings = new LinkedHashMap<>();
     }
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private static class McpToolBinding {
+        McpSyncClient client;
+        McpSchema.Tool tool;
+
+        McpToolBinding(McpSyncClient client, McpSchema.Tool tool) {
+            this.client = client;
+            this.tool = tool;
+        }
+    }
+
+    private final ObjectMapper mapper = new ObjectMapper();
     private static final Logger logger = LogManager.getLogger(Client.class);
 
-    private ChatSettings settings;
+    private final ChatSettings settings;
     private OpenAIClient client;
     private final Proteu proteu;
     private final Hili hili;
@@ -217,7 +229,6 @@ public class Client {
     }
 
     // --- Chat core logic ---
-
     private Values chatInternal(String model, Values messages, Values options) {
         Values result = new Values();
 
@@ -354,7 +365,6 @@ public class Client {
     }
 
     // --- Helpers ---
-
     private List<ChatCompletionMessageParam> buildMessages(Values messages) {
         List<ChatCompletionMessageParam> list = new ArrayList<>();
 
@@ -422,34 +432,69 @@ public class Client {
         return true;
     }
 
+    private List<ChatCompletionTool> buildTools() {
+        if (settings.tools == null || settings.tools.isEmpty()) return List.of();
+
+        List<ChatCompletionTool> result = new ArrayList<>();
+        for (Values t : settings.tools.listOfValues()) {
+            try {
+                String schemaJson = mapper.writeValueAsString(t.get("inputSchema"));
+                System.out.println(schemaJson);
+
+            } catch (Exception e) {
+                logger.error("Failed to build tool '{}'.", t.getString("name"), e);
+            }
+        }
+        return result;
+    }
+
     public void mcp(Values configs) {
         this.settings.mcp = configs;
         this.settings.tools = new Values().setForceList(true);
-
-        for (McpSyncClient c : this.settings.mcpClients) {
-            try { c.closeGracefully(); } catch (Exception ignored) {}
-        }
-        this.settings.mcpClients.clear();
+        this.settings.toolBindings.clear();
+        this.closeMcpClients();
 
         if (configs == null || configs.isEmpty()) return;
 
         for (Values serverConfig : configs.listOfValues()) {
-            System.out.println(serverConfig.toJSON());
-
             McpClientTransport transport = buildTransport(serverConfig);
             if (transport == null) {
-                // TODO: CREATE ERROR WARNING
-                return;
+                continue;
             }
-            try (McpSyncClient client = McpClient.sync(transport).build()) {
-                c
+
+            try {
+                McpSyncClient client = McpClient.sync(transport).build();
+                client.initialize();
+                this.settings.mcpClients.add(client);
+
+                for (McpSchema.Tool tool : client.listTools().tools()) {
+                    String toolName = tool.name();
+
+                    this.settings.toolBindings.put(toolName, new McpToolBinding(client, tool));
+
+                    Values t = new Values()
+                            .set("name", tool.name())
+                            .set("description", tool.description())
+                            .set("inputSchema", tool.inputSchema());
+
+                    this.settings.tools.add(t);
+                }
+            } catch (Exception e) {
+                logger.error("Failed to initialize MCP client.", e);
             }
         }
     }
 
-    private McpClientTransport buildTransport(Values values){
-        McpClientTransport transport = null;
+    private void closeMcpClients() {
+        for (McpSyncClient c : settings.mcpClients) {
+            try {
+                c.closeGracefully();
+            } catch (Exception ignored) {}
+        }
+        settings.mcpClients.clear();
+    }
 
+    private McpClientTransport buildTransport(Values values) {
         String type = values.getString("type");
 
         if (type == null || type.isBlank()) {
@@ -457,20 +502,28 @@ public class Client {
             return null;
         }
 
-
         if (type.equalsIgnoreCase("remote")) {
             String url = values.getString("url");
             if (url == null || url.isBlank()) {
                 logger.error("MCP 'remote' transport requires a 'url' field.");
                 return null;
             }
+
             String normalizedUrl = normalizeUrl(url);
             if (normalizedUrl == null) {
                 logger.error("MCP remote transport has invalid URL: {}", url);
                 return null;
             }
 
-            HttpClientSseClientTransport.Builder builder = HttpClientSseClientTransport.builder(normalizedUrl);
+            String endpoint = values.getString("endpoint");
+            if (endpoint == null || endpoint.isBlank()) {
+                endpoint = "/mcp";
+            }
+
+            HttpClientStreamableHttpTransport.Builder builder =
+                    HttpClientStreamableHttpTransport.builder(normalizedUrl)
+                            .endpoint(endpoint);
+
             Values headers = values.getValues("headers");
             if (headers != null && !headers.isEmpty()) {
                 builder.customizeRequest(req -> {
@@ -480,15 +533,134 @@ public class Client {
                 });
             }
 
-            logger.info("MCP remote SSE transport → {}", normalizedUrl);
+            logger.info("MCP remote Streamable HTTP transport {}{}", normalizedUrl, endpoint);
             return builder.build();
 
         } else if (type.equalsIgnoreCase("stdio")) {
-            // TODO: IMPLEMENT WITH stdio
+            String command = values.getString("command");
+            if (command == null || command.isBlank()) {
+                logger.error("MCP 'stdio' requires a 'command'.");
+                return null;
+            }
+
+            ServerParameters.Builder b = ServerParameters.builder(command);
+
+            Values argsList = values.getValues("args");
+            if (argsList != null && !argsList.isEmpty()) {
+                List<String> args = new ArrayList<>();
+                for (int i = 0; i < argsList.size(); i++) {
+                    args.add(argsList.getString(i));
+                }
+                b.args(args);
+            }
+
+            Values envMap = values.getValues("env");
+            if (envMap != null && !envMap.isEmpty()) {
+                Map<String, String> env = new LinkedHashMap<>();
+                for (String key : envMap.keys()) {
+                    env.put(key, envMap.getString(key));
+                }
+                b.env(env);
+            }
+
+            logger.info("MCP stdio transport {} {}", command,
+                    values.getValues("args") != null ? values.getValues("args").toJSON() : "[]");
+
+            return new StdioClientTransport(b.build(), new JacksonMcpJsonMapper(mapper));
         }
 
-        return transport;
+        logger.error("Unsupported MCP transport type: {}", type);
+        return null;
     }
+
+    // --- Embeddings public overloads ---
+
+    public Values embeddings(String input) {
+        return embeddingsInternal(this.settings.model, List.of(input), null);
+    }
+
+    public Values embeddings(String model, String input) {
+        return embeddingsInternal(model, List.of(input), null);
+    }
+
+    public Values embeddings(String model, String input, Values options) {
+        return embeddingsInternal(model, List.of(input), options);
+    }
+
+    public Values embeddings(Values inputs) {
+        return embeddingsInternal(this.settings.model, Arrays.asList(inputs.toStringArray()), null);
+    }
+
+    public Values embeddings(Values inputs, Values options) {
+        return embeddingsInternal(this.settings.model, Arrays.asList(inputs.toStringArray()), options);
+    }
+
+    public Values embeddings(String model, Values inputs) {
+        return embeddingsInternal(model, Arrays.asList(inputs.toStringArray()), null);
+    }
+
+    public Values embeddings(String model, Values inputs, Values options) {
+        return embeddingsInternal(model, Arrays.asList(inputs.toStringArray()), options);
+    }
+
+    // --- Embeddings core logic ---
+    private Values embeddingsInternal(String model, List<String> inputs, Values options) {
+        Values result = new Values();
+
+        if (!isInitialized()) {
+            logger.error("AI client '{}' not initialized.", this.settings.provider);
+            return result;
+        }
+
+        if (model == null || model.isBlank()) {
+            logger.error("Model cannot be null or empty.");
+            return result;
+        }
+
+        if (inputs == null || inputs.isEmpty()) {
+            logger.error("Inputs cannot be null or empty.");
+            return result;
+        }
+
+        try {
+            EmbeddingCreateParams.Builder builder = EmbeddingCreateParams.builder()
+                    .model(model)
+                    .input(EmbeddingCreateParams.Input.ofArrayOfStrings(inputs));
+
+            if (options != null) {
+                if (options.containsKey("dimensions")) {
+                    builder.dimensions(options.getLong("dimensions"));
+                }
+                if (options.containsKey("encoding_format")) {
+                    builder.encodingFormat(EmbeddingCreateParams.EncodingFormat.of(
+                            options.getString("encoding_format")
+                    ));
+                }
+                if (options.containsKey("user")) {
+                    builder.user(options.getString("user"));
+                }
+            }
+
+            CreateEmbeddingResponse response = instance().embeddings().create(builder.build());
+            String json = mapper.writeValueAsString(response);
+            result = Values.fromJSON(json);
+            result.remove("valid");
+
+        } catch (Exception e) {
+            logger.error(
+                    "Embeddings request failed for provider '{}', model '{}'.",
+                    this.settings.provider,
+                    model,
+                    e
+            );
+        }
+
+        return result;
+    }
+
+
+
+
 
 
 }
