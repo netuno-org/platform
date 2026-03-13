@@ -14,7 +14,8 @@
         if (typeof $ !== 'undefined') {
             var valueTime = '_{data=com.time.value}';
             netuno.com.time.load("_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}", "_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}_", function () {
-                valueTime = $(this).val();
+                valueTime = $("#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-time-_{util=requestuuid}").val();
+                debugger
                 $("\#_{config=netuno_form_name}-_{data=name}-_{config=netuno_form_mode}-_{util=requestuuid}").val(valueTime + ':00.0');
             });
         }
