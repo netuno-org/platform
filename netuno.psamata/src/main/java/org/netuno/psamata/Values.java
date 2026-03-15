@@ -3694,7 +3694,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     }
 
     public List<?> list() {
-        return List.copyOf(new Values(array).array);
+        return new Values(array).array;
     }
     
     public<T> List<T> list(Class<T> cls) {
@@ -3712,6 +3712,18 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             }
         }
         return list;
+    }
+
+    public List<Object> reversed() {
+        return new Values(array).array.reversed();
+    }
+
+    public<T> List<T> reversed(Class<T> cls) {
+        return (List<T>)reversed();
+    }
+
+    public Values reversedValues() {
+        return new Values(reversed());
     }
 
     public Values find(Values filter) {
