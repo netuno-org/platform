@@ -3,17 +3,25 @@ package org.netuno.tritao.ai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.core.JsonValue;
+import com.openai.helpers.ChatCompletionAccumulator;
+import com.openai.models.FunctionDefinition;
+import com.openai.models.FunctionParameters;
 import com.openai.models.chat.completions.*;
 import com.openai.models.embeddings.CreateEmbeddingResponse;
 import com.openai.models.embeddings.EmbeddingCreateParams;
+import com.openai.models.models.Model;
+import com.openai.models.models.ModelListPage;
+import io.modelcontextprotocol.client.McpClient;
+import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
 import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
 import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
+import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
@@ -21,17 +29,16 @@ import org.netuno.tritao.hili.Hili;
 
 import java.net.URI;
 import java.net.URL;
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
 
-import com.openai.models.models.Model;
-import com.openai.models.models.ModelListPage;
-
-import io.modelcontextprotocol.client.McpClient;
-import io.modelcontextprotocol.client.McpSyncClient;
-import io.modelcontextprotocol.spec.McpClientTransport;
-
 public class Client {
+
+    @FunctionalInterface
+    public interface ToolCallback {
+        Values onToolCall(String toolName, Values arguments, McpSyncClient client, McpSchema.Tool tool);
+    }
 
     private static class ChatSettings {
         private String model;
@@ -43,7 +50,6 @@ public class Client {
         private final List<McpSyncClient> mcpClients = new ArrayList<>();
         private final Map<String, McpToolBinding> toolBindings = new LinkedHashMap<>();
     }
-
     private static class McpToolBinding {
         McpSyncClient client;
         McpSchema.Tool tool;
@@ -98,7 +104,6 @@ public class Client {
         return true;
     }
 
-
     private void initialize() {
         try {
             Values aiConfig = proteu.getConfig()
@@ -121,9 +126,8 @@ public class Client {
                 return;
             }
 
-            OpenAIOkHttpClient.Builder builder =
-                    OpenAIOkHttpClient.builder()
-                            .apiKey(apiKey);
+            OpenAIOkHttpClient.Builder builder = OpenAIOkHttpClient.builder()
+                    .apiKey(apiKey);
 
             if (baseUrl != null) {
                 builder.baseUrl(baseUrl);
@@ -210,199 +214,12 @@ public class Client {
         return models;
     }
 
-    // --- Chat public overloads ---
-
-    public Values chat(Values messages) {
-        return chatInternal(this.settings.model, messages, null);
-    }
-
-    public Values chat(Values messages, Values options) {
-        return chatInternal(this.settings.model, messages, options);
-    }
-
-    public Values chat(String model, Values messages) {
-        return chatInternal(model, messages, null);
-    }
-
-    public Values chat(String model, Values messages, Values options) {
-        return chatInternal(model, messages, options);
-    }
-
-    // --- Chat core logic ---
-    private Values chatInternal(String model, Values messages, Values options) {
-        Values result = new Values();
-
-        if (!isInitialized()) {
-            logger.error("AI client '{}' not initialized.", this.settings.provider);
-            return result;
+    public boolean model(String model) {
+        if (!isValidModel(model)) {
+            return false;
         }
-
-        if (model == null || model.isBlank()) {
-            logger.error("Model cannot be null or empty.");
-            return result;
-        }
-
-        if (messages == null || messages.isEmpty()) {
-            logger.error("Messages cannot be null or empty.");
-            return result;
-        }
-
-        try {
-            List<ChatCompletionMessageParam> messageList = buildMessages(messages);
-            ChatCompletionCreateParams.Builder builder = ChatCompletionCreateParams.builder()
-                    .model(model)
-                    .messages(messageList);
-
-            if (options != null) {
-                if (options.containsKey("temperature")) {
-                    builder.temperature(options.getDouble("temperature"));
-                }
-                if (options.containsKey("max_tokens")) {
-                    builder.maxCompletionTokens(options.getInt("max_tokens"));
-                }
-                if (options.containsKey("top_p")) {
-                    builder.topP(options.getDouble("top_p"));
-                }
-            }
-
-            ChatCompletion completion = instance().chat().completions().create(builder.build());
-            String json = mapper.writeValueAsString(completion);
-            result = Values.fromJSON(json);
-            result.remove("valid");
-
-        } catch (Exception e) {
-            logger.error(
-                    "Chat completion failed for provider '{}', model '{}'.",
-                    this.settings.provider,
-                    model,
-                    e
-            );
-        }
-
-        return result;
-    }
-
-    // --- Stream public overloads ---
-
-    public void stream(Values messages, Consumer<Values> onToken) {
-        streamInternal(this.settings.model, messages, null, onToken);
-    }
-    public void stream(Values messages, Values options, Consumer<Values> onToken) {
-        streamInternal(this.settings.model, messages, options, onToken);
-    }
-    public void stream(String model, Values messages, Consumer<Values> onToken) {
-        streamInternal(model, messages, null, onToken);
-    }
-    public void stream(String model, Values messages, Values options, Consumer<Values> onToken) {
-        streamInternal(model, messages, options, onToken);
-    }
-
-    // --- Stream core logic ---
-    private void streamInternal(String model, Values messages, Values options, Consumer<Values> onToken) {
-
-        if (!isInitialized()) {
-            logger.error("AI client '{}' not initialized.", this.settings.provider);
-            return;
-        }
-
-        if (model == null || model.isBlank()) {
-            logger.error("Model cannot be null or empty.");
-            return;
-        }
-
-        if (messages == null || messages.isEmpty()) {
-            logger.error("Messages cannot be null or empty.");
-            return;
-        }
-
-        try {
-            List<ChatCompletionMessageParam> messageList = buildMessages(messages);
-            ChatCompletionCreateParams.Builder builder = ChatCompletionCreateParams.builder()
-                    .model(model)
-                    .messages(messageList);
-
-            if (options != null) {
-                if (options.containsKey("temperature")) {
-                    builder.temperature(options.getDouble("temperature"));
-                }
-                if (options.containsKey("max_tokens")) {
-                    builder.maxCompletionTokens(options.getInt("max_tokens"));
-                }
-                if (options.containsKey("top_p")) {
-                    builder.topP(options.getDouble("top_p"));
-                }
-            }
-
-            try (var streamingResponse = instance().chat().completions().createStreaming(builder.build())) {
-                streamingResponse.stream().forEach(chunk -> {
-                    try {
-                        String json = mapper.writeValueAsString(chunk);
-                        Values chunkValues = Values.fromJSON(json);
-                        chunkValues.remove("valid");
-
-                        if (onToken != null) {
-                            onToken.accept(chunkValues);
-                        }
-                    } catch (Exception e) {
-                        logger.error(
-                                "Failed to serialize stream chunk for provider '{}'.",
-                                this.settings.provider, e
-                        );
-                    }
-                });
-            }
-
-        } catch (Exception e) {
-            if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
-                logger.error(
-                        "Chat stream failed for provider '{}', model '{}'.",
-                        this.settings.provider,
-                        model,
-                        e
-                );
-            }
-        }
-    }
-
-    // --- Helpers ---
-    private List<ChatCompletionMessageParam> buildMessages(Values messages) {
-        List<ChatCompletionMessageParam> list = new ArrayList<>();
-
-        for (Values msg : messages.listOfValues()) {
-            String role = msg.getString("role");
-            String content = msg.getString("content");
-
-            if (content == null) {
-                continue;
-            }
-
-            switch (role) {
-                case "system":
-                    list.add(ChatCompletionMessageParam.ofSystem(
-                            ChatCompletionSystemMessageParam.builder()
-                                    .content(content)
-                                    .build()
-                    ));
-                    break;
-
-                case "assistant":
-                    list.add(ChatCompletionMessageParam.ofAssistant(
-                            ChatCompletionAssistantMessageParam.builder()
-                                    .content(content)
-                                    .build()
-                    ));
-                    break;
-
-                default:
-                    list.add(ChatCompletionMessageParam.ofUser(
-                            ChatCompletionUserMessageParam.builder()
-                                    .content(content)
-                                    .build()
-                    ));
-            }
-        }
-
-        return list;
+        this.settings.model = model;
+        return true;
     }
 
     private boolean isValidModel(String modelName) {
@@ -424,29 +241,362 @@ public class Client {
         return false;
     }
 
-    public boolean model(String model) {
-        if (!isValidModel(model)) {
-            return false;
-        }
-        this.settings.model = model;
-        return true;
+    // -------------------------------------------------------------------------
+    // CHAT
+    // -------------------------------------------------------------------------
+
+    public Values chat(Values messages) {
+        return chatInternal(this.settings.model, messages, null, null);
     }
 
-    private List<ChatCompletionTool> buildTools() {
-        if (settings.tools == null || settings.tools.isEmpty()) return List.of();
+    public Values chat(Values messages, Values options) {
+        return chatInternal(this.settings.model, messages, options, null);
+    }
 
-        List<ChatCompletionTool> result = new ArrayList<>();
-        for (Values t : settings.tools.listOfValues()) {
-            try {
-                String schemaJson = mapper.writeValueAsString(t.get("inputSchema"));
-                System.out.println(schemaJson);
+    public Values chat(Values messages, ToolCallback toolCallback) {
+        return chatInternal(this.settings.model, messages, null, toolCallback);
+    }
 
-            } catch (Exception e) {
-                logger.error("Failed to build tool '{}'.", t.getString("name"), e);
-            }
+    public Values chat(Values messages, Values options, ToolCallback toolCallback) {
+        return chatInternal(this.settings.model, messages, options, toolCallback);
+    }
+
+    public Values chat(String model, Values messages) {
+        return chatInternal(model, messages, null, null);
+    }
+
+    public Values chat(String model, Values messages, Values options) {
+        return chatInternal(model, messages, options, null);
+    }
+
+    public Values chat(String model, Values messages, ToolCallback toolCallback) {
+        return chatInternal(model, messages, null, toolCallback);
+    }
+
+    public Values chat(String model, Values messages, Values options, ToolCallback toolCallback) {
+        return chatInternal(model, messages, options, toolCallback);
+    }
+
+    private Values chatInternal(String model, Values messages, Values options, ToolCallback toolCallback) {
+        Values result = new Values();
+
+        if (!isInitialized()) {
+            logger.error("AI client '{}' not initialized.", this.settings.provider);
+            return result;
         }
+
+        if (model == null || model.isBlank()) {
+            logger.error("Model cannot be null or empty.");
+            return result;
+        }
+
+        if (messages == null || messages.isEmpty()) {
+            logger.error("Messages cannot be null or empty.");
+            return result;
+        }
+
+        try {
+            ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
+
+            int maxLoops = 10;
+            for (int loop = 0; loop < maxLoops; loop++) {
+                ChatCompletion completion = instance().chat().completions().create(builder.build());
+
+                String json = mapper.writeValueAsString(completion);
+                result = Values.fromJSON(json);
+                result.remove("valid");
+
+                if (completion.choices() == null || completion.choices().isEmpty()) {
+                    return result;
+                }
+
+                boolean hadToolCalls = false;
+
+                for (ChatCompletion.Choice choice : completion.choices()) {
+                    builder.addMessage(choice.message());
+
+                    List<ChatCompletionMessageToolCall> toolCalls = choice.message()
+                            .toolCalls()
+                            .orElse(List.of());
+
+                    if (toolCalls.isEmpty()) {
+                        continue;
+                    }
+
+                    hadToolCalls = true;
+
+                    for (ChatCompletionMessageToolCall toolCall : toolCalls) {
+                        Values toolResult = executeToolCall(toolCall, toolCallback);
+                        builder.addMessage(
+                                ChatCompletionToolMessageParam.builder()
+                                        .toolCallId(toolCall.asFunction().id())
+                                        .content(toolResult.toJSON())
+                                        .build()
+                        );
+                    }
+                }
+
+                if (!hadToolCalls) {
+                    return result;
+                }
+            }
+
+            logger.warn("Max tool-call loops reached.");
+            return result;
+
+        } catch (Exception e) {
+            logger.error(
+                    "Chat completion failed for provider '{}', model '{}'.",
+                    this.settings.provider,
+                    model,
+                    e
+            );
+        }
+
         return result;
     }
+
+    // -------------------------------------------------------------------------
+    // STREAM
+    // -------------------------------------------------------------------------
+
+    public void stream(Values messages, Consumer<Values> onToken) {
+        streamInternal(this.settings.model, messages, null, onToken, null);
+    }
+
+    public void stream(Values messages, Values options, Consumer<Values> onToken) {
+        streamInternal(this.settings.model, messages, options, onToken, null);
+    }
+
+    public void stream(Values messages, Consumer<Values> onToken, ToolCallback toolCallback) {
+        streamInternal(this.settings.model, messages, null, onToken, toolCallback);
+    }
+
+    public void stream(Values messages, Values options, Consumer<Values> onToken, ToolCallback toolCallback) {
+        streamInternal(this.settings.model, messages, options, onToken, toolCallback);
+    }
+
+    public void stream(String model, Values messages, Consumer<Values> onToken) {
+        streamInternal(model, messages, null, onToken, null);
+    }
+
+    public void stream(String model, Values messages, Values options, Consumer<Values> onToken) {
+        streamInternal(model, messages, options, onToken, null);
+    }
+
+    public void stream(String model, Values messages, Consumer<Values> onToken, ToolCallback toolCallback) {
+        streamInternal(model, messages, null, onToken, toolCallback);
+    }
+
+    public void stream(String model, Values messages, Values options, Consumer<Values> onToken, ToolCallback toolCallback) {
+        streamInternal(model, messages, options, onToken, toolCallback);
+    }
+
+    private void streamInternal(
+            String model,
+            Values messages,
+            Values options,
+            Consumer<Values> onToken,
+            ToolCallback toolCallback
+    ) {
+        if (!isInitialized()) {
+            logger.error("AI client '{}' not initialized.", this.settings.provider);
+            return;
+        }
+
+        if (model == null || model.isBlank()) {
+            logger.error("Model cannot be null or empty.");
+            return;
+        }
+
+        if (messages == null || messages.isEmpty()) {
+            logger.error("Messages cannot be null or empty.");
+            return;
+        }
+
+        try {
+            ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
+
+            int maxLoops = 10;
+            for (int loop = 0; loop < maxLoops; loop++) {
+                StringBuilder assistantText = new StringBuilder();
+                Map<Integer, ToolCallState> toolCallStates = new TreeMap<>();
+                boolean streamHadChunks = false;
+
+                try (var streamingResponse = instance().chat().completions().createStreaming(builder.build())) {
+                    for (ChatCompletionChunk chunk : (Iterable<ChatCompletionChunk>) streamingResponse.stream()::iterator) {
+                        try {
+                            streamHadChunks = true;
+
+                            String json = mapper.writeValueAsString(chunk);
+                            Values chunkValues = Values.fromJSON(json);
+                            chunkValues.remove("valid");
+
+                            if (onToken != null) {
+                                onToken.accept(chunkValues);
+                            }
+
+                            Values choices = chunkValues.getValues("choices");
+                            if (choices == null || choices.isEmpty()) {
+                                continue;
+                            }
+
+                            for (int i = 0; i < choices.size(); i++) {
+                                Values choice = choices.getValues(i);
+                                if (choice == null) {
+                                    continue;
+                                }
+
+                                Values delta = choice.getValues("delta");
+                                if (delta == null) {
+                                    continue;
+                                }
+
+                                String content = delta.getString("content");
+                                if (content != null) {
+                                    assistantText.append(content);
+                                }
+
+                                Values toolCalls = delta.getValues("tool_calls");
+                                if (toolCalls == null || toolCalls.isEmpty()) {
+                                    continue;
+                                }
+
+                                for (int j = 0; j < toolCalls.size(); j++) {
+                                    Values toolCall = toolCalls.getValues(j);
+                                    if (toolCall == null) {
+                                        continue;
+                                    }
+
+                                    int index = 0;
+                                    try {
+                                        index = toolCall.getInt("index");
+                                    } catch (Exception ignored) {
+                                    }
+
+                                    ToolCallState state = toolCallStates.computeIfAbsent(index, k -> new ToolCallState());
+
+                                    String id = toolCall.getString("id");
+                                    if (id != null && !id.isBlank()) {
+                                        state.id = id;
+                                    }
+
+                                    String type = toolCall.getString("type");
+                                    if (type != null && !type.isBlank()) {
+                                        state.type = type;
+                                    }
+
+                                    Values function = toolCall.getValues("function");
+                                    if (function != null) {
+                                        String name = function.getString("name");
+                                        if (name != null && !name.isBlank()) {
+                                            state.name = name;
+                                        }
+
+                                        String arguments = function.getString("arguments");
+                                        if (arguments != null) {
+                                            state.arguments.append(arguments);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            logger.error("Failed to process stream chunk.", e);
+                        }
+                    }
+                }
+
+                if (!streamHadChunks) {
+                    logger.warn("Streaming response returned no chunks.");
+                    return;
+                }
+
+                List<ChatCompletionMessageToolCall> toolCalls = new ArrayList<>();
+                for (ToolCallState state : toolCallStates.values()) {
+                    if (state.id == null || state.id.isBlank() || state.name == null || state.name.isBlank()) {
+                        logger.warn("Skipping incomplete streamed tool call: id='{}', name='{}'.", state.id, state.name);
+                        continue;
+                    }
+
+                    toolCalls.add(
+                            ChatCompletionMessageToolCall.ofFunction(
+                                    ChatCompletionMessageFunctionToolCall.builder()
+                                            .id(state.id)
+                                            .function(
+                                                    ChatCompletionMessageFunctionToolCall.Function.builder()
+                                                            .name(state.name)
+                                                            .arguments(state.arguments.toString())
+                                                            .build()
+                                            )
+                                            .build()
+                            )
+                    );
+                }
+
+                boolean hadToolCalls = !toolCalls.isEmpty();
+
+                if (hadToolCalls) {
+                    ChatCompletionAssistantMessageParam.Builder assistantMessageBuilder =
+                            ChatCompletionAssistantMessageParam.builder()
+                                    .role(JsonValue.from("assistant"))
+                                    .toolCalls(toolCalls);
+
+                    if (!assistantText.isEmpty()) {
+                        assistantMessageBuilder.content(assistantText.toString());
+                    }
+
+                    builder.addMessage(assistantMessageBuilder.build());
+
+                    for (ChatCompletionMessageToolCall toolCall : toolCalls) {
+                        Values toolResult = executeToolCall(toolCall, toolCallback);
+
+                        builder.addMessage(
+                                ChatCompletionToolMessageParam.builder()
+                                        .role(JsonValue.from("tool"))
+                                        .toolCallId(toolCall.asFunction().id())
+                                        .content(toolResult != null ? toolResult.toJSON() : "{}")
+                                        .build()
+                        );
+                    }
+
+                    continue;
+                }
+
+                if (!assistantText.isEmpty()) {
+                    builder.addMessage(
+                            ChatCompletionAssistantMessageParam.builder()
+                                    .role(JsonValue.from("assistant"))
+                                    .content(assistantText.toString())
+                                    .build()
+                    );
+                }
+
+                return;
+            }
+
+            logger.warn("Max stream tool-call loops reached.");
+
+        } catch (Exception e) {
+            if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
+                logger.error(
+                        "Chat stream failed for provider '{}', model '{}'.",
+                        this.settings.provider,
+                        model,
+                        e
+                );
+            }
+        }
+    }
+
+    private static final class ToolCallState {
+        String id;
+        String type = "function";
+        String name;
+        StringBuilder arguments = new StringBuilder();
+    }
+    // -------------------------------------------------------------------------
+    // MCP
+    // -------------------------------------------------------------------------
 
     public void mcp(Values configs) {
         this.settings.mcp = configs;
@@ -454,7 +604,9 @@ public class Client {
         this.settings.toolBindings.clear();
         this.closeMcpClients();
 
-        if (configs == null || configs.isEmpty()) return;
+        if (configs == null || configs.isEmpty()) {
+            return;
+        }
 
         for (Values serverConfig : configs.listOfValues()) {
             McpClientTransport transport = buildTransport(serverConfig);
@@ -463,17 +615,29 @@ public class Client {
             }
 
             try {
-                McpSyncClient client = McpClient.sync(transport).build();
+                McpSyncClient client = McpClient.sync(transport)
+                        .requestTimeout(Duration.ofSeconds(60))
+                        .build();
+
                 client.initialize();
                 this.settings.mcpClients.add(client);
 
-                for (McpSchema.Tool tool : client.listTools().tools()) {
-                    String toolName = tool.name();
+                String serverName = serverConfig.getString("name");
+                if (serverName == null || serverName.isBlank()) {
+                    serverName = "mcp" + this.settings.mcpClients.size();
+                }
 
-                    this.settings.toolBindings.put(toolName, new McpToolBinding(client, tool));
+                for (McpSchema.Tool tool : client.listTools().tools()) {
+                    String originalToolName = tool.name();
+                    String exposedToolName = serverName + "__" + originalToolName;
+
+                    this.settings.toolBindings.put(
+                            exposedToolName,
+                            new McpToolBinding(client, tool)
+                    );
 
                     Values t = new Values()
-                            .set("name", tool.name())
+                            .set("name", exposedToolName)
                             .set("description", tool.description())
                             .set("inputSchema", tool.inputSchema());
 
@@ -489,7 +653,8 @@ public class Client {
         for (McpSyncClient c : settings.mcpClients) {
             try {
                 c.closeGracefully();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         settings.mcpClients.clear();
     }
@@ -563,7 +728,8 @@ public class Client {
                 b.env(env);
             }
 
-            logger.info("MCP stdio transport {} {}", command,
+            logger.info("MCP stdio transport {} {}",
+                    command,
                     values.getValues("args") != null ? values.getValues("args").toJSON() : "[]");
 
             return new StdioClientTransport(b.build(), new JacksonMcpJsonMapper(mapper));
@@ -573,7 +739,9 @@ public class Client {
         return null;
     }
 
-    // --- Embeddings public overloads ---
+    // -------------------------------------------------------------------------
+    // EMBEDDINGS
+    // -------------------------------------------------------------------------
 
     public Values embeddings(String input) {
         return embeddingsInternal(this.settings.model, List.of(input), null);
@@ -603,7 +771,6 @@ public class Client {
         return embeddingsInternal(model, Arrays.asList(inputs.toStringArray()), options);
     }
 
-    // --- Embeddings core logic ---
     private Values embeddingsInternal(String model, List<String> inputs, Values options) {
         Values result = new Values();
 
@@ -632,9 +799,9 @@ public class Client {
                     builder.dimensions(options.getLong("dimensions"));
                 }
                 if (options.containsKey("encoding_format")) {
-                    builder.encodingFormat(EmbeddingCreateParams.EncodingFormat.of(
-                            options.getString("encoding_format")
-                    ));
+                    builder.encodingFormat(
+                            EmbeddingCreateParams.EncodingFormat.of(options.getString("encoding_format"))
+                    );
                 }
                 if (options.containsKey("user")) {
                     builder.user(options.getString("user"));
@@ -658,9 +825,199 @@ public class Client {
         return result;
     }
 
+    // -------------------------------------------------------------------------
+    // HELPERS
+    // -------------------------------------------------------------------------
 
+    private ChatCompletionCreateParams.Builder createChatBuilder(String model, Values messages, Values options) {
+        ChatCompletionCreateParams.Builder builder = ChatCompletionCreateParams.builder()
+                .model(model);
 
+        addMessages(builder, messages);
+        applyChatOptions(builder, options);
+        addMcpTools(builder);
 
+        return builder;
+    }
 
+    private void addMessages(ChatCompletionCreateParams.Builder builder, Values messages) {
+        for (Values msg : messages.listOfValues()) {
+            String role = msg.getString("role");
+            String content = msg.getString("content");
 
+            if (role == null || role.isBlank()) {
+                role = "user";
+            }
+
+            if ("tool".equals(role)) {
+                String toolCallId = msg.getString("tool_call_id");
+                if (toolCallId != null && !toolCallId.isBlank() && content != null) {
+                    builder.addMessage(
+                            ChatCompletionToolMessageParam.builder()
+                                    .toolCallId(toolCallId)
+                                    .content(content)
+                                    .build()
+                    );
+                }
+                continue;
+            }
+
+            if (content == null) {
+                continue;
+            }
+
+            switch (role) {
+                case "system":
+                    builder.addSystemMessage(content);
+                    break;
+                case "assistant":
+                    builder.addAssistantMessage(content);
+                    break;
+                default:
+                    builder.addUserMessage(content);
+                    break;
+            }
+        }
+    }
+
+    private void applyChatOptions(ChatCompletionCreateParams.Builder builder, Values options) {
+        if (options == null || options.isEmpty()) {
+            return;
+        }
+
+        if (options.containsKey("temperature")) {
+            builder.temperature(options.getDouble("temperature"));
+        }
+
+        if (options.containsKey("max_tokens")) {
+            builder.maxCompletionTokens(options.getInt("max_tokens"));
+        }
+
+        if (options.containsKey("top_p")) {
+            builder.topP(options.getDouble("top_p"));
+        }
+    }
+
+    private void addMcpTools(ChatCompletionCreateParams.Builder builder) {
+        if (settings.tools == null || settings.tools.isEmpty()) {
+            return;
+        }
+
+        for (Values t : settings.tools.listOfValues()) {
+            try {
+                String toolName = t.getString("name");
+                String description = t.getString("description");
+
+                Object schemaObject = t.get("inputSchema");
+                Map<String, Object> schemaMap = convertToMap(schemaObject);
+
+                FunctionParameters.Builder parametersBuilder = FunctionParameters.builder();
+                for (Map.Entry<String, Object> entry : schemaMap.entrySet()) {
+                    parametersBuilder.putAdditionalProperty(
+                            entry.getKey(),
+                            JsonValue.from(entry.getValue())
+                    );
+                }
+
+                builder.addTool(
+                        ChatCompletionFunctionTool.builder()
+                                .function(
+                                        FunctionDefinition.builder()
+                                                .name(toolName)
+                                                .description(description != null ? description : "")
+                                                .parameters(parametersBuilder.build())
+                                                .build()
+                                )
+                                .build()
+                );
+            } catch (Exception e) {
+                logger.error("Failed to add MCP tool '{}'.", t.getString("name"), e);
+            }
+        }
+    }
+
+    private Values executeToolCall(ChatCompletionMessageToolCall toolCall, ToolCallback toolCallback) {
+        try {
+            ChatCompletionMessageFunctionToolCall functionCall = toolCall.asFunction();
+            String toolName = functionCall.function().name();
+            String argumentsJson = functionCall.function().arguments();
+
+            McpToolBinding binding = settings.toolBindings.get(toolName);
+            if (binding == null) {
+                return new Values()
+                        .set("error", true)
+                        .set("message", "Tool not found: " + toolName);
+            }
+
+            Values arguments = parseJsonValues(argumentsJson);
+
+            if (toolCallback != null) {
+                Values overridden = toolCallback.onToolCall(toolName, arguments, binding.client, binding.tool);
+                if (overridden != null) {
+                    return overridden;
+                }
+            }
+
+            Map<String, Object> argumentsMap = convertToMap(arguments);
+            McpSchema.CallToolResult callResult = binding.client.callTool(
+                    new McpSchema.CallToolRequest(binding.tool.name(), argumentsMap)
+                );
+
+            Values out = new Values();
+            out.set("content", String.valueOf(callResult.content()));
+
+            return out;
+
+        } catch (Exception e) {
+            logger.error("Failed to execute tool call.", e);
+            return new Values()
+                    .set("error", true)
+                    .set("message", e.getMessage() != null ? e.getMessage() : "Tool execution failed.");
+        }
+    }
+
+    private Values parseJsonValues(String json) {
+        if (json == null || json.isBlank()) {
+            return new Values();
+        }
+
+        try {
+            return Values.fromJSON(json);
+        } catch (Exception e) {
+            logger.warn("Failed to parse tool arguments JSON: {}", json, e);
+            return new Values();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> convertToMap(Object input) {
+        if (input == null) {
+            return new LinkedHashMap<>();
+        }
+
+        try {
+            if (input instanceof Map) {
+                return new LinkedHashMap<>((Map<String, Object>) input);
+            }
+
+            if (input instanceof Values) {
+                String json = ((Values) input).toJSON();
+                Object obj = mapper.readValue(json, Object.class);
+                if (obj instanceof Map) {
+                    return new LinkedHashMap<>((Map<String, Object>) obj);
+                }
+                return new LinkedHashMap<>();
+            }
+
+            String json = mapper.writeValueAsString(input);
+            Object obj = mapper.readValue(json, Object.class);
+            if (obj instanceof Map) {
+                return new LinkedHashMap<>((Map<String, Object>) obj);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to convert object to map.", e);
+        }
+
+        return new LinkedHashMap<>();
+    }
 }
