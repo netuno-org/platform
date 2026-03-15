@@ -1,10 +1,9 @@
-package org.netuno.tritao.ai;
+package org.netuno.tritao.ai.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.JsonValue;
-import com.openai.helpers.ChatCompletionAccumulator;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
 import com.openai.models.chat.completions.*;
@@ -594,6 +593,8 @@ public class Client {
         String name;
         StringBuilder arguments = new StringBuilder();
     }
+
+
     // -------------------------------------------------------------------------
     // MCP
     // -------------------------------------------------------------------------
