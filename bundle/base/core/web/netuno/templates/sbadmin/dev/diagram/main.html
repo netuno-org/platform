@@ -52,6 +52,9 @@
         var reorganize = 0;
         $("#diagram_base_form").on("change", function () {
             formUid = $(this).val();
+            if (formUid == null || formUid === "0") {
+                formUid = "";
+            }
             changeDiagramUrl();
         });
         $("#diagram_reorganize_button").on("click", function () {
@@ -63,7 +66,7 @@
         });
 
         function changeDiagramUrl() {
-            diagram.attr("src", "Diagram_{netuno-config=extension}?action=iframe&form_uid="+ formUid +"&reorganize="+ reorganize);
+            diagram.attr("src", "Diagram_{netuno-config=extension}?action=iframe&form_uid="+ formUid +"&reorganize="+ reorganize +"&time="+ new Date().getTime());
         }
 
     })(typeof netuno == 'undefined' ? parent.netuno : netuno, typeof $ == 'undefined' ? parent.$ : $);
