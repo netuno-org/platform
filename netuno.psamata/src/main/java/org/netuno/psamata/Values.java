@@ -3249,27 +3249,6 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         clear();
     }
 
-    /**
-     * Finalize.
-     * @throws Throwable Throwable
-     */
-    @Override
-    protected final void finalize() throws Throwable {
-        /**
-         * Is not possible to clean because in execution lead to data loss.
-         * keysRef.clear();
-         * objects.clear();
-         * array.clear();
-         */
-
-        /*
-        GC TEST
-        keysRef = null;
-        objects = null;
-        array = null;
-        */
-    }
-
     public int sizeOfMap() {
         return objects.size();
     }
@@ -3714,8 +3693,10 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return list;
     }
 
-    public List<Object> reversed() {
-        return new Values(array).array.reversed();
+    public List<?> reversed() {
+        List<?> list = list();
+        Collections.reverse(list);
+        return list;
     }
 
     public<T> List<T> reversed(Class<T> cls) {
