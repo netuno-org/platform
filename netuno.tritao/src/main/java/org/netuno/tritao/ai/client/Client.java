@@ -49,6 +49,7 @@ public class Client {
         private final List<McpSyncClient> mcpClients = new ArrayList<>();
         private final Map<String, McpToolBinding> toolBindings = new LinkedHashMap<>();
     }
+
     private static class McpToolBinding {
         McpSyncClient client;
         McpSchema.Tool tool;
