@@ -120,4 +120,9 @@ public class AppFS {
         return Config.getAppsHome() + File.separator + Config.getAppConfig(appName).getString("home") + File.separator +"config"+
                 File.separator +"_"+ Config.getEnv() +".json";
     }
+
+    public static void clearServerRun(String name) {
+        String appPath = getPath(name);
+        org.netuno.psamata.io.FileUtils.deleteAll(AppPath.app(appPath, AppPath.SERVER_RUN));
+    }
 }
