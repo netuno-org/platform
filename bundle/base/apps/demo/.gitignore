@@ -14,5 +14,7 @@ package-lock.json
 *~*
 *#*
 
+/server/.run
+
 /dbs/*.trace.db
 
