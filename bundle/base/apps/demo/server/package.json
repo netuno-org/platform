@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Application backend.",
+  "author": "netuno.org",
+  "license": "ISC",
+  "imports": {
+    "#actions/*": {
+      "default": "./actions/*"
+    },
+    "#components/*": {
+      "default": "./components/*"
+    },
+    "#core/*": {
+      "default": "./core/*"
+    },
+    "#reports/*": {
+      "default": "./reports/*"
+    },
+    "#services/*": {
+      "default": "./services/*"
+    },
+    "#setup/*": {
+      "default": "./setup/*"
+    },
+    "#templates/*": {
+      "default": "./templates/*"
+    }
+  },
+  "dependencies": {
+    "server": "file:"
+  }
+}
