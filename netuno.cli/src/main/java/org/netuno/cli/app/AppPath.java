@@ -84,6 +84,12 @@ public enum AppPath {
             return "server";
         }
     },
+    SERVER_RUN {
+        @Override
+        public String toString() {
+            return AppPath.SERVER + File.separator + ".run";
+        }
+    },
     SERVER_ACTIONS {
         @Override
         public String toString() {
