@@ -142,7 +142,7 @@ public class Edit {
                     && rule.getWrite() > Rule.NONE) {
                 if (itemId.equals("")) {
                     DataItem dataItem = Config.getDBBuilder(proteu).insert();
-                    if (dataItem.getStatus() == DataItem.Status.Updated) {
+                    if (dataItem.getStatus() == DataItem.Status.Inserted) {
                         TemplateBuilder.output(proteu, hili, "edit/notification/new_saved", rowTable);
                         if (!proteu.getRequestAll().getBoolean("netuno_autosave")) {
                             if (!proteu.getRequestAll().getBoolean("netuno_edit_only")) {

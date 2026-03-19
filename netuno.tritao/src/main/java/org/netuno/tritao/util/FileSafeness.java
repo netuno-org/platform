@@ -63,6 +63,8 @@ public class FileSafeness {
             }
             if (nums + alphaUpper + alphaLower == 8) {
                 baseName = baseName.substring(0, baseName.lastIndexOf("-"));
+            } else {
+                break;
             }
         }
         if (baseName.length() > 26) {
