@@ -563,7 +563,6 @@ public class App implements MainArg {
     public static void setup() {
         for (String appName : Config.getAppConfig().keys()) {
         	AppFS.makeDirs(appName);
-            AppFS.clearServerRun(appName);
         }
     }
 
