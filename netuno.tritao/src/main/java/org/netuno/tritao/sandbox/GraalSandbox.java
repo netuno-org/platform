@@ -150,12 +150,13 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
         if (path.startsWith(Path.of(appServer, "node_modules"))) {
             return;
         }
-        Path out = Path.of(appServer, ".run");
-        if (!Files.exists(out)) {
-            Files.createDirectory(out);
+        String appRun = Config.getPathAppRun(manager.getProteu());
+        Path pathAppRun = Path.of(appRun);
+        if (!Files.exists(pathAppRun)) {
+            Files.createDirectories(pathAppRun);
         }
         String innerPath = path.toString().substring(appServer.length());
-        Path outFile = Path.of(out.toString(), innerPath);
+        Path outFile = Path.of(appRun, innerPath);
         Path outFolder = outFile.getParent();
         if (!Files.exists(outFolder)) {
             Files.createDirectories(outFolder);
@@ -188,9 +189,12 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
         if (path.startsWith(Path.of(appServer, "node_modules"))) {
             return graalFileSystem.defaultToAbsolutePath(path);
         }
-        Path out = Path.of(appServer, ".run");
-        String innerPath = path.toString().substring(appServer.length());
-        return Path.of(out.toString(), innerPath);
+        if (path.startsWith(appServer)) {
+            String innerPath = path.toString().substring(appServer.length());
+            return Path.of(Config.getPathAppRun(manager.getProteu()), innerPath);
+        } else {
+            return path;
+        }
     }
 
     @Override
@@ -206,9 +210,12 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
         if (path.startsWith(Path.of(appServer, "node_modules"))) {
             return graalFileSystem.defaultToRealPath(path, linkOptions);
         }
-        Path out = Path.of(appServer, ".run");
-        String innerPath = path.toString().substring(appServer.length());
-        return Path.of(out.toString(), innerPath);
+        if (path.startsWith(appServer)) {
+            String innerPath = path.toString().substring(appServer.length());
+            return Path.of(Config.getPathAppRun(manager.getProteu()), innerPath);
+        } else {
+            return path;
+        }
     }
 
     private boolean isMJS(String source) {
