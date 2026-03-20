@@ -39,6 +39,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import org.netuno.cli.utils.ConfigScript;
 import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Temp;
 import org.netuno.cli.ws.DevServletContextHandler;
 import org.netuno.psamata.io.StreamGobbler;
 import org.netuno.psamata.Values;
@@ -145,6 +146,8 @@ public class Server implements MainArg {
                 logger.fatal("Script of the global configuration was not found.");
                 return;
             }
+
+            Temp.clear();
             
             Config.loadAppConfigs();
             
