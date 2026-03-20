@@ -54,6 +54,7 @@ public final class Config {
     public static final String CORE_HOME_DEFAULT = Path.of(HOME_DEFAULT, "core").toString();
     public static final String LOGS_HOME_DEFAULT = Path.of(HOME_DEFAULT, "logs").toString();
     public static final String CONFIG_SCRIPT_NAME_DEFAULT = Path.of(HOME_DEFAULT, "config").toString();
+    public static final String TEMP_DEFAULT = Path.of(HOME_DEFAULT, "core", "temp").toString();
 
     /**
      * Configuration.
@@ -87,6 +88,8 @@ public final class Config {
      * Config script file.
      */
     public static String configScriptName = CONFIG_SCRIPT_NAME_DEFAULT;
+
+    public static String temp = TEMP_DEFAULT;
     /**
      * Language.
      */
@@ -210,8 +213,6 @@ public final class Config {
      * Configuration to application clone.
      */
     private static ConfigClone clone = new ConfigClone();
-
-    public static String temp = "";
 
     public static int cronThreadCount = 3;
 
@@ -400,6 +401,9 @@ public final class Config {
             if (getConfigScriptName().equals(CONFIG_SCRIPT_NAME_DEFAULT)) {
                 setConfigScriptName(Path.of(getHome(), "config").toString());
             }
+            if (getConfigScriptName().equals(TEMP_DEFAULT)) {
+                setConfigScriptName(Path.of(getHome(), "core", "temp").toString());
+            }
         }
     }
     
@@ -445,6 +449,18 @@ public final class Config {
             return;
         }
         Config.configScriptName = configScriptName;
+    }
+
+
+    public static String getTemp() {
+        return temp;
+    }
+
+    public static void setTemp(String temp) {
+        if (temp.equals(TEMP_DEFAULT)) {
+            return;
+        }
+        Config.temp = temp;
     }
 
     public static String getLanguage() {
@@ -661,14 +677,6 @@ public final class Config {
 
     public static void setClone(ConfigClone clone) {
         Config.clone = clone;
-    }
-
-    public static String getTemp() {
-        return temp;
-    }
-
-    public static void setTemp(String temp) {
-        Config.temp = temp;
     }
 
     public static int getCronThreadCount() {
