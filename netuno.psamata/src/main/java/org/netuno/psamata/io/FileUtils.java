@@ -39,9 +39,13 @@ public class FileUtils {
         return delete(new java.io.File(path));
     }
 
+    public static boolean delete(java.nio.file.Path path) {
+        return delete(path.toFile());
+    }
+
     /**
      * Delete folder.
-     * @param folder Folder
+     * @param dir Folder
      */
     public static boolean delete(java.io.File dir) {
         if (dir.isDirectory()) {
@@ -54,6 +58,10 @@ public class FileUtils {
     
     public static boolean deleteAll(String dir) {
         return deleteAll(new java.io.File(dir));
+    }
+
+    public static boolean deleteAll(java.nio.file.Path path) {
+        return deleteAll(path.toFile());
     }
     
     public static boolean deleteAll(java.io.File dir) {
@@ -68,9 +76,13 @@ public class FileUtils {
         deleteOnExit(new java.io.File(path));
     }
 
+    public static void deleteOnExit(java.nio.file.Path path) {
+        deleteOnExit(path.toFile());
+    }
+
     /**
      * Delete folder.
-     * @param folder Folder
+     * @param dir Folder
      */
     public static void deleteOnExit(java.io.File dir) {
         if (dir.isDirectory()) {
@@ -88,10 +100,14 @@ public class FileUtils {
     public static long size(String path) {
         return size(new java.io.File(path));
     }
+
+    public static void size(java.nio.file.Path path) {
+        size(path.toFile());
+    }
     
     /**
      * Folder size.
-     * @param folder Folder
+     * @param dir Folder
      */
     public static long size(java.io.File dir) {
     	if (dir.isDirectory()) {
@@ -109,6 +125,10 @@ public class FileUtils {
      */
     public static boolean delete(String path, FileRecursionLevel recursive, boolean folders, String extension) {
         return delete(new java.io.File(path), recursive, folders, extension);
+    }
+
+    public static boolean delete(java.nio.file.Path p, FileRecursionLevel recursive, boolean folders, String extension) {
+        return delete(p.toFile(), recursive, folders, extension);
     }
     
     public static boolean delete(java.io.File f, FileRecursionLevel recursive, boolean folders, String extension) {
@@ -162,6 +182,11 @@ public class FileUtils {
     public static java.io.File copy(String sourceFilePath, String destPath) throws IOException {
         return copy(new java.io.File(sourceFilePath), new java.io.File(destPath));
     }
+
+    public static java.nio.file.Path copy(java.nio.file.Path sourcePath, java.nio.file.Path destPath) throws IOException {
+        return copy(sourcePath.toFile(), destPath.toFile()).toPath();
+    }
+
     /**
      * Copy file.
      * @param sourceFile Source file.
