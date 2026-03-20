@@ -42,19 +42,21 @@ license*.json
 package-lock.json
 pnpm-lock.yaml
 
-base/netuno.jar
+/base/netuno.jar
 
-base/core/web/WEB-INF/lib/
-base/core/web/WEB-INF/classes
+/base/core/web/WEB-INF/lib/
+/base/core/web/WEB-INF/classes
 
-base/logs/*.log
+/base/logs/*.log
 
-base/apps/*.json
+/base/apps/*.json
 
-base/core/graalvm
-base/graalvm
+/base/core/temp
 
-out/
+/base/core/graalvm
+/base/graalvm
+
+/out/
 
 /publish-release.json
 
