@@ -73,21 +73,30 @@ public class GraalRunner implements AutoCloseable {
     }
 
     public GraalRunner(String... permittedLanguages) {
-        init(null, permittedLanguages);
+        init(null, null, permittedLanguages);
+    }
+
+    public GraalRunner(GraalPathEvents pathEvents, String... permittedLanguages) {
+        init(pathEvents, null, permittedLanguages);
     }
     
-    public GraalRunner(Map<String, String> options, String... permittedLanguages) {
-        init(options, permittedLanguages);
+    public GraalRunner(GraalPathEvents pathEvents, Map<String, String> options, String... permittedLanguages) {
+        init(pathEvents, options, permittedLanguages);
     }
     
-    private void init(Map<String, String> options, String... permittedLanguages) {
+    private void init(GraalPathEvents pathEvents, Map<String, String> options, String... permittedLanguages) {
         //engine = Engine.create();
         contextBuilder = Context.newBuilder(permittedLanguages)
                 .allowNativeAccess(true)
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLookup(className -> true)
                 .allowExperimentalOptions(true)
-                .allowIO(IOAccess.ALL)
+                .allowIO(
+                        IOAccess.newBuilder()
+                        .allowHostSocketAccess(true)
+                        .fileSystem(new GraalFileSystem(pathEvents))
+                        .build()
+                )
                 .allowAllAccess(true)
                 .allowCreateThread(true)
                 .allowHostAccess(hostAccess);
@@ -209,12 +218,18 @@ public class GraalRunner implements AutoCloseable {
     }
 
     public Object eval(String language, java.io.File path, String sourceCode) {
-        try {
-            Source.Builder sourceBuilder = Source.newBuilder(language, sourceCode, path.getAbsolutePath());
-            if (path.getName().endsWith("cjs") || path.getName().endsWith("mjs")) {
+        return eval(language, path, sourceCode, null);
+    }
+
+    public Object eval(String language, java.io.File path, String sourceCode, String mimeType) {
+        try (java.io.Reader sourceCodeReader = new java.io.StringReader(sourceCode)) {
+            Source.Builder sourceBuilder = Source.newBuilder(language, sourceCodeReader, path.getAbsolutePath());
+            if ((path.getName().toLowerCase().endsWith(".cjs") || path.getName().toLowerCase().endsWith(".mjs"))
+                || (mimeType != null && (mimeType.equalsIgnoreCase("cjs")
+                    || mimeType.equalsIgnoreCase("mjs")))) {
                 sourceBuilder.mimeType("application/javascript+module");
             }
-            Source source = sourceBuilder.build();
+            Source source = sourceBuilder.buildLiteral();
             return context.eval(source);
         } catch (java.io.IOException e) {
             throw new Error(e);
@@ -245,6 +260,17 @@ public class GraalRunner implements AutoCloseable {
     }
 
     public Object eval(String language, String code) {
+        try {
+            return context.eval(language, code);
+        } catch (org.graalvm.polyglot.PolyglotException e) {
+            if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("Context execution was cancelled.")) {
+                return null;
+            }
+            throw e;
+        }
+    }
+
+    public Object eval(String language, String code, String mimeType) {
         try {
             return context.eval(language, code);
         } catch (org.graalvm.polyglot.PolyglotException e) {
