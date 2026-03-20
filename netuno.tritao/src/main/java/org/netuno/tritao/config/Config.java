@@ -32,6 +32,7 @@ import org.netuno.tritao.util.PasswordSHA256Hex;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
@@ -558,6 +559,14 @@ public class Config {
             return getPathAppBaseServer(proteu) + File.separator +"templates";
         }
         return proteu.getConfig().getString("_path:app:templates");
+    }
+
+    public static String getPathAppRun(Proteu proteu) {
+        return Path.of(Config.getPathCoreTemp(), "run", Config.getApp(proteu)).toString();
+    }
+
+    public static String getPathCoreTemp() {
+        return org.netuno.cli.Config.getTemp();
     }
 
     public static boolean isAppConfigLoaded(Proteu proteu) {
