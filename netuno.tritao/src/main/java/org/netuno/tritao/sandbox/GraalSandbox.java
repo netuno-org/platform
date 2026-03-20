@@ -18,12 +18,23 @@
 
 package org.netuno.tritao.sandbox;
 
+import org.apache.commons.io.FilenameUtils;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.io.InputStream;
+import org.netuno.psamata.io.OutputStream;
+import org.netuno.psamata.script.GraalFileSystem;
+import org.netuno.psamata.script.GraalPathEvents;
 import org.netuno.psamata.script.GraalRunner;
 import org.netuno.tritao.config.Config;
 
+import java.io.IOException;
+import java.nio.file.AccessMode;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,12 +43,17 @@ import java.util.regex.Pattern;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 @ScriptSandbox(extensions = {"js", "cjs", "mjs", "py"})
-public class GraalSandbox implements Scriptable {
-    private static final Pattern REGEX_PATTER_IMPORT_SERVER_TYPES = Pattern.compile("^.*((import|const)\\s+([_a-z0-9,\\{\\}\\s]+)\\s*((=\\s*require)|from).*@netuno/server-types.*)$", Pattern.MULTILINE);
+public class GraalSandbox implements Scriptable, GraalPathEvents {
+    private static final Pattern REGEX_PATTER_IMPORT_SERVER_TYPES = Pattern.compile("^.*((import|const)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*((=\\s*require)|from).*@netuno/server-types.*)$", Pattern.MULTILINE);
+    private static final Pattern REGEX_PATTER_CJS = Pattern.compile("^.*((const)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*(=\\s*require).*#.*)$", Pattern.MULTILINE);
+    private static final Pattern REGEX_PATTER_MJS = Pattern.compile("^.*((import)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*(from).*#.*)$", Pattern.MULTILINE);
+    private static final Pattern REGEX_PATTER_IS_MJS = Pattern.compile("^.*((import)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*(from).*)$", Pattern.MULTILINE);
 
     private SandboxManager manager;
 
     private GraalRunner graalRunner = null;
+
+    private GraalFileSystem graalFileSystem = null;
 
     public GraalSandbox(SandboxManager manager) {
         this.manager = manager;
@@ -62,7 +78,7 @@ public class GraalSandbox implements Scriptable {
         options.put("python.CAPI", "lib/python/capi");
         //options.put("python.WithoutJNI", "true");
 
-        graalRunner = new GraalRunner(options, Config.getPermittedLanguages());
+        graalRunner = new GraalRunner(this, options, Config.getPermittedLanguages());
     }
 
     private String getGraalLanguage(String extension) {
@@ -86,14 +102,15 @@ public class GraalSandbox implements Scriptable {
         String lang = getGraalLanguage(script.extension());
         bindings.forEach((k, v) -> graalRunner.set(lang, k.toString(), v));
         String source = script.content();
+        String mimeType = null;
         if (lang.equals("js")) {
-            Matcher matcher = REGEX_PATTER_IMPORT_SERVER_TYPES.matcher(source);
-            source = matcher.replaceAll("// $1");
+            source = buildSourceCode(source, ".");
+            mimeType = isMJS(source) ? "mjs" : null;
         }
         if (script.scriptFile() == null) {
             return graalRunner.eval(lang, script.content());
         } else {
-            return graalRunner.eval(lang, script.scriptFile(), source);
+            return graalRunner.eval(lang, script.scriptFile(), source, mimeType);
         }
     }
 
@@ -112,5 +129,121 @@ public class GraalSandbox implements Scriptable {
     public void close() {
         graalRunner.close();
         graalRunner = null;
+    }
+
+    @Override
+    public void setFileSystem(GraalFileSystem graalFileSystem) {
+        this.graalFileSystem = graalFileSystem;
+    }
+
+    @Override
+    public void checkAccess(Path path, Set<? extends AccessMode> modes, LinkOption... linkOptions) throws IOException {
+        String appServer = Config.getPathAppBaseServer(manager.getProteu());
+        if (path.startsWith("~") || path.startsWith("#")) {
+            path = Path.of(appServer, path.toString().substring(1));
+        }
+        graalFileSystem.defaultCheckAccess(path, modes, linkOptions);
+        String extension = FilenameUtils.getExtension(path.getFileName().toString());
+        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs")) {
+            return;
+        }
+        if (path.startsWith(Path.of(appServer, "node_modules"))) {
+            return;
+        }
+        Path out = Path.of(appServer, ".run");
+        if (!Files.exists(out)) {
+            Files.createDirectory(out);
+        }
+        String innerPath = path.toString().substring(appServer.length());
+        Path outFile = Path.of(out.toString(), innerPath);
+        Path outFolder = outFile.getParent();
+        if (!Files.exists(outFolder)) {
+            Files.createDirectories(outFolder);
+        }
+        if (Files.exists(outFile) && Files.getLastModifiedTime(outFile).toMillis() > Files.getLastModifiedTime(path).toMillis()) {
+            return;
+        }
+        String cjsPrefixPath = "";
+        int pathLevels = Path.of(innerPath).getNameCount() - 1;
+        for (int i = 0; i < pathLevels; i++) {
+            if (!cjsPrefixPath.isEmpty()) {
+                cjsPrefixPath += "/";
+            }
+            cjsPrefixPath += "..";
+        }
+        String source = buildSourceCode(InputStream.readFromFile(path), cjsPrefixPath);
+        OutputStream.writeToFile(source, outFile, false);
+    }
+
+    @Override
+    public Path toAbsolutePath(Path path) {
+        String appServer = Config.getPathAppBaseServer(manager.getProteu());
+        if (path.startsWith("~") || path.startsWith("#")) {
+            path = Path.of(appServer, path.toString().substring(1));
+        }
+        String extension = FilenameUtils.getExtension(path.getFileName().toString());
+        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs")) {
+            return graalFileSystem.defaultToAbsolutePath(path);
+        }
+        if (path.startsWith(Path.of(appServer, "node_modules"))) {
+            return graalFileSystem.defaultToAbsolutePath(path);
+        }
+        Path out = Path.of(appServer, ".run");
+        String innerPath = path.toString().substring(appServer.length());
+        return Path.of(out.toString(), innerPath);
+    }
+
+    @Override
+    public Path toRealPath(Path path, LinkOption... linkOptions) throws IOException {
+        String appServer = Config.getPathAppBaseServer(manager.getProteu());
+        if (path.startsWith("~") || path.startsWith("#")) {
+            path = Path.of(appServer, path.toString().substring(1));
+        }
+        String extension = FilenameUtils.getExtension(path.getFileName().toString());
+        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs")) {
+            return graalFileSystem.defaultToRealPath(path, linkOptions);
+        }
+        if (path.startsWith(Path.of(appServer, "node_modules"))) {
+            return graalFileSystem.defaultToRealPath(path, linkOptions);
+        }
+        Path out = Path.of(appServer, ".run");
+        String innerPath = path.toString().substring(appServer.length());
+        return Path.of(out.toString(), innerPath);
+    }
+
+    private boolean isMJS(String source) {
+        Matcher matcherMJS = REGEX_PATTER_IS_MJS.matcher(source);
+        while (matcherMJS.find()) {
+            if (!matcherMJS.group(1).contains("@netuno/server-type")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String buildSourceCode(String source, String cjsPrefixPath) {
+        Matcher matcherImportServerTypes = REGEX_PATTER_IMPORT_SERVER_TYPES.matcher(source);
+        source = matcherImportServerTypes.replaceAll("// $1");
+        Matcher matcherCJS = REGEX_PATTER_CJS.matcher(source);
+        source = matcherCJS.replaceAll((matchResult) -> matchResult.group(1)
+                .replace("#actions/", cjsPrefixPath + "/actions/")
+                .replace("#components/", cjsPrefixPath + "/components/")
+                .replace("#core/", cjsPrefixPath + "/core/")
+                .replace("#reports/", cjsPrefixPath + "/reports/")
+                .replace("#services/", cjsPrefixPath + "/services/")
+                .replace("#setup/", cjsPrefixPath + "/setup/")
+                .replace("#templates/", cjsPrefixPath + "/templates/")
+        );
+        Matcher matcherMJS = REGEX_PATTER_MJS.matcher(source);
+        source = matcherMJS.replaceAll((matchResult) -> matchResult.group(1)
+                .replace("#actions/", "~/actions/")
+                .replace("#components/", "~/components/")
+                .replace("#core/", "~/core/")
+                .replace("#reports/", "~/reports/")
+                .replace("#services/", "~/services/")
+                .replace("#setup/", "~/setup/")
+                .replace("#templates/", "~/templates/")
+        );
+        return source;
     }
 }
