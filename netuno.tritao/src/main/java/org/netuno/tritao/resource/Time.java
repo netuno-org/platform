@@ -575,6 +575,10 @@ public class Time extends ResourceBase {
         }
     }
 
+    public Period periodBetween(LocalDate startDateInclusive, LocalDate endDateExclusive) {
+        return Period.between(startDateInclusive, endDateExclusive);
+    }
+
     public Period periodOf(int years, int months, int days) {
         return Period.of(years, months, days);
     }
