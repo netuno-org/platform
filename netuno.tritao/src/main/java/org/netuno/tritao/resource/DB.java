@@ -4058,14 +4058,14 @@ public class DB extends ResourceBase {
                 howToUse = {})
         },
         parameters = {
-            @ParameterDoc(name = "localDateTime", translations = {
+            @ParameterDoc(name = "localDate", translations = {
                 @ParameterTranslationDoc(
                         language = LanguageDoc.PT,
-                        description = "Objeto do tipo: _java.time.LocalDateTime_"
+                        description = "Objeto do tipo: _java.time.LocalDate_"
                 ),
                 @ParameterTranslationDoc(
                         language = LanguageDoc.EN,
-                        description = "Object of type: _java.time.LocalDateTime_"
+                        description = "Object of type: _java.time.LocalDate_"
                 )
             })
         },
