@@ -34,6 +34,8 @@ import java.util.function.Consumer;
 
 public class Client {
 
+    private static final int DEFAULT_MAX_TOOL_LOOPS = 10;
+
     @FunctionalInterface
     public interface ToolCallback {
         Values onToolCall(String toolName, Values arguments, McpSyncClient client, McpSchema.Tool tool);
@@ -42,6 +44,7 @@ public class Client {
     private static class ChatSettings {
         private String model;
         private String provider;
+        private int maxToolLoops;
 
         private Values mcp;
         private Values tools;
@@ -74,6 +77,8 @@ public class Client {
 
         this.settings = new ChatSettings();
         this.settings.provider = Objects.requireNonNull(provider, "Provider cannot be null");
+        this.settings.maxToolLoops = DEFAULT_MAX_TOOL_LOOPS;
+
 
         if (!Config.isAppConfigLoaded(proteu)) {
             logger.warn("AI client not initialized: application configuration not loaded.");
@@ -81,6 +86,21 @@ public class Client {
         }
 
         initialize();
+    }
+
+    public boolean maxToolLoops(int maxLoops) {
+        if (maxLoops < 1) {
+            logger.error("Max tool loops must be at least 1.");
+            return false;
+        }
+
+        this.settings.maxToolLoops = maxLoops;
+        logger.info("Max tool loops set to {}.", maxLoops);
+        return true;
+    }
+
+    public int getMaxToolLoops() {
+        return this.settings.maxToolLoops;
     }
 
     public boolean provider(String provider) {
@@ -298,8 +318,7 @@ public class Client {
         try {
             ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
 
-            int maxLoops = 10;
-            for (int loop = 0; loop < maxLoops; loop++) {
+            for (int loop = 0; loop < this.settings.maxToolLoops; loop++) {
                 ChatCompletion completion = instance().chat().completions().create(builder.build());
 
                 String json = mapper.writeValueAsString(completion);
@@ -417,8 +436,7 @@ public class Client {
         try {
             ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
 
-            int maxLoops = 10;
-            for (int loop = 0; loop < maxLoops; loop++) {
+            for (int loop = 0;  loop < this.settings.maxToolLoops; loop++) {
                 StringBuilder assistantText = new StringBuilder();
                 Map<Integer, ToolCallState> toolCallStates = new TreeMap<>();
                 boolean streamHadChunks = false;
