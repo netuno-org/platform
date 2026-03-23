@@ -79,11 +79,12 @@ public class VectorStore {
         return this;
     }
 
-    public void add(String collection, float[] embedding, String text, Values metadata) {
+
+    public void add(String collection, Values embedding, String text, Values metadata) {
         throw new UnsupportedOperationException("add() not implemented in " + this.getClass().getSimpleName());
     }
 
-    public void add(String collection, String id, float[] embedding, String text, Values metadata) {
+    public void add(String collection, String id, Values embedding, String text, Values metadata) {
         throw new UnsupportedOperationException("add() not implemented in " + this.getClass().getSimpleName());
     }
 
@@ -91,11 +92,11 @@ public class VectorStore {
         throw new UnsupportedOperationException("addBatch() not implemented in " + this.getClass().getSimpleName());
     }
 
-    public Values search(String collection, float[] embedding, int topK) {
+    public Values search(String collection, Values embedding, int topK) {
         throw new UnsupportedOperationException("search() not implemented in " + this.getClass().getSimpleName());
     }
 
-    public Values search(String collection, float[] embedding, int topK, Values filter) {
+    public Values search(String collection, Values embedding, int topK, Values filter) {
         throw new UnsupportedOperationException("search() not implemented in " + this.getClass().getSimpleName());
     }
 

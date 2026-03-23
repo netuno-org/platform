@@ -58,17 +58,17 @@ public class FileVectorStore extends VectorStore {
     private static class DocumentData {
         private String id;
         private String text;
-        private float[] embedding;
+        private List<Double> embedding;  // Alterado de float[] para List<Double>
         private Values metadata;
         private long timestamp;
 
         public DocumentData() {
         }
 
-        public DocumentData(String id, String text, float[] embedding, Values metadata) {
+        public DocumentData(String id, String text, List<Double> embedding, Values metadata) {
             this.id = id;
             this.text = text;
-            this.embedding = embedding;
+            this.embedding = embedding != null ? embedding : new ArrayList<>();
             this.metadata = metadata != null ? metadata : new Values();
             this.timestamp = System.currentTimeMillis();
         }
@@ -89,11 +89,11 @@ public class FileVectorStore extends VectorStore {
             this.text = text;
         }
 
-        public float[] getEmbedding() {
+        public List<Double> getEmbedding() {
             return embedding;
         }
 
-        public void setEmbedding(float[] embedding) {
+        public void setEmbedding(List<Double> embedding) {
             this.embedding = embedding;
         }
 
@@ -216,8 +216,8 @@ public class FileVectorStore extends VectorStore {
         return true;
     }
 
-    private double cosineSimilarity(float[] a, float[] b) {
-        if (a == null || b == null || a.length == 0 || b.length == 0 || a.length != b.length) {
+    private double cosineSimilarity(List<Double> a, List<Double> b) {
+        if (a == null || b == null || a.isEmpty() || b.isEmpty() || a.size() != b.size()) {
             return -1.0;
         }
 
@@ -225,10 +225,12 @@ public class FileVectorStore extends VectorStore {
         double normA = 0.0;
         double normB = 0.0;
 
-        for (int i = 0; i < a.length; i++) {
-            dot += a[i] * b[i];
-            normA += (double) a[i] * a[i];
-            normB += (double) b[i] * b[i];
+        for (int i = 0; i < a.size(); i++) {
+            double aVal = a.get(i);
+            double bVal = b.get(i);
+            dot += aVal * bVal;
+            normA += aVal * aVal;
+            normB += bVal * bVal;
         }
 
         if (normA == 0.0 || normB == 0.0) {
@@ -238,18 +240,38 @@ public class FileVectorStore extends VectorStore {
         return dot / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 
+    private List<Double> valuesToEmbeddingList(Values embedding) {
+        if (embedding == null) {
+            return new ArrayList<>();
+        }
+
+        List<Double> list = new ArrayList<>();
+        for (int i = 0; i < embedding.size(); i++) {
+            list.add(embedding.getDouble(i));
+        }
+        return list;
+    }
+
+    private Values embeddingListToValues(List<Double> embedding) {
+        Values values = new Values().forceList();
+        for (Double d : embedding) {
+            values.add(d);
+        }
+        return values;
+    }
+
     @Override
-    public void add(String collection, float[] embedding, String text, Values metadata) {
+    public void add(String collection, Values embedding, String text, Values metadata) {
         add(collection, null, embedding, text, metadata);
     }
 
     @Override
-    public void add(String collection, String id, float[] embedding, String text, Values metadata) {
+    public void add(String collection, String id, Values embedding, String text, Values metadata) {
         if (collection == null || collection.trim().isEmpty()) {
             throw new IllegalArgumentException("Collection name cannot be null or empty");
         }
 
-        if (embedding == null || embedding.length == 0) {
+        if (embedding == null || embedding.isEmpty()) {
             throw new IllegalArgumentException("Embedding cannot be null or empty");
         }
 
@@ -261,6 +283,8 @@ public class FileVectorStore extends VectorStore {
             id = UUID.randomUUID().toString();
         }
 
+        List<Double> embeddingList = valuesToEmbeddingList(embedding);
+
         ReentrantLock lock = getLock();
         lock.lock();
         try {
@@ -269,13 +293,13 @@ public class FileVectorStore extends VectorStore {
             CollectionData collectionData = store.get(collection);
 
             if (collectionData == null) {
-                collectionData = new CollectionData(embedding.length);
+                collectionData = new CollectionData(embeddingList.size());
                 store.put(collection, collectionData);
-            } else if (collectionData.getDimensions() != embedding.length) {
+            } else if (collectionData.getDimensions() != embeddingList.size()) {
                 throw new IllegalArgumentException("Embedding dimensions do not match collection dimensions");
             }
 
-            collectionData.getDocuments().put(id, new DocumentData(id, text, embedding, metadata));
+            collectionData.getDocuments().put(id, new DocumentData(id, text, embeddingList, metadata));
 
             writeStore(store);
         } finally {
@@ -308,16 +332,15 @@ public class FileVectorStore extends VectorStore {
 
                 String id = document.getString("id", "");
                 String text = document.getString("text", "");
-                Values metadata = document.get("metadata") instanceof Values
-                        ? (Values) document.get("metadata")
-                        : new Values();
+                Values metadata = document.getValues("metadata", new Values());
 
                 Object embeddingObject = document.get("embedding");
-                if (!(embeddingObject instanceof float[])) {
+                if (!(embeddingObject instanceof Values)) {
                     continue;
                 }
 
-                float[] embedding = (float[]) embeddingObject;
+                Values embedding = (Values) embeddingObject;
+                List<Double> embeddingList = valuesToEmbeddingList(embedding);
 
                 if (text == null || text.trim().isEmpty()) {
                     continue;
@@ -328,13 +351,13 @@ public class FileVectorStore extends VectorStore {
                 }
 
                 if (collectionData == null) {
-                    collectionData = new CollectionData(embedding.length);
+                    collectionData = new CollectionData(embeddingList.size());
                     store.put(collection, collectionData);
-                } else if (collectionData.getDimensions() != embedding.length) {
+                } else if (collectionData.getDimensions() != embeddingList.size()) {
                     throw new IllegalArgumentException("Embedding dimensions do not match collection dimensions");
                 }
 
-                collectionData.getDocuments().put(id, new DocumentData(id, text, embedding, metadata));
+                collectionData.getDocuments().put(id, new DocumentData(id, text, embeddingList, metadata));
             }
 
             writeStore(store);
@@ -344,25 +367,27 @@ public class FileVectorStore extends VectorStore {
     }
 
     @Override
-    public Values search(String collection, float[] embedding, int topK) {
+    public Values search(String collection, Values embedding, int topK) {
         return search(collection, embedding, topK, null);
     }
 
     @Override
-    public Values search(String collection, float[] embedding, int topK, Values filter) {
-        Values results = new Values();
+    public Values search(String collection, Values embedding, int topK, Values filter) {
+        Values results = new Values().forceList();  // ← MUDANÇA: forceList() para retornar como lista
 
         if (collection == null || collection.trim().isEmpty()) {
             return results;
         }
 
-        if (embedding == null || embedding.length == 0) {
+        if (embedding == null || embedding.isEmpty()) {
             return results;
         }
 
         if (topK <= 0) {
             return results;
         }
+
+        List<Double> embeddingList = valuesToEmbeddingList(embedding);
 
         ReentrantLock lock = getLock();
         lock.lock();
@@ -374,7 +399,7 @@ public class FileVectorStore extends VectorStore {
                 return results;
             }
 
-            if (collectionData.getDimensions() != embedding.length) {
+            if (collectionData.getDimensions() != embeddingList.size()) {
                 throw new IllegalArgumentException("Embedding dimensions do not match collection dimensions");
             }
 
@@ -385,7 +410,7 @@ public class FileVectorStore extends VectorStore {
                     continue;
                 }
 
-                double score = cosineSimilarity(embedding, document.getEmbedding());
+                double score = cosineSimilarity(embeddingList, document.getEmbedding());
                 if (score < 0) {
                     continue;
                 }
@@ -405,15 +430,15 @@ public class FileVectorStore extends VectorStore {
                 DocumentData document = (DocumentData) match.get("document");
                 double score = (double) match.get("score");
 
-                Values item = new Values();
+                Values item = new Values().forceMap();  // ← Cada item é um mapa
                 item.put("id", document.getId());
                 item.put("text", document.getText());
                 item.put("metadata", document.getMetadata());
-                item.put("embedding", document.getEmbedding());
+                item.put("embedding", embeddingListToValues(document.getEmbedding()));
                 item.put("score", score);
                 item.put("timestamp", document.getTimestamp());
 
-                results.put(String.valueOf(i), item);
+                results.add(item);
             }
 
             return results;
