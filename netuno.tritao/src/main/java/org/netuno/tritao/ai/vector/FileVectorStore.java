@@ -58,7 +58,7 @@ public class FileVectorStore extends VectorStore {
     private static class DocumentData {
         private String id;
         private String text;
-        private List<Double> embedding;  // Alterado de float[] para List<Double>
+        private List<Double> embedding;
         private Values metadata;
         private long timestamp;
 
@@ -324,31 +324,32 @@ public class FileVectorStore extends VectorStore {
             CollectionData collectionData = store.get(collection);
 
             for (Object item : documents.values()) {
-                if (!(item instanceof Values)) {
-                    continue;
+
+                if (!(item instanceof Values document)) {
+                    throw new IllegalArgumentException("Each item in addBatch must be a Values object");
                 }
 
-                Values document = (Values) item;
-
-                String id = document.getString("id", "");
-                String text = document.getString("text", "");
-                Values metadata = document.getValues("metadata", new Values());
+                String text = document.getString("text", null);
+                if (text == null || text.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Each item in addBatch must contain a non-empty 'text' field");
+                }
 
                 Object embeddingObject = document.get("embedding");
-                if (!(embeddingObject instanceof Values)) {
-                    continue;
+                if (!(embeddingObject instanceof Values embeddingValues)) {
+                    throw new IllegalArgumentException("Each item in addBatch must contain an 'embedding' field of type Values");
                 }
 
-                Values embedding = (Values) embeddingObject;
-                List<Double> embeddingList = valuesToEmbeddingList(embedding);
-
-                if (text == null || text.trim().isEmpty()) {
-                    continue;
+                List<Double> embeddingList = valuesToEmbeddingList(embeddingValues);
+                if (embeddingList.isEmpty()) {
+                    throw new IllegalArgumentException("Embedding cannot be empty");
                 }
 
+                String id = document.getString("id", null);
                 if (id == null || id.trim().isEmpty()) {
                     id = UUID.randomUUID().toString();
                 }
+
+                Values metadata = document.getValues("metadata", new Values());
 
                 if (collectionData == null) {
                     collectionData = new CollectionData(embeddingList.size());
@@ -357,7 +358,10 @@ public class FileVectorStore extends VectorStore {
                     throw new IllegalArgumentException("Embedding dimensions do not match collection dimensions");
                 }
 
-                collectionData.getDocuments().put(id, new DocumentData(id, text, embeddingList, metadata));
+                collectionData.getDocuments().put(
+                        id,
+                        new DocumentData(id, text, embeddingList, metadata)
+                );
             }
 
             writeStore(store);
@@ -373,7 +377,7 @@ public class FileVectorStore extends VectorStore {
 
     @Override
     public Values search(String collection, Values embedding, int topK, Values filter) {
-        Values results = new Values().forceList();  // ← MUDANÇA: forceList() para retornar como lista
+        Values results = new Values().forceList();
 
         if (collection == null || collection.trim().isEmpty()) {
             return results;
@@ -536,24 +540,20 @@ public class FileVectorStore extends VectorStore {
 
     @Override
     public Values listCollections() {
-        Values results = new Values();
+        Values results = new Values().forceList();
 
         ReentrantLock lock = getLock();
         lock.lock();
         try {
             Map<String, CollectionData> store = readStore();
-
-            int index = 0;
             for (Map.Entry<String, CollectionData> entry : store.entrySet()) {
                 Values item = new Values();
                 item.put("name", entry.getKey());
                 item.put("dimensions", entry.getValue().getDimensions());
                 item.put("count", entry.getValue().getDocuments().size());
 
-                results.put(String.valueOf(index), item);
-                index++;
+                results.add(item);
             }
-
             return results;
         } finally {
             lock.unlock();
