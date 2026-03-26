@@ -12,7 +12,6 @@ import org.netuno.tritao.resource.event.ResourceEvent;
 import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 
-
 @Resource(name = "ai")
 public class AI extends ResourceBase {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(AI.class);

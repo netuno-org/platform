@@ -451,7 +451,7 @@ public class FileVectorStore extends VectorStore {
                 DocumentData document = (DocumentData) match.get("document");
                 double score = (double) match.get("score");
 
-                Values item = new Values().forceMap();  // ← Cada item é um mapa
+                Values item = new Values().forceMap();
                 item.put("id", document.getId());
                 item.put("text", document.getText());
                 item.put("metadata", document.getMetadata());

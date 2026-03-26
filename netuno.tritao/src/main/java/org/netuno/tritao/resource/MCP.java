@@ -20,12 +20,11 @@ import org.apache.logging.log4j.Logger;
 
 @Resource(name = "mcp")
 public class MCP extends ResourceBase {
-
     private static Logger logger = LogManager.getLogger(MCP.class);
 
     private List<MCPTool> tools;
 
-    protected MCP(Proteu proteu, Hili hili) {
+    public MCP(Proteu proteu, Hili hili) {
         super(proteu, hili);
         this.tools = new ArrayList<>();
     }
@@ -43,6 +42,30 @@ public class MCP extends ResourceBase {
             this.description = description;
             this.schema = schema;
             this.execute = execute;
+        }
+    }
+
+    private void initialize() {
+        Path mcpPath = Paths.get(Config.getPathAppMCP(getProteu()));
+        try {
+            if (!Files.exists(mcpPath)) {
+                Files.createDirectories(mcpPath);
+                logger.info("MCP folder created: " + mcpPath);
+            }
+
+            try (Stream<Path> files = Files.list(mcpPath)) {
+                files.sorted().forEach(f -> {
+                    if (!Files.isRegularFile(f)) return;
+                    String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
+                    ScriptResult result = getHili().sandbox().runScript(mcpPath.toString(), fileName);
+                    logger.info("Loaded MCP tool: " + fileName + " | Success: " + result.isSuccess());
+                });
+            } catch (IOException e) {
+                logger.fatal("When looking for mcp tools scripts into the folder: " + mcpPath, e);
+            }
+
+        } catch (IOException e) {
+            logger.fatal("Error initializing MCP in folder: " + mcpPath.toString(), e);
         }
     }
 
@@ -65,22 +88,24 @@ public class MCP extends ResourceBase {
         return list;
     }
 
-
-    public void initialize() {
-        try (Stream<Path> files = Files.list(Paths.get(Config.getPathAppMCP(getProteu())))) {
-            files.sorted().forEach(
-                    (f) -> {
-                        String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
-                        ScriptResult scriptSchemaResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
-                        System.out.println(f);
-                        System.out.println(scriptSchemaResult.isSuccess());
-                    }
-            );
-        } catch (IOException e) {
-            logger.fatal("When looking for setup schema scripts into the folder: " + Config.getPathAppSetup(getProteu()), e);
+    private Values callTool(String name, Values input) {
+        for (MCPTool tool : tools) {
+            if (tool.name.equals(name)) {
+                try {
+                    return tool.execute.apply(input);
+                } catch (Exception e) {
+                    logger.error("Error executing tool: " + name, e);
+                    Values error = new Values();
+                    error.set("success", false);
+                    error.set("error", e.getMessage());
+                    return error;
+                }
+            }
         }
-
+        Values notFound = new Values();
+        notFound.set("success", false);
+        notFound.set("error", "Tool not found: " + name);
+        return notFound;
     }
-
 
 }
