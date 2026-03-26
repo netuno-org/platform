@@ -36,11 +36,11 @@ public class AI extends ResourceBase {
     @ResourceEvent(type = ResourceEventType.AfterServiceConfiguration)
     private void afterServiceConfiguration() {}
 
-    public Values config() {
+    private Values config() {
         return getProteu().getConfig().getValues("_ai");
     }
 
-    public Values clientConfig() {
+    private Values clientConfig() {
         Values aiConfig = config();
         if (aiConfig == null) {
             return new Values();
@@ -48,7 +48,7 @@ public class AI extends ResourceBase {
         return aiConfig.getValues("client");
     }
 
-    public Values clientConfig(String name) {
+    private Values clientConfig(String name) {
         Values clientCfg = clientConfig();
         if (clientCfg == null) {
             return new Values();
@@ -56,7 +56,7 @@ public class AI extends ResourceBase {
         return clientCfg.getValues(name);
     }
 
-    public Values vectorConfig() {
+    private Values vectorConfig() {
         Values aiConfig = config();
         if (aiConfig == null) {
             return new Values();
@@ -100,5 +100,7 @@ public class AI extends ResourceBase {
 
         return new FileVectorStore(getProteu(), getHili(), provider);
     }
+
+
 
 }

@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Netuno.org under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The Netuno.org licenses this file to You under the Apache License, Version
+ * 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.netuno.tritao.ai.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +81,7 @@ public class Client {
     }
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private static final Logger logger = LogManager.getLogger(Client.class);
+    private static final Logger LOGGER = LogManager.getLogger(Client.class);
 
     private final ChatSettings settings;
     private OpenAIClient client;
@@ -81,7 +98,7 @@ public class Client {
 
 
         if (!Config.isAppConfigLoaded(proteu)) {
-            logger.warn("AI client not initialized: application configuration not loaded.");
+            LOGGER.warn("AI client not initialized: application configuration not loaded.");
             return;
         }
 
@@ -90,12 +107,12 @@ public class Client {
 
     public boolean maxToolLoops(int maxLoops) {
         if (maxLoops < 1) {
-            logger.error("Max tool loops must be at least 1.");
+            LOGGER.error("Max tool loops must be at least 1.");
             return false;
         }
 
         this.settings.maxToolLoops = maxLoops;
-        logger.info("Max tool loops set to {}.", maxLoops);
+        LOGGER.info("Max tool loops set to {}.", maxLoops);
         return true;
     }
 
@@ -105,7 +122,7 @@ public class Client {
 
     public boolean provider(String provider) {
         if (provider == null || provider.isBlank()) {
-            logger.error("Provider cannot be null or empty.");
+            LOGGER.error("Provider cannot be null or empty.");
             return false;
         }
 
@@ -116,11 +133,11 @@ public class Client {
         initialize();
 
         if (!isInitialized()) {
-            logger.error("Failed to switch to provider '{}'.", provider);
+            LOGGER.error("Failed to switch to provider '{}'.", provider);
             return false;
         }
 
-        logger.info("Provider switched successfully to '{}'.", provider);
+        LOGGER.info("Provider switched successfully to '{}'.", provider);
         return true;
     }
 
@@ -132,7 +149,7 @@ public class Client {
                     .getValues("client");
 
             if (aiConfig == null || !aiConfig.keys().contains(this.settings.provider)) {
-                logger.warn("AI provider '{}' not found in configuration.", this.settings.provider);
+                LOGGER.warn("AI provider '{}' not found in configuration.", this.settings.provider);
                 return;
             }
 
@@ -142,7 +159,7 @@ public class Client {
             String baseUrl = normalizeUrl(providerConfig.getString("url"));
 
             if (apiKey == null || apiKey.isBlank()) {
-                logger.error("Missing API key for AI provider '{}'.", this.settings.provider);
+                LOGGER.error("Missing API key for AI provider '{}'.", this.settings.provider);
                 return;
             }
 
@@ -154,10 +171,10 @@ public class Client {
             }
 
             this.client = builder.build();
-            logger.info("AI client initialized successfully for provider '{}'.", this.settings.provider);
+            LOGGER.info("AI client initialized successfully for provider '{}'.", this.settings.provider);
 
         } catch (Exception e) {
-            logger.error("Failed to initialize AI client for provider '{}'.", this.settings.provider, e);
+            LOGGER.error("Failed to initialize AI client for provider '{}'.", this.settings.provider, e);
         }
     }
 
@@ -185,14 +202,14 @@ public class Client {
 
             String protocol = parsed.getProtocol();
             if (!protocol.equals("http") && !protocol.equals("https")) {
-                logger.error("Invalid protocol in URL: {}", url);
+                LOGGER.error("Invalid protocol in URL: {}", url);
                 return null;
             }
 
             return url.replaceAll("/+$", "");
 
         } catch (Exception e) {
-            logger.error("Invalid URL format: {}", url);
+            LOGGER.error("Invalid URL format: {}", url);
             return null;
         }
     }
@@ -201,7 +218,7 @@ public class Client {
         Values models = new Values().setForceList(true);
 
         if (!isInitialized()) {
-            logger.error("AI client '{}' not initialized.", this.settings.provider);
+            LOGGER.error("AI client '{}' not initialized.", this.settings.provider);
             return models;
         }
 
@@ -215,7 +232,7 @@ public class Client {
                     model.remove("valid");
                     models.add(model);
                 } catch (Exception e) {
-                    logger.error(
+                    LOGGER.error(
                             "Failed to serialize model for provider '{}'.",
                             this.settings.provider,
                             e
@@ -224,7 +241,7 @@ public class Client {
             }
 
         } catch (Exception e) {
-            logger.error(
+            LOGGER.error(
                     "Failed to load models for provider '{}'.",
                     this.settings.provider,
                     e
@@ -255,7 +272,7 @@ public class Client {
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to validate model '{}'", modelName, e);
+            LOGGER.error("Failed to validate model '{}'", modelName, e);
         }
 
         return false;
@@ -301,17 +318,17 @@ public class Client {
         Values result = new Values();
 
         if (!isInitialized()) {
-            logger.error("AI client '{}' not initialized.", this.settings.provider);
+            LOGGER.error("AI client '{}' not initialized.", this.settings.provider);
             return result;
         }
 
         if (model == null || model.isBlank()) {
-            logger.error("Model cannot be null or empty.");
+            LOGGER.error("Model cannot be null or empty.");
             return result;
         }
 
         if (messages == null || messages.isEmpty()) {
-            logger.error("Messages cannot be null or empty.");
+            LOGGER.error("Messages cannot be null or empty.");
             return result;
         }
 
@@ -360,11 +377,11 @@ public class Client {
                 }
             }
 
-            logger.warn("Max tool-call loops reached.");
+            LOGGER.warn("Max tool-call loops reached.");
             return result;
 
         } catch (Exception e) {
-            logger.error(
+            LOGGER.error(
                     "Chat completion failed for provider '{}', model '{}'.",
                     this.settings.provider,
                     model,
@@ -419,17 +436,17 @@ public class Client {
             ToolCallback toolCallback
     ) {
         if (!isInitialized()) {
-            logger.error("AI client '{}' not initialized.", this.settings.provider);
+            LOGGER.error("AI client '{}' not initialized.", this.settings.provider);
             return;
         }
 
         if (model == null || model.isBlank()) {
-            logger.error("Model cannot be null or empty.");
+            LOGGER.error("Model cannot be null or empty.");
             return;
         }
 
         if (messages == null || messages.isEmpty()) {
-            logger.error("Messages cannot be null or empty.");
+            LOGGER.error("Messages cannot be null or empty.");
             return;
         }
 
@@ -519,20 +536,20 @@ public class Client {
                                 }
                             }
                         } catch (Exception e) {
-                            logger.error("Failed to process stream chunk.", e);
+                            LOGGER.error("Failed to process stream chunk.", e);
                         }
                     }
                 }
 
                 if (!streamHadChunks) {
-                    logger.warn("Streaming response returned no chunks.");
+                    LOGGER.warn("Streaming response returned no chunks.");
                     return;
                 }
 
                 List<ChatCompletionMessageToolCall> toolCalls = new ArrayList<>();
                 for (ToolCallState state : toolCallStates.values()) {
                     if (state.id == null || state.id.isBlank() || state.name == null || state.name.isBlank()) {
-                        logger.warn("Skipping incomplete streamed tool call: id='{}', name='{}'.", state.id, state.name);
+                        LOGGER.warn("Skipping incomplete streamed tool call: id='{}', name='{}'.", state.id, state.name);
                         continue;
                     }
 
@@ -592,11 +609,11 @@ public class Client {
                 return;
             }
 
-            logger.warn("Max stream tool-call loops reached.");
+            LOGGER.warn("Max stream tool-call loops reached.");
 
         } catch (Exception e) {
             if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
-                logger.error(
+                LOGGER.error(
                         "Chat stream failed for provider '{}', model '{}'.",
                         this.settings.provider,
                         model,
@@ -664,7 +681,7 @@ public class Client {
                     this.settings.tools.add(t);
                 }
             } catch (Exception e) {
-                logger.error("Failed to initialize MCP client.", e);
+                LOGGER.error("Failed to initialize MCP client.", e);
             }
         }
     }
@@ -683,20 +700,20 @@ public class Client {
         String type = values.getString("type");
 
         if (type == null || type.isBlank()) {
-            logger.error("MCP server config is missing required 'type' field: {}", values.toJSON());
+            LOGGER.error("MCP server config is missing required 'type' field: {}", values.toJSON());
             return null;
         }
 
         if (type.equalsIgnoreCase("remote")) {
             String url = values.getString("url");
             if (url == null || url.isBlank()) {
-                logger.error("MCP 'remote' transport requires a 'url' field.");
+                LOGGER.error("MCP 'remote' transport requires a 'url' field.");
                 return null;
             }
 
             String normalizedUrl = normalizeUrl(url);
             if (normalizedUrl == null) {
-                logger.error("MCP remote transport has invalid URL: {}", url);
+                LOGGER.error("MCP remote transport has invalid URL: {}", url);
                 return null;
             }
 
@@ -718,13 +735,13 @@ public class Client {
                 });
             }
 
-            logger.info("MCP remote Streamable HTTP transport {}{}", normalizedUrl, endpoint);
+            LOGGER.info("MCP remote Streamable HTTP transport {}{}", normalizedUrl, endpoint);
             return builder.build();
 
         } else if (type.equalsIgnoreCase("stdio")) {
             String command = values.getString("command");
             if (command == null || command.isBlank()) {
-                logger.error("MCP 'stdio' requires a 'command'.");
+                LOGGER.error("MCP 'stdio' requires a 'command'.");
                 return null;
             }
 
@@ -748,14 +765,14 @@ public class Client {
                 b.env(env);
             }
 
-            logger.info("MCP stdio transport {} {}",
+            LOGGER.info("MCP stdio transport {} {}",
                     command,
                     values.getValues("args") != null ? values.getValues("args").toJSON() : "[]");
 
             return new StdioClientTransport(b.build(), new JacksonMcpJsonMapper(mapper));
         }
 
-        logger.error("Unsupported MCP transport type: {}", type);
+        LOGGER.error("Unsupported MCP transport type: {}", type);
         return null;
     }
 
@@ -795,17 +812,17 @@ public class Client {
         Values result = new Values();
 
         if (!isInitialized()) {
-            logger.error("AI client '{}' not initialized.", this.settings.provider);
+            LOGGER.error("AI client '{}' not initialized.", this.settings.provider);
             return result;
         }
 
         if (model == null || model.isBlank()) {
-            logger.error("Model cannot be null or empty.");
+            LOGGER.error("Model cannot be null or empty.");
             return result;
         }
 
         if (inputs == null || inputs.isEmpty()) {
-            logger.error("Inputs cannot be null or empty.");
+            LOGGER.error("Inputs cannot be null or empty.");
             return result;
         }
 
@@ -834,7 +851,7 @@ public class Client {
             result.remove("valid");
 
         } catch (Exception e) {
-            logger.error(
+            LOGGER.error(
                     "Embeddings request failed for provider '{}', model '{}'.",
                     this.settings.provider,
                     model,
@@ -951,7 +968,7 @@ public class Client {
                                 .build()
                 );
             } catch (Exception e) {
-                logger.error("Failed to add MCP tool '{}'.", t.getString("name"), e);
+                LOGGER.error("Failed to add MCP tool '{}'.", t.getString("name"), e);
             }
         }
     }
@@ -989,7 +1006,7 @@ public class Client {
             return out;
 
         } catch (Exception e) {
-            logger.error("Failed to execute tool call.", e);
+            LOGGER.error("Failed to execute tool call.", e);
             return new Values()
                     .set("error", true)
                     .set("message", e.getMessage() != null ? e.getMessage() : "Tool execution failed.");
@@ -1004,7 +1021,7 @@ public class Client {
         try {
             return Values.fromJSON(json);
         } catch (Exception e) {
-            logger.warn("Failed to parse tool arguments JSON: {}", json, e);
+            LOGGER.warn("Failed to parse tool arguments JSON: {}", json, e);
             return new Values();
         }
     }
@@ -1035,7 +1052,7 @@ public class Client {
                 return new LinkedHashMap<>((Map<String, Object>) obj);
             }
         } catch (Exception e) {
-            logger.error("Failed to convert object to map.", e);
+            LOGGER.error("Failed to convert object to map.", e);
         }
 
         return new LinkedHashMap<>();

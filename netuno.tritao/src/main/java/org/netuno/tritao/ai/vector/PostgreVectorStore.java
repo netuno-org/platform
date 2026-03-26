@@ -36,7 +36,7 @@ import java.util.UUID;
 
 public class PostgreVectorStore extends VectorStore {
 
-    private static final Logger logger = LogManager.getLogger(PostgreVectorStore.class);
+    private static final Logger LOGGER = LogManager.getLogger(PostgreVectorStore.class);
     private static final String COLLECTIONS_TABLE = "netuno_vector_collections";
     private static final String DOCUMENTS_TABLE = "netuno_vector_documents";
 
@@ -92,7 +92,7 @@ public class PostgreVectorStore extends VectorStore {
         try {
             checkPgVectorExtension();
             createStoreTables();
-            logger.info("PostgreVectorStore initialized successfully for provider '{}'.", provider);
+            LOGGER.info("PostgreVectorStore initialized successfully for provider '{}'.", provider);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to initialize PostgreVectorStore", e);
         }
@@ -110,7 +110,7 @@ public class PostgreVectorStore extends VectorStore {
             }
 
             if (!exists) {
-                logger.info("pgvector extension not found. Attempting to create it.");
+                LOGGER.info("pgvector extension not found. Attempting to create it.");
                 try (Statement statement = connection.createStatement()) {
                     statement.execute("CREATE EXTENSION IF NOT EXISTS vector");
                 }
@@ -279,7 +279,7 @@ public class PostgreVectorStore extends VectorStore {
         try {
             return Values.fromJSON(json);
         } catch (Exception e) {
-            logger.warn("Could not parse metadata JSON: {}", json, e);
+            LOGGER.warn("Could not parse metadata JSON: {}", json, e);
             return new Values();
         }
     }

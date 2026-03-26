@@ -37,7 +37,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class FileVectorStore extends VectorStore {
 
-    private static final Logger logger = LogManager.getLogger(FileVectorStore.class);
+    private static final Logger LOGGER = LogManager.getLogger(FileVectorStore.class);
 
     private static final Map<String, ReentrantLock> FILE_LOCKS = new ConcurrentHashMap<>();
 
@@ -174,9 +174,9 @@ public class FileVectorStore extends VectorStore {
 
             basePath = filePath.toString();
 
-            logger.info("FileVectorStore initialized at: {}", basePath);
+            LOGGER.info("FileVectorStore initialized at: {}", basePath);
         } catch (Exception e) {
-            logger.error("Failed to initialize FileVectorStore", e);
+            LOGGER.error("Failed to initialize FileVectorStore", e);
         }
     }
 
@@ -197,7 +197,7 @@ public class FileVectorStore extends VectorStore {
 
             return loaded != null ? loaded : new HashMap<>();
         } catch (IOException e) {
-            logger.error("Failed to load data from file: {}", basePath, e);
+            LOGGER.error("Failed to load data from file: {}", basePath, e);
             return new HashMap<>();
         }
     }
@@ -207,7 +207,7 @@ public class FileVectorStore extends VectorStore {
             File file = new File(basePath);
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, store);
         } catch (IOException e) {
-            logger.error("Failed to save data to file: {}", basePath, e);
+            LOGGER.error("Failed to save data to file: {}", basePath, e);
             throw new RuntimeException("Failed to save vector store file", e);
         }
     }

@@ -391,7 +391,8 @@ public class Config {
         }
         return proteu.getConfig().getString("_url:app:base:storage");
     }
-    
+
+
     public static String getPathAppLanguages(Proteu proteu) {
         if (!proteu.getConfig().hasKey("_path:app:languages")) {
             return getPathAppBaseConfig(proteu) + File.separator +"languages";
@@ -418,6 +419,13 @@ public class Config {
             return getPathAppBaseServer(proteu) + File.separator +"setup";
         }
         return proteu.getConfig().getString("_path:app:setup");
+    }
+
+    public static String getPathAppMCP(Proteu proteu) {
+        if (!proteu.getConfig().hasKey("_path:app:mcp")) {
+            return getPathAppBaseServer(proteu) + File.separator + "mcp";
+        }
+        return proteu.getConfig().getString("_path:app:mcp");
     }
     
     public static String getPathAppReports(Proteu proteu) {

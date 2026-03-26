@@ -25,6 +25,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
+import org.netuno.tritao.ai.mcp.HandlerMCP;
 import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.event.EventId;
@@ -235,12 +236,19 @@ public class Service {
                     outStream = new ByteArrayOutputStream();
                     proteu.getOutput().getMirrors().add(outStream);
                 }
+
                 if (service.getPath().startsWith("_auth_provider/")) {
                     HandlerProviders providers = new HandlerProviders(service, proteu, hili);
                     providers.run();
+                } else if (service.getPath().startsWith("mcp")) {
+                    HandlerMCP mcp = new HandlerMCP(service, proteu, hili);
+                    mcp.run();
                 } else {
                     service.execute(service.getPath());
                 }
+
+
+
                 if (outStream != null) {
                     schema.validateSchemaOut(outStream);
                 }
