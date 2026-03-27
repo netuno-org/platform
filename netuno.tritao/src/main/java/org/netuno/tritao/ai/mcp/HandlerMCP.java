@@ -37,9 +37,67 @@ public class HandlerMCP extends Web {
         header.contentType("application/json");
         header.noCache();
 
+        Values query = proteu.getRequestAll();
+
+        if (query == null || query.isEmpty()) {
+            header.status(400);
+            out.json(new Values().set("error", "Invalid JSON-RPC request"));
+            return;
+        }
+
+        String method = query.getString("method");
+        Object id = query.get("id");
+        Values result = new Values().set("jsonrpc", "2.0").set("id", id);
+
+        if ("initialize".equals(method)) {
+            Values capabilities = new Values()
+                    .set("tools", new Values()
+                            .set("listChanged", false)
+                    );
+
+            result.set("result", new Values()
+                    .set("protocolVersion", "2025-11-25")
+                    .set("serverInfo", new Values()
+                            .set("name", "Netuno MCP Server")
+                            .set("version", "1.0")
+                    )
+                    .set("capabilities", capabilities)
+            );
+        }
+
+
+       else if (method.equalsIgnoreCase("tools/list")) {
+            result.set("result", new Values().set("tools", tools.listTools()));
+        } else if (method.equalsIgnoreCase("tools/call")) {
+            Values params = query.getValues("params");
+
+            String name = params.getString("name");
+            Values arguments = params.getValues("arguments");
+
+            if (!tools.hasTool(name)) {
+                result.set("error", new Values()
+                        .set("code", -32601)
+                        .set("message", "Tool not found: " + name)
+                );
+            } else {
+                Values toolResult = tools.callTool(name, arguments);
+
+                Values content = new Values().forceList();
+
+                content.add(new Values()
+                        .set("type", "text")
+                        .set("text", toolResult.toJSON())
+                );
+
+                result.set("result", new Values()
+                        .set("content", content)
+                );
+            }
+        }
+
         header.status(Proteu.HTTPStatus.OK200);
-        out.json(tools.listTools().toJSON());
-        tools.runTool("hello", new Values());
+        out.json(result);
     }
+
 
 }
