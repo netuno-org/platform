@@ -533,6 +533,14 @@ public class App extends ResourceBase {
 	public String getUrlServices() {
 		return urlServices();
 	}
+
+	public String buildServiceURL(String path) {
+		return Config.getServiceURL(getProteu(), path);
+	}
+
+	public String buildServiceFullURL(String path) {
+		return Config.getServiceFullURL(getProteu(), path);
+	}
 	
     @MethodDoc(
     		translations = {
