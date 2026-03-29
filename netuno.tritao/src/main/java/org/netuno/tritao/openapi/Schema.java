@@ -444,7 +444,12 @@ public class Schema extends Web {
                                                         schemaInProperty.unset("required");
                                                     }
                                                     if (schemaInProperty.hasKey("example")) {
-                                                        parameter.set("example", schemaInProperty.getValues("example"));
+                                                        Values exampleValues = schemaInProperty.getValues("example");
+                                                        if (exampleValues != null) {
+                                                            parameter.set("example", exampleValues);
+                                                        } else {
+                                                            parameter.set("example", schemaInProperty.getString("example"));
+                                                        }
                                                         schemaInProperty.unset("example");
                                                     }
                                                     if (schemaInProperty.hasKey("examples")) {
