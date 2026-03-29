@@ -316,11 +316,12 @@ public class CORS extends ResourceBase {
                         entry.set("optionsAutoResponse", entry.getBoolean("optionsAutoResponse", true));
                         getProteu().getConfig().set("_cors:entry", entry);
                         Values header = new Values()
-                        .set("Access-Control-Allow-Origin", origin)
-                        .set("Access-Control-Allow-Methods", "GET,HEAD,PATCH,PUT,POST,DELETE,OPTIONS")
-                        .set("Access-Control-Allow-Headers", "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization")
-                        .set("Access-Control-Allow-Expose-Headers", "Content-Length,Content-Range")
-                        .set("Access-Control-Allow-Credentials", true);
+                            .set("Access-Control-Allow-Origin", origin)
+                            // PATCH is considered a custom HTTP Method, and for full compatibility, it is added in lowercase too.
+                            .set("Access-Control-Allow-Methods", "GET,HEAD,PATCH,PUT,POST,DELETE,OPTIONS,patch")
+                            .set("Access-Control-Allow-Headers", "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization")
+                            .set("Access-Control-Allow-Expose-Headers", "Content-Length,Content-Range")
+                            .set("Access-Control-Allow-Credentials", true);
                         Values headerEntry = entry.getValues("header");
                         if (headerEntry != null) {
                             header.merge(headerEntry);
