@@ -400,16 +400,24 @@ public class WS extends ResourceBase {
     
     public boolean sendService(String sessionId, Values message) {
         Values sessionData = getSessionEndpoint(sessionId);
+        if (sessionData == null) {
+            return false;
+        }
         Session session = sessionData.get("session", Session.class);
         Values data = message.getValues("data", new Values());
         message.unset("data");
+        if (!message.hasKey("type")) {
+            if (message.getValues("content") != null) {
+                message.set("type", "json");
+            } else {
+                message.set("type", "text");
+            }
+        }
         Values dataRemote = data
                 .set(
                         "_ws",
                         new Values()
                                 .set("session", sessionId)
-                                .set("config", sessionData.getValues("config", new Values()))
-                                .set("qs", new Values(session.getRequestURI().getQuery(), "&", "="))
                                 .set("message", message)
                 );
         Remote remote = resource(Remote.class).alwaysBodyData().asJSON().acceptJSON();
@@ -419,44 +427,24 @@ public class WS extends ResourceBase {
                 remote.getHeader().set(headerKey, header.get(headerKey));
             }
         }
-        String urlService = Config.getFullOrLocalURL(
-                getProteu(),
-                message.getString("service")
-        );
-        org.netuno.psamata.net.Remote.Response response = null;
-        switch (message.getString("method").toUpperCase()) {
-            case "POST":
-                response = remote.post(
-                    urlService,
-                    dataRemote
-                );
-                break;
-            case "PATCH":
-                response = remote.patch(
-                    urlService,
-                    dataRemote
-                );
-                break;
-            case "PUT":
-                response = remote.put(
-                    urlService,
-                    dataRemote
-                );
-                break;
-            case "DELETE":
-                response = remote.delete(
-                    urlService,
-                    dataRemote
-                );
-                break;
-            default:
-                response = remote.get(
-                    urlService,
-                    dataRemote
-                );
-                break;
-
+        remote.getHeader().set("Cookie", sessionData.getString("cookie"));
+        remote.getHeader().set("Authorization", sessionData.getString("authorization"));
+        remote.getHeader().set("WS-Session-Id", sessionId);
+        remote.getHeader().set("WS-Session-Config", sessionData.getValues("config", new Values()).toJSON());
+        remote.getHeader().set("WS-Session-QS", new Values(session.getRequestURI().getQuery(), "&", "="));
+        String url = null;
+        if (message.hasKey("url")) {
+            url = message.getString("url");
+        } else {
+            url = Config.getServiceFullURL(getProteu(), message.getString("service"));
         }
+        org.netuno.psamata.net.Remote.Response response = switch (message.getString("method").toUpperCase()) {
+            case "POST" -> remote.post(url, dataRemote);
+            case "PATCH" -> remote.patch(url, dataRemote);
+            case "PUT" -> remote.put(url, dataRemote);
+            case "DELETE" -> remote.delete(url, dataRemote);
+            default -> remote.get(url, dataRemote);
+        };
         if (response.isOk()) {
             String type = "text";
             if (response.isJSON()) {
@@ -466,7 +454,7 @@ public class WS extends ResourceBase {
                 session.getAsyncRemote().sendText(
                         new Values()
                                 .set("method", response.getMethod().toUpperCase())
-                                .set("service", message.getString("service"))
+                                .set("service", Config.getServiceURL(getProteu(), message.getString("service")))
                                 .set("status", remote.statusCode)
                                 .set("type", type)
                                 .set("content", response.isJSON() ? response.json() : response.toString())
@@ -476,13 +464,13 @@ public class WS extends ResourceBase {
             } catch (Throwable e) {
                 if (e instanceof java.nio.channels.ClosedChannelException
                         || e.getClass().getSimpleName().equals("WebSocketException")) {
-                    throw new ResourceException("Service "+ urlService +" failed to send the output to closed session "+ session.getId() +".");
+                    throw new ResourceException("Service "+ url +" failed to send the output to closed session "+ session.getId() +".");
                 } else {
-                    throw new ResourceException("Service "+ urlService +" failed to send the output to session "+ session.getId() +".", e);
+                    throw new ResourceException("Service "+ url +" failed to send the output to session "+ session.getId() +".", e);
                 }
             }
         }
-        throw new ResourceException("Service "+ urlService +" failed with status "+ response.statusCode +".");
+        throw new ResourceException("Service "+ url +" failed with status "+ response.statusCode +".");
     }
     
     public boolean sendAsService(Values message) {
@@ -642,44 +630,19 @@ public class WS extends ResourceBase {
                 remote.getHeader().set(headerKey, header.get(headerKey));
             }
         }
-        String urlService = Config.getFullOrLocalURL(
-                getProteu(),
-                message.getString("service")
-        );
-        org.netuno.psamata.net.Remote.Response response = null;
-        switch (message.getString("method").toUpperCase()) {
-            case "POST":
-                response = remote.post(
-                    urlService,
-                    dataRemote
-                );
-                break;
-            case "PATCH":
-                response = remote.patch(
-                    urlService,
-                    dataRemote
-                );
-                break;
-            case "PUT":
-                response = remote.put(
-                    urlService,
-                    dataRemote
-                );
-                break;
-            case "DELETE":
-                response = remote.delete(
-                    urlService,
-                    dataRemote
-                );
-                break;
-            default:
-                response = remote.get(
-                    urlService,
-                    dataRemote
-                );
-                break;
-
+        String url = null;
+        if (message.hasKey("url")) {
+            url = message.getString("url");
+        } else {
+            url = Config.getServiceFullURL(getProteu(), message.getString("service"));
         }
+        org.netuno.psamata.net.Remote.Response response = switch (message.getString("method").toUpperCase()) {
+            case "POST" -> remote.post(url, dataRemote);
+            case "PATCH" -> remote.patch(url, dataRemote);
+            case "PUT" -> remote.put(url, dataRemote);
+            case "DELETE" -> remote.delete(url, dataRemote);
+            default -> remote.get(url, dataRemote);
+        };
         if (response.isOk()) {
             String type = "text";
             if (response.isJSON()) {
@@ -688,7 +651,7 @@ public class WS extends ResourceBase {
             
             Values responseData = new Values()
                     .set("method", response.getMethod().toUpperCase())
-                    .set("service", message.getString("service"))
+                    .set("service", Config.getServiceURL(getProteu(), message.getString("service")))
                     .set("status", remote.statusCode)
                     .set("type", type)
                     .set("content", response.isJSON() ? response.json() : response.toString());
@@ -716,7 +679,7 @@ public class WS extends ResourceBase {
             });
             return true;
         }
-        throw new ResourceException("Service "+ urlService +" broadcast failed with status "+ response.statusCode +".");
+        throw new ResourceException("Service "+ url +" broadcast failed with status "+ response.statusCode +".");
     }
     
     public void broadcastAsService(String endpointName, Values message) throws IOException {
@@ -888,6 +851,14 @@ public class WS extends ResourceBase {
 
         public String getType() {
             return type;
+        }
+
+        public Values data() {
+            return getData();
+        }
+
+        public Values getData() {
+            return data;
         }
 
         public boolean typeJSON() {
