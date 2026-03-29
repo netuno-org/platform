@@ -502,6 +502,10 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
     }
 
+    public Where notEqual(Object value) {
+        return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
