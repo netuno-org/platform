@@ -803,6 +803,22 @@ public class Config {
         }
         return url;
     }
+
+    public static String getServiceURL(Proteu proteu, String path) {
+        String url = Config.getUrlServices(proteu);
+        if (!url.endsWith("/")) {
+            url += "/";
+        }
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        url += path;
+        return url;
+    }
+
+    public static String getServiceFullURL(Proteu proteu, String path) {
+        return Config.getFullOrLocalURL(proteu, getServiceURL(proteu, path));
+    }
     
     public static String getRequestHost(Proteu proteu) {
     	String host = proteu.getRequestHeader().getString("Host").toLowerCase();
