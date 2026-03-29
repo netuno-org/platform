@@ -11,17 +11,16 @@ You are free to change, remove, or replace any default technology as you want.
 
 ### Default Requisites
 
-PNPM and Bun are required on the system as default.
+Bun is required on the system as default.
 
-1. [**PNPM Installation**](https://pnpm.io/installation)
-2. [**Bun Installation**](https://bun.sh/docs/installation)
+- [**Bun Installation**](https://bun.sh/docs/installation)
 
-[More about PNPM and Bun.](https://doc.netuno.org/docs/academy/website/pnpm-bun/)
+[More about Bun.](https://doc.netuno.org/docs/academy/website/bun/)
 
 ### Install Packages
 
-`pnpm install`
+`bun install`
 
 ### Watch changes and auto recompile
 
-`pnpm run watch`
+`bun run watch`
