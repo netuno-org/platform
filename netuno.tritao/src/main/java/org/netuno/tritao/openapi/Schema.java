@@ -382,14 +382,14 @@ public class Schema extends Web {
                                 final String serviceFullName = FilenameUtils.getBaseName(p.getFileName().toString());
                                 final String serviceName = FilenameUtils.getBaseName(serviceFullName);
                                 String serviceMethod = FilenameUtils.getExtension(serviceFullName);
-                                if (serviceMethod.isEmpty() && service.getMethods().contains(serviceName)) {
+                                if (serviceMethod.isEmpty() && service.getMethods().contains(serviceName.toLowerCase())) {
                                     serviceMethod = serviceName;
                                 }
                                 if (serviceName.isEmpty() || serviceMethod.isEmpty()) {
                                     continue;
                                 }
                                 String servicePath = servicesPath;
-                                if (!service.getMethods().contains(serviceName)) {
+                                if (!service.getMethods().contains(serviceName.toLowerCase())) {
                                     servicePath += "/" + serviceName;
                                 }
                                 try {
