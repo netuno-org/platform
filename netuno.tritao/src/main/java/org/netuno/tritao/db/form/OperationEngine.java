@@ -143,6 +143,12 @@ public class OperationEngine extends Data {
                     " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"')";
             case Contains ->
                     " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
+            case NotContains ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " NOT LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
+            case NotStartsWith ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " NOT LIKE " + "LOWER('"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
+            case NotEndsWith ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " NOT LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"')";
             case In -> {
                 List<String> values = null;
                 if (relationOperator.getValue() instanceof Values) {
