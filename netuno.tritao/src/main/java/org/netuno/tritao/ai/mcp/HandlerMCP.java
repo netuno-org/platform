@@ -29,7 +29,7 @@ public class HandlerMCP extends Web {
 
     public void run() throws Exception {
         MCP tools = resource(MCP.class);
-        tools.initialize();
+        tools.init();
 
         Header header = resource(Header.class);
         Out out = resource(Out.class);
@@ -38,6 +38,12 @@ public class HandlerMCP extends Web {
         header.noCache();
 
         Values query = proteu.getRequestAll();
+
+        if (!tools.isEnabled()) {
+            header.status(400);
+            out.json(new Values().set("error", "MCP server is not configured or not enabled"));
+            return;
+        }
 
         if (query == null || query.isEmpty()) {
             header.status(400);
@@ -57,31 +63,24 @@ public class HandlerMCP extends Web {
 
             result.set("result", new Values()
                     .set("protocolVersion", "2025-11-25")
-                    .set("serverInfo", new Values()
-                            .set("name", "Netuno MCP Server")
-                            .set("version", "1.0")
-                    )
+                    .set("serverInfo", tools.getServerInfo())
                     .set("capabilities", capabilities)
             );
         }
-
-
        else if (method.equalsIgnoreCase("tools/list")) {
-            result.set("result", new Values().set("tools", tools.listTools()));
+            result.set("result", new Values().set("tools", tools.listAvailableTools()));
         } else if (method.equalsIgnoreCase("tools/call")) {
             Values params = query.getValues("params");
-
             String name = params.getString("name");
             Values arguments = params.getValues("arguments");
 
-            if (!tools.hasTool(name)) {
+            if (!tools.containsTool(name)) {
                 result.set("error", new Values()
                         .set("code", -32601)
                         .set("message", "Tool not found: " + name)
                 );
             } else {
-                Values toolResult = tools.callTool(name, arguments);
-
+                Values toolResult = tools.executeTool(name, arguments);
                 Values content = new Values().forceList();
 
                 content.add(new Values()

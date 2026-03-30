@@ -146,7 +146,6 @@ public class FileVectorStore extends VectorStore {
             String configuredPath = config.getString("path", "").trim();
 
             Path filePath;
-
             if (configuredPath.isEmpty() || "...".equals(configuredPath)) {
                 filePath = Paths.get(appPath, "storage", "vector_store.json");
             } else {

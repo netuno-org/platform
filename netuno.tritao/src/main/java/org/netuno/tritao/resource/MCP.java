@@ -22,11 +22,46 @@ public class MCP extends ResourceBase {
     private final Map<String, MCPTool> tools = new HashMap<>();
     private final List<MCPMiddleware> middlewares = new ArrayList<>();
 
+    private boolean isEnabled = true;
+    private String title = "Netuno MCP";
+    private String version = "1.0";
+
     public MCP(Proteu proteu, Hili hili) {
         super(proteu, hili);
     }
 
-    public void initialize() {
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public Values getServerInfo(){
+        return new Values()
+                .set("name", title)
+                .set("version", version);
+    }
+
+    public void init() {
+        if (!Config.isAppConfigLoaded(getProteu())) {
+            logger.warn("MCP server not initialized: application configuration not loaded.");
+            return;
+        }
+
+        try {
+            Values mcpConfig = getProteu().getConfig()
+                    .getValues("_app:config")
+                    .getValues("mcp")
+                    .getValues("server");
+
+            if (mcpConfig == null || !mcpConfig.getBoolean("enabled")) {
+                this.isEnabled = false;
+                return;
+            }
+            this.title = mcpConfig.getString("name", "Netuno MCP");
+            this.version = mcpConfig.getString("version", "1.0");
+        } catch (Exception e) {
+            logger.error("Error loading MCP config", e);
+        }
+
         Path mcpPath = Paths.get(Config.getPathAppMCP(getProteu()));
 
         try {
@@ -35,14 +70,14 @@ public class MCP extends ResourceBase {
                 logger.info("MCP folder created: {}", mcpPath);
             }
 
-            try (Stream<Path> files = Files.list(mcpPath)) {
+            try (Stream<Path> files = Files.walk(mcpPath)) {
                 files
                         .filter(Files::isRegularFile)
                         .sorted()
-                        .forEach(this::loadScript);
+                        .forEach(file -> loadScript(mcpPath, file));
 
             } catch (IOException e) {
-                logger.fatal("Error listing MCP folder: {}", mcpPath, e);
+                logger.fatal("Error walking MCP folder: {}", mcpPath, e);
             }
 
         } catch (IOException e) {
@@ -50,38 +85,39 @@ public class MCP extends ResourceBase {
         }
     }
 
-    private void loadScript(Path file) {
+    private void loadScript(Path rootPath, Path file) {
         String fileName = FilenameUtils.removeExtension(file.getFileName().toString());
+        Path relativePath = rootPath.relativize(file);
 
         try {
             ScriptResult result = getHili()
                     .sandbox()
                     .runScript(file.getParent().toString(), fileName);
 
-            if (!result.isSuccess()) {
-                logger.error("Failed loading MCP tool script: {}", fileName);
+            if (result.isSuccess()) {
+                logger.info("Loaded MCP script: {}", relativePath);
             } else {
-                logger.info("Loaded MCP script: {}", fileName);
+                logger.error("Failed loading MCP tool script: {}", relativePath);
             }
 
         } catch (Exception e) {
-            logger.error("Error executing MCP script: {}", fileName, e);
+            logger.error("Error executing MCP script: {}", relativePath, e);
         }
     }
 
-    public void addMiddleware(MCPMiddleware middleware) {
-        middlewares.add(middleware);
+    public void addMiddlewares(MCPMiddleware... middlewares) {
+        Collections.addAll(this.middlewares, middlewares);
     }
 
-    public void addTool(String name, String description, Values schema, Function<Values, Values> execute) {
+    public void registerTool(String name, String description, Values schema, Function<Values, Values> execute) {
         tools.put(name, new MCPTool(name, description, schema, execute));
     }
 
-    public boolean hasTool(String name) {
+    public boolean containsTool(String name) {
         return tools.containsKey(name);
     }
 
-    public Values listTools() {
+    public Values listAvailableTools() {
         Values list = new Values().forceList();
 
         tools.values().forEach(tool -> {
@@ -95,30 +131,30 @@ public class MCP extends ResourceBase {
         return list;
     }
 
-    public Values callTool(String name, Values input) {
+    public Values executeTool(String name, Values input) {
         MCPTool tool = tools.get(name);
 
         if (tool == null) {
-            return error("Tool not found: " + name);
+            return buildError("Tool not found: " + name);
         }
 
         for (MCPMiddleware middleware : middlewares) {
-            Values result = middleware.handle(tool);
+            Values result = middleware.intercept(tool);
             if (result == null) {
                 continue;
             }
-            return error(result.toJSON());
+            return buildError(result.toJSON());
         }
 
         try {
             return tool.execute.apply(input);
         } catch (Exception e) {
             logger.error("Error executing tool: {}", name, e);
-            return error(e.getMessage());
+            return buildError(e.getMessage());
         }
     }
 
-    private Values error(String message) {
+    private Values buildError(String message) {
         Values error = new Values();
         error.set("success", false);
         error.set("error", message);
@@ -127,7 +163,7 @@ public class MCP extends ResourceBase {
 
     @FunctionalInterface
     public interface MCPMiddleware {
-        Values handle(MCPTool tool);
+        Values intercept(MCPTool tool);
     }
 
     private record MCPTool(
