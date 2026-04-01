@@ -42,8 +42,7 @@ public class OperationEngine extends Data {
         StringBuilder whereSQL = new StringBuilder();
         if (query.getWhere() != null && !query.getWhere().getConditions().isEmpty()) {
             final ConditionalOperator firstConditional = query.getWhere().getConditions().getFirst();
-            whereSQL.append("\n").append("\t")
-                    .append(firstConditional.getOperator() != null ? "" : " AND")
+            whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
                     .append(this.buildWhereSQL(query.getWhere()));
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
@@ -51,22 +50,28 @@ public class OperationEngine extends Data {
             joinSQL.append("\t").append("\t").append(this.buildJoinSQL(join));
             if (join.getWhere() != null && !join.getWhere().getConditions().isEmpty()) {
                 final ConditionalOperator firstConditional = join.getWhere().getConditions().getFirst();
-                whereSQL.append("\n").append("\t")
-                        .append(firstConditional.getOperator() != null ? "" : " AND")
+                whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
                         .append(this.buildWhereSQL(join.getWhere()));
             }
             for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
                 final Join subJoin = entrySubJoin.getValue();
                 if (subJoin.getWhere() != null && !subJoin.getWhere().getConditions().isEmpty()) {
                     final ConditionalOperator firstConditional = subJoin.getWhere().getConditions().getFirst();
-                    whereSQL.append("\n").append("\t")
-                            .append(firstConditional.getOperator() != null ? "" : " AND")
+                    whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
                             .append(this.buildWhereSQL(subJoin.getWhere()));
                 }
             }
         }
-        whereSQL.insert(0, "\nWHERE 1 = 1");
-        return joinSQL.toString() + whereSQL;
+        String strWhereSQL = whereSQL.toString();
+        String finalWhereSQL = "";
+
+        if (strWhereSQL.trim().startsWith("AND")) {
+            finalWhereSQL = whereSQL.toString().replaceFirst("AND", "");
+        } else if (strWhereSQL.trim().startsWith("OR")) {
+            finalWhereSQL = whereSQL.toString().replaceFirst("OR", "");
+        }
+
+        return joinSQL + (finalWhereSQL.trim().isEmpty() ? "" : "\nWHERE" + finalWhereSQL);
     }
 
     public String buildJoinSQL(Join join) {
