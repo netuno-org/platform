@@ -248,7 +248,6 @@ public class Service {
                 }
 
 
-
                 if (outStream != null) {
                     schema.validateSchemaOut(outStream);
                 }

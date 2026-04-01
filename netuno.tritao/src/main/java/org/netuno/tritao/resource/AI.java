@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.ai.client.Client;
+import org.netuno.tritao.ai.utils.ContextRetrievalChunker;
 import org.netuno.tritao.ai.vector.FileVectorStore;
 import org.netuno.tritao.ai.vector.PostgreVectorStore;
 import org.netuno.tritao.ai.vector.VectorStore;
@@ -100,6 +101,10 @@ public class AI extends ResourceBase {
         return new FileVectorStore(getProteu(), getHili(), provider);
     }
 
+
+    public ContextRetrievalChunker contextRetrievalChunker(){
+        return new ContextRetrievalChunker();
+  }
 
 
 }

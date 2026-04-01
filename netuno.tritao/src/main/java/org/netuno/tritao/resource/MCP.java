@@ -99,7 +99,6 @@ public class MCP extends ResourceBase {
             } else {
                 logger.error("Failed loading MCP tool script: {}", relativePath);
             }
-
         } catch (Exception e) {
             logger.error("Error executing MCP script: {}", relativePath, e);
         }

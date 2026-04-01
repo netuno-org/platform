@@ -577,6 +577,8 @@ public class ProteuEvents implements Events {
             }
             proteu.getConfig().set("_service:path", proteu.safePath(servicePath));
             url = "/org/netuno/tritao/Service.netuno";
+
+
         } else if ((hostType == Config.HostType.ADMIN && url.endsWith(".netuno") && url.startsWith(admin_url))
         		|| (hostType == Config.HostType.BASE && url.endsWith(".netuno") && url.startsWith(admin_url))) {
             String dynamicURL = url.substring(admin_url.length());
