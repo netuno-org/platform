@@ -240,10 +240,14 @@ public class Service {
                 if (service.getPath().startsWith("_auth_provider/")) {
                     HandlerProviders providers = new HandlerProviders(service, proteu, hili);
                     providers.run();
-                } else if (service.getPath().startsWith("mcp")) {
+                }
+                /*
+                else if (service.getPath().startsWith("mcp")) {
                     HandlerMCP mcp = new HandlerMCP(service, proteu, hili);
                     mcp.run();
-                } else {
+                }
+                 */
+                 else {
                     service.execute(service.getPath());
                 }
 

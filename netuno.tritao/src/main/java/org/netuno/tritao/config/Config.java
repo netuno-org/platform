@@ -237,6 +237,7 @@ public class Config {
         }
     }
 
+
     public static String getUrlServices(Proteu proteu) {
         Values appConfig = proteu.getConfig().getValues("_app:config");
         if (appConfig.has("url") && appConfig.getValues("url").has("services")) {
@@ -340,6 +341,15 @@ public class Config {
             return getPathStatic(proteu) +"/lang";
         }
         return proteu.getConfig().getString("_path:lang");
+    }
+
+    public static String getUrlMCP(Proteu proteu) {
+        Values appConfig = proteu.getConfig().getValues("_app:config");
+        if (appConfig.has("url") && appConfig.getValues("url").has("mcp")) {
+            return getUrlBase(proteu) + appConfig.getValues("url").getString("mcp");
+        } else {
+            return getUrlBase(proteu) + "/mcp";
+        }
     }
 
 
@@ -854,6 +864,14 @@ public class Config {
                     }
                 }
             }
+            Values hostsMCP = hosts.getValues("mcp");
+            if (hostsMCP != null && hostsMCP.isList()) {
+                for (String hostMCP : hostsMCP.list(String.class)) {
+                    if (!hostMCP.isEmpty() && hostMCP.equalsIgnoreCase(host)) {
+                        return HostType.MCP;
+                    }
+                }
+            }
             String hostAdmin = hosts.getString("base");
             if (!hostAdmin.isEmpty() && hostAdmin.equalsIgnoreCase(host)) {
                 return HostType.ADMIN;
@@ -861,6 +879,10 @@ public class Config {
             String hostServices = hosts.getString("services");
             if (!hostServices.isEmpty() && hostServices.equalsIgnoreCase(host)) {
                 return HostType.SERVICES;
+            }
+            String hostMCP = hosts.getString("mcp");
+            if (!hostMCP.isEmpty() && hostMCP.equalsIgnoreCase(host)) {
+                return HostType.MCP;
             }
         } else {
             String _host = appConfig.getString("host");
@@ -882,6 +904,7 @@ public class Config {
     public enum HostType {
     	BASE,
     	ADMIN,
-    	SERVICES;
+    	SERVICES,
+        MCP;
     }
 }
