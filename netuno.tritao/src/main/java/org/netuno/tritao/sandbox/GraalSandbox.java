@@ -121,6 +121,20 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
     }
 
     @Override
+    public Values getAll(ScriptSourceCode script) {
+        String lang = getGraalLanguage(script.extension());
+        Set<String> keys = graalRunner.keys(lang);
+        Values all = new Values();
+        for (String key : keys) {
+            if (key.startsWith("_")) {
+                continue;
+            }
+            all.put(key, get(script, key));
+        }
+        return all;
+    }
+
+    @Override
     public void stop() {
         graalRunner.closeContext();
     }

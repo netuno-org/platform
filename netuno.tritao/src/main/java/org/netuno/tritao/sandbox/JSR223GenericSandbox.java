@@ -88,6 +88,19 @@ public abstract class JSR223GenericSandbox implements Scriptable {
     public Object get(ScriptSourceCode script, String name) {
         return engine.get(name);
     }
+
+    @Override
+    public Values getAll(ScriptSourceCode script) {
+        Bindings bindings = engine.getBindings(0);
+        Values all = new Values();
+        for (String key : bindings.keySet()) {
+            if (key.startsWith("_")) {
+                continue;
+            }
+            all.put(key, bindings.get(key));
+        }
+        return all;
+    }
     
     @Override
     public void stop() {
