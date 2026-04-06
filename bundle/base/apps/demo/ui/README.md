@@ -1,8 +1,8 @@
 
 ### Install Packages
 
-`npm install`
+`bun install`
 
 ### Watch changes and auto recompile
 
-`npm run watch`
+`bun run watch`
