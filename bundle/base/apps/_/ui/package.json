@@ -26,6 +26,7 @@
     "vite-plugin-imp": "^2.4.0"
   },
   "trustedDependencies": [
+    "esbuild",
     "less"
   ]
 }
