@@ -502,6 +502,10 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
     }
 
+    public Where notEqual(Object value) {
+        return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
@@ -541,6 +545,10 @@ public class Where {
     )
     public Where startsWith(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.StartsWith);
+    }
+
+    public Where notStartsWith(Object value) {
+        return this.addConditionalOperator(value, RelationalOperatorType.NotStartsWith);
     }
 
     @MethodDoc(
@@ -584,6 +592,10 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.EndsWith);
     }
 
+    public Where notEndsWith(Object value) {
+        return this.addConditionalOperator(value, RelationalOperatorType.NotEndsWith);
+    }
+
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
@@ -623,6 +635,10 @@ public class Where {
     )
     public Where contains(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.Contains);
+    }
+
+    public Where notContains(Object value) {
+        return this.addConditionalOperator(value, RelationalOperatorType.NotContains);
     }
     
     @MethodDoc(

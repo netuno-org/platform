@@ -33,5 +33,7 @@ public interface Scriptable {
 
     Object get(ScriptSourceCode script, String name);
 
+    Values getAll(ScriptSourceCode script);
+
     void close();
 }
