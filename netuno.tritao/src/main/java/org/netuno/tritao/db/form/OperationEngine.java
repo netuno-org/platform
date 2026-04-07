@@ -42,8 +42,7 @@ public class OperationEngine extends Data {
         StringBuilder whereSQL = new StringBuilder();
         if (query.getWhere() != null && !query.getWhere().getConditions().isEmpty()) {
             final ConditionalOperator firstConditional = query.getWhere().getConditions().getFirst();
-            whereSQL.append("\n").append("\t")
-                    .append(firstConditional.getOperator() != null ? "" : " AND")
+            whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
                     .append(this.buildWhereSQL(query.getWhere()));
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
@@ -51,22 +50,28 @@ public class OperationEngine extends Data {
             joinSQL.append("\t").append("\t").append(this.buildJoinSQL(join));
             if (join.getWhere() != null && !join.getWhere().getConditions().isEmpty()) {
                 final ConditionalOperator firstConditional = join.getWhere().getConditions().getFirst();
-                whereSQL.append("\n").append("\t")
-                        .append(firstConditional.getOperator() != null ? "" : " AND")
+                whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
                         .append(this.buildWhereSQL(join.getWhere()));
             }
             for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
                 final Join subJoin = entrySubJoin.getValue();
                 if (subJoin.getWhere() != null && !subJoin.getWhere().getConditions().isEmpty()) {
                     final ConditionalOperator firstConditional = subJoin.getWhere().getConditions().getFirst();
-                    whereSQL.append("\n").append("\t")
-                            .append(firstConditional.getOperator() != null ? "" : " AND")
+                    whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
                             .append(this.buildWhereSQL(subJoin.getWhere()));
                 }
             }
         }
-        whereSQL.insert(0, "\nWHERE 1 = 1");
-        return joinSQL.toString() + whereSQL;
+        String strWhereSQL = whereSQL.toString();
+        String finalWhereSQL = "";
+
+        if (strWhereSQL.trim().startsWith("AND")) {
+            finalWhereSQL = whereSQL.toString().replaceFirst("AND", "");
+        } else if (strWhereSQL.trim().startsWith("OR")) {
+            finalWhereSQL = whereSQL.toString().replaceFirst("OR", "");
+        }
+
+        return joinSQL + (finalWhereSQL.trim().isEmpty() ? "" : "\nWHERE" + finalWhereSQL);
     }
 
     public String buildJoinSQL(Join join) {
@@ -82,11 +87,11 @@ public class OperationEngine extends Data {
 
     public String buildRelation(Relationship relation, String table) {
         String relationSQL = "";
-        relationSQL = (relation.getAlias() != null ? relation.getTableName() + " " + relation.getAlias() : relation.getTableName()) + " ON ";
-        String finalRelationName = relation.getAlias() != null && !relation.getAlias().isEmpty() && !relation.getAlias().isBlank() ? relation.getAlias() : relation.getTableName();
+        relationSQL = (relation.getAlias() != null ? this.escape(relation.getTableName()) + " " + relation.getAlias() : this.escape(relation.getTableName())) + " ON ";
+        String finalRelationName = relation.getAlias() != null && !relation.getAlias().isEmpty() && !relation.getAlias().isBlank() ? relation.getAlias() : this.escape(relation.getTableName());
         switch (relation.getType()) {
-            case ManyToOne -> relationSQL += table+"."+relation.getColumn() + " = " + finalRelationName+".id";
-            case OneToMany -> relationSQL += finalRelationName+"."+relation.getColumn() + " = " + table+".id";
+            case ManyToOne -> relationSQL += this.escape(table)+"."+relation.getColumn() + " = " + finalRelationName+".id";
+            case OneToMany -> relationSQL += finalRelationName+"."+relation.getColumn() + " = " + this.escape(table)+".id";
         }
         for(Map.Entry<String, Join> subRelationEntry : relation.getSubRelations().entrySet()) {
             Join join = subRelationEntry.getValue();
@@ -112,7 +117,7 @@ public class OperationEngine extends Data {
             conditionSQL += ")";
         } else {
             conditionSQL += " " + (condition.getOperator() != null ? condition.getOperator() : "")
-                    +  this.buildRelationOperatorSQL(condition.getRelationOperator(), table, condition.getColumn());
+                    +  this.buildRelationOperatorSQL(condition.getRelationOperator(), this.escape(table), condition.getColumn());
         }
         return conditionSQL;
     }
@@ -143,6 +148,12 @@ public class OperationEngine extends Data {
                     " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"')";
             case Contains ->
                     " " + "LOWER(" +table+"."+column+ ")" + " LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
+            case NotContains ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " NOT LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
+            case NotStartsWith ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " NOT LIKE " + "LOWER('"+DB.sqlInjection(relationOperator.getValue().toString())+"%')";
+            case NotEndsWith ->
+                    " " + "LOWER(" +table+"."+column+ ")" + " NOT LIKE " + "LOWER('%"+DB.sqlInjection(relationOperator.getValue().toString())+"')";
             case In -> {
                 List<String> values = null;
                 if (relationOperator.getValue() instanceof Values) {
@@ -178,15 +189,15 @@ public class OperationEngine extends Data {
     }
 
     public String buildSelectSQL(Operation query) {
-        String select = "SELECT \n\t" + query.getFormName()+".*" + " \nFROM ";
+        String select = "SELECT \n\t" + this.escape(query.getFormName()) +".*" + " \nFROM ";
         List <String> fields = query.getFieldsToGet().stream().map(field ->
-                field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn()
+                field.getAlias() != null ? this.escape(field.getColumn()) + " AS " + field.getAlias() : this.escape(field.getColumn())
         ).collect(Collectors.toList());
         if (!fields.isEmpty()) {
             select = "SELECT \n\t" + String.join(", \n\t", fields) + " \nFROM ";
         }
         if (query.isDistinct()) {
-            select = "SELECT DISTINCT\n" + query.getFormName()+".*" + " \nFROM ";
+            select = "SELECT DISTINCT\n" + this.escape(query.getFormName())+".*" + " \nFROM ";
             if (!fields.isEmpty()) {
                 select = "SELECT DISTINCT\n\t" + String.join(", \n\t", fields) + " \nFROM ";
             }
@@ -225,7 +236,7 @@ public class OperationEngine extends Data {
 
     public List<Values> all(Operation query) {
         String select = this.buildSelectSQL(query);
-        String selectCommandSQL = select + query.getFormName()+ this.buildQuerySQL(query);
+        String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
@@ -560,6 +571,15 @@ public class OperationEngine extends Data {
             case NotFound -> throw new ResourceException("No records found in the form " + dataItem.getFormName());
             case Error -> throw new ResourceException("Impossible to " + action + " record in the form " + dataItem.getFormName());
             case Exists -> throw new ResourceException("Already exists a record in the " + dataItem.getFormName() + "."+ dataItem.getFieldName() +" with this data.");
+        }
+    }
+
+    public String escape(String data) {
+        if (data.contains(".")) {
+            var splitData = data.split("\\.");
+            return getBuilder().escapeStart() + splitData[0] +getBuilder().escapeEnd() + "." + splitData[1];
+        } else {
+            return getBuilder().escapeStart() + data + getBuilder().escapeEnd();
         }
     }
 }
