@@ -315,7 +315,7 @@ public class OperationEngine extends Data {
     }
 
     public List<Values> getRecordIDs(Operation query) {
-        String selectIdsCommandSQL = "SELECT " + query.getFormName() + ".id FROM " + query.getFormName() + this.buildQuerySQL(query);
+        String selectIdsCommandSQL = "SELECT " + this.escape(query.getFormName()) + ".id FROM " + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (query.getOrder() != null) {
             selectIdsCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
         }
