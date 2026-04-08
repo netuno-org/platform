@@ -34,6 +34,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * PostgreVectorStore - Resource
+ * @author Marcel Gheorghe Becheanu - @marcelbecheanu
+ */
 public class PostgreVectorStore extends VectorStore {
 
     private static final Logger LOGGER = LogManager.getLogger(PostgreVectorStore.class);

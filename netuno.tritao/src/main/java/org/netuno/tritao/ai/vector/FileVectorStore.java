@@ -35,6 +35,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * FileVectorStore - Resource
+ * @author Marcel Gheorghe Becheanu - @marcelbecheanu
+ */
 public class FileVectorStore extends VectorStore {
 
     private static final Logger LOGGER = LogManager.getLogger(FileVectorStore.class);

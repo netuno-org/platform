@@ -26,6 +26,10 @@ import org.netuno.tritao.hili.Hili;
 
 import java.util.*;
 
+/**
+ * VectorStore - Resource
+ * @author Marcel Gheorghe Becheanu - @marcelbecheanu
+ */
 public class VectorStore {
     private static final Logger LOGGER = LogManager.getLogger(VectorStore.class);
 

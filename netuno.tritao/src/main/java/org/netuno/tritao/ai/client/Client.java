@@ -38,6 +38,7 @@ import io.modelcontextprotocol.spec.McpClientTransport;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.Config;
@@ -49,6 +50,53 @@ import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
 
+
+/**
+ * Client - Resource
+ * @author Marcel Gheorghe Becheanu - @marcelbecheanu
+ */
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "AI Client",
+                introduction = "Recurso de cliente de inteligência artificial.\n\n"
+                        + "Permite integrar com fornecedores de IA compatíveis com a API OpenAI, "
+                        + "suportando chat, streaming, embeddings e ferramentas MCP (Model Context Protocol).",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "const client = _ai.client('openai')\n"
+                                        + "client.model('gpt-4o')\n"
+                                        + "\n"
+                                        + "const messages = _val.list()\n"
+                                        + "    .add(_val.map().set('role', 'user').set('content', 'Olá!'))\n"
+                                        + "\n"
+                                        + "const result = client.chat(messages)\n"
+                                        + "_out.json(result)"
+                        )
+                }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "AI Client",
+                introduction = "Artificial intelligence client resource.\n\n"
+                        + "Allows integration with AI providers compatible with the OpenAI API, "
+                        + "supporting chat, streaming, embeddings and MCP (Model Context Protocol) tools.",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "const client = _ai.client('openai')\n"
+                                        + "client.model('gpt-4o')\n"
+                                        + "\n"
+                                        + "const messages = _val.list()\n"
+                                        + "    .add(_val.map().set('role', 'user').set('content', 'Hello!'))\n"
+                                        + "\n"
+                                        + "const result = client.chat(messages)\n"
+                                        + "_out.json(result)"
+                        )
+                }
+        )
+})
 public class Client {
 
     private static final int DEFAULT_MAX_TOOL_LOOPS = 10;
@@ -215,7 +263,7 @@ public class Client {
     }
 
     public Values models() {
-        Values models = new Values().setForceList(true);
+        Values models = Values.newList();
 
         if (!isInitialized()) {
             LOGGER.error("AI client '{}' not initialized.", this.settings.provider);
@@ -1025,7 +1073,6 @@ public class Client {
             return new Values();
         }
     }
-
     @SuppressWarnings("unchecked")
     private Map<String, Object> convertToMap(Object input) {
         if (input == null) {
