@@ -14,7 +14,7 @@ The supported languages with their code file extensions are:
 
 The backend folders and their purpose are:
 
-- `actions` - Injects code behaviour in form and database modifications, more about [Actions](https://doc.netuno.org/docs/academy/server/actions).
+- `actions` - Injects code behavior in form and database modifications, more about [Actions](https://doc.netuno.org/docs/academy/server/actions).
 - `components` - Custom form fields and data structures.
 - `core` - Scripts of core event cycles and shared scripts used by others, more about [Core Imports](https://doc.netuno.org/docs/academy/server/import).
 - `reports` - Reports source code.
