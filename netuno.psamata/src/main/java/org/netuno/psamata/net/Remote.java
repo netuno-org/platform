@@ -38,6 +38,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
@@ -47,24 +48,12 @@ import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
-/*
-JAVA 11 - PATCH
-
-import java.net.http.HttpRequest;
-
-HttpRequest request = HttpRequest.newBuilder()
-               .uri(URI.create(uri))
-               .method("PATCH", HttpRequest.BodyPublishers.ofString(message))
-               .header("Content-Type", "text/xml")
-               .build();
-*/
-
 /**
  * Client HTTP.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class Remote {
-    private static TrustManager[] trustAllCerts = new TrustManager[]{
+    private static final TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
@@ -425,23 +414,23 @@ public class Remote {
         return submit("delete", url, data);
     }
 
-    public Response get(String url, Map data) {
+    public Response get(String url, Map<?, ?> data) {
         return submit("get", url, new Values(data));
     }
 
-    public Response post(String url, Map data) {
+    public Response post(String url, Map<?, ?> data) {
         return submit("post", url, new Values(data));
     }
 
-    public Response put(String url, Map data) {
+    public Response put(String url, Map<?, ?> data) {
         return submit("put", url, new Values(data));
     }
 
-    public Response patch(String url, Map data) {
+    public Response patch(String url, Map<?, ?> data) {
         return submit("patch", url, new Values(data));
     }
 
-    public Response delete(String url, Map data) {
+    public Response delete(String url, Map<?, ?> data) {
         return submit("delete", url, new Values(data));
     }
 
@@ -465,23 +454,23 @@ public class Remote {
         return submit("delete", url, data);
     }
 
-    public Response get(Map data) {
+    public Response get(Map<?, ?> data) {
         return submit("get", url, new Values(data));
     }
 
-    public Response post(Map data) {
+    public Response post(Map<?, ?> data) {
         return submit("post", url, new Values(data));
     }
 
-    public Response put(Map data) {
+    public Response put(Map<?, ?> data) {
         return submit("put", url, new Values(data));
     }
 
-    public Response patch(Map data) {
+    public Response patch(Map<?, ?> data) {
         return submit("patch", url, new Values(data));
     }
 
-    public Response delete(Map data) {
+    public Response delete(Map<?, ?> data) {
         return submit("delete", url, new Values(data));
     }
 
@@ -510,7 +499,7 @@ public class Remote {
         return submit(method, url, data);
     }
     
-    public Response submitJSON(String method, Map data) {
+    public Response submitJSON(String method, Map<?, ?> data) {
         return submitJSON(method, url, new Values(data));
     }
 
@@ -519,7 +508,7 @@ public class Remote {
         return submit(method, url, data);
     }
 
-    public Response submitJSON(String method, String url, Map data) {
+    public Response submitJSON(String method, String url, Map<?, ?> data) {
         return submitJSON(method, url, new Values(data));
     }
 
@@ -528,7 +517,7 @@ public class Remote {
         return submit(method, url, data);
     }
     
-    public Response submitForm(String method, Map data) {
+    public Response submitForm(String method, Map<?, ?> data) {
         return submitForm(method, url, new Values(data));
     }
 
@@ -537,7 +526,7 @@ public class Remote {
         return submit(method, url, data);
     }
     
-    public Response submitForm(String method, String url, Map data) {
+    public Response submitForm(String method, String url, Map<?, ?> data) {
         return submitForm(method, url, new Values(data));
     }
 
@@ -572,22 +561,22 @@ public class Remote {
                 finalData = _data.toJSON();
             }
         }
-        return submitJava11(method, url, _qs, contentType, finalData, data);
+        return submit(method, url, _qs, contentType, finalData, data);
     }
     
-    public Response submit(String method, String url, Map data) {
+    public Response submit(String method, String url, Map<?, ?> data) {
         return this.submit(method, url, new Values(data));
     }
 
     public Response submit(String method, String url, Values qs, String contentType, String data) {
-        return submitJava11(method, url, qs, contentType, data, null);
+        return submit(method, url, qs, contentType, data, null);
     }
     
-    public Response submit(String method, String url, Map qs, String contentType, String data) {
+    public Response submit(String method, String url, Map<?, ?> qs, String contentType, String data) {
         return submit(method, url, new Values(qs), contentType, data);
     }
 
-    private Response submitJava11(String method, String url, Values qs, String contentType, String dataReady, Values data) {
+    private Response submit(String method, String url, Values qs, String contentType, String dataReady, Values data) {
         String queryString = qs.toString("&", "=", new Values().set("urlEncode", true));
         String fullUrl = urlPrefix;
         if (!fullUrl.isEmpty() && !url.isEmpty()
@@ -614,16 +603,22 @@ public class Remote {
             HttpRequest.Builder builder = HttpRequest.newBuilder()
                     .uri(URI.create(fullUrl));
             boolean isRequestBodyString = dataReady != null && !dataReady.isEmpty() && !contentType.equals(contentTypeMultipartFormData);
+            boolean isContentTypeLoaded = false;
             if (isRequestBodyString) {
                 builder.header("Content-Type", contentType + "; charset=" + getCharset());
+                isContentTypeLoaded = true;
             } else if (data != null && !data.isEmpty() && contentType.equals(contentTypeMultipartFormData)) {
                 builder.header("Content-Type", contentType + "; boundary=" + boundary);
+                isContentTypeLoaded = true;
             }
             if (!getAuthorization().isEmpty()) {
                 builder.header("Authorization", authorization);
             }
 
             for (String key : getHeader().keys()) {
+                if (isContentTypeLoaded && key.equalsIgnoreCase("Content-Type")) {
+                    continue;
+                }
                 builder.header(key, getHeader().getString(key));
             }
 
@@ -636,8 +631,8 @@ public class Remote {
                         Object value = data.get(key);
                         multipartFormDataAppend(outputStream, writer, boundary, key, value);
                     }
-                    if (data.keys().size() > 0) {
-                        writer.append("--" + boundary + "--").append(LINE_FEED);
+                    if (!data.isEmpty()) {
+                        writer.append("--").append(boundary).append("--").append(LINE_FEED);
                     }
                 }
                 builder.method(method.toUpperCase(), HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()));
@@ -645,7 +640,7 @@ public class Remote {
 
             HttpRequest request = builder.build();
 
-            String charset = "";
+            String charset = Charset.defaultCharset().name();
 
             Response response = new Response();
             response.setURL(fullUrl);
@@ -687,7 +682,7 @@ public class Remote {
                     response.setBytes(org.netuno.psamata.io.InputStream.readAllBytes(clientResponseBody));
                     if (!binary) {
                         String content = null;
-                        if (charset.isEmpty()) {
+                        if (charset.isEmpty() || charset.equalsIgnoreCase(Charset.defaultCharset().name())) {
                             content = new String(response.getBytes());
                         } else {
                             content = new String(response.getBytes(), charset);
@@ -702,7 +697,7 @@ public class Remote {
             return response;
         } catch (Throwable t) {
             String dataContent = "";
-            if ((isForm() || isText() || isJSON()) && !data.isEmpty()) {
+            if ((isForm() || isText() || isJSON()) && data != null && !data.isEmpty()) {
                 dataContent = data.toJSON();
                 if (dataContent.length() > 150) {
                     dataContent = dataContent.substring(0, 150) + "...";
@@ -710,187 +705,9 @@ public class Remote {
             }
             throw new Error(
                     t.getMessage() +"\n"+ method.toUpperCase() +" "+ fullUrl
-                            + (!data.isEmpty() ?
+                            + (data != null && !data.isEmpty() ?
                             "\n>> "+ dataContent : ""),
                     t);
-        }
-    }
-
-    private Response submit(String method, String url, Values qs, String contentType, String dataReady, Values data) {
-        String queryString = qs.toString("&", "=", new Values().set("urlEncode", true));
-        String fullUrl = urlPrefix;
-        if (!fullUrl.isEmpty() && !url.isEmpty()
-                && !fullUrl.endsWith("/") && !url.startsWith("/")) {
-            fullUrl += "/";
-        }
-        fullUrl += url + (queryString.isEmpty() ? "" : "?" + queryString);
-        try {
-            String boundary = "---" + System.currentTimeMillis() + UUID.randomUUID().toString().replace("-", "");
-
-            URL _url = new URL(fullUrl);
-            Response response = new Response();
-            response.setMethod(method);
-            response.setURL(fullUrl);
-            HttpURLConnection connection = (HttpURLConnection) _url.openConnection();
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setConnectTimeout(connectTimeout);
-            connection.setReadTimeout(readTimeout);
-            connection.setInstanceFollowRedirects(isFollowRedirects());
-            if (method.equalsIgnoreCase("patch")) {
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("X-HTTP-Method", method.toUpperCase());
-                connection.setRequestProperty("X-HTTP-Method-Override", method.toUpperCase());
-            } else {
-                connection.setRequestMethod(method.toUpperCase());
-                if (method.equalsIgnoreCase("get") && isAlwaysDataBody()) {
-                    connection.setRequestProperty("X-HTTP-Method", method.toUpperCase());
-                    connection.setRequestProperty("X-HTTP-Method-Override", method.toUpperCase());
-                }
-            }
-            if (dataReady != null && !dataReady.isEmpty() && !contentType.equals(contentTypeMultipartFormData)) {
-                connection.setRequestProperty("Content-Type", contentType + "; charset=" + getCharset());
-                connection.setRequestProperty("Content-Length", Integer.toString(dataReady.getBytes().length));
-            } else if (data != null && !data.isEmpty() && contentType.equals(contentTypeMultipartFormData)) {
-                connection.setRequestProperty("Content-Type", contentType + "; boundary=" + boundary);
-            }
-            if (!getAuthorization().isEmpty()) {
-                connection.setRequestProperty("Authorization", authorization);
-            }
-            for (String key : getHeader().keys()) {
-                connection.setRequestProperty(key, getHeader().getString(key));
-            }
-            connection.setUseCaches(false);
-            if (dataReady != null && !dataReady.isEmpty() && !contentType.equals(contentTypeMultipartFormData)) {
-                DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-                out.writeBytes(dataReady);
-                out.flush();
-                out.close();
-            } else if (data != null && !data.isEmpty() && contentType.equals(contentTypeMultipartFormData)) {
-                OutputStream outputStream = connection.getOutputStream();
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, getCharset()), true);
-                for (String key : data.keys()) {
-                    Object value = data.get(key);
-                    multipartFormDataAppend(outputStream, writer, boundary, key, value);
-                }
-                if (data.keys().size() > 0) {
-                    writer.append("--" + boundary + "--").append(LINE_FEED);
-                }
-                writer.close();
-            }
-            String charset = "";
-            try {
-                statusCode = connection.getResponseCode();
-                response.setStatusCode(statusCode);
-                Values responseHeader = new Values();
-                for (String key : connection.getHeaderFields().keySet()) {
-                    for (String value : connection.getHeaderFields().get(key)) {
-                        responseHeader.set(key, value);
-                    }
-                }
-                response.setHeader(responseHeader);
-                if (statusCode == 301 && isFollowRedirects() && responseHeader.hasKey("Location")) {
-                    return submit(method, responseHeader.getString("Location"), qs, contentType, dataReady, data);
-                }
-                String responseContentType = responseHeader
-                        .getString("Content-Type")
-                        .toLowerCase()
-                        .replace(" ", "");
-                Values responseContentTypeValues = new Values(responseContentType, ";", "=");
-                if (responseContentTypeValues.has("charset")) {
-                    charset = responseContentTypeValues.getString("charset");
-                }
-            } catch (Exception e) {
-                e.toString();
-            }
-            try {
-                InputStream inputStream = connection.getInputStream();
-                if (inputStream != null) {
-                    response.setBytes(org.netuno.psamata.io.InputStream.readAllBytes(inputStream));
-                    if (!binary) {
-                        String content = null;
-                        if (charset.isEmpty()) {
-                            content = new String(response.getBytes());
-                        } else {
-                            content = new String(response.getBytes(), charset);
-                        }
-                        response.setContent(content);
-                    }
-                    inputStream.close();
-                }
-            } catch (Exception e) {
-                e.toString();
-            }
-            try {
-                InputStream errorStream = connection.getErrorStream();
-                if (errorStream != null) {
-                    String error = org.netuno.psamata.io.InputStream.readAll(errorStream, charset);
-                    response.setError(new Exception(error));
-                    errorStream.close();
-                }
-            } catch (Exception e) {
-                e.toString();
-            }
-            connection.disconnect();
-            return response;
-        } catch (Throwable t) {
-            String dataContent = "";
-            if ((isForm() || isText() || isJSON()) && !data.isEmpty()) {
-                dataContent = data.toJSON();
-                if (dataContent.length() > 150) {
-                    dataContent = dataContent.substring(0, 150) + "...";
-                }
-            }
-            throw new Error(
-                    t.getMessage() +"\n"+ method.toUpperCase() +" "+ fullUrl
-                            + (!data.isEmpty() ?
-                                    "\n>> "+ dataContent : ""),
-                    t);
-        }
-    }
-
-    private void multipartFormDataAppendJava11(OutputStream outputStream, PrintWriter writer, String boundary, String key, Object value) throws IOException {
-        if (value instanceof Values) {
-            Values values = (Values) value;
-            if (values.isList()) {
-                for (Object object : values) {
-                    multipartFormDataAppendJava11(outputStream, writer, boundary, key, object);
-                }
-            } else {
-                for (String subKey : values.keys()) {
-                    multipartFormDataAppendJava11(outputStream, writer, boundary, key + subKey, values.get(subKey));
-                }
-            }
-        } else if (value instanceof File) {
-            File file = (File) value;
-            String fileName = file.getName();
-            writer.append("--" + boundary).append(LINE_FEED);
-            writer.append("Content-Disposition: form-data; name=\"" + key
-                            + "\"; filename=\"" + fileName + "\"")
-                    .append(LINE_FEED);
-            writer.append("Content-Type: "
-                            + URLConnection.guessContentTypeFromName(fileName))
-                    .append(LINE_FEED);
-            writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
-            writer.append(LINE_FEED);
-            writer.flush();
-            InputStream inputStream = file.getInputStream();
-            byte[] buffer = new byte[4 * 1024];
-            int bytesRead = -1;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-            outputStream.flush();
-            inputStream.close();
-            writer.append(LINE_FEED);
-            writer.flush();
-        } else {
-            writer.append("--" + boundary).append(LINE_FEED);
-            writer.append("Content-Disposition: form-data; name=\"" + key + "\"").append(LINE_FEED);
-            writer.append("Content-Type: text/plain; charset=" + getCharset()).append(LINE_FEED);
-            writer.append(LINE_FEED);
-            writer.append(value.toString()).append(LINE_FEED);
-            writer.flush();
         }
     }
 
@@ -909,15 +726,9 @@ public class Remote {
         } else if (value instanceof File) {
             File file = (File) value;
             String fileName = file.getName();
-            writer.append("--" + boundary).append(LINE_FEED);
-            writer.append(
-                    "Content-Disposition: form-data; name=\"" + key
-                    + "\"; filename=\"" + fileName + "\""
-                    ).append(LINE_FEED);
-            writer.append(
-                    "Content-Type: " // application/octet-stream
-                    + URLConnection.guessContentTypeFromName(fileName)
-                    ).append(LINE_FEED);
+            writer.append("--").append(boundary).append(LINE_FEED);
+            writer.append("Content-Disposition: form-data; name=\"").append(key).append("\"; filename=\"").append(fileName).append("\"").append(LINE_FEED);
+            writer.append("Content-Type: ").append(URLConnection.guessContentTypeFromName(fileName)).append(LINE_FEED);
             //writer.append("Content-Transfer-Encoding: BINARY").append(LINE_FEED);
             writer.append(LINE_FEED);
             writer.flush();
@@ -932,9 +743,9 @@ public class Remote {
             writer.append(LINE_FEED);
             writer.flush();
         } else {
-            writer.append("--" + boundary).append(LINE_FEED);
-            writer.append("Content-Disposition: form-data; name=\"" + key + "\"").append(LINE_FEED);
-            writer.append("Content-Type: text/plain; charset=" + getCharset()).append(LINE_FEED);
+            writer.append("--").append(boundary).append(LINE_FEED);
+            writer.append("Content-Disposition: form-data; name=\"").append(key).append("\"").append(LINE_FEED);
+            writer.append("Content-Type: text/plain; charset=").append(getCharset()).append(LINE_FEED);
             writer.append(LINE_FEED);
             writer.append(value.toString()).append(LINE_FEED);
             writer.flush();
@@ -949,7 +760,7 @@ public class Remote {
         return submitJSON(method, url, data);
     }
 
-    public Response json(String method, String url, Map data) {
+    public Response json(String method, String url, Map<?, ?> data) {
         return submitJSON(method, url, data);
     }
 
@@ -1081,19 +892,6 @@ public class Remote {
         } catch (java.io.IOException e) {
             throw new Error(e);
         }
-    }
-
-    @Override
-    protected final void finalize() throws Throwable {
-        /*
-        GC TEST
-        qs.removeAll();
-        qs = null;
-        data.removeAll();
-        data = null;
-        header.removeAll();
-        header = null;
-        */
     }
 
     public class Response {
@@ -1401,8 +1199,7 @@ public class Remote {
             if (name.isEmpty()) {
                 name = File.getName(url);
             }
-            File file = new File(name, header.getString("Content-Type"), new java.io.ByteArrayInputStream(bytes));
-            return file;
+            return new File(name, header.getString("Content-Type"), new java.io.ByteArrayInputStream(bytes));
         }
 
         public Throwable error() {
@@ -1449,7 +1246,7 @@ public class Remote {
         public String getContentType() {
             if (getHeader().hasKey("Content-Type")) {
                 Values contentType = getHeader().getValues("Content-Type");
-                if (contentType != null && contentType.isList() && contentType.size() > 0) {
+                if (contentType != null && contentType.isList() && !contentType.isEmpty()) {
                     return contentType.getString(0);
                 }
                 return getHeader().getString("Content-Type");
@@ -1466,17 +1263,6 @@ public class Remote {
                 return content.toString();
             }
             return "";
-        }
-
-        @Override
-        protected final void finalize() throws Throwable {
-            /*
-            GC TEST
-            if (header != null) {
-                header.removeAll();
-            }
-            header = null;
-            */
         }
     }
 }
