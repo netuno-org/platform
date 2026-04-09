@@ -26,8 +26,12 @@ import org.netuno.tritao.hili.Hili;
 
 import java.util.*;
 
+/**
+ * VectorStore - Resource
+ * @author Marcel Gheorghe Becheanu - @marcelbecheanu
+ */
 public class VectorStore {
-    private static final Logger logger = LogManager.getLogger(VectorStore.class);
+    private static final Logger LOGGER = LogManager.getLogger(VectorStore.class);
 
     protected final Proteu proteu;
     protected final Hili hili;
@@ -49,7 +53,7 @@ public class VectorStore {
 
     public void init() {
         if (!Config.isAppConfigLoaded(proteu)) {
-            logger.warn("Vector Store not initialized: application configuration not loaded.");
+            LOGGER.warn("Vector Store not initialized: application configuration not loaded.");
             return;
         }
 
@@ -59,13 +63,13 @@ public class VectorStore {
                     .getValues("ai");
 
             if (aiConfig == null) {
-                logger.warn("AI configuration not found.");
+                LOGGER.warn("AI configuration not found.");
                 return;
             }
 
             Values vectorConfig = aiConfig.getValues("vector");
             if (vectorConfig == null || !vectorConfig.keys().contains(provider)) {
-                logger.warn("Vector provider '{}' not found in configuration.", provider);
+                LOGGER.warn("Vector provider '{}' not found in configuration.", provider);
                 return;
             }
 
@@ -73,7 +77,7 @@ public class VectorStore {
             initialized = true;
 
         } catch (Exception e) {
-            logger.error("Failed to initialize Vector Store for provider '{}'.", provider, e);
+            LOGGER.error("Failed to initialize Vector Store for provider '{}'.", provider, e);
         }
     }
 
