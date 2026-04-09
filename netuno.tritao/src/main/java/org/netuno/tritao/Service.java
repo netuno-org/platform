@@ -25,7 +25,6 @@ import org.netuno.proteu.Proteu;
 import org.netuno.proteu.ProteuException;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
-import org.netuno.tritao.ai.mcp.HandlerMCP;
 import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.event.EventId;

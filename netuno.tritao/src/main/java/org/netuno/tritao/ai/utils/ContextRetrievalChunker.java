@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.ai.utils;
 
+import org.netuno.library.doc.*;
 import org.netuno.psamata.Values;
 
 import java.util.ArrayList;
@@ -28,6 +29,60 @@ import java.util.regex.Pattern;
  * ContextRetrievalChunker - Resource
  * @author Marcel Gheorghe Becheanu - @marcelbecheanu
  */
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "AI ContextRetrievalChunker",
+                introduction = "Utilitário de divisão de texto em blocos (chunks) para recuperação de contexto em pipelines RAG (Retrieval-Augmented Generation).\n\n"
+                        + "Permite dividir documentos Markdown em blocos de tamanho controlado, com sobreposição configurável, "
+                        + "preservando a estrutura de cabeçalhos e blocos de código para melhor qualidade de recuperação semântica.\n\n"
+                        + "**Características principais:**\n"
+                        + "- Preserva a hierarquia de cabeçalhos (H1-H6)\n"
+                        + "- Protege blocos de código contra quebras\n"
+                        + "- Tamanho de chunk padrão: 512 caracteres\n"
+                        + "- Sobreposição padrão: 50 caracteres\n"
+                        + "- Quebras inteligentes em limites semânticos (cabeçalhos, parágrafos)",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "// Exemplo básico\n"
+                                        + "const chunker = _ai.contextRetrievalChunker()\n"
+                                        + "const chunks = chunker.markdown(documentoMD)\n"
+                                        + "\n"
+                                        + "for (const chunk of chunks) {\n"
+                                        + "    _log.info(`Chunk ${chunk.get('index')}: ${chunk.get('heading')}`)\n"
+                                        + "    _log.info(`Texto: ${chunk.get('text')}`)\n"
+                                        + "}\n"
+                        )
+                }
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "AI ContextRetrievalChunker",
+                introduction = "Text chunking utility for context retrieval in RAG (Retrieval-Augmented Generation) pipelines.\n\n"
+                        + "Splits Markdown documents into controlled-size chunks with configurable overlap, "
+                        + "preserving heading structure and code blocks for better semantic retrieval quality.\n\n"
+                        + "**Key features:**\n"
+                        + "- Preserves heading hierarchy (H1-H6)\n"
+                        + "- Protects code blocks from being broken\n"
+                        + "- Default chunk size: 512 characters\n"
+                        + "- Default overlap: 50 characters\n"
+                        + "- Smart breaks at semantic boundaries (headings, paragraphs)",
+                howToUse = {
+                        @SourceCodeDoc(
+                                type = SourceCodeTypeDoc.JavaScript,
+                                code = "// Basic example\n"
+                                        + "const chunker = _ai.contextRetrievalChunker()\n"
+                                        + "const chunks = chunker.markdown(markdownDocument)\n"
+                                        + "\n"
+                                        + "for (const chunk of chunks) {\n"
+                                        + "    _log.info(`Chunk ${chunk.get('index')}: ${chunk.get('heading')}`)\n"
+                                        + "    _log.info(`Text: ${chunk.get('text')}`)\n"
+                                        + "}\n"
+                        )
+                }
+        )
+})
 public class ContextRetrievalChunker {
     private static final int DEFAULT_CHUNK_SIZE = 512;
     private static final int DEFAULT_OVERLAP = 50;
@@ -35,10 +90,148 @@ public class ContextRetrievalChunker {
     private static final Pattern HEADING_PATTERN = Pattern.compile("^(#{1,6})\\s+(.+)$", Pattern.MULTILINE);
     private static final Pattern CODE_BLOCK_PATTERN = Pattern.compile("```[\\s\\S]*?```");
 
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Divide um documento Markdown em blocos de texto utilizando os valores predefinidos de tamanho de bloco ("
+                            + DEFAULT_CHUNK_SIZE + " caracteres) e sobreposição (" + DEFAULT_OVERLAP + " caracteres). "
+                            + "Cada bloco preserva o cabeçalho Markdown mais próximo como contexto e respeita os limites de blocos de código.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const chunks = chunker.markdown('# Título\\n\\nConteúdo do documento...')\n"
+                                            + "\n"
+                                            + "for (const chunk of chunks) {\n"
+                                            + "    _log.info(chunk.get('text'))\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Splits a Markdown document into text chunks using the default chunk size ("
+                            + DEFAULT_CHUNK_SIZE + " characters) and overlap (" + DEFAULT_OVERLAP + " characters). "
+                            + "Each chunk preserves the nearest Markdown heading as context and respects code block boundaries.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const chunks = chunker.markdown('# Title\\n\\nDocument content...')\n"
+                                            + "\n"
+                                            + "for (const chunk of chunks) {\n"
+                                            + "    _log.info(chunk.get('text'))\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "markdown", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Texto em formato Markdown a dividir em blocos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Text in Markdown format to split into chunks."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Lista de blocos, cada um com os campos: `index` (posição na sequência), `start` (posição inicial no texto original), `heading` (cabeçalho Markdown mais próximo) e `text` (conteúdo do bloco, com cabeçalho de contexto prefixado se necessário)."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "List of chunks, each with the fields: `index` (position in the sequence), `start` (starting position in the original text), `heading` (nearest Markdown heading) and `text` (chunk content, with context heading prepended if needed)."
+            )
+    })
     public Values markdown(String markdown) {
         return markdown(markdown, DEFAULT_CHUNK_SIZE, DEFAULT_OVERLAP);
     }
 
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Divide um documento Markdown em blocos de texto com tamanho de bloco e sobreposição configuráveis. "
+                            + "Os cortes são feitos preferencialmente em cabeçalhos Markdown, parágrafos ou espaços, evitando sempre cortar dentro de blocos de código. "
+                            + "Quando um bloco não começa por um cabeçalho, o cabeçalho mais próximo é automaticamente prefixado para preservar o contexto semântico.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Blocos de 1024 caracteres com sobreposição de 100\n"
+                                            + "const chunks = chunker.markdown(markdown, 1024, 100)\n"
+                                            + "\n"
+                                            + "for (const chunk of chunks) {\n"
+                                            + "    _log.info('--- Chunk ' + chunk.get('index'))\n"
+                                            + "    _log.info('Heading: ' + chunk.get('heading'))\n"
+                                            + "    _log.info(chunk.get('text'))\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Splits a Markdown document into text chunks with configurable chunk size and overlap. "
+                            + "Cuts are made preferably at Markdown headings, paragraphs or spaces, always avoiding splitting inside code blocks. "
+                            + "When a chunk does not start with a heading, the nearest heading is automatically prepended to preserve semantic context.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code =  "// Chunks of 1024 characters with overlap of 100\n"
+                                            + "const chunks = chunker.markdown(markdown, 1024, 100)\n"
+                                            + "\n"
+                                            + "for (const chunk of chunks) {\n"
+                                            + "    _log.info('--- Chunk ' + chunk.get('index'))\n"
+                                            + "    _log.info('Heading: ' + chunk.get('heading'))\n"
+                                            + "    _log.info(chunk.get('text'))\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "markdown", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Texto em formato Markdown a dividir em blocos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Text in Markdown format to split into chunks."
+                    )
+            }),
+            @ParameterDoc(name = "chunkSize", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tamanhodoBloco",
+                            description = "Número máximo de caracteres por bloco. Valor predefinido: " + DEFAULT_CHUNK_SIZE + "."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Maximum number of characters per chunk. Default value: " + DEFAULT_CHUNK_SIZE + "."
+                    )
+            }),
+            @ParameterDoc(name = "overlap", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "sobreposicao",
+                            description = "Número de caracteres de sobreposição entre blocos consecutivos, para preservar continuidade de contexto. Valor predefinido: " + DEFAULT_OVERLAP + "."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Number of overlapping characters between consecutive chunks, to preserve context continuity. Default value: " + DEFAULT_OVERLAP + "."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Lista de blocos, cada um com os campos: `index` (posição na sequência), `start` (posição inicial no texto original), `heading` (cabeçalho Markdown mais próximo) e `text` (conteúdo do bloco, com cabeçalho de contexto prefixado se necessário)."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "List of chunks, each with the fields: `index` (position in the sequence), `start` (starting position in the original text), `heading` (nearest Markdown heading) and `text` (chunk content, with context heading prepended if needed)."
+            )
+    })
     public Values markdown(String markdown, int chunkSize, int overlap) {
         String text = preprocessMarkdown(markdown);
         List<int[]> codeBlocks = extractRanges(CODE_BLOCK_PATTERN, text);
