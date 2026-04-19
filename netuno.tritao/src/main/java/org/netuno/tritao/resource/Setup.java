@@ -28,7 +28,10 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Event;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.OutputStream;
+import org.netuno.tritao.com.Component;
+import org.netuno.tritao.com.ComponentData;
 import org.netuno.tritao.config.Config;
+import org.netuno.tritao.db.manager.Column;
 import org.netuno.tritao.event.EventId;
 import org.netuno.tritao.hili.Hili;
 
@@ -44,6 +47,7 @@ import java.util.stream.Stream;
 import org.netuno.tritao.resource.event.ResourceEvent;
 import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.sandbox.ScriptResult;
+import org.netuno.tritao.util.Link;
 
 /**
  * Setup - Resource
@@ -237,6 +241,12 @@ public class Setup extends ResourceBase {
         if (running) {
             return false;
         }
+        Path pathSchemaDBML = Path.of(Config.getPathAppSetup(getProteu()), "_db-schema.dbml");
+        try {
+            Files.deleteIfExists(pathSchemaDBML);
+        } catch (IOException e) {
+            logger.fatal("Could not delete the DB schema: " + pathSchemaDBML, e);
+        }
         try (Stream<Path> files = Files.list(Paths.get(Config.getPathAppSetup(getProteu())))) {
             files.sorted().forEach(
                 (f) -> {
@@ -253,6 +263,7 @@ public class Setup extends ResourceBase {
         } catch (IOException e) {
             logger.fatal("When looking for setup scripts into the folder: " + Config.getPathAppSetup(getProteu()), e);
         }
+        StringBuilder schemaDBML = new StringBuilder();
         Group group = resource(Group.class);
         User user = resource(User.class);
         Form form = new Form(getProteu(), getHili());
@@ -292,7 +303,12 @@ public class Setup extends ResourceBase {
                 code.append("_form.createIfNotExists(\n");
                 code.append(valuesToCode(f));
                 code.append(")\n");
-                for (Values c : form.getAllComponents(id)) {
+                schemaDBML.append("Table ");
+                schemaDBML.append(f.getString("name"));
+                schemaDBML.append(" {\n");
+                schemaDBML.append("  id int [pk, increment]\n");
+                for (Values _c : form.getAllComponents(id)) {
+                    Values c = new Values(_c);
                     Values fieldViewUser = user.get(c.getInt("view_user_id"));
                     if (fieldViewUser != null) {
                         c.set("view_user_uid", fieldViewUser.getString("uid"));
@@ -319,7 +335,46 @@ public class Setup extends ResourceBase {
                     code.append("\t" + escapeToCodeString(f.getString("uid")) + ",\n");
                     code.append(valuesToCode(c));
                     code.append(")\n");
+
+                    Component com = null;
+                    try {
+                        com = Config.getNewComponent(getProteu(), getHili(), c.getString("type"));
+                    } catch (Exception e) {
+                        logger.fatal("Form " + f.getString("name")
+                                + " Component type " + c.getString("type") + " cannot be loaded.", e);
+                        return false;
+                    }
+                    com.setProteu(getProteu());
+                    com.setDesignData(_c);
+                    com.setTableData(_f);
+                    for (ComponentData componentData : com.getDataStructure()) {
+                        Column column = Config.getDBBuilder(getProteu()).columnDataType(componentData);
+                        schemaDBML.append("  ");
+                        schemaDBML.append(column.getName());
+                        schemaDBML.append(" ");
+                        schemaDBML.append(column.toTypeDefinition());
+                        schemaDBML.append(" ");
+                        List<String> settings = new ArrayList<>();
+                        if (_c.getBoolean("mandatory")) {
+                            settings.add("not null");
+                        }
+                        if (_c.getBoolean("unique")) {
+                            settings.add("unique");
+                        }
+                        if (componentData.hasLink()) {
+                            settings.add("ref: > "+ componentData.getLinkTableName() +".id");
+                        }
+                        settings.add("note: '"+ _c.getString("title").replace("'", "\\'") +"'");
+                        schemaDBML.append("[");
+                        schemaDBML.append(String.join(", ", settings));
+                        schemaDBML.append("]\n");
+                    }
                 }
+                schemaDBML.append("  Note: '");
+                schemaDBML.append(_f.getString("title").replace("'", "\\'"));
+                schemaDBML.append("'\n");
+                schemaDBML.append("}\n");
+                schemaDBML.append("\n");
                 String file = Config.getPathAppSetup(getProteu()) + File.separator
                         + "_schema-form-" + StringUtils.leftPad(Integer.toString(formUids.size()), formsPadSize, "0") + "-" + f.getString("name")
                         + ".js";
@@ -329,8 +384,16 @@ public class Setup extends ResourceBase {
                             file,
                             false);
                 } catch (IOException e) {
-                    logger.fatal("Generating the schema into " + file, e);
+                    logger.fatal("Could not create the schema in " + file, e);
                 }
+            }
+            try {
+                OutputStream.writeToFile(
+                        schemaDBML.toString(),
+                        pathSchemaDBML,
+                        false);
+            } catch (IOException e) {
+                logger.fatal("Could not create the DB schema in " + pathSchemaDBML, e);
             }
             if (formUids.size() == forms.size()) {
                 break;
