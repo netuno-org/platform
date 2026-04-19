@@ -519,6 +519,8 @@ public class ProteuEvents implements Events {
         String admin_url = Config.getUrlAdmin(proteu);
         String services_url = Config.getUrlServices(proteu);
         String public_url = Config.getUrlPublic(proteu);
+        String mcp_url = Config.getUrlMCP(proteu);
+
         if (!admin_url.startsWith("/")) {
         	admin_url = "/"+ admin_url;
         }
@@ -537,7 +539,13 @@ public class ProteuEvents implements Events {
         if (!public_url.endsWith("/")) {
         	public_url = public_url +"/";
         }
-        
+        if (!mcp_url.startsWith("/")) {
+            mcp_url = "/"+ mcp_url;
+        }
+        if (mcp_url.endsWith("/")) {
+            mcp_url = mcp_url.substring(0, mcp_url.length() - 1);
+        }
+
         if (url.equals(admin_url)) {
             url = admin_url + "Index.netuno";
         }
@@ -577,6 +585,20 @@ public class ProteuEvents implements Events {
             }
             proteu.getConfig().set("_service:path", proteu.safePath(servicePath));
             url = "/org/netuno/tritao/Service.netuno";
+        } else if ((hostType == Config.HostType.MCP && url.startsWith(mcp_url))
+                || (hostType == Config.HostType.BASE && url.startsWith(mcp_url))
+                || (hostType == Config.HostType.ADMIN && url.startsWith(admin_url + "mcp"))) {
+            String mcpPath;
+            if (hostType == Config.HostType.MCP || hostType == Config.HostType.BASE) {
+                mcpPath = url.substring(mcp_url.length());
+            } else {
+                mcpPath = url.substring((admin_url + "mcp").length());
+            }
+            if (mcpPath.toLowerCase().endsWith(".netuno")) {
+                mcpPath = mcpPath.substring(0, mcpPath.length() - ".netuno".length());
+            }
+            proteu.getConfig().set("_mcp:path", proteu.safePath(mcpPath));
+            url = "/org/netuno/tritao/MCP.netuno";
         } else if ((hostType == Config.HostType.ADMIN && url.endsWith(".netuno") && url.startsWith(admin_url))
         		|| (hostType == Config.HostType.BASE && url.endsWith(".netuno") && url.startsWith(admin_url))) {
             String dynamicURL = url.substring(admin_url.length());
@@ -600,7 +622,6 @@ public class ProteuEvents implements Events {
         }
 
         /*
-
         // EN: SECURITY SCRIPT TO AVOID MALICIOUS USE OF APPS
         // PT: SCRIPT DE SEGURANÇA PARA EVITAR USO MALICIOSO DAS APPS
 

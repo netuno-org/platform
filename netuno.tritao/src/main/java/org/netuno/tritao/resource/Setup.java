@@ -199,6 +199,7 @@ public class Setup extends ResourceBase {
                     logger.fatal("When looking for setup scripts into the folder: " + Config.getPathAppSetup(getProteu()), e);
                 }
             }
+
             getHili().event().run(EventId.SETUP_END_BEFORE);
             Event.run("_setup:"+ Config.getApp(getProteu()) +":schema:end");
             getHili().event().run(EventId.SETUP_END);
