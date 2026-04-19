@@ -231,6 +231,10 @@ public class ComponentData {
         return link != null && !link.isEmpty();
     }
 
+    public String getLinkTableName() {
+        return Link.getTableName(getLink());
+    }
+
     public Object getValueAsObject() {
         switch (getType()) {
             case Boolean:
