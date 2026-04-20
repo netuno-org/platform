@@ -368,31 +368,25 @@ public class App implements MainArg {
         
         AppPath.appFile(appPath, AppPath.SERVER_CORE, "_config.js", serverCoreConfig);
 
+        AppPath.copyApp(appPath, AppPath.CONFIG, "README.md");
         AppPath.copyApp(appPath, AppPath.CONFIG, "_development.js");
         AppPath.copyApp(appPath, AppPath.CONFIG, "_production.js");
         AppPath.copyApp(appPath, AppPath.CONFIG, "icon.png");
 
+        AppPath.copyApp(appPath, AppPath.PUBLIC, "README.md");
         AppPath.copyApp(appPath, AppPath.PUBLIC_IMAGES, "logo.png");
         AppPath.copyApp(appPath, AppPath.PUBLIC_IMAGES, "logo-main.png");
         AppPath.copyApp(appPath, AppPath.PUBLIC_IMAGES, "logo-dev.png");
         AppPath.copyApp(appPath, AppPath.PUBLIC_IMAGES, "icon.png");
-
         AppPath.copyApp(appPath, AppPath.PUBLIC_SCRIPTS, "ui.js");
         AppPath.copyApp(appPath, AppPath.PUBLIC_SCRIPTS, "ui.js.map");
-
         AppPath.copyApp(appPath, AppPath.PUBLIC_STYLES, "main.css");
         AppPath.copyApp(appPath, AppPath.PUBLIC_STYLES, "ui.css");
 
-        /*
-        AppPath.copyApp(appPath, AppPath.SERVER_ACTIONS_SAMPLE, "delete.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_ACTIONS_SAMPLE, "deleted.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_ACTIONS_SAMPLE, "insert.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_ACTIONS_SAMPLE, "save.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_ACTIONS_SAMPLE, "saved.js");
-         */
-
+        AppPath.copyApp(appPath, AppPath.SERVER, "README.md");
         AppPath.copyApp(appPath, AppPath.SERVER, "package.json");
-        
+
+        AppPath.copyApp(appPath, AppPath.SERVER_CORE, "README.md");
         AppPath.copyApp(appPath, AppPath.SERVER_CORE, "_config.js");
         AppPath.copyApp(appPath, AppPath.SERVER_CORE, "_init.js");
         AppPath.copyApp(appPath, AppPath.SERVER_CORE, "_request_close.js");
@@ -404,46 +398,14 @@ public class App implements MainArg {
         AppPath.copyApp(appPath, AppPath.SERVER_CORE, "_service_end.js");
         AppPath.copyApp(appPath, AppPath.SERVER_CORE, "_service_error.js");
         AppPath.copyApp(appPath, AppPath.SERVER_CORE, "_service_start.js");
-        /*
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_FIREBASE_LISTENER, "sample.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "calc-hours.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "date-format.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "db.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "export-excel.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "export-pdf.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "firebase.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "group.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "infinite-loop.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "mail-send.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "print-lines.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "print-template.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "query-interaction.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "query-parameter.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "query-result.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "registos.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "remote-delete-json.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "remote-get-json.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "remote-mailjet-sms.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "remote-patch-json.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "remote-post-json.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "remote-put-json.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "uid.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES_SAMPLES, "user.js");
-        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES, "config.js");
-        */
 
-        AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES_DEV, "dashboard.html");
-        /*
-        AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES_SAMPLES, "content-1.html");
-        AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES_SAMPLES, "content-2.html");
-        AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES_SAMPLES, "footer.html");
-        AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES_SAMPLES, "header.html");
-        AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES_SAMPLES, "identity.html");
-         */
+        AppPath.copyApp(appPath, AppPath.SERVER_SERVICES, "README.md");
 
+        AppPath.copyApp(appPath, AppPath.SERVER_SETUP, "README.md");
         AppPath.copyApp(appPath, AppPath.SERVER_SETUP, "_start.js");
         AppPath.copyApp(appPath, AppPath.SERVER_SETUP, "_end.js");
 
+        AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES, "README.md");
         AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES, "dashboard.html");
         AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES, "scripts.html");
         AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES, "scripts_dev.html");
@@ -451,14 +413,11 @@ public class App implements MainArg {
         AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES, "styles.html");
         AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES, "styles_dev.html");
         AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES, "styles_login.html");
+        AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES_DEV, "dashboard.html");
 
+        AppPath.copyApp(appPath, AppPath.STORAGE, "README.md");
         AppPath.copyApp(appPath, AppPath.STORAGE_FILESYSTEM_PRIVATE, "info.txt");
         AppPath.copyApp(appPath, AppPath.STORAGE_FILESYSTEM_PUBLIC, "info.txt");
-        /*
-        AppPath.copyApp(appPath, AppPath.STORAGE_FILESYSTEM_SERVER_SAMPLES_EXPORTEXCEL, "logo.png");
-        AppPath.copyApp(appPath, AppPath.STORAGE_FILESYSTEM_SERVER_SAMPLES_EXPORTPDF, "logo.png");
-        AppPath.copyApp(appPath, AppPath.STORAGE_FILESYSTEM_SERVER_SAMPLES_EXPORTPDF, "viksi-script.ttf");
-        */
         AppPath.copyApp(appPath, AppPath.STORAGE_FILESYSTEM_SERVER, "info.txt");
 
         AppPath.copyApp(appPath, AppPath.UI_SRC_CONTAINERS_DASHBOARDCONTAINER, "index.jsx");
