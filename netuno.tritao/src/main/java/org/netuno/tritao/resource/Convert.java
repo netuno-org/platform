@@ -21,6 +21,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.text.StringEscapeUtils;
 import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.hili.Hili;
 
@@ -1489,5 +1490,215 @@ public class Convert extends ResourceBase {
 			list.add(Array.get(array, i));
 		}
 		return list;
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Substituí acentos pela letra correspondente sem acentuação.",
+							howToUse = {}),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Replace accents with the corresponding unaccented letter.",
+							howToUse = {})
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "text",
+							translations = {
+									@ParameterTranslationDoc(
+											language = LanguageDoc.PT,
+											name = "texto",
+											description = "Conteúdo que será convertido."
+									),
+									@ParameterTranslationDoc(
+											language = LanguageDoc.EN,
+											description = "Content that will be converted."
+									)
+							}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Texto sem acentos."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Text without accents."
+					)
+			}
+	)
+	public String stripAccents(String text) {
+		return org.apache.commons.lang3.StringUtils.stripAccents(text);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Garante que é seguro utilizar como caminho no sistema de arquivos ou na URL, converte \\ para /.",
+							howToUse = {}),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Ensures that it is safe to use as a path in the file system or URL, converts \\ to /.",
+							howToUse = {})
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "path",
+							translations = {
+									@ParameterTranslationDoc(
+											language = LanguageDoc.PT,
+											name = "caminho",
+											description = "Caminho que será convertido para garantir a segurança."
+									),
+									@ParameterTranslationDoc(
+											language = LanguageDoc.EN,
+											description = "The path will be converted to ensure safety."
+									)
+							}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Caminho seguro."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Safe path."
+					)
+			}
+	)
+	public String safePath(String path) {
+		return SafePath.path(path);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Garante que é seguro utilizar como nome de arquivo.",
+							howToUse = {}),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Filename that will be converted to ensure security.",
+							howToUse = {})
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "fileName",
+							translations = {
+									@ParameterTranslationDoc(
+											language = LanguageDoc.PT,
+											name = "nomeArquivo",
+											description = "Nome de arquivo que será convertido para garantir a segurança."
+									),
+									@ParameterTranslationDoc(
+											language = LanguageDoc.EN,
+											description = "Filename that will be converted to ensure security."
+									)
+							}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Nome de arquivo seguro."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Safe file name."
+					)
+			}
+	)
+	public String safeFileName(String fileName) {
+		return SafePath.path(fileName);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Garante que é seguro utilizar como caminho de arquivos no sistema, adapta a / ou a \\ para o formato correto do sistema operacional.",
+							howToUse = {}),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Ensures that it is safe to use as a file path in the system, adapting the / or \\ to the correct operating system format.",
+							howToUse = {})
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "path",
+							translations = {
+									@ParameterTranslationDoc(
+											language = LanguageDoc.PT,
+											name = "caminho",
+											description = "Caminho de sistema que será convertido para garantir a segurança."
+									),
+									@ParameterTranslationDoc(
+											language = LanguageDoc.EN,
+											description = "The path system will be converted to ensure safety."
+									)
+							}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Caminho de sistema seguro."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Safe system path."
+					)
+			}
+	)
+	public String safeSystemPath(String systemPath) {
+		return SafePath.systemPath(systemPath);
+	}
+
+	@MethodDoc(
+			translations = {
+					@MethodTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Converte o texto para ser injetado com segurança na URL, utilizado para descrever o conteúdo da página no SEO.",
+							howToUse = {}),
+					@MethodTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Converts the text to be safely injected into the URL, used to describe the page content in SEO.",
+							howToUse = {})
+			},
+			parameters = {
+					@ParameterDoc(
+							name = "text",
+							translations = {
+									@ParameterTranslationDoc(
+											language = LanguageDoc.PT,
+											name = "texto",
+											description = "Conteúdo que será convertido."
+									),
+									@ParameterTranslationDoc(
+											language = LanguageDoc.EN,
+											description = "Content that will be converted."
+									)
+							}
+					)
+			},
+			returns = {
+					@ReturnTranslationDoc(
+							language = LanguageDoc.PT,
+							description = "Texto seguro para utilizar na URL."
+					),
+					@ReturnTranslationDoc(
+							language = LanguageDoc.EN,
+							description = "Safe text to use in URLs."
+					)
+			}
+	)
+	public String slug(String text) {
+		return safeFileName(stripAccents(text)).replaceAll("\\s", "-");
 	}
 }
