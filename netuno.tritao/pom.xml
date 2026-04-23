@@ -559,7 +559,7 @@
         <dependency>
             <groupId>io.modelcontextprotocol.sdk</groupId>
             <artifactId>mcp-json-jackson2</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.1</version>
         </dependency>
 
         <!--
