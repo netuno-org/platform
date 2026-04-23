@@ -92,7 +92,7 @@ public class File implements IO {
         if (!path.startsWith(SafePath.path(jail))) {
             path = SafePath.path(new java.io.File(jail, path).getAbsolutePath());
         }
-        physicalPath = SafePath.fileSystemPath(path);
+        physicalPath = SafePath.systemPath(path);
     }
 
     /**
@@ -116,13 +116,13 @@ public class File implements IO {
      */
     public File(final String filePath, final String filePhysicalPath, final String fileContentType) {
         path = SafePath.path(filePath);
-        physicalPath = SafePath.fileSystemPath(filePhysicalPath);
+        physicalPath = SafePath.systemPath(filePhysicalPath);
         contentType = fileContentType;
     }
 
     private String buildFullPath(String physicalPath, String jail, String path) {
         if (!jail.isEmpty()) {
-            path = SafePath.fileSystemPath(path);
+            path = SafePath.systemPath(path);
         }
         if (!physicalPath.isEmpty()) {
             return physicalPath;
@@ -798,10 +798,10 @@ public class File implements IO {
             if (pathToWriteFile.startsWith(jail)) {
                 pathToWriteFile = pathToWriteFile.substring(jail.length());
             }
-            pathToWriteFile = SafePath.fileSystemPath(pathToWriteFile);
+            pathToWriteFile = SafePath.systemPath(pathToWriteFile);
             path = pathToWriteFile;
             pathToWriteFile = jail + java.io.File.separator + pathToWriteFile;
-            pathToWriteFile = SafePath.fileSystemPath(pathToWriteFile);
+            pathToWriteFile = SafePath.systemPath(pathToWriteFile);
         }
         FileUtils.delete(pathToWriteFile, FileRecursionLevel.NONE, false, "");
         if (physicalPath.equals("")) {
@@ -893,12 +893,12 @@ public class File implements IO {
     }, returns = {})
     public boolean copy(String destPath, boolean override) throws IOException {
         if (!jail.isEmpty()) {
-            destPath = SafePath.fileSystemPath(destPath);
+            destPath = SafePath.systemPath(destPath);
             if (destPath.startsWith(jail)) {
                 destPath = destPath.substring(jail.length());
             }
             destPath = jail + java.io.File.separator + destPath;
-            destPath = SafePath.fileSystemPath(destPath);
+            destPath = SafePath.systemPath(destPath);
         }
         path = fullPath();
         java.io.File fOrig = new java.io.File(path);
@@ -945,12 +945,12 @@ public class File implements IO {
     }, returns = {})
     public boolean copyFiles(String destPath, String extension) throws IOException {
         if (!jail.isEmpty()) {
-            destPath = SafePath.fileSystemPath(destPath);
+            destPath = SafePath.systemPath(destPath);
             if (destPath.startsWith(jail)) {
                 destPath = destPath.substring(jail.length());
             }
             destPath = jail + java.io.File.separator + destPath;
-            destPath = SafePath.fileSystemPath(destPath);
+            destPath = SafePath.systemPath(destPath);
         }
         for (File file : list()) {
             if (!file.isDirectory()) {
@@ -1099,12 +1099,12 @@ public class File implements IO {
     }, returns = {})
     public boolean renameTo(String destPath) {
         if (!jail.isEmpty()) {
-            destPath = SafePath.fileSystemPath(destPath);
+            destPath = SafePath.systemPath(destPath);
             if (destPath.startsWith(jail)) {
                 destPath = destPath.substring(jail.length());
             }
             destPath = jail + java.io.File.separator + destPath;
-            destPath = SafePath.fileSystemPath(destPath);
+            destPath = SafePath.systemPath(destPath);
         }
         java.io.File f = new java.io.File(fullPath());
         return f.renameTo(new java.io.File(destPath));
@@ -1143,7 +1143,7 @@ public class File implements IO {
     }, returns = {})
     public boolean isDirectory() {
         if (!jail.isEmpty()) {
-            path = SafePath.fileSystemPath(path);
+            path = SafePath.systemPath(path);
         }
         java.io.File f = new java.io.File(this.physicalPath());
         return f.isDirectory();
@@ -1162,7 +1162,7 @@ public class File implements IO {
     }, returns = {})
     public boolean isFile() {
         if (!jail.isEmpty()) {
-            path = SafePath.fileSystemPath(path);
+            path = SafePath.systemPath(path);
         }
         java.io.File f = new java.io.File(this.physicalPath());
         return f.isFile();
@@ -1192,7 +1192,7 @@ public class File implements IO {
     }, returns = {})
     public long lastModified() {
         if (!jail.isEmpty()) {
-            path = SafePath.fileSystemPath(path);
+            path = SafePath.systemPath(path);
         }
         java.io.File f = new java.io.File(fullPath());
         return f.lastModified();
@@ -1211,7 +1211,7 @@ public class File implements IO {
     }, returns = {})
     public List<File> list() {
         if (!jail.isEmpty()) {
-            path = SafePath.fileSystemPath(path);
+            path = SafePath.systemPath(path);
         }
         java.io.File f = new java.io.File(fullPath());
         List<File> files = new ArrayList<>();
@@ -1285,7 +1285,7 @@ public class File implements IO {
     }, returns = {})
     public boolean exists() {
     	if (!jail.isEmpty()) {
-            path = SafePath.fileSystemPath(path);
+            path = SafePath.systemPath(path);
         }
         java.io.File f = new java.io.File(fullPath());
         return f.exists();

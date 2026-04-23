@@ -84,7 +84,7 @@ public class SafePath {
         return fileName;
     }
 
-    public static String fileSystemPath(String path) {
+    public static String systemPath(String path) {
         path = path(path);
         path = path.replace("\\", java.io.File.separator);
         path = path.replace("/", java.io.File.separator);
