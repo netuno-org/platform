@@ -1268,8 +1268,8 @@ public class Proteu {
         return SafePath.fileName(fileName);
     }
 
-    public String safeFileSystemPath(String path) {
-        return SafePath.fileSystemPath(path);
+    public String safeSystemPath(String path) {
+        return SafePath.systemPath(path);
     }
 
     public Values newValues() {
