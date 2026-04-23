@@ -989,7 +989,7 @@ public class App extends ResourceBase {
 
 	public File path(String path) {
 		return new File(
-				SafePath.fileSystemPath(path),
+				SafePath.systemPath(path),
 				Config.getPathAppBase(getProteu())
 		);
 	}
@@ -1076,7 +1076,7 @@ public class App extends ResourceBase {
 
     public File file(String path) {
         File file = new File(
-            SafePath.fileSystemPath(path),
+            SafePath.systemPath(path),
             Config.getPathAppBase(getProteu())
         );
         if (file.exists()) {
@@ -1128,7 +1128,7 @@ public class App extends ResourceBase {
 	)
     public boolean isFile(String path) {
         File file = new File(
-                SafePath.fileSystemPath(path),
+                SafePath.systemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         return file.exists() && file.isFile();
@@ -1179,7 +1179,7 @@ public class App extends ResourceBase {
 
     public File folder(String path) {
         File file = new File(
-                SafePath.fileSystemPath(path),
+                SafePath.systemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         if (file.exists()) {
@@ -1232,7 +1232,7 @@ public class App extends ResourceBase {
 	)
     public boolean isFolder(String path) {
         File file = new File(
-                SafePath.fileSystemPath(path),
+                SafePath.systemPath(path),
                 Config.getPathAppBase(getProteu())
         );
         return file.exists() && file.isDirectory();

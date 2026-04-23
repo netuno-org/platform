@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.*;
 import org.netuno.psamata.Values;
+import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.ConfigError;
 import org.netuno.tritao.db.DBExecutor;
@@ -569,7 +570,7 @@ public class ProteuEvents implements Events {
             
             url = publicPath;
             
-            String publicFilePath = Config.getPathAppBasePublic(proteu) + File.separator + proteu.safeFileSystemPath(publicPath);
+            String publicFilePath = Config.getPathAppBasePublic(proteu) + File.separator + SafePath.systemPath(publicPath);
             proteu.setURLDownload(new Download(proteu, new File(publicFilePath)));
         } else if ((hostType == Config.HostType.SERVICES && url.startsWith(services_url))
         		|| (hostType == Config.HostType.BASE && url.startsWith(services_url))
@@ -685,7 +686,7 @@ public class ProteuEvents implements Events {
             
             url = storagePath;
             
-            String storageFilePath = Config.getPathAppBaseStorage(proteu) + File.separator + proteu.safeFileSystemPath(storagePath);
+            String storageFilePath = Config.getPathAppBaseStorage(proteu) + File.separator + SafePath.systemPath(storagePath);
             if (proteu.getConfig().getBoolean("_storage:download")
                     || storageFilePath.startsWith(Config.getPathAppFileSystemPublic(proteu)) && proteu.getConfig().getBoolean("_storage:filesystem:private:download")
                     || storageFilePath.startsWith(Config.getPathAppFileSystemPublic(proteu)) && proteu.getConfig().getBoolean("_storage:filesystem:public:download")

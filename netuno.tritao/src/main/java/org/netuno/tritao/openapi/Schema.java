@@ -323,8 +323,8 @@ public class Schema extends Web {
     }
 
     private void loadDataWithSchema(Values data, String path) {
-        path = SafePath.fileSystemPath(path);
-        String scriptPath = "/_schema/" + SafePath.fileSystemPath(path);
+        path = SafePath.systemPath(path);
+        String scriptPath = "/_schema/" + SafePath.systemPath(path);
         if (ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + scriptPath) != null) {
             data.unset("_schema");
             try {

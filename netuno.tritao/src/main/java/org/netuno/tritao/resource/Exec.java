@@ -214,7 +214,7 @@ public class Exec extends ResourceBaseValues {
             })
     }, returns = {})
     public ScriptResult core(String path, boolean preserveContext) throws ResourceException {
-        path = SafePath.fileSystemPath(path);
+        path = SafePath.systemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppCore(getProteu()) + "/" +  path);
         if (scriptPath != null) {
             return getHili().sandbox().runScript(Config.getPathAppCore(getProteu()), path, preserveContext);
@@ -268,7 +268,7 @@ public class Exec extends ResourceBaseValues {
             })
     }, returns = {})
     public ScriptResult service(String path, boolean preserveContext) throws ResourceException {
-        path = SafePath.fileSystemPath(path);
+        path = SafePath.systemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(Config.getPathAppServices(getProteu()) + "/" +  path);
         if (scriptPath != null) {
             return getHili().sandbox().runScript(Config.getPathAppServices(getProteu()), path, preserveContext);

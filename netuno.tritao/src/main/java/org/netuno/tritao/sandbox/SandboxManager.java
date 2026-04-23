@@ -267,7 +267,7 @@ public class SandboxManager {
     }
 
     private ScriptResult runScript(String path, String file, boolean preserveContext, boolean fromOnError, boolean onlyExists) {
-        path = SafePath.fileSystemPath(path);
+        path = SafePath.systemPath(path);
         String scriptPath = ScriptRunner.searchScriptFile(path + "/" + file);
         if (onlyExists && scriptPath == null) {
             return ScriptResult.withSuccess(null);
@@ -309,7 +309,7 @@ public class SandboxManager {
                     while (m.find()) {
                         String importScriptFolder = m.group(2);
                         String importScriptPath = m.group(3);
-                        importScriptPath = SafePath.fileSystemPath(importScriptPath);
+                        importScriptPath = SafePath.systemPath(importScriptPath);
                         if (importScriptFolder.equals("_core")) {
                             String importScriptCorePath = Config.getPathAppCore(proteu) +"/"+ importScriptPath;
                             String importScriptCore = ScriptRunner.searchScriptFile(importScriptCorePath);

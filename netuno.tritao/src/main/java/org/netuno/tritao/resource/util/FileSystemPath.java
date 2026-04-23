@@ -42,7 +42,7 @@ public class FileSystemPath {
             }
             if (storage.subpath() != null && !storage.subpath().isEmpty()) {
                 path += File.separator +
-                        SafePath.fileSystemPath(storage.subpath());
+                        SafePath.systemPath(storage.subpath());
             }
         } else if (storage.isDatabase()) {
             if (storage.subpath() != null && !storage.subpath().isEmpty()) {
@@ -50,7 +50,7 @@ public class FileSystemPath {
                 path += File.separator +
                         SafePath.path(storage.getBase().substring("database/".length())) +
                         File.separator +
-                        SafePath.fileSystemPath(storage.subpath());
+                        SafePath.systemPath(storage.subpath());
             }
         }
         return path;
