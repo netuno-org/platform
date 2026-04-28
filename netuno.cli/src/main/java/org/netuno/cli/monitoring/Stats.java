@@ -71,14 +71,14 @@ public class Stats implements MainArg {
         try {
             InetAddress remoteAddress = InetAddress.getLocalHost();
             hostname = remoteAddress.getHostName();
-            SystemInfo systemInfo = new SystemInfo();
-            HardwareAbstractionLayer hardware = systemInfo.getHardware();
-            centralProcessor = hardware.getProcessor();
-            globalMemory = hardware.getMemory();
-            operatingSystem = systemInfo.getOperatingSystem();
         } catch (UnknownHostException e) {
             logger.error("Unable to obtain the hostname.", e);
         }
+        SystemInfo systemInfo = new SystemInfo();
+        HardwareAbstractionLayer hardware = systemInfo.getHardware();
+        centralProcessor = hardware.getProcessor();
+        globalMemory = hardware.getMemory();
+        operatingSystem = systemInfo.getOperatingSystem();
     }
     
     public void run() throws IOException {
