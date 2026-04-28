@@ -89,7 +89,11 @@ public class Monitor implements Runnable {
                 String recordsFilePath = Stats.getLogFilePath();
                 
                 Values entry = Stats.performanceData();
-                
+
+                if (entry == null) {
+                    continue;
+                }
+
                 double cpuLoadSystem = entry.getValues("cpu").getValues("load").getDouble("system");
                 double cpuLoadProcess = entry.getValues("cpu").getValues("load").getDouble("process");
                 
@@ -120,14 +124,14 @@ public class Monitor implements Runnable {
                 }
                 Path logPath = Paths.get(recordsFilePath);
                 try {
-                OutputStream.writeToFile(
-                        (Files.exists(logPath) && Files.size(logPath) > 0 ?
-                                "\n"
-                                : "")
-                        + entry.toJSON(),
-                        recordsFilePath,
-                        true
-                );
+                    OutputStream.writeToFile(
+                            (Files.exists(logPath) && Files.size(logPath) > 0 ?
+                                    "\n"
+                                    : "")
+                            + entry.toJSON(),
+                            recordsFilePath,
+                            true
+                    );
                 } catch(org.json.JSONException exception) {
                     logger.fatal(exception.getMessage(), exception);
                 }
