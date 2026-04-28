@@ -188,10 +188,17 @@ public class Setup extends ResourceBase {
                     files.sorted().forEach(
                             (f) -> {
                                 String fileName = FilenameUtils.removeExtension(f.getFileName().toString());
-                                if (!fileName.startsWith("_")) {
-                                    ScriptResult scriptGenericResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
-                                    result.set(result.get() && scriptGenericResult.isSuccess());
+                                if (fileName.startsWith("_")) {
+                                    return;
                                 }
+                                String extension = FilenameUtils.getExtension(f.getFileName().toString()).toLowerCase();
+                                if (extension.equals("md") || extension.equals("txt") || extension.equals("html")
+                                        || extension.equals("db") || extension.equals("dbml") || extension.equals("sql")
+                                ) {
+                                    return;
+                                }
+                                ScriptResult scriptGenericResult = getHili().sandbox().runScript(Config.getPathAppSetup(getProteu()), fileName);
+                                result.set(result.get() && scriptGenericResult.isSuccess());
                             }
                     );
                 } catch (IOException e) {
