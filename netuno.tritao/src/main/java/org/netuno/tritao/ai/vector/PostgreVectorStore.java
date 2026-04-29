@@ -1069,20 +1069,32 @@ public class PostgreVectorStore extends VectorStore {
             }
 
             StringBuilder sql = new StringBuilder("""
-                    SELECT
-                        id,
-                        content,
-                        embedding::text AS embedding_text,
-                        metadata::text AS metadata_json,
-                        EXTRACT(EPOCH FROM created_at) * 1000 AS timestamp_ms,
-                        (1 - (embedding <=> ?::vector)) AS score
-                    FROM %s
-                    WHERE provider = ?
-                      AND collection_name = ?
-                    """.formatted(DOCUMENTS_TABLE));
+                SELECT
+                    id,
+                    content,
+                    embedding::text AS embedding_text,
+                    metadata::text AS metadata_json,
+                    EXTRACT(EPOCH FROM created_at) * 1000 AS timestamp_ms,
+                    (1 - (embedding <=> ?::vector)) AS score
+                FROM %s
+                WHERE provider = ?
+                  AND collection_name = ?
+                """.formatted(DOCUMENTS_TABLE));
 
+            List<String> filterClauses = new ArrayList<>();
             if (filter != null && !filter.isEmpty()) {
-                sql.append(" AND metadata @> ?::jsonb");
+                for (Object keyObj : filter.toMap().keySet()) {
+                    String key = keyObj.toString();
+                    Object value = filter.get(key);
+                    if (value instanceof Values v && v.isList()) {
+                        filterClauses.add("metadata->>'" + key + "' = ANY(?::text[])");
+                    } else {
+                        filterClauses.add("metadata @> ?::jsonb");
+                    }
+                }
+                if (!filterClauses.isEmpty()) {
+                    sql.append(" AND ").append(String.join(" AND ", filterClauses));
+                }
             }
 
             sql.append(" ORDER BY embedding <=> ?::vector ASC LIMIT ?");
@@ -1096,7 +1108,20 @@ public class PostgreVectorStore extends VectorStore {
                 statement.setString(index++, collection);
 
                 if (filter != null && !filter.isEmpty()) {
-                    statement.setString(index++, valuesToJson(filter));
+                    for (Object keyObj : filter.toMap().keySet()) {
+                        String key = keyObj.toString();
+                        Object value = filter.get(key);
+                        if (value instanceof Values v && v.isList()) {
+                            String[] arr = v.list().stream()
+                                    .map(Object::toString)
+                                    .toArray(String[]::new);
+                            statement.setArray(index++, connection.createArrayOf("text", arr));
+                        } else {
+                            Values singleFilter = new Values();
+                            singleFilter.put(key, value);
+                            statement.setString(index++, valuesToJson(singleFilter));
+                        }
+                    }
                 }
 
                 statement.setString(index++, vectorLiteral);
@@ -1317,14 +1342,19 @@ public class PostgreVectorStore extends VectorStore {
             )
     })
     public boolean createCollection(String collection, int dimensions) {
-        ensureInitialized();
+        if (!isInitialized()) {
+            LOGGER.error("Cannot create collection '{}' — Is not initialized.", collection);
+            return false;
+        }
 
-        if (collection == null || collection.trim().isEmpty()) {
+        if (collection == null || collection.isBlank()) {
+            LOGGER.warn("Collection name cannot be null or blank.");
             return false;
         }
 
         if (dimensions <= 0) {
-            throw new IllegalArgumentException("Dimensions must be greater than zero");
+            LOGGER.warn("Dimensions must be greater than zero, got: {}", dimensions);
+            return false;
         }
 
         String sql = """

@@ -351,14 +351,26 @@ public class FileVectorStore extends VectorStore {
             Object metadataValue = metadata.get(entry.getKey());
             Object filterValue = entry.getValue();
 
-            if (!Objects.equals(metadataValue, filterValue)) {
-                return false;
+            if (filterValue instanceof Values filterValues && filterValues.isList()) {
+                boolean found = false;
+                for (Object item : filterValues.list()) {
+                    if (Objects.equals(metadataValue, item)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    return false;
+                }
+            } else {
+                if (!Objects.equals(metadataValue, filterValue)) {
+                    return false;
+                }
             }
         }
 
         return true;
     }
-
     private double cosineSimilarity(List<Double> a, List<Double> b) {
         if (a == null || b == null || a.isEmpty() || b.isEmpty() || a.size() != b.size()) {
             return -1.0;
@@ -1224,12 +1236,14 @@ public class FileVectorStore extends VectorStore {
             )
     })
     public boolean createCollection(String collection, int dimensions) {
-        if (collection == null || collection.trim().isEmpty()) {
+        if (collection == null || collection.isBlank()) {
+            LOGGER.warn("Collection name cannot be null or blank.");
             return false;
         }
 
         if (dimensions <= 0) {
-            throw new IllegalArgumentException("Dimensions must be greater than zero");
+            LOGGER.warn("Dimensions must be greater than zero, got: {}", dimensions);
+            return false;
         }
 
         ReentrantLock lock = getLock();
