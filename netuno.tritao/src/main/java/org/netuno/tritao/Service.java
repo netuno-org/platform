@@ -40,6 +40,7 @@ import org.netuno.tritao.openapi.Schema;
 import org.netuno.tritao.auth.providers.HandlerProviders;
 import org.netuno.tritao.resource.Altcha;
 import org.netuno.tritao.resource.Out;
+import org.netuno.tritao.resource.Resource;
 import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.event.ResourceEventExecutor;
 import org.netuno.tritao.util.TemplateBuilder;
@@ -48,17 +49,20 @@ import org.netuno.tritao.util.TemplateBuilder;
  * Execution of the services scripts.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
+@Resource(name = "service", autoLoad = false)
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language= LanguageDoc.PT,
                 title = "Service",
-                introduction = "Gere a execução dos scripts de serviços em `server/services`.",
+                introduction = "Gere a execução dos scripts de serviços em `server/services`.\n" +
+                        "\n> Este recurso está disponível apenas no contexto de execução dos serviços (`services`).",
                 howToUse = { }
         ),
         @LibraryTranslationDoc(
                 language= LanguageDoc.EN,
                 title = "Service",
-                introduction = "Manages the execution of the services scripts in `server/services`.",
+                introduction = "Manages the execution of the services scripts in `server/services`.\n" +
+                        "\n> This resource is only available in the services execution context.",
                 howToUse = { }
         )
 })
