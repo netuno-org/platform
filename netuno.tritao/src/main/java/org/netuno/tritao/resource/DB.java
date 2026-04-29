@@ -2089,9 +2089,9 @@ public class DB extends ResourceBase {
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
-                                    code =  "// Se existir algum dado na tabela worker com o campo name (a chave primária nesta tabela)" +
-                                            "// igual ao inserido na query todos os dados serão atualizados" +
-                                            "// Se não existir algum dado a informação será inserida na tabela" +
+                                    code =  "// Se existir algum dado na tabela worker com o campo name (a chave primária nesta tabela)\n" +
+                                            "// igual ao inserido na query todos os dados serão atualizados\n" +
+                                            "// Se não existir algum dado a informação será inserida na tabela\n" +
                                             "var dadosStore = _db.store(\n" +
                                             "    'worker',\n" +
                                             "    _val.map()\n" +
@@ -2107,9 +2107,9 @@ public class DB extends ResourceBase {
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
-                                    code = "// If there is some data on table worker with the name field (the primary key on this table) " +
-                                            "// equal to the added all the data will be updated" +
-                                            "// If there isn't it will instead be inserted" +
+                                    code = "// If there is some data on table worker with the name field (the primary key on this table) \n" +
+                                            "// equal to the added all the data will be updated\n" +
+                                            "// If there isn't it will instead be inserted\n" +
                                             "var storedData = _db.store(\n" +
                                             "    'worker',\n" +
                                             "    _val.map()\n" +
