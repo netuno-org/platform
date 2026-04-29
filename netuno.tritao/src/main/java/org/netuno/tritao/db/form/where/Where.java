@@ -23,7 +23,7 @@ import org.netuno.psamata.Values;
             introduction = "Definição da configuração do objeto Where para construção de condições nas consultas com o recurso _db.form()",
             howToUse = {}
     )
-})
+}, hasEquals = true)
 public class Where {
     private String table;
     private List<ConditionalOperator> conditions = new ArrayList<ConditionalOperator>();

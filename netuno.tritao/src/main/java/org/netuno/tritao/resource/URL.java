@@ -42,7 +42,7 @@ import org.netuno.tritao.hili.Hili;
                 introduction = "Application URL management resource.",
                 howToUse = { }
         )
-})
+}, hasEquals = true)
 public class URL extends ResourceBase {
 
     public String url;
