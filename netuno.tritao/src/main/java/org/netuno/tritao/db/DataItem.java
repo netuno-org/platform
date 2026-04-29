@@ -30,11 +30,13 @@ import org.netuno.tritao.resource.Resource;
  * Data Item loaded in the database operations and useful with actions.
  * @author Eduardo Fonseca Velasques - @eduveks
  */
+@Resource(name = "dataItem", autoLoad = false)
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language=LanguageDoc.PT,
                 title = "DataItem",
-                introduction = "Transição de dados e de controlo das operações das actions, utilizado nos scripts em `server/actions`.",
+                introduction = "Transição de dados e de controlo das operações das actions, utilizado nos scripts em `server/actions`.\n" +
+                        "\n> Este recurso está disponível apenas no contexto de execução das ações (`actions`).",
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,
@@ -47,7 +49,8 @@ import org.netuno.tritao.resource.Resource;
         @LibraryTranslationDoc(
                 language=LanguageDoc.EN,
                 title = "DataItem",
-                introduction = "Data transition and control of actions operations, used in scripts in `server/actions`.",
+                introduction = "Data transition and control of actions operations, used in scripts in `server/actions`.\n" +
+                        "\n> This resource is only available in the actions execution context.",
                 howToUse = {
                         @SourceCodeDoc(
                                 type = SourceCodeTypeDoc.JavaScript,
