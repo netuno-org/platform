@@ -275,7 +275,7 @@ public class LibraryContent {
                     || _method.getName().equals("notify")
                     || _method.getName().equals("notifyAll")
                     || _method.getName().equals("wait")
-                    || _method.getName().equals("equals")) {
+                    || (_method.getName().equals("equals") && !libraryDoc.hasEquals())) {
                 continue;
             }
             if (_method.getAnnotation(IgnoreDoc.class) != null) {
