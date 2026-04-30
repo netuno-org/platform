@@ -131,11 +131,13 @@ public class Form {
             sb.append("\n// ");
             sb.append("\n");
             sb.append("\n");
+            sb.append("import {_val, _db} from \"@netuno/server-types\";");
+            sb.append("\n");
             sb.append("\n");
             for (Values databaseItem : databaseData) {
                 sb.append("_db.insertIfNotExists(\n");
                 sb.append("  \"" + tableName + "\",\n");
-                sb.append("  _val.init()\n");
+                sb.append("  _val.map()\n");
                 sb.append("    .set(\"uid\", \"" + databaseItem.getString("uid") + "\")\n");
                 for (int i = 0; i < rsDesignXY.size(); i++) {
                     Values designXY = rsDesignXY.get(i);
