@@ -247,10 +247,19 @@ public class HandlerProviders extends Web {
             );
             return;
         }
+        if (getHili().sandbox().runScriptIfExists(
+                Config.getPathAppCore(getProteu()), "_auth_sign_in"
+        ).isError()) {
+            Header header = resource(Header.class);
+            header.status(Proteu.HTTPStatus.InternalServerError500);
+            return;
+        }
         Auth auth = resource(Auth.class);
+        Values jwtData = auth.jwtSignInData();
+        jwtData.set("extra", auth.signInExtraData());
         out.json(
                 new Values()
-                        .set("token", auth.jwtSignInData())
+                        .set("token", jwtData)
                         .set(
                                 "provider",
                                 new Values()
