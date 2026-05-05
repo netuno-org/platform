@@ -3789,6 +3789,11 @@ public class DB extends ResourceBase {
                     return "?::double precision";
                 }
             }
+            if (type.equalsIgnoreCase("uid") || type.equalsIgnoreCase("uuid") || type.equalsIgnoreCase("guid")) {
+                if (isPG()) {
+                    return "?::uuid";
+                }
+            }
             if (type.equalsIgnoreCase("time")) {
                 if (isPG()) {
                     return "?::time";
