@@ -1081,49 +1081,16 @@ public class PostgreVectorStore extends VectorStore {
                   AND collection_name = ?
                 """.formatted(DOCUMENTS_TABLE));
 
-            List<String> filterClauses = new ArrayList<>();
-            if (filter != null && !filter.isEmpty()) {
-                for (Object keyObj : filter.toMap().keySet()) {
-                    String key = keyObj.toString();
-                    Object value = filter.get(key);
-                    if (value instanceof Values v && v.isList()) {
-                        filterClauses.add("metadata->>'" + key + "' = ANY(?::text[])");
-                    } else {
-                        filterClauses.add("metadata @> ?::jsonb");
-                    }
-                }
-                if (!filterClauses.isEmpty()) {
-                    sql.append(" AND ").append(String.join(" AND ", filterClauses));
-                }
-            }
-
+            appendMetadataFilterClauses(sql, filter);
             sql.append(" ORDER BY embedding <=> ?::vector ASC LIMIT ?");
 
             try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
                 String vectorLiteral = toVectorLiteral(embeddingList);
-
                 int index = 1;
                 statement.setString(index++, vectorLiteral);
                 statement.setString(index++, provider);
                 statement.setString(index++, collection);
-
-                if (filter != null && !filter.isEmpty()) {
-                    for (Object keyObj : filter.toMap().keySet()) {
-                        String key = keyObj.toString();
-                        Object value = filter.get(key);
-                        if (value instanceof Values v && v.isList()) {
-                            String[] arr = v.list().stream()
-                                    .map(Object::toString)
-                                    .toArray(String[]::new);
-                            statement.setArray(index++, connection.createArrayOf("text", arr));
-                        } else {
-                            Values singleFilter = new Values();
-                            singleFilter.put(key, value);
-                            statement.setString(index++, valuesToJson(singleFilter));
-                        }
-                    }
-                }
-
+                index = bindMetadataFilter(statement, filter, index);
                 statement.setString(index++, vectorLiteral);
                 statement.setInt(index, topK);
 
@@ -1601,5 +1568,316 @@ public class PostgreVectorStore extends VectorStore {
         }
 
         return 0;
+    }
+
+
+    @Override
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna todos os documentos de uma coleção, sem qualquer filtragem.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const documentos = store.getAll('artigos')\n"
+                                            + "\n"
+                                            + "for (const doc of documentos) {\n"
+                                            + "    _log.info(doc.get('id') + ' | ' + doc.get('text'))\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns all documents in a collection, without any filtering.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const documents = store.getAll('articles')\n"
+                                            + "\n"
+                                            + "for (const doc of documents) {\n"
+                                            + "    _log.info(doc.get('id') + ' | ' + doc.get('text'))\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "collection", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "colecao",
+                            description = "Nome da coleção a consultar."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the collection to query."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Lista com todos os documentos da coleção. Cada item contém: `id`, `text`, `embedding`, `metadata` e `timestamp`."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "List of all documents in the collection. Each item contains: `id`, `text`, `embedding`, `metadata` and `timestamp`."
+            )
+    })
+    public Values getAll(String collection) {
+        return getAll(collection, null);
+    }
+
+    @Override
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Retorna todos os documentos de uma coleção que correspondam ao filtro de metadados fornecido. "
+                            + "O filtro é aplicado como correspondência exata por subconjunto JSON (operador `@>` do PostgreSQL). "
+                            + "Para valores em lista, é utilizado `= ANY()` em vez do operador de subconjunto.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const filtro = _val.map().set('fonte', 'web')\n"
+                                            + "\n"
+                                            + "const documentos = store.getAll('artigos', filtro)\n"
+                                            + "\n"
+                                            + "for (const doc of documentos) {\n"
+                                            + "    _log.info(doc.get('id') + ' | ' + doc.get('text'))\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Returns all documents in a collection that match the provided metadata filter. "
+                            + "The filter is applied as exact JSON subset matching (PostgreSQL `@>` operator). "
+                            + "For list values, `= ANY()` is used instead of the subset operator.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const filter = _val.map().set('source', 'web')\n"
+                                            + "\n"
+                                            + "const documents = store.getAll('articles', filter)\n"
+                                            + "\n"
+                                            + "for (const doc of documents) {\n"
+                                            + "    _log.info(doc.get('id') + ' | ' + doc.get('text'))\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "collection", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "colecao",
+                            description = "Nome da coleção a consultar."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the collection to query."
+                    )
+            }),
+            @ParameterDoc(name = "metadataFilter", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "filtroMetadados",
+                            description = "Objeto com pares chave-valor para filtrar os documentos pelos seus metadados. Se nulo ou vazio, retorna todos os documentos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Object with key-value pairs to filter documents by their metadata. If null or empty, all documents are returned."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Lista dos documentos correspondentes. Cada item contém: `id`, `text`, `embedding`, `metadata` e `timestamp`."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "List of matching documents. Each item contains: `id`, `text`, `embedding`, `metadata` and `timestamp`."
+            )
+    })
+    public Values getAll(String collection, Values metadataFilter) {
+        ensureInitialized();
+
+        Values results = new Values().forceList();
+
+        if (collection == null || collection.trim().isEmpty()) {
+            return results;
+        }
+
+        StringBuilder sql = new StringBuilder("""
+                SELECT
+                    id,
+                    content,
+                    embedding::text AS embedding_text,
+                    metadata::text AS metadata_json,
+                    EXTRACT(EPOCH FROM created_at) * 1000 AS timestamp_ms
+                FROM %s
+                WHERE provider = ?
+                  AND collection_name = ?
+                """.formatted(DOCUMENTS_TABLE));
+
+        appendMetadataFilterClauses(sql, metadataFilter);
+        sql.append(" ORDER BY created_at ASC");
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            int index = 1;
+            statement.setString(index++, provider);
+            statement.setString(index++, collection);
+            bindMetadataFilter(statement, metadataFilter, index);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    Values item = new Values().forceMap();
+                    item.put("id", rs.getString("id"));
+                    item.put("text", rs.getString("content"));
+                    item.put("embedding", vectorLiteralToValues(rs.getString("embedding_text")));
+                    item.put("metadata", jsonToValues(rs.getString("metadata_json")));
+                    item.put("timestamp", rs.getLong("timestamp_ms"));
+                    results.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to getAll from PostgreVectorStore", e);
+        }
+
+        return results;
+    }
+
+    @Override
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Remove todos os documentos de uma coleção que correspondam ao filtro de metadados fornecido. "
+                            + "O filtro é obrigatório e não pode ser nulo nem vazio, para evitar eliminações acidentais de toda a coleção. "
+                            + "Para apagar a coleção inteira utilize `deleteCollection`.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const filtro = _val.map().set('fonte', 'web')\n"
+                                            + "\n"
+                                            + "store.deleteByMetadata('artigos', filtro)\n"
+                                            + "_log.info('Documentos com fonte=web removidos.')"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Removes all documents from a collection that match the provided metadata filter. "
+                            + "The filter is mandatory and cannot be null or empty, to prevent accidental deletion of the entire collection. "
+                            + "To delete the entire collection use `deleteCollection`.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const filter = _val.map().set('source', 'web')\n"
+                                            + "\n"
+                                            + "store.deleteByMetadata('articles', filter)\n"
+                                            + "_log.info('Documents with source=web removed.')"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "collection", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "colecao",
+                            description = "Nome da coleção de onde os documentos serão removidos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the collection from which documents will be removed."
+                    )
+            }),
+            @ParameterDoc(name = "metadataFilter", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "filtroMetadados",
+                            description = "Objeto com pares chave-valor que identificam os documentos a remover. Não pode ser nulo nem vazio."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Object with key-value pairs identifying the documents to remove. Cannot be null or empty."
+                    )
+            })
+    }, returns = {})
+    public void deleteByMetadata(String collection, Values metadataFilter) {
+        ensureInitialized();
+
+        if (collection == null || collection.trim().isEmpty()) {
+            throw new IllegalArgumentException("Collection name cannot be null or empty");
+        }
+
+        if (metadataFilter == null || metadataFilter.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "metadataFilter cannot be null or empty in deleteByMetadata — use deleteCollection to remove all documents"
+            );
+        }
+
+        StringBuilder sql = new StringBuilder("""
+                DELETE FROM %s
+                WHERE provider = ?
+                  AND collection_name = ?
+                """.formatted(DOCUMENTS_TABLE));
+
+        appendMetadataFilterClauses(sql, metadataFilter);
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            int index = 1;
+            statement.setString(index++, provider);
+            statement.setString(index++, collection);
+            bindMetadataFilter(statement, metadataFilter, index);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to deleteByMetadata in PostgreVectorStore", e);
+        }
+    }
+
+
+    /**
+     * Builds the metadata filter WHERE clauses and binds parameters to the statement.
+     * Returns the next available parameter index after binding.
+     */
+    private int bindMetadataFilter(PreparedStatement statement, Values metadataFilter, int startIndex) throws SQLException {
+        int index = startIndex;
+        if (metadataFilter == null || metadataFilter.isEmpty()) {
+            return index;
+        }
+        for (Object keyObj : metadataFilter.toMap().keySet()) {
+            String key = keyObj.toString();
+            Object value = metadataFilter.get(key);
+            if (value instanceof Values v && v.isList()) {
+                String[] arr = v.list().stream()
+                        .map(Object::toString)
+                        .toArray(String[]::new);
+                statement.setArray(index++, statement.getConnection().createArrayOf("text", arr));
+            } else {
+                Values singleFilter = new Values();
+                singleFilter.put(key, value);
+                statement.setString(index++, valuesToJson(singleFilter));
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Appends metadata filter clauses to a SQL StringBuilder.
+     */
+    private void appendMetadataFilterClauses(StringBuilder sql, Values metadataFilter) {
+        if (metadataFilter == null || metadataFilter.isEmpty()) {
+            return;
+        }
+        for (Object keyObj : metadataFilter.toMap().keySet()) {
+            String key = keyObj.toString();
+            Object value = metadataFilter.get(key);
+            if (value instanceof Values v && v.isList()) {
+                sql.append(" AND metadata->>'").append(key).append("' = ANY(?::text[])");
+            } else {
+                sql.append(" AND metadata @> ?::jsonb");
+            }
+        }
     }
 }

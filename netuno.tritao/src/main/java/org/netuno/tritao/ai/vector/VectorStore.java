@@ -144,4 +144,16 @@ public class VectorStore {
     public int count(String collection) {
         throw new UnsupportedOperationException("count() not implemented in " + this.getClass().getSimpleName());
     }
+
+    public Values getAll(String collection) {
+        throw new UnsupportedOperationException("getAll() not implemented in " + this.getClass().getSimpleName());
+    }
+
+    public Values getAll(String collection, Values metadataFilter) {
+        throw new UnsupportedOperationException("getAll() not implemented in " + this.getClass().getSimpleName());
+    }
+
+    public void deleteByMetadata(String collection, Values metadataFilter) {
+        throw new UnsupportedOperationException("deleteByMetadata() not implemented in " + this.getClass().getSimpleName());
+    }
 }
