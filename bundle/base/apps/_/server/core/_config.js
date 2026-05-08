@@ -1,12 +1,12 @@
+import {_config, _env, _url, _req, _header} from "@netuno/server-types";
 
-_config.set("_lang", _config.get("_lang:default"))
+_config.set("_lang", _config.get("_lang:default"));
 
 if (_env.is("dev")
     && (_url.equals("/") || _url.equals("/Index.netuno"))) {
-  _config
-    .set("_login:user", "dev")
+  _config.set("_login:user", "dev")
     .set("_login:pass", "dev")
-    .set("_login:auto", _req.getString("action") != "logout")
+    .set("_login:auto", _req.getString("action") !== "logout");
 }
 
 /**
@@ -15,8 +15,8 @@ if (_env.is("dev")
 
 if (_url.download.isDownloadable()) {
   if (_env.is("dev") && _url.indexOf("/public/scripts/main.js") > 0) {
-    _header.noCache()
+    _header.noCache();
   } else {
-    _header.cache(2628000)
+    _header.cache(2628000);
   }
 }

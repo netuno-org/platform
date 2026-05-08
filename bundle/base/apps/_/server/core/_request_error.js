@@ -1,8 +1,7 @@
+import {_out} from "@netuno/server-types";
 
 if (!_out.isClosed()) {
-  _out.print(
-    "### SERVER ERROR ###"
-  )
+  _out.print("### SERVER ERROR ###");
   /*
   // Is insecure but the code below will print errors with more details...
   _out.print(
