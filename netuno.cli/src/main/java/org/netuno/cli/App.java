@@ -433,7 +433,7 @@ public class App implements MainArg {
         AppPath.copyApp(appPath, AppPath.UI, "vite.config.js");
 
         AppPath.copyApp(appPath, null, "_.gitignore");
-        AppPath.copyApp(appPath, null, ".editor.config");
+        AppPath.copyApp(appPath, null, ".editorconfig");
 
         Values configJSON = new Values();
         configJSON.set("name", name);
