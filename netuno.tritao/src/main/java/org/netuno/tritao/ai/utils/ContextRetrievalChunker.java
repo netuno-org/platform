@@ -338,4 +338,137 @@ public class ContextRetrievalChunker {
         return false;
     }
 
+    public Values pdf(String pdfText) {
+        return pdf(pdfText, DEFAULT_CHUNK_SIZE, DEFAULT_OVERLAP);
+    }
+
+    public Values pdf(String pdfText, int chunkSize, int overlapSize) {
+        if (pdfText == null || pdfText.isBlank()) return Values.newList();
+        String normalizedText = normalizePdfText(pdfText);
+        List<Integer> sentenceOffsets   = new ArrayList<>();
+        List<String>  sentenceTexts     = new ArrayList<>();
+        List<Boolean> isParagraphOpener = new ArrayList<>();
+        tokenizeIntoSentences(normalizedText, sentenceOffsets, sentenceTexts, isParagraphOpener);
+        return buildPdfChunks(sentenceOffsets, sentenceTexts, isParagraphOpener, chunkSize, overlapSize);
+    }
+
+    private String normalizePdfText(String rawText) {
+        return rawText
+                .replaceAll("\\r\\n|\\r", "\n")
+                .replaceAll("-\\n([a-z])", "$1")
+                .replaceAll("[ \\t]+(?=\\n)", "")
+                .replaceAll("\\n{3,}", "\n\n")
+                .trim();
+    }
+
+    private void tokenizeIntoSentences(String text,
+                                       List<Integer> sentenceOffsets,
+                                       List<String>  sentenceTexts,
+                                       List<Boolean> isParagraphOpener) {
+        Pattern sentenceBoundary = Pattern.compile("(?<=[.!?])[ \\t]+(?=[\\p{Lu}\\p{N}\"'(\\[])");
+        int cursor = 0;
+        while (cursor < text.length()) {
+            int paragraphStart = cursor;
+            while (paragraphStart < text.length() && text.charAt(paragraphStart) == '\n') {
+                paragraphStart++;
+            }
+            if (paragraphStart >= text.length()) break;
+
+            int paragraphEnd = text.indexOf("\n\n", paragraphStart);
+            if (paragraphEnd < 0) paragraphEnd = text.length();
+
+            String paragraph = text.substring(paragraphStart, paragraphEnd);
+            if (!paragraph.isBlank()) {
+                String[] sentences        = sentenceBoundary.split(paragraph);
+                boolean  opensNewParagraph = true;
+                int      searchCursor     = paragraphStart;
+                for (String raw : sentences) {
+                    String sentence = raw.trim();
+                    if (sentence.isBlank()) continue;
+                    int offset = text.indexOf(sentence, searchCursor);
+                    if (offset < 0 || offset >= paragraphEnd) offset = searchCursor;
+                    searchCursor = offset + sentence.length();
+                    sentenceOffsets.add(offset);
+                    sentenceTexts.add(sentence);
+                    isParagraphOpener.add(opensNewParagraph);
+                    opensNewParagraph = false;
+                }
+            }
+            cursor = paragraphEnd + 2;
+        }
+    }
+
+    private Values buildPdfChunks(List<Integer> sentenceOffsets,
+                                  List<String>  sentenceTexts,
+                                  List<Boolean> isParagraphOpener,
+                                  int chunkSize,
+                                  int overlapSize) {
+        Values result = Values.newList();
+        if (sentenceTexts.isEmpty()) return result;
+
+        final int totalSentences = sentenceTexts.size();
+        final int minChunkLength = Math.max(1, chunkSize / 4);
+        int chunkIndex  = 0;
+        int windowStart = 0;
+
+        while (windowStart < totalSentences) {
+            int           chunkStartOffset = sentenceOffsets.get(windowStart);
+            StringBuilder chunkContent     = new StringBuilder();
+            int           windowEnd        = windowStart;
+
+            while (windowEnd < totalSentences) {
+                String  sentence           = sentenceTexts.get(windowEnd);
+                boolean startsNewParagraph = isParagraphOpener.get(windowEnd);
+                String  separator          = chunkContent.isEmpty()
+                        ? ""
+                        : (startsNewParagraph ? "\n\n" : " ");
+                int proposedLength = chunkContent.length() + separator.length() + sentence.length();
+                if (proposedLength > chunkSize) {
+                    if (chunkContent.isEmpty()) { chunkContent.append(sentence); windowEnd++; }
+                    break;
+                }
+                chunkContent.append(separator).append(sentence);
+                windowEnd++;
+            }
+
+            // Absorb tiny trailing tail to avoid orphan micro-chunks
+            if (windowEnd < totalSentences) {
+                int remainingLength = 0;
+                for (int k = windowEnd; k < totalSentences; k++) {
+                    remainingLength += sentenceTexts.get(k).length() + 2;
+                }
+                if (remainingLength > 0 && remainingLength < minChunkLength) {
+                    while (windowEnd < totalSentences) {
+                        boolean startsNewParagraph = isParagraphOpener.get(windowEnd);
+                        chunkContent.append(startsNewParagraph ? "\n\n" : " ")
+                                .append(sentenceTexts.get(windowEnd++));
+                    }
+                }
+            }
+
+            String chunkText = chunkContent.toString().strip();
+            if (!chunkText.isBlank()) {
+                Values chunk = Values.newMap();
+                chunk.set("index", chunkIndex++);
+                chunk.set("start", chunkStartOffset);
+                chunk.set("text",  chunkText);
+                result.add(chunk);
+            }
+
+            if (windowEnd >= totalSentences) break;
+
+            // Overlap: rewind to repeat ≈ overlapSize chars in the next chunk
+            int accumulatedOverlap = 0;
+            int nextWindowStart    = windowEnd;
+            for (int k = windowEnd - 1; k > windowStart; k--) {
+                int sentenceLength = sentenceTexts.get(k).length() + (isParagraphOpener.get(k) ? 2 : 1);
+                if (accumulatedOverlap + sentenceLength > overlapSize) break;
+                accumulatedOverlap += sentenceLength;
+                nextWindowStart = k;
+            }
+            windowStart = Math.max(nextWindowStart, windowStart + 1);
+        }
+
+        return result;
+    }
 }
