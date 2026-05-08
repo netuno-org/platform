@@ -5,7 +5,11 @@ node_modules/
 .idea/
 .metadata/
 .vscode
+
 package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lock
 
 /trash/*
 
