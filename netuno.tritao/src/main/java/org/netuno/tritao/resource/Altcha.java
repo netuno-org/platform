@@ -34,7 +34,7 @@ public class Altcha extends ResourceBase {
     private static String GLOBAL_KEY = null;
     public boolean enabled = true;
     public String key = "";
-    public long maxNumber = 100000L;
+    public int cost = 10_000;
     public int expires = 60;
     public boolean checkExpires = true;
 
@@ -65,7 +65,7 @@ public class Altcha extends ResourceBase {
         Values altcha = getProteu().getConfig().getValues("_altcha", Values.newMap());
         this.enabled = altcha.getBoolean("enabled", this.enabled);
         this.key = altcha.getString("key", GLOBAL_KEY);
-        this.maxNumber = altcha.getLong("maxNumber", this.maxNumber);
+        this.cost = altcha.getInt("cost", this.cost);
         this.expires = altcha.getInt("expires", this.expires) * 60;
         this.checkExpires = altcha.getBoolean("checkExpires", this.checkExpires);
         return this;
@@ -107,21 +107,21 @@ public class Altcha extends ResourceBase {
         return this;
     }
 
-    public long maxNumber() {
-        return maxNumber;
+    public long cost() {
+        return cost;
     }
 
-    public long getMaxNumber() {
-        return maxNumber;
+    public long getCost() {
+        return cost;
     }
 
-    public Altcha maxNumber(long maxNumber) {
-        this.maxNumber = maxNumber;
+    public Altcha cost(int cost) {
+        this.cost = cost;
         return this;
     }
 
-    public Altcha setMaxNumber(long maxNumber) {
-        this.maxNumber = maxNumber;
+    public Altcha setCost(int cost) {
+        this.cost = cost;
         return this;
     }
 
@@ -162,18 +162,14 @@ public class Altcha extends ResourceBase {
     }
 
     public Values challenge() {
-        org.altcha.altcha.Altcha.ChallengeOptions options = new org.altcha.altcha.Altcha.ChallengeOptions()
-                .setMaxNumber(maxNumber) // the maximum random number
-                .setHmacKey(key)
-                .setExpiresInSeconds(expires); // 1 hour expiration
         try {
-            org.altcha.altcha.Altcha.Challenge challenge = org.altcha.altcha.Altcha.createChallenge(options);
-            return Values.newMap()
-                    .set("algorithm", challenge.algorithm)
-                    .set("challenge", challenge.challenge)
-                    .set("maxnumber", challenge.maxnumber)
-                    .set("salt", challenge.salt)
-                    .set("signature", challenge.signature);
+            var options = new org.altcha.altcha.v2.Altcha.CreateChallengeOptions()
+                    .algorithm("PBKDF2/SHA-256")
+                    .cost(cost)
+                    .hmacSignatureSecret(key)
+                    .expiresInSeconds(expires);
+            var challenge = org.altcha.altcha.v2.Altcha.createChallenge(options);
+            return Values.fromJSON(challenge.toJson());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -181,7 +177,14 @@ public class Altcha extends ResourceBase {
 
     public boolean verifySolution(String payload) {
         try {
-            return org.altcha.altcha.Altcha.verifySolution(payload, key, checkExpires);
+            var result =  org.altcha.altcha.v2.Altcha.verifySolution(payload, key, org.altcha.altcha.v2.Altcha.kdf("PBKDF2/SHA-256"));
+            if (result.expired()) {
+                logger.debug("Challenge expired.");
+            }
+            if (Boolean.TRUE.equals(result.invalidSignature())) {
+                logger.debug("The challenge was tampered with.");
+            }
+            return result.verified();
         } catch (Exception e) {
             logger.debug("Verifying solution for the payload: "+ payload, e);
             return false;
