@@ -19,7 +19,7 @@
 					#if($_auth.altchaAdminEnabled())
 					<div class="form-group">
 						<input id="inputAltcha" type="hidden" name="altcha" value="">
-						<altcha-widget id="widgetAltcha" challengeurl="_{netuno-config=url-services}_altcha" language="_{netuno-config=language}" hidelogo hidefooter></altcha-widget>
+						<altcha-widget id="widgetAltcha" challenge="_{netuno-config=url-services}_altcha" language="_{netuno-config=language}" hideLogo hideFooter></altcha-widget>
 						<script>
 							document.getElementById("widgetAltcha").addEventListener("statechange", function (ev) {
 								if (ev.detail.state === "verified") {
