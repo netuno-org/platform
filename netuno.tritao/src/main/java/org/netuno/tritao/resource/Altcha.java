@@ -31,10 +31,15 @@ import org.netuno.tritao.resource.event.ResourceEventType;
 @Resource(name = "altcha")
 public class Altcha extends ResourceBase {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(Lang.class);
-    private static String GLOBAL_KEY = null;
+    private static String GLOBAL_SECRET = null;
+    private static String GLOBAL_KEY_SECRET = null;
+    private static final Integer GLOBAL_COUNTER = Double.valueOf((Math.random() * 100) + 50).intValue();
     public boolean enabled = true;
-    public String key = "";
+    public String algorithm = "";
+    public String secret = "";
+    public String keySecret = "";
     public int cost = 10_000;
+    public int counter = 0;
     public int expires = 60;
     public boolean checkExpires = true;
 
@@ -44,8 +49,11 @@ public class Altcha extends ResourceBase {
 
     @ResourceEvent(type= ResourceEventType.BeforeEnvironment)
     private void beforeEnvironment() {
-        if (GLOBAL_KEY == null) {
-            GLOBAL_KEY = resource(Random.class).initString(16, true).nextString();
+        if (GLOBAL_SECRET == null) {
+            GLOBAL_SECRET = resource(Random.class).initString(16, true).nextString();
+        }
+        if (GLOBAL_KEY_SECRET == null) {
+            GLOBAL_KEY_SECRET = resource(Random.class).initString(16, true).nextString();
         }
         Values config = getProteu().getConfig().getValues("_app:config").getValues("altcha", Values.newMap());
         getProteu().getConfig().set("_altcha", config);
@@ -61,11 +69,31 @@ public class Altcha extends ResourceBase {
         load();
     }
 
+    private org.altcha.altcha.v2.Altcha.Challenge createChallenge() {
+        try {
+            var options = new org.altcha.altcha.v2.Altcha.CreateChallengeOptions()
+                    .algorithm(algorithm)
+                    .cost(cost)
+                    .hmacSignatureSecret(secret)
+                    .expiresInSeconds(expires);
+            if (algorithm.toUpperCase().startsWith("SHA-")) {
+                options = options.counter(counter).hmacKeySignatureSecret(keySecret);
+            }
+            var challenge = org.altcha.altcha.v2.Altcha.createChallenge(options);
+            return challenge;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Altcha load() {
         Values altcha = getProteu().getConfig().getValues("_altcha", Values.newMap());
         this.enabled = altcha.getBoolean("enabled", this.enabled);
-        this.key = altcha.getString("key", GLOBAL_KEY);
+        this.algorithm = altcha.getString("algorithm", "PBKDF2/SHA-256");
+        this.secret = altcha.getString("key", GLOBAL_SECRET);
+        this.keySecret = altcha.getString("key", GLOBAL_KEY_SECRET);
         this.cost = altcha.getInt("cost", this.cost);
+        this.counter = altcha.getInt("counter", GLOBAL_COUNTER);
         this.expires = altcha.getInt("expires", this.expires) * 60;
         this.checkExpires = altcha.getBoolean("checkExpires", this.checkExpires);
         return this;
@@ -89,21 +117,57 @@ public class Altcha extends ResourceBase {
         return this;
     }
 
-    public String key() {
-        return key;
+    public String algorithm() {
+        return algorithm;
     }
 
-    public String getKey() {
-        return key;
+    public String getAlgorithm() {
+        return algorithm;
     }
 
-    public Altcha key(String key) {
-        this.key = key;
+    public Altcha algorithm(String algorithm) {
+        this.algorithm = algorithm;
         return this;
     }
 
-    public Altcha setKey(String key) {
-        this.key = key;
+    public Altcha setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+        return this;
+    }
+
+    public String secret() {
+        return secret;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public Altcha secret(String secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    public Altcha setSecret(String secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    public String keySecret() {
+        return keySecret;
+    }
+
+    public String getKeySecret() {
+        return keySecret;
+    }
+
+    public Altcha keySecret(String keySecret) {
+        this.keySecret = keySecret;
+        return this;
+    }
+
+    public Altcha setKeySecret(String keySecret) {
+        this.keySecret = keySecret;
         return this;
     }
 
@@ -122,6 +186,24 @@ public class Altcha extends ResourceBase {
 
     public Altcha setCost(int cost) {
         this.cost = cost;
+        return this;
+    }
+
+    public long counter() {
+        return counter;
+    }
+
+    public long getCounter() {
+        return counter;
+    }
+
+    public Altcha counter(int counter) {
+        this.counter = counter;
+        return this;
+    }
+
+    public Altcha setCounter(int counter) {
+        this.counter = counter;
         return this;
     }
 
@@ -163,13 +245,7 @@ public class Altcha extends ResourceBase {
 
     public Values challenge() {
         try {
-            var options = new org.altcha.altcha.v2.Altcha.CreateChallengeOptions()
-                    .algorithm("PBKDF2/SHA-256")
-                    .cost(cost)
-                    .hmacSignatureSecret(key)
-                    .expiresInSeconds(expires);
-            var challenge = org.altcha.altcha.v2.Altcha.createChallenge(options);
-            return Values.fromJSON(challenge.toJson());
+            return Values.fromJSON(createChallenge().toJson());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -177,7 +253,13 @@ public class Altcha extends ResourceBase {
 
     public boolean verifySolution(String payload) {
         try {
-            var result =  org.altcha.altcha.v2.Altcha.verifySolution(payload, key, org.altcha.altcha.v2.Altcha.kdf("PBKDF2/SHA-256"));
+            org.altcha.altcha.v2.Altcha.VerifySolutionResult result;
+            if (algorithm.toUpperCase().startsWith("SHA-")) {
+                var parsedPayload = org.altcha.altcha.v2.Altcha.parsePayload(payload);
+                result = org.altcha.altcha.v2.Altcha.verifySolution(parsedPayload.challenge(), parsedPayload.solution(), secret, keySecret, null);
+            } else {
+                result = org.altcha.altcha.v2.Altcha.verifySolution(payload, secret, org.altcha.altcha.v2.Altcha.kdf(algorithm));
+            }
             if (result.expired()) {
                 logger.debug("Challenge expired.");
             }
