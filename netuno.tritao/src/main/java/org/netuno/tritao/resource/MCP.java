@@ -37,7 +37,6 @@ import java.util.stream.Stream;
  * MCP - Resource
  * @author Marcel Gheorghe Becheanu - @marcelbecheanu
  */
-
 @LibraryDoc(translations = {
         @LibraryTranslationDoc(
                 language = LanguageDoc.PT,
