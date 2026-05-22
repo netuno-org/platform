@@ -309,6 +309,7 @@ public class ProteuEvents implements Events {
                         loadHikariConfig(app, config, db);
                         org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
                     } else if (dbEngine.equalsIgnoreCase("pg")
+                            || dbEngine.equalsIgnoreCase("postgres")
                             || dbEngine.equalsIgnoreCase("postgresql")) {
                         HikariConfig config = new HikariConfig();
                         config.setDriverClassName("org.postgresql.Driver");
@@ -343,7 +344,7 @@ public class ProteuEvents implements Events {
                         }
                         loadHikariConfig(app, config, db);
                         org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
-                    } else if (dbEngine.equalsIgnoreCase("mariadb")) {
+                    } else if (dbEngine.equalsIgnoreCase("maria") || dbEngine.equalsIgnoreCase("mariadb")) {
                         HikariConfig config = new HikariConfig();
                         config.setDriverClassName("org.mariadb.jdbc.Driver");
                         if (db.hasKey("url")) {
@@ -498,10 +499,12 @@ public class ProteuEvents implements Events {
             hili.event().run(EventId.INIT_AFTER);
         }
         hili.event().run(EventId.REQUEST_START_BEFORE);
+        resourceEventExecutor.runAppEvent(ResourceEventType.BeforeRequestStart);
         hili.event().run(EventId.REQUEST_START);
         hili.event().run(EventId.REQUEST_START_SCRIPT_BEFORE);
         hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_start");
         hili.event().run(EventId.REQUEST_START_SCRIPT_AFTER);
+        resourceEventExecutor.runAppEvent(ResourceEventType.AfterRequestStart);
         hili.event().run(EventId.REQUEST_START_AFTER);
     }
 
@@ -705,10 +708,12 @@ public class ProteuEvents implements Events {
         Hili hili = faros.get(Hili.class);
         if (proteu.getConfig().getValues("_app:config") != null) {
             hili.event().run(EventId.REQUEST_CLOSE_BEFORE);
+            ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeRequestClose);
             hili.event().run(EventId.REQUEST_CLOSE);
             hili.event().run(EventId.REQUEST_CLOSE_SCRIPT_BEFORE);
             hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_close");
             hili.event().run(EventId.REQUEST_CLOSE_SCRIPT_AFTER);
+            ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterRequestClose);
             hili.event().run(EventId.REQUEST_CLOSE_AFTER);
         }
     }

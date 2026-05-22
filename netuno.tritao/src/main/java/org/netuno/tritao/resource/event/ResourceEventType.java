@@ -84,11 +84,36 @@ public enum ResourceEventType {
      */
     AfterServiceEnd,
     /**
+     * To execute before the service gives an error.
+     */
+    BeforeServiceError,
+    /**
+     * To execute after the service gives an error.
+     */
+    AfterServiceError,
+    /**
      * To execute before the service not found.
      */
     BeforeServiceNotFound,
     /**
      * To execute after the service not found.
      */
-    AfterServiceNotFound
+    AfterServiceNotFound,
+    /**
+     * To execute before the request close.
+     */
+    BeforeRequestStart,
+    /**
+     * To execute after the request start.
+     */
+    AfterRequestStart,
+    /**
+     * To execute before the request start.
+     */
+    BeforeRequestClose,
+    /**
+     * To execute after the request close.
+     */
+    AfterRequestClose
+
 }
