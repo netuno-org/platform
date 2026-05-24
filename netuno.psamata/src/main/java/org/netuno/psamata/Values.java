@@ -3662,7 +3662,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return this.forceList;
     }
 
-    public List<?> toList() {
+    public List<Object> toList() {
     	forceList();
         return list();
     }
@@ -3672,7 +3672,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return list(cls);
     }
 
-    public List<?> list() {
+    public List<Object> list() {
         return new Values(array).array;
     }
     
@@ -3988,6 +3988,45 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             return as(o);
         }
         return o;
+    }
+
+    public Map<String, Object> unvaluedMap() {
+        return unvaluedMap(this);
+    }
+
+    public static Map<String, Object> unvaluedMap(Values values) {
+        Map<String, Object> map = values.map();
+        for (Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getValue() instanceof Values) {
+                Values entryValues = (Values)entry.getValue();
+                if (entryValues.isMap()) {
+                    map.put(entry.getKey(), unvaluedMap(entryValues));
+                } else if (entryValues.isList()) {
+                    map.put(entry.getKey(), unvaluedList(entryValues));
+                }
+            }
+        }
+        return map;
+    }
+
+    public List<Object> unvaluedList() {
+        return unvaluedList(this);
+    }
+
+    public static List<Object> unvaluedList(Values values) {
+        List<Object> list = values.list();
+        for (int i = 0; i < list.size(); i++) {
+            Object item = list.get(i);
+            if (item instanceof Values) {
+                Values itemValues = (Values)item;
+                if (itemValues.isMap()) {
+                    list.set(i, unvaluedMap(itemValues));
+                } else if (itemValues.isList()) {
+                    list.set(i, unvaluedList(itemValues));
+                }
+            }
+        }
+        return list;
     }
 
     /*
