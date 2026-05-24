@@ -708,12 +708,17 @@ public class ProteuEvents implements Events {
         Hili hili = faros.get(Hili.class);
         if (proteu.getConfig().getValues("_app:config") != null) {
             hili.event().run(EventId.REQUEST_CLOSE_BEFORE);
-            ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.BeforeRequestClose);
+            var resourceEventExecutor = ResourceEventExecutor.getInstance(proteu);
+            if (resourceEventExecutor != null) {
+                resourceEventExecutor.runAppEvent(ResourceEventType.BeforeRequestClose);
+            }
             hili.event().run(EventId.REQUEST_CLOSE);
             hili.event().run(EventId.REQUEST_CLOSE_SCRIPT_BEFORE);
             hili.sandbox().runScript(Config.getPathAppCore(proteu), "_request_close");
             hili.event().run(EventId.REQUEST_CLOSE_SCRIPT_AFTER);
-            ResourceEventExecutor.getInstance(proteu).runAppEvent(ResourceEventType.AfterRequestClose);
+            if (resourceEventExecutor != null) {
+                resourceEventExecutor.runAppEvent(ResourceEventType.AfterRequestClose);
+            }
             hili.event().run(EventId.REQUEST_CLOSE_AFTER);
         }
     }
