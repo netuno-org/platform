@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.tritao.resource;
+package org.netuno.tritao.resource.pdf;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -52,10 +52,9 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
 import com.itextpdf.layout.Document;
 import org.netuno.tritao.hili.Hili;
-import org.netuno.tritao.resource.pdf.PDFExtract;
-import org.netuno.tritao.resource.pdf.PDFToHTML;
-import org.netuno.tritao.resource.pdf.PDFToImage;
-import org.netuno.tritao.resource.pdf.PDFToText;
+import org.netuno.tritao.resource.Resource;
+import org.netuno.tritao.resource.ResourceBase;
+import org.netuno.tritao.resource.Storage;
 import org.netuno.tritao.resource.util.FileSystemPath;
 
 import java.io.IOException;
