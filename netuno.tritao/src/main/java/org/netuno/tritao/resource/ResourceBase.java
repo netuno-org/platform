@@ -17,14 +17,20 @@
 
 package org.netuno.tritao.resource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.netuno.proteu.Proteu;
+import org.netuno.psamata.io.FileManager;
 import org.netuno.tritao.hili.Hili;
+
+import java.util.*;
 
 /**
  * Resource Base
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public abstract class ResourceBase {
+    private static final Logger logger = LogManager.getLogger(ResourceBase.class);
 
     private Proteu proteu = null;
     private Hili hili = null;
@@ -32,6 +38,7 @@ public abstract class ResourceBase {
     protected ResourceBase(Proteu proteu, Hili hili) {
         this.proteu = proteu;
         this.hili = hili;
+        hili.resource().newInstance(this);
     }
 
     protected Proteu getProteu() {
@@ -49,5 +56,4 @@ public abstract class ResourceBase {
     protected String enumValueOf(String key) {
         return key.toUpperCase().replace("-", "_");
     }
-
 }

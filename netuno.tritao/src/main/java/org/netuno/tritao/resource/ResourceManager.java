@@ -26,10 +26,9 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.config.ConfigError;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.util.ResourceException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Resource Manager
@@ -39,6 +38,8 @@ public class ResourceManager {
     private static final Logger logger = LogManager.getLogger(ResourceManager.class);
 
     private static final List<Class<?>> classes = Collections.synchronizedList(new ArrayList<>());
+
+    private static final Map<String, List<AutoCloseable>> closeables = Collections.synchronizedMap(new HashMap<>());
 
     private Proteu proteu = null;
     private Hili hili = null;
@@ -69,6 +70,16 @@ public class ResourceManager {
     public ResourceManager(Proteu proteu, Hili hili) {
         this.proteu = proteu;
         this.hili = hili;
+    }
+
+    public void newInstance(Object o) {
+        if (o instanceof AutoCloseable) {
+            String threadName = Thread.currentThread().getName();
+            if (!closeables.containsKey(threadName)) {
+                closeables.put(threadName, new ArrayList<>());
+            }
+            closeables.get(threadName).add((AutoCloseable)o);
+        }
     }
 
     public<T> T get(Class<T> resourceClass) {
@@ -128,6 +139,22 @@ public class ResourceManager {
 
     public void close() {
         if (resources != null) {
+            String threadName = Thread.currentThread().getName();
+            if (closeables.containsKey(threadName)) {
+                var rs = closeables.get(threadName);
+                for (var r : rs) {
+                    try {
+                        if (!resources.contains(r)) {
+                            r.close();
+                        }
+                    } catch (Throwable e) {
+                        logger.warn("The "+ this.getClass().getSimpleName() +" failed to close.");
+                        logger.debug("The "+ this.getClass().getSimpleName() +" failed to close.", e);
+                    }
+                }
+                rs.clear();
+                closeables.remove(threadName);
+            }
             for (Object resource : resources.values()) {
                 if (resource instanceof AutoCloseable) {
                     try {
@@ -136,7 +163,6 @@ public class ResourceManager {
                         logger.warn("The "+ resource.getClass().getSimpleName() +" failed to close.");
                         logger.debug("The "+ resource.getClass().getSimpleName() +" failed to close.", e);
                     }
-
                 }
             }
             resources.clear();
