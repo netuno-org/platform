@@ -31,7 +31,7 @@ public class SetupRunner extends Web {
         resource(Out.class).json(
             resource(Val.class)
                 .map()
-                .set("result", setup.run().getCode())
+                .set("result", setupResult.getCode())
         );
     }
 }

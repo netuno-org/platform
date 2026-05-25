@@ -155,7 +155,7 @@ public class Mongo extends ResourceBase implements AutoCloseable {
     }
 
     public MongoDatabase database(String name) {
-        return new MongoDatabase(getProteu(), getHili(), this, client.getDatabase(name));
+        return new MongoDatabase(this, client.getDatabase(name));
     }
 
     public Document document() {
