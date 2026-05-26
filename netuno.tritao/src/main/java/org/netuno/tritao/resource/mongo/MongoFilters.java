@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.resource.mongo;
 
+import org.bson.BsonType;
 import org.bson.conversions.Bson;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
@@ -46,6 +47,50 @@ public class MongoFilters {
 
     }
 
+    public Bson eq(Object value) {
+        return com.mongodb.client.model.Filters.eq(value);
+    }
+
+    public Bson eq(String fieldName, Object value) {
+        return com.mongodb.client.model.Filters.eq(fieldName, value);
+    }
+
+    public Bson ne(String fieldName, Object value) {
+        return com.mongodb.client.model.Filters.eq(fieldName, value);
+    }
+
+    public Bson gt(String fieldName, Object value) {
+        return com.mongodb.client.model.Filters.gt(fieldName, value);
+    }
+
+    public Bson lt(String fieldName, Object value) {
+        return com.mongodb.client.model.Filters.lt(fieldName, value);
+    }
+
+    public Bson gte(String fieldName, Object value) {
+        return com.mongodb.client.model.Filters.gte(fieldName, value);
+    }
+
+    public Bson lte(String fieldName, Object value) {
+        return com.mongodb.client.model.Filters.lte(fieldName, value);
+    }
+
+    public Bson in(String fieldName, Object... values) {
+        return com.mongodb.client.model.Filters.in(fieldName, values);
+    }
+
+    public Bson in(String fieldName, Iterable<Object> values) {
+        return com.mongodb.client.model.Filters.in(fieldName, values);
+    }
+
+    public Bson nin(String fieldName, Object... values) {
+        return com.mongodb.client.model.Filters.nin(fieldName, values);
+    }
+
+    public Bson nin(String fieldName, Iterable<Object> values) {
+        return com.mongodb.client.model.Filters.nin(fieldName, values);
+    }
+
     public Bson and(Iterable<Bson> filters) {
         return com.mongodb.client.model.Filters.and(filters);
     }
@@ -54,23 +99,39 @@ public class MongoFilters {
         return com.mongodb.client.model.Filters.and(filters);
     }
 
-    public Bson eq(Object o) {
-        return com.mongodb.client.model.Filters.eq(o);
+    public Bson or(Iterable<Bson> filters) {
+        return com.mongodb.client.model.Filters.or(filters);
     }
 
-    public Bson eq(String name, Object o) {
-        return com.mongodb.client.model.Filters.eq(name, o);
+    public Bson or(Bson... filters) {
+        return com.mongodb.client.model.Filters.or(filters);
     }
 
-    public Bson ne(String name, Object o) {
-        return com.mongodb.client.model.Filters.eq(name, o);
+    public Bson not(Bson filter) {
+        return com.mongodb.client.model.Filters.not(filter);
     }
 
-    public Bson gt(String name, Object o) {
-        return com.mongodb.client.model.Filters.gt(name, o);
+    public Bson nor(Bson... filters) {
+        return com.mongodb.client.model.Filters.nor(filters);
     }
 
-    public Bson lt(String name, Object o) {
-        return com.mongodb.client.model.Filters.lt(name, o);
+    public Bson nor(Iterable<Bson> filters) {
+        return com.mongodb.client.model.Filters.nor(filters);
+    }
+
+    public Bson exists(String fieldName) {
+        return com.mongodb.client.model.Filters.exists(fieldName);
+    }
+
+    public Bson exists(String fieldName, boolean exists) {
+        return com.mongodb.client.model.Filters.exists(fieldName, exists);
+    }
+
+    public Bson type(final String fieldName, final BsonType type) {
+        return com.mongodb.client.model.Filters.type(fieldName, type);
+    }
+
+    public Bson type(final String fieldName, final String type) {
+        return com.mongodb.client.model.Filters.type(fieldName, type);
     }
 }
