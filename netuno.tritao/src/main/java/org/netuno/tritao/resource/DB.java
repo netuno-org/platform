@@ -2084,6 +2084,91 @@ public class DB extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
+                    description = "Faz o delete de um registro caso ele exista.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code =  "const removido = _db.deleteIfExists(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.map()\n" +
+                                            "        .set('name','Netuno')\n" +
+                                            ");\n" +
+                                            "if (removido) {\n" +
+                                            "  _log.info('Havia registros, portanto, foram removidos com sucesso.');\n" +
+                                            "}\n"
+                            )}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Deletes a record if it exists.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const removed = _db.deleteIfExists(\n" +
+                                            "    'worker',\n" +
+                                            "    _val.map()\n" +
+                                            "        .set('name','Netuno')\n" +
+                                            ");\n" +
+                                            "if (removed) {\n" +
+                                            "  _log.info('There were records, therefore they were successfully removed.');\n" +
+                                            "}\n"
+                            )})
+    }, parameters = {
+            @ParameterDoc(name = "table", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "tabela",
+                            description = "Nome da tabela na base de dados que deve ser eliminado os dados."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the table in the database from which the data should be deleted."
+                    )
+            }),
+            @ParameterDoc(name = "data", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "dados",
+                            description = "Objeto com a estrutura de dados que será eliminada."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Object with the data structure to be deleted."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Se algum registro foi encontrado e eliminado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "If any records were found and deleted."
+            )
+    }
+    )
+    public boolean deleteIfExists(String table, Map data) throws ResourceException {
+        return deleteIfExists(table, new Values(data));
+    }
+
+    public boolean deleteIfExists(String table, Values data) throws ResourceException {
+        if (!data.hasKey("active")) {
+            data.set("active", true);
+        }
+        Builder builder = Config.getDBBuilder(getProteu());
+        DataSelected dataSelected = builder.selectSearch(table, data, false);
+        if (dataSelected.getTotal() == 0) {
+            return false;
+        }
+        for (Values item : dataSelected.getResults()) {
+            checkErrors("delete", table, null, data, builder.delete(table, item.getString(table +"_id")));
+        }
+        return true;
+
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
                     description = "Executa a atualização de um valor caso ele exista baseando-se numa chave primária ou uma inserção quando nenhum dado existe com a mesma chave primária. "+
                             "Este tipo de operação é útil quando não é possível utilizar IDs em determinadas operações.",
                     howToUse = {
