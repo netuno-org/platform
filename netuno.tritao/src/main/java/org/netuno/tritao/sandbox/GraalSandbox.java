@@ -19,6 +19,8 @@
 package org.netuno.tritao.sandbox;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
@@ -27,7 +29,9 @@ import org.netuno.psamata.script.GraalPathEvents;
 import org.netuno.psamata.script.GraalRunner;
 import org.netuno.tritao.config.Config;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.AccessMode;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -35,6 +39,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,10 +49,12 @@ import java.util.regex.Pattern;
  */
 @ScriptSandbox(extensions = {"js", "cjs", "mjs", "py"})
 public class GraalSandbox implements Scriptable, GraalPathEvents {
+    private static final Logger logger = LogManager.getLogger(GraalSandbox.class);
     private static final Pattern REGEX_PATTER_IMPORT_SERVER_TYPES = Pattern.compile("^.*((import|const)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*((=\\s*require)|from).*@netuno/server-types.*)$", Pattern.MULTILINE);
     private static final Pattern REGEX_PATTER_CJS = Pattern.compile("^.*((const)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*(=\\s*require).*#.*)$", Pattern.MULTILINE);
     private static final Pattern REGEX_PATTER_MJS = Pattern.compile("^.*((import)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*(from).*#.*)$", Pattern.MULTILINE);
     private static final Pattern REGEX_PATTER_IS_MJS = Pattern.compile("^.*((import)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*(from).*)$", Pattern.MULTILINE);
+    private static final Pattern DEBUGGER_PATTER = Pattern.compile("^\\s*(debugger)\\s*;?\\s*(//.*|)$", Pattern.MULTILINE);
 
     private SandboxManager manager;
 
@@ -100,8 +107,33 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
     @Override
     public Object run(ScriptSourceCode script, Values bindings) throws Exception {
         String lang = getGraalLanguage(script.extension());
-        bindings.forEach((k, v) -> graalRunner.set(lang, k.toString(), v));
         String source = script.content();
+        if (DEBUGGER_PATTER.matcher(source).find()) {
+            String debugInspectPath = Config.getApp(manager.getProteu()) + "-";
+            if (script.scriptFile() == null) {
+                debugInspectPath += script.scriptFile().getPath();
+            }
+            debugInspectPath += UUID.randomUUID();
+            final String inspectPath = debugInspectPath;
+            final String inspectPort = Integer.toString(org.netuno.cli.Config.getJSInspectPort());
+            Map<String, String> options = new HashMap<>();
+            options.put("inspect", inspectPort);
+            options.put("inspect.Path", inspectPath);
+            graalRunner.newContext(options);
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception ex) { }
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new URI("devtools://devtools/bundled/js_app.html?ws=127.0.0.1:"+ inspectPort +"/"+ inspectPath));
+                    } catch (Exception e) {
+                        logger.error(e);
+                    }
+                }
+            }).start();
+        }
+        bindings.forEach((k, v) -> graalRunner.set(lang, k.toString(), v));
         String mimeType = null;
         if (lang.equals("js")) {
             source = buildSourceCode(source, ".");
