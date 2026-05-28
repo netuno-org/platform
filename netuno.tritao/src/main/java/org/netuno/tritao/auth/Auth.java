@@ -52,12 +52,23 @@ public class Auth extends Web {
         JWT_REQUEST,
         SESSION_REQUEST;
 
+        public boolean ensureJWT(Proteu proteu) {
+            return (this == JWT || this == JWT_REQUEST) && (
+                    proteu.getConfig().hasKey("_auth:jwt:token")
+                    || proteu.getRequestHeader().has("Authorization")
+            );
+        }
+
+        public boolean ensureSESSION(Proteu proteu) {
+            return (this == SESSION || this == SESSION_REQUEST) && !proteu.getRequestHeader().has("Authorization");
+        }
+
         public boolean isJWT(Proteu proteu) {
-            return (this == JWT || this == JWT_REQUEST) && proteu.getRequestHeader().has("Authorization");
+            return this == JWT || this == JWT_REQUEST;
         }
 
         public boolean isSESSION(Proteu proteu) {
-            return (this == SESSION || this == SESSION_REQUEST) && !proteu.getRequestHeader().has("Authorization");
+            return this == SESSION || this == SESSION_REQUEST;
         }
 
         public boolean isREQUEST() {
@@ -99,7 +110,7 @@ public class Auth extends Web {
     }
 
     public static Values getUser(Proteu proteu, Hili hili, Type type) {
-        if (type.isJWT(proteu)) {
+        if (type.ensureJWT(proteu)) {
             if (proteu.getConfig().has("_auth:jwt:db:user")
                     && proteu.getConfig().getValues("_auth:jwt:db:user") != null) {
                 return proteu.getConfig().getValues("_auth:jwt:db:user");
@@ -113,7 +124,7 @@ public class Auth extends Web {
             proteu.getConfig().set("_auth:jwt:db:user", user);
             return user;
         }
-        if (type.isSESSION(proteu)) {
+        if (type.ensureSESSION(proteu)) {
             if (proteu.getConfig().has("_auth:session:db:user")
                     && proteu.getConfig().getValues("_auth:session:db:user") != null) {
                 return proteu.getConfig().getValues("_auth:session:db:user");
@@ -136,7 +147,7 @@ public class Auth extends Web {
     }
 
     public static Values getGroup(Proteu proteu, Hili hili, Type type) {
-        if (type.isJWT(proteu)) {
+        if (type.ensureJWT(proteu)) {
             if (proteu.getConfig().has("_auth:jwt:db:group")
                     && proteu.getConfig().getValues("_auth:jwt:db:group") != null) {
                 return proteu.getConfig().getValues("_auth:jwt:db:group");
@@ -148,7 +159,7 @@ public class Auth extends Web {
             }
             return org.netuno.tritao.config.Config.getDBBuilder(proteu).getGroupByUId(values.getString("_group_uid"));
         }
-        if (type.isSESSION(proteu)) {
+        if (type.ensureSESSION(proteu)) {
             if (proteu.getConfig().has("_auth:session:db:group")
                     && proteu.getConfig().getValues("_auth:session:db:group") != null) {
                 return proteu.getConfig().getValues("_auth:session:db:group");
@@ -165,12 +176,12 @@ public class Auth extends Web {
 
     public static boolean isAdminAuthenticated(Proteu proteu, Hili hili, Type type, boolean redirect) {
         if (isAuthenticated(proteu, hili, type, redirect)) {
-            if (type.isJWT(proteu)) {
+            if (type.ensureJWT(proteu)) {
                 org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
                 Values values = auth.jwtData();
                 return values.getBoolean("_admin");
             }
-            if (type.isSESSION(proteu)) {
+            if (type.ensureSESSION(proteu)) {
                 return proteu.getSession().getBoolean("_admin");
             }
         }
@@ -184,12 +195,12 @@ public class Auth extends Web {
 
     public static boolean isDevAuthenticated(Proteu proteu, Hili hili, Type type, boolean redirect) {
         if (isAuthenticated(proteu, hili, type, redirect)) {
-            if (type.isJWT(proteu)) {
+            if (type.ensureJWT(proteu)) {
                 org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
                 Values values = auth.jwtData();
                 return values.getBoolean("_dev");
             }
-            if (type.isSESSION(proteu)) {
+            if (type.ensureSESSION(proteu)) {
                 return proteu.getSession().getBoolean("_dev");
             }
         }
@@ -207,11 +218,11 @@ public class Auth extends Web {
 
     public static boolean isAuthenticated(Proteu proteu, Hili hili, Type type, boolean redirect) {
         boolean result = false;
-        if (type.isJWT(proteu)) {
+        if (type.ensureJWT(proteu)) {
             org.netuno.tritao.resource.Auth auth = new org.netuno.tritao.resource.Auth(proteu, hili);
             return auth.jwtTokenCheck();
         }
-        if (type.isSESSION(proteu)) {
+        if (type.ensureSESSION(proteu)) {
             result = !proteu.getSession().getString("_user_uid").isEmpty()
                     && !proteu.getSession().getString("_group_uid").isEmpty();
             if (!result && signIn(proteu, hili, type) == SignInState.OK) {
