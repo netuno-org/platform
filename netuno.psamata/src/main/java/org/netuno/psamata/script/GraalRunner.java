@@ -32,6 +32,10 @@ public class GraalRunner implements AutoCloseable {
 
     private static HostAccess hostAccess = null;
 
+    private GraalPathEvents initialPathEvents;
+    private Map<String, String> initialOptions;
+    private String[] initialPermittedLanguages;
+
     private Builder contextBuilder = null;
     
     private Context context = null;
@@ -85,17 +89,25 @@ public class GraalRunner implements AutoCloseable {
     }
     
     private void init(GraalPathEvents pathEvents, Map<String, String> options, String... permittedLanguages) {
+        initialPathEvents = pathEvents;
+        initialOptions = options;
+        initialPermittedLanguages = permittedLanguages;
         //engine = Engine.create();
-        contextBuilder = Context.newBuilder(permittedLanguages)
+        newContextBuilder();
+        newContext();
+    }
+
+    private void newContextBuilder() {
+        contextBuilder = Context.newBuilder(initialPermittedLanguages)
                 .allowNativeAccess(true)
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLookup(className -> true)
                 .allowExperimentalOptions(true)
                 .allowIO(
                         IOAccess.newBuilder()
-                        .allowHostSocketAccess(true)
-                        .fileSystem(new GraalFileSystem(pathEvents))
-                        .build()
+                                .allowHostSocketAccess(true)
+                                .fileSystem(new GraalFileSystem(initialPathEvents))
+                                .build()
                 )
                 .allowAllAccess(true)
                 .allowCreateThread(true)
@@ -120,14 +132,20 @@ public class GraalRunner implements AutoCloseable {
         System.out.println("Done.");
          */
 
-        if (options != null) {
-            contextBuilder.options(options);
+        if (initialOptions != null) {
+            contextBuilder.options(initialOptions);
         }
-        
-        newContext();
+    }
+
+    public void newContext() {
+        newContext(null);
     }
     
-    public void newContext() {
+    public void newContext(Map<String, String> options) {
+        if (options != null) {
+            newContextBuilder();
+            contextBuilder.options(options);
+        }
         context = contextBuilder.build();
         contexts.add(context);
     }
