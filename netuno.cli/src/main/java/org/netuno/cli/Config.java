@@ -144,6 +144,8 @@ public final class Config {
 
     public static List<String> permittedLanguages = Arrays.asList("js", "regex", "python");
 
+    public static int jsInspectPort = 9222;
+
     /**
      * Download Default Cache
      */
@@ -364,6 +366,14 @@ public final class Config {
 
     public static void setPermittedLanguages(List<String> permittedLanguages) {
         Config.permittedLanguages = permittedLanguages;
+    }
+
+    public static int getJSInspectPort() {
+        return jsInspectPort;
+    }
+
+    public static void setJSInspectPort(int jsInspectPort) {
+        Config.jsInspectPort = jsInspectPort;
     }
 
     public static int getDownloadDefaultCache() {
