@@ -321,9 +321,7 @@ public class OperationEngine extends Data {
         }
         selectIdsCommandSQL += "\nLIMIT " + query.getLimit();
         List<Values> recordIDs = getExecutor().query(selectIdsCommandSQL);
-        if (recordIDs.isEmpty()) {
-            throw new ResourceException("Not found records with query:\n"+selectIdsCommandSQL);
-        }
+
         return recordIDs;
     }
 
