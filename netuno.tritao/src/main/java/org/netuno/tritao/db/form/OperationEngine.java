@@ -278,13 +278,13 @@ public class OperationEngine extends Data {
     public int count(Operation query) {
         final var pagination = query.getPagination();
         String select = "SELECT COUNT("+query.getFormName()+".id"+") AS total \nFROM ";
-        if (pagination.getDistinct() != null && !pagination.getDistinct().isBlank()) {
+        if (pagination != null && pagination.getDistinct() != null && !pagination.getDistinct().isBlank()) {
             select = "SELECT COUNT(DISTINCT " + DB.sqlInjection(pagination.getDistinct()) + ") AS total \nFROM ";
         } else if (query.isDistinct()) {
             select = "SELECT COUNT(DISTINCT " + query.getFormName() + ".id" + ") AS total \nFROM ";
         }
         String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
-        if (pagination.isUseGroup() && query.getGroup() != null) {
+        if (pagination != null && pagination.isUseGroup() && query.getGroup() != null) {
             selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
         }
         if (query.isDebug()) {

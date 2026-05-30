@@ -1399,4 +1399,8 @@ public class Operation {
         Values deleteLinks = linkEngine.buildDeleteLinks(this.formName, Arrays.stream(forms).toList());
         return operationalEngine.cascadeDelete(deleteLinks, this);
     }
+
+    public int count() {
+        return operationalEngine.count(this);
+    }
 }
