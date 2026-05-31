@@ -84,7 +84,7 @@ public class Logger extends ResourceBase {
                 "\n# " + path +
                 "\n# " + scriptName +
                 "\n#" +
-                "\n# " + message +
+                "\n# " + String.join("\n# ", message.split("\\n")) +
                 "\n#" +
                 "\n";
     }
