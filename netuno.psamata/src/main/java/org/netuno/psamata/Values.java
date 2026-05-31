@@ -146,25 +146,24 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
     	values(variablesLine, splitter, set, charsetName);
     }
 
-    private void values(final String variablesLine, final String splitter,
+    private void values(final String paramsLine, final String splitter,
                         final String set, final String charsetName) {
-    	if (charsetName != null && !charsetName.equals("")) {
+    	if (charsetName != null && !charsetName.isBlank()) {
             urlCharacterEncoding = charsetName;
         }
-        if (variablesLine != null && !variablesLine.equals("")) {
-            String[] variables = variablesLine.split(splitter);
-            for (int x = 0; x < variables.length; x++) {
-                if (variables[x].indexOf(set) == -1) {
-                    set(variables[x], null);
-                } else if ((!variables[x].equals("")) && (variables[x] != null)
-                        && (!variables[x].equals(set))) {
-                    String[] part = variables[x].split(set, 2);
-                    if (part[1].equals("")) {
+        if (paramsLine != null && !paramsLine.isBlank()) {
+            String[] params = paramsLine.split(splitter);
+            for (String param : params) {
+                if (!param.contains(set)) {
+                    set(param.trim(), null);
+                } else if ((!param.isBlank()) && (!param.equals(set))) {
+                    String[] part = param.split(set, 2);
+                    part[0] = part[0].trim();
+                    if (part[1].isBlank()) {
                         set(part[0], null);
                     } else {
                         try {
-                        	set(part[0], URLDecoder.decode(part[1],
-                                    urlCharacterEncoding));
+                            set(part[0], URLDecoder.decode(part[1], urlCharacterEncoding));
                         } catch (Exception e) {
                             set(part[0], part[1]);
                         }
@@ -2345,7 +2344,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             if (keyRef == null) {
                 return false;
             }
-            return objects.keySet().contains(keyRef);
+            return objects.containsKey(keyRef);
         } else if (isList()) {
             return array.contains(key);
         }
