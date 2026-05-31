@@ -1260,6 +1260,9 @@ public class Remote {
                 return error.toString();
             }
             if (content != null) {
+                if (content instanceof byte[]) {
+                    return new String((byte[])content);
+                }
                 return content.toString();
             }
             return "";
