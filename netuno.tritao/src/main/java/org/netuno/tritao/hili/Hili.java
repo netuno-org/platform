@@ -44,9 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Hili implements Faros {
     private static Logger logger = LogManager.getLogger(Hili.class);
 
-    private static Map<String, ImmutablePair<Long, String>> cachedScripts = new ConcurrentHashMap<>();
-    
-    private boolean init = false;
+    private static final Map<String, Hili> instances = new ConcurrentHashMap<>();
 
     private Proteu proteu;
 
@@ -57,8 +55,6 @@ public class Hili implements Faros {
     private EventManager event = null;
 
     private ScriptEngine scriptEngineVelocity = null;
-    
-    private int scriptsRunning = 0;
 
     static {
         System.setProperty("idea.use.native.fs.for.win", "false");
@@ -68,6 +64,7 @@ public class Hili implements Faros {
 
     public Hili(Proteu proteu) {
         this.proteu = proteu;
+        instances.put(Thread.currentThread().getName(), this);
         proteu.getConfig().set("netuno_build_number", Config.BUILD_NUMBER);
         proteu.getConfig().set("_build_number", Config.BUILD_NUMBER);
         proteu.getConfig().set("netuno_version_year", Config.VERSION_YEAR);
@@ -76,6 +73,10 @@ public class Hili implements Faros {
         sandbox = new SandboxManager(proteu, this);
         resource = new ResourceManager(proteu, this);
         event = new EventManager(proteu, this);
+    }
+
+    public Proteu proteu() {
+        return proteu;
     }
 
     public SandboxManager sandbox() {
@@ -144,5 +145,11 @@ public class Hili implements Faros {
         proteu = null;
 
         scriptEngineVelocity = null;
+
+        instances.remove(Thread.currentThread().threadId());
+    }
+
+    public static Hili instance() {
+        return instances.get(Thread.currentThread().getName());
     }
 }
