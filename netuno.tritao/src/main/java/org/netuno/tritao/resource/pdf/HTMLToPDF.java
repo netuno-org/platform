@@ -22,6 +22,8 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.io.File;
+import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.HTML;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,12 +34,19 @@ import java.io.IOException;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public interface HTMLToPDF {
-    default File fromHTML(org.w3c.dom.Document doc, String baseURI) throws IOException {
+    default File fromHTML(String content) throws IOException {
+        var hili = Hili.instance();
+        var html = hili.resource().get(HTML.class);
+        var doc = html.parse(content);
+        return fromHTML(html.toW3CDom(doc));
+    }
+
+    default File fromHTML(org.w3c.dom.Document doc) throws IOException {
         try (var out = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.useSVGDrawer(new BatikSVGDrawer());
             builder.useMathMLDrawer(new MathMLDrawer());
-            builder.withW3cDocument(doc, baseURI);
+            builder.withW3cDocument(doc, null);
             builder.toStream(out);
             builder.run();
             return new File("file.pdf", Proteu.ContentType.PDF.toString(), new ByteArrayInputStream(out.toByteArray()));
