@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
 import org.netuno.library.doc.LanguageDoc;
@@ -378,5 +379,13 @@ public class HTML extends ResourceBase {
 
     public Document.OutputSettings documentOutputSettings() {
         return new Document.OutputSettings();
+    }
+
+    public W3CDom w3cDom() {
+        return new W3CDom();
+    }
+
+    public org.w3c.dom.Document toW3CDom(Document doc) {
+        return new W3CDom().fromJsoup(doc);
     }
 }
