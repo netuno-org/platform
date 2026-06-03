@@ -44,6 +44,8 @@ import org.netuno.library.doc.*;
         )
 })
 public class File implements IO {
+    private static String OS = System.getProperty("os.name");
+
     /**
      * Path.
      */
@@ -500,6 +502,21 @@ public class File implements IO {
     
     public String baseName() {
     	return getBaseName();
+    }
+
+    public String uri() {
+        String uri = "file://";
+        uri += SafePath.path(getPath());
+        return uri;
+    }
+
+    public String fullURI() {
+        String uri = "file://";
+        if (OS.startsWith("Windows")) {
+            uri += "/";
+        }
+        uri += SafePath.path(getFullPath());
+        return uri;
     }
 
     @MethodDoc(translations = {
