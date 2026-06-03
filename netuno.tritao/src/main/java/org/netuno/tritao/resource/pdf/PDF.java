@@ -82,7 +82,7 @@ import java.net.MalformedURLException;
                 howToUse = { }
         )
 })
-public class PDF extends ResourceBase implements PDFToText, PDFToHTML, PDFExtract, PDFToImage {
+public class PDF extends ResourceBase implements PDFToText, PDFToHTML, PDFExtract, PDFToImage, HTMLToPDF {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(PDF.class);
 
     public PdfWriter writer = null;
