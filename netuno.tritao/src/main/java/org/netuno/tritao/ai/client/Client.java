@@ -3069,18 +3069,34 @@ public class Client {
                 }
             }
 
+            return invokeTool(toolName, arguments);
+        } catch (Exception e) {
+            LOGGER.error("Failed to execute tool call.", e);
+            return new Values()
+                    .set("error", true)
+                    .set("message", e.getMessage() != null ? e.getMessage() : "Tool execution failed.");
+        }
+    }
+
+    public Values invokeTool(String toolName, Values arguments) {
+        if (toolName == null || toolName.isBlank()) {
+            return new Values().set("error", true).set("message", "Tool name is required.");
+        }
+        McpToolBinding binding = settings.toolBindings.get(toolName);
+        if (binding == null) {
+            return new Values().set("error", true).set("message", "Tool not found: " + toolName);
+        }
+        try {
             Map<String, Object> argumentsMap = convertToMap(arguments);
             McpSchema.CallToolResult callResult = binding.client.callTool(
                     new McpSchema.CallToolRequest(binding.tool.name(), argumentsMap)
-                );
-
+            );
             Values out = new Values();
-            out.set("content", String.valueOf(callResult.content()));
-
+            String jsonContent = mapper.writeValueAsString(callResult.content());
+            out.set("content", jsonContent);
             return out;
-
         } catch (Exception e) {
-            LOGGER.error("Failed to execute tool call.", e);
+            LOGGER.error("Failed to invoke tool '{}'.", toolName, e);
             return new Values()
                     .set("error", true)
                     .set("message", e.getMessage() != null ? e.getMessage() : "Tool execution failed.");
@@ -3103,7 +3119,7 @@ public class Client {
     private Map<String, Object> convertToMap(Object input) {
         if (input == null) {
             return new LinkedHashMap<>();
-        }
+        }   
 
         try {
             if (input instanceof Map) {
