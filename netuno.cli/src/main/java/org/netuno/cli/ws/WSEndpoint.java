@@ -268,6 +268,7 @@ public class WSEndpoint {
         Values result = new Values()
                 .set("method", response.getMethod().toUpperCase())
                 .set("service", urlServicePath)
+                .set("data", data)
                 .set("status", remote.statusCode);
         String type = "text";
         if (response.isJSON()) {
