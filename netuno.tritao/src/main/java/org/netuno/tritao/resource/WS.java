@@ -455,6 +455,7 @@ public class WS extends ResourceBase {
                         new Values()
                                 .set("method", response.getMethod().toUpperCase())
                                 .set("service", Config.getServiceURL(getProteu(), message.getString("service")))
+                                .set("data", data)
                                 .set("status", remote.statusCode)
                                 .set("type", type)
                                 .set("content", response.isJSON() ? response.json() : response.toString())
@@ -652,6 +653,7 @@ public class WS extends ResourceBase {
             Values responseData = new Values()
                     .set("method", response.getMethod().toUpperCase())
                     .set("service", Config.getServiceURL(getProteu(), message.getString("service")))
+                    .set("data", data)
                     .set("status", remote.statusCode)
                     .set("type", type)
                     .set("content", response.isJSON() ? response.json() : response.toString());
