@@ -151,7 +151,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>5.7.0</version>
+            <version>5.8.0</version>
         </dependency>
 
         <dependency>
@@ -608,7 +608,7 @@
         <dependency>
             <groupId>com.openai</groupId>
             <artifactId>openai-java</artifactId>
-            <version>4.36.0</version>
+            <version>4.39.1</version>
         </dependency>
 
         <dependency>
