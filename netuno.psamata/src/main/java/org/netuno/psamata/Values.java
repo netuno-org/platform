@@ -401,9 +401,9 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
      * @param key Key
      * @return object found
      */
-    public final Object get(final String key) {
+    public final <T> T get(final String key) {
         try {
-            return objects.get(keysRef.get(key.toUpperCase()));
+            return (T)objects.get(keysRef.get(key.toUpperCase()));
         } catch (Exception e) {
             return null;
         }
@@ -3434,9 +3434,9 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         return get(key.toString());
     }
 
-    public Object get(int index) {
+    public <T> T get(int index) {
         if (index >= 0 && index < array.size()) {
-            return array.get(index);
+            return (T)array.get(index);
         }
         return get(""+ index);
     }
