@@ -882,7 +882,7 @@ public class App extends ResourceBase {
 			}
 	)
 	public boolean configReloaded() {
-		return getProteu().getConfig().getBoolean("_app:config:reloaded");
+		return Config.isAppConfigReloaded(getProteu());
 	}
 
 	public boolean isConfigReloaded() {
