@@ -50,8 +50,6 @@ public class LinkEngine extends TableBuilderResourceBase {
         }
     }
 
-
-
     public Values buildDeleteLinks(String form, List<String> formsToLink) {
         if (formsToLink.isEmpty()) {
             throw new ResourceException("No form was provided in deleteCascade method");
@@ -105,20 +103,31 @@ public class LinkEngine extends TableBuilderResourceBase {
     }
 
     public Relationship buildRelation(String form, RelationshipLink subLink) {
-        Values linkBetween = getLinkBetween(form, subLink.getFormLink());
-        if (linkBetween != null) { //ManyToOne Relation
-            String column = linkBetween.getString("name");
-            Relationship relation = new Relationship(subLink.getFormLink(), subLink.getAlias(), column, RelationshipType.ManyToOne);
+        Values manyToOneRelationMapping = buildRelationshipMapping(form, subLink.getFormLink(), RelationshipType.ManyToOne);
+
+        if (manyToOneRelationMapping != null) { //ManyToOne Relation
+            Relationship relation = new Relationship(
+                    manyToOneRelationMapping.getString("formTableLink"),
+                    subLink.getAlias(),
+                    manyToOneRelationMapping.getString("formColumn"),
+                    RelationshipType.ManyToOne
+            );
             for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                 Link link = linkEntry.getValue();
                 relation.getSubRelations().put(subLink.getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
             }
             return relation;
         } else { //OneToMany Relation
-            linkBetween = getLinkBetween(subLink.getFormLink(), form);
-            if (linkBetween != null) {
-                String column = linkBetween.getString("name");
-                Relationship relation = new Relationship(subLink.getFormLink(), subLink.getAlias(), column, RelationshipType.OneToMany);
+            Values oneToManyRelationMapping = buildRelationshipMapping(form, subLink.getFormLink(), RelationshipType.OneToMany);
+
+            if (oneToManyRelationMapping != null) {
+
+                Relationship relation = new Relationship(
+                        oneToManyRelationMapping.getString("formTableLink"),
+                        subLink.getAlias(),
+                        oneToManyRelationMapping.getString("formColumn"),
+                        RelationshipType.OneToMany
+                );
                 for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                     Link link = linkEntry.getValue();
                     relation.getSubRelations().put(subLink.getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
@@ -128,6 +137,54 @@ public class LinkEngine extends TableBuilderResourceBase {
                 throw new IllegalArgumentException("There is no link between the forms " + form + " and " + subLink.getFormLink());
             }
         }
+    }
+
+    public Values buildRelationshipMapping(String form, String formToLink, RelationshipType type) {
+        final String formToLinkTable = formToLink.split("\\.")[0];
+        final String formToLinkColumn = formToLink.split("\\.").length > 1 ? formToLink.split("\\.")[1] : null;
+        Values relationMapping = new Values();
+        relationMapping.set("form", form);
+
+        if (type == RelationshipType.ManyToOne) {
+            List<Values> componentsOfTheForm = getSelectComponents(form);
+
+            for (Values value : componentsOfTheForm) {
+                String properties = value.getString("properties");
+                String name = value.getString("name");
+
+                if (formToLinkTable.equals(this.extractFormOfTheLink(properties)) && formToLinkColumn == null) {
+                    relationMapping.set("formTableLink", formToLinkTable);
+                    relationMapping.set("formColumn", name);
+                    return relationMapping;
+                } else if (formToLinkTable.equals(form) && formToLinkColumn != null && formToLinkColumn.equals(name)) {
+                    relationMapping.set("formTableLink", this.extractFormOfTheLink(properties));
+                    relationMapping.set("formColumn", name);
+                    return relationMapping;
+                } else if (formToLinkColumn == null && formToLinkTable.equals(name)) {
+                    relationMapping.set("formTableLink", this.extractFormOfTheLink(properties));
+                    relationMapping.set("formColumn", name);
+                    return relationMapping;
+                }
+            }
+        } else if (type == RelationshipType.OneToMany) {
+            List<Values> componentsOfTheForm = getSelectComponents(formToLinkTable);
+
+            for (Values value : componentsOfTheForm) {
+                String properties = value.getString("properties");
+                String name = value.getString("name");
+
+                if (form.equals(this.extractFormOfTheLink(properties)) && formToLinkColumn == null) {
+                    relationMapping.set("formTableLink", formToLinkTable);
+                    relationMapping.set("formColumn", name);
+                    return relationMapping;
+                } else if (form.equals(this.extractFormOfTheLink(properties)) && formToLinkColumn.equals(name)) {
+                    relationMapping.set("formTableLink", formToLinkTable);
+                    relationMapping.set("formColumn", name);
+                    return relationMapping;
+                }
+            }
+        }
+        return null;
     }
 
     public Values getLinkBetween(String form, String formToLink) {
