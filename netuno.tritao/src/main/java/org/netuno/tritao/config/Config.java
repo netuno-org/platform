@@ -98,6 +98,10 @@ public class Config {
         }
         return proteu.getConfig().getString("_app");
     }
+
+    public static boolean isAppConfigReloaded(Proteu proteu) {
+        return proteu.getConfig().getBoolean("_app:config:reloaded");
+    }
     
     public static Values getAppConfig(Proteu proteu) {
     	if (proteu.getConfig().has("_app:config")) {
