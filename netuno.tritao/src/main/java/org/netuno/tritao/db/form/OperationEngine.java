@@ -90,8 +90,8 @@ public class OperationEngine extends Data {
         relationSQL = (relation.getAlias() != null ? this.escape(relation.getTableName()) + " " + relation.getAlias() : this.escape(relation.getTableName())) + " ON ";
         String finalRelationName = relation.getAlias() != null && !relation.getAlias().isEmpty() && !relation.getAlias().isBlank() ? relation.getAlias() : this.escape(relation.getTableName());
         switch (relation.getType()) {
-            case ManyToOne -> relationSQL += this.escape(table)+"."+relation.getColumn() + " = " + finalRelationName+".id";
-            case OneToMany -> relationSQL += finalRelationName+"."+relation.getColumn() + " = " + this.escape(table)+".id";
+            case ManyToOne -> relationSQL += this.escape(table)+"."+this.escape(relation.getColumn()) + " = " + finalRelationName+".\"id\"";
+            case OneToMany -> relationSQL += finalRelationName+"."+this.escape(relation.getColumn()) + " = " + this.escape(table)+".\"id\"";
         }
         for(Map.Entry<String, Join> subRelationEntry : relation.getSubRelations().entrySet()) {
             Join join = subRelationEntry.getValue();
@@ -117,7 +117,7 @@ public class OperationEngine extends Data {
             conditionSQL += ")";
         } else {
             conditionSQL += " " + (condition.getOperator() != null ? condition.getOperator() : "")
-                    +  this.buildRelationOperatorSQL(condition.getRelationOperator(), this.escape(table), condition.getColumn());
+                    +  this.buildRelationOperatorSQL(condition.getRelationOperator(), this.escape(table), this.escape(condition.getColumn()));
         }
         return conditionSQL;
     }
@@ -191,7 +191,7 @@ public class OperationEngine extends Data {
     public String buildSelectSQL(Operation query) {
         String select = "SELECT \n\t" + this.escape(query.getFormName()) +".*" + " \nFROM ";
         List <String> fields = query.getFieldsToGet().stream().map(field ->
-                field.getAlias() != null ? this.escape(field.getColumn()) + " AS " + field.getAlias() : this.escape(field.getColumn())
+                field.getAlias() != null ? this.escape(field.getColumn()) + " AS " + this.escape(field.getAlias()) : this.escape(field.getColumn())
         ).collect(Collectors.toList());
         if (!fields.isEmpty()) {
             select = "SELECT \n\t" + String.join(", \n\t", fields) + " \nFROM ";
@@ -238,10 +238,10 @@ public class OperationEngine extends Data {
         String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
-            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
+            selectCommandSQL += "\nGROUP BY " + this.escape(query.getGroup().getColumn());
         }
         if (query.getOrder() != null) {
-            selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+            selectCommandSQL += "\nORDER BY " + this.escape(query.getOrder().getColumn()) + " " + query.getOrder().getOrder();
         }
         selectCommandSQL += "\nLIMIT " + query.getLimit();
         if (query.isDebug()) {
@@ -256,12 +256,12 @@ public class OperationEngine extends Data {
 
     public Values first(Operation query) {
         String select = this.buildSelectSQL(query);
-        String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
+        String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
-            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
+            selectCommandSQL += "\nGROUP BY " + this.escape(query.getGroup().getColumn());
         }
         if (query.getOrder() != null) {
-            selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+            selectCommandSQL += "\nORDER BY " + this.escape(query.getOrder().getColumn()) + " " + query.getOrder().getOrder();
         }
         selectCommandSQL += "\nLIMIT 1";
         if (query.isDebug()) {
@@ -277,15 +277,15 @@ public class OperationEngine extends Data {
 
     public int count(Operation query) {
         final var pagination = query.getPagination();
-        String select = "SELECT COUNT("+query.getFormName()+".id"+") AS total \nFROM ";
+        String select = "SELECT COUNT("+this.escape(query.getFormName())+".id"+") AS total \nFROM ";
         if (pagination != null && pagination.getDistinct() != null && !pagination.getDistinct().isBlank()) {
             select = "SELECT COUNT(DISTINCT " + DB.sqlInjection(pagination.getDistinct()) + ") AS total \nFROM ";
         } else if (query.isDistinct()) {
-            select = "SELECT COUNT(DISTINCT " + query.getFormName() + ".id" + ") AS total \nFROM ";
+            select = "SELECT COUNT(DISTINCT " + this.escape(query.getFormName()) + "\".id\"" + ") AS total \nFROM ";
         }
-        String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
+        String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (pagination != null && pagination.isUseGroup() && query.getGroup() != null) {
-            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
+            selectCommandSQL += "\nGROUP BY " + this.escape(query.getGroup().getColumn());
         }
         if (query.isDebug()) {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
@@ -297,12 +297,12 @@ public class OperationEngine extends Data {
 
     public Page page(Operation query) {
         String select = this.buildSelectSQL(query);
-        String selectCommandSQL = select + query.getFormName() + this.buildQuerySQL(query);
+        String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
-            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumn();
+            selectCommandSQL += "\nGROUP BY " + this.escape(query.getGroup().getColumn());
         }
         if (query.getOrder() != null) {
-            selectCommandSQL += "\nORDER BY " + query.getOrder().getColumn() + " " + query.getOrder().getOrder();
+            selectCommandSQL += "\nORDER BY " + this.escape(query.getOrder().getColumn()) + " " + query.getOrder().getOrder();
         }
         selectCommandSQL += "\nLIMIT "+query.getPagination().getPageSize() +" OFFSET " + query.getPagination().getOffset();
         if (query.isDebug()) {
@@ -575,7 +575,7 @@ public class OperationEngine extends Data {
     public String escape(String data) {
         if (data.contains(".")) {
             var splitData = data.split("\\.");
-            return getBuilder().escapeStart() + splitData[0] +getBuilder().escapeEnd() + "." + splitData[1];
+            return getBuilder().escapeStart() + splitData[0] +getBuilder().escapeEnd() + "." + getBuilder().escapeStart() + splitData[1] +getBuilder().escapeEnd();
         } else {
             return getBuilder().escapeStart() + data + getBuilder().escapeEnd();
         }
