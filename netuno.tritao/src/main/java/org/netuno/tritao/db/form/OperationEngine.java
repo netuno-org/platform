@@ -238,7 +238,7 @@ public class OperationEngine extends Data {
         String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
-            selectCommandSQL += "\nGROUP BY " + this.escape(query.getGroup().getColumn());
+            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumns().stream().map(this::escape).collect(Collectors.joining(", "));
         }
         if (query.getOrder() != null) {
             selectCommandSQL += "\nORDER BY " + this.escape(query.getOrder().getColumn()) + " " + query.getOrder().getOrder();
@@ -258,7 +258,7 @@ public class OperationEngine extends Data {
         String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
-            selectCommandSQL += "\nGROUP BY " + this.escape(query.getGroup().getColumn());
+            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumns().stream().map(this::escape).collect(Collectors.joining(", "));
         }
         if (query.getOrder() != null) {
             selectCommandSQL += "\nORDER BY " + this.escape(query.getOrder().getColumn()) + " " + query.getOrder().getOrder();
@@ -285,7 +285,7 @@ public class OperationEngine extends Data {
         }
         String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (pagination != null && pagination.isUseGroup() && query.getGroup() != null) {
-            selectCommandSQL += "\nGROUP BY " + this.escape(query.getGroup().getColumn());
+            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumns().stream().map(this::escape).collect(Collectors.joining(", "));
         }
         if (query.isDebug()) {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
@@ -299,7 +299,7 @@ public class OperationEngine extends Data {
         String select = this.buildSelectSQL(query);
         String selectCommandSQL = select + this.escape(query.getFormName()) + this.buildQuerySQL(query);
         if (query.getGroup() != null) {
-            selectCommandSQL += "\nGROUP BY " + this.escape(query.getGroup().getColumn());
+            selectCommandSQL += "\nGROUP BY " + query.getGroup().getColumns().stream().map(this::escape).collect(Collectors.joining(", "));
         }
         if (query.getOrder() != null) {
             selectCommandSQL += "\nORDER BY " + this.escape(query.getOrder().getColumn()) + " " + query.getOrder().getOrder();
