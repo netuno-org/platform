@@ -331,6 +331,7 @@ public class OperationEngine extends Data {
         List<String> undeletedRecords = new ArrayList<>();
         for (Values recordID : recordIDs) {
             final DataItem dataItem = getBuilder().delete(query.getFormName(), recordID.getString("id"));
+            checkDataItemErrors(dataItem, "delete");
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 numberOfAffectedRecords++;
             } else {
@@ -364,6 +365,7 @@ public class OperationEngine extends Data {
                 }
             }
             DataItem dataItem = getBuilder().delete(query.getFormName(), recordID.getString("id"));
+            checkDataItemErrors(dataItem, "delete");
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 affectedForms.set(
                         query.getFormName(),
@@ -410,6 +412,7 @@ public class OperationEngine extends Data {
         List<String> unaffectedRecords = new ArrayList<>();
         for (Values recordID : recordIDs) {
             DataItem dataItem = getBuilder().update(query.getFormName(), recordID.getString("id"), data);
+            checkDataItemErrors(dataItem, "update");
             if (dataItem.getStatusType() == DataItem.StatusType.Ok) {
                 numberOfAffectedRecords++;
             } else {
@@ -568,7 +571,9 @@ public class OperationEngine extends Data {
         switch (dataItem.getStatus()) {
             case NotFound -> throw new ResourceException("No records found in the form " + dataItem.getFormName());
             case Error -> throw new ResourceException("Impossible to " + action + " record in the form " + dataItem.getFormName());
-            case Exists -> throw new ResourceException("Already exists a record in the " + dataItem.getFormName() + "."+ dataItem.getFieldName() +" with this data.");
+            case Exists -> throw new ResourceException("The field " + dataItem.fieldName + " Already exists in the form " + dataItem.formName);
+            case Mandatory -> throw new ResourceException("The " + dataItem.fieldName + " field is mandatory in the form " + dataItem.formName);
+            case Relations -> throw new ResourceException("Not possible delete record - violation of relations in the form " + dataItem.formName);
         }
     }
 
