@@ -119,7 +119,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>7.0.2</version>
+            <version>7.1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -140,7 +140,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.5.8</version>
+            <version>3.5.9</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
@@ -341,7 +341,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>7.4.0.Final</version>
+            <version>7.4.2.Final</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
@@ -580,17 +580,17 @@
         <dependency>
             <groupId>uk.org.okapibarcode</groupId>
             <artifactId>okapibarcode</artifactId>
-            <version>0.5.5</version>
+            <version>0.5.6</version>
         </dependency>
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
-            <version>9.8.0</version>
+            <version>9.9.0</version>
         </dependency>
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <version>5.30.0</version>
+            <version>5.32.0</version>
         </dependency>
 
         <dependency>
@@ -608,13 +608,13 @@
         <dependency>
             <groupId>com.openai</groupId>
             <artifactId>openai-java</artifactId>
-            <version>4.39.1</version>
+            <version>4.41.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.modelcontextprotocol.sdk</groupId>
             <artifactId>mcp-json-jackson2</artifactId>
-            <version>1.1.3</version>
+            <version>2.0.0</version>
         </dependency>
 
         <!--

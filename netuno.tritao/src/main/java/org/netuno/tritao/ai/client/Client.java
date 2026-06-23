@@ -2361,9 +2361,9 @@ public class Client {
 
             Values headers = values.getValues("headers");
             if (headers != null && !headers.isEmpty()) {
-                builder.customizeRequest(req -> {
+                builder.httpRequestCustomizer((requestBuilder, method, uri, body, context) -> {
                     for (String key : headers.keys()) {
-                        req.header(key, headers.getString(key));
+                        requestBuilder.header(key, headers.getString(key));
                     }
                 });
             }
@@ -3115,26 +3115,20 @@ public class Client {
             return new Values();
         }
     }
-    @SuppressWarnings("unchecked")
+   @SuppressWarnings("unchecked")
     private Map<String, Object> convertToMap(Object input) {
-        if (input == null) {
-            return new LinkedHashMap<>();
-        }   
-
+        if (input == null) return new LinkedHashMap<>();
+        if (input instanceof Map) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            for (Map.Entry<?, ?> e : ((Map<?, ?>) input).entrySet()) {
+                map.put(e.getKey().toString(), convertValue(e.getValue()));
+            }
+            return map;
+        }
+        if (input instanceof Values) {
+            return convertValuesToMap((Values) input);
+        }
         try {
-            if (input instanceof Map) {
-                return new LinkedHashMap<>((Map<String, Object>) input);
-            }
-
-            if (input instanceof Values) {
-                String json = ((Values) input).toJSON();
-                Object obj = mapper.readValue(json, Object.class);
-                if (obj instanceof Map) {
-                    return new LinkedHashMap<>((Map<String, Object>) obj);
-                }
-                return new LinkedHashMap<>();
-            }
-
             String json = mapper.writeValueAsString(input);
             Object obj = mapper.readValue(json, Object.class);
             if (obj instanceof Map) {
@@ -3143,7 +3137,31 @@ public class Client {
         } catch (Exception e) {
             LOGGER.error("Failed to convert object to map.", e);
         }
-
         return new LinkedHashMap<>();
+    }
+
+    private Map<String, Object> convertValuesToMap(Values values) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (String key : values.keys()) {
+            map.put(key, convertValue(values.get(key)));
+        }
+        return map;
+    }
+
+    private Object convertValue(Object val) {
+        if (val == null) return null;
+        if (val instanceof Values) {
+            Values v = (Values) val;
+            if (v.isList()) {
+                List<Object> list = new ArrayList<>();
+                for (int i = 0; i < v.size(); i++) {
+                    list.add(convertValue(v.get(i)));
+                }
+                return list;
+            } else {
+                return convertValuesToMap(v);
+            }
+        }
+        return val;
     }
 }

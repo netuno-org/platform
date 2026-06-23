@@ -9,6 +9,8 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+import java.util.List;
+
 /**
  * Group - Object to config group preferences of the results
  * @author Jailton de Araujo Santos - @jailtonaraujo
@@ -22,22 +24,22 @@ import org.netuno.library.doc.ReturnTranslationDoc;
     )
 })
 public class Group {
-    private String column;
+    private List<String> columns;
 
-    public Group( String column) {
-        this.column = column;
+    public Group(List<String> columns) {
+        this.columns = columns;
     }
 
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Retorna a coluna que será usada na efetuar o agrupamento.",
+                description = "Retorna as colunas que serão usadas na efetuar o agrupamento.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Returns the column that will be used to perform the grouping.",
+                description = "Returns the columns that will be used to perform the grouping.",
                 howToUse = {}
             )
         },
@@ -45,28 +47,28 @@ public class Group {
         returns = {
             @ReturnTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Nome da coluna."
+                description = "Colunas."
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "The name of the column."
+                description = "Columns."
             )
         }
     )
-    public String getColumn() {
-        return column;
+    public List<String> getColumns() {
+        return columns;
     }
 
     @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Define a coluna que será usada na efetuar o agrupamento.",
+                description = "Define as colunas que serão usadas na efetuar o agrupamento.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Defines the column that will be used to perform the grouping.",
+                description = "Defines the columns that will be used to perform the grouping.",
                 howToUse = {}
             )
         },
@@ -74,12 +76,12 @@ public class Group {
             @ParameterDoc(name = "column", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Nome da coluna.",
-                    name = "coluna"
+                    description = "Colunas.",
+                    name = "colunas"
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "The name of the column."
+                    description = "columns."
                 )
             })
         },
@@ -94,8 +96,8 @@ public class Group {
             )
         }
     )
-    public Group setColumn(String column) {
-        this.column = column;
+    public Group setColumns(List<String> columns) {
+        this.columns = columns;
         return this;
     }
 }

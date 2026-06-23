@@ -1183,12 +1183,12 @@ public class Operation {
     }
 
     public Operation group(String column) {
-        this.group = new Group(column);
+        this.group = new Group(List.of(column));
         return this;
     }
 
     public Operation group(String ...columns) {
-        this.group = new Group(String.join(", ", Arrays.stream(columns).toList()));
+        this.group = new Group(Arrays.stream(columns).toList());
         return this;
     }
 
