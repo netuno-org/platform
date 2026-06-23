@@ -465,8 +465,7 @@ public class Enterprise extends HttpServlet {
                             proteu.getOutput().close();
                         }
                     } catch (Throwable t) {
-                        logger.error("Closing Proteu output", t);
-                        throw new Error(t);
+                        logger.debug("Closing Proteu Output", t);
                     } finally {
                         end(proteu, faros, request, response, scriptRunner, error);
                     }
