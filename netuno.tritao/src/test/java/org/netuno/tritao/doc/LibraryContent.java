@@ -546,7 +546,7 @@ public class LibraryContent {
                     contents.getMarkdown().append(": ");
 
                     contents.getMarkdown().append(
-                            span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, parameterTypes[parameterCounter], FormatType.Markdown))
+                            span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, parameterTypes[parameterCounter], FormatType.Markdown, false))
                     );
 
                     contents.getTypeScriptDeclarations().append(
@@ -569,7 +569,7 @@ public class LibraryContent {
                 contents.getMarkdown().append(" : ");
 
                 contents.getMarkdown().append(
-                        span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, method.getGenericReturnType(), FormatType.Markdown))
+                        span(plainMarkdown, "fontWeight: 'normal', fontStyle: 'italic'", type(contents, method.getGenericReturnType(), FormatType.Markdown, false))
                 );
 
                 contents.getTypeScriptDeclarations().append("): ");
@@ -615,13 +615,13 @@ public class LibraryContent {
                         String parameterName = _parameter.getString("parameterName", parameter.getName());
                         ParameterTranslationDoc parameterTranslationDoc = (ParameterTranslationDoc) _parameter.get("parameterTranslationDoc");
                         if (parameterTranslationDoc == null) {
-                            contents.getMarkdown().append("| **" + parameterName + "** | _" + type(contents, parameter.getType(), FormatType.Markdown) + "_ |   |\n");
+                            contents.getMarkdown().append("| **" + parameterName + "** | " + type(contents, parameter.getType(), FormatType.Markdown) + " |   |\n");
                         } else {
                             String[] lines = parameterTranslationDoc.description().split("\n");
                             boolean firstLine = true;
                             for (String line : lines) {
                                 if (firstLine) {
-                                    contents.getMarkdown().append("| **" + parameterName + "** | _" + type(contents, parameter.getType(), FormatType.Markdown) + "_ | " + line + " |\n");
+                                    contents.getMarkdown().append("| **" + parameterName + "** | " + type(contents, parameter.getType(), FormatType.Markdown) + " | " + line + " |\n");
                                 } else {
                                     contents.getMarkdown().append("|   |   | " + line + " |\n");
                                 }
@@ -637,7 +637,7 @@ public class LibraryContent {
                     contents.getMarkdown().append("##### Retorno\n");
                 }
                 contents.getMarkdown().append("\n");
-                contents.getMarkdown().append("( _" + (type(contents, method.getReturnType(), FormatType.Markdown)) + "_ )\n");
+                contents.getMarkdown().append("( " + (type(contents, method.getReturnType(), FormatType.Markdown)) + " )\n");
                 if (returnTranslationDoc != null) {
                     contents.getMarkdown().append("\n");
                     contents.getMarkdown().append(returnTranslationDoc.description());
@@ -661,40 +661,23 @@ public class LibraryContent {
         return contents;
     }
 
-    private String type(GeneratedContents contents, Type type, FormatType formatType) throws ClassNotFoundException {
-        switch (type.getTypeName()) {
-            case "void" -> {
-                return "void";
-            }
-            case "java.lang.String", "String" -> {
-                return "string";
-            }
-            case "java.lang.Character", "C", "char" -> {
-                return "char";
-            }
-            case "java.lang.Byte", "B", "byte" -> {
-                return "byte";
-            }
-            case "java.lang.Short", "S", "short" -> {
-                return "short";
-            }
-            case "java.lang.Integer", "I", "int" -> {
-                return "int";
-            }
-            case "java.lang.Long", "Long", "long" -> {
-                return "long";
-            }
-            case "java.lang.Float", "Float", "float" -> {
-                return "float";
-            }
-            case "java.lang.Double", "Double", "double" -> {
-                return "double";
-            }
-            case "java.lang.Boolean", "Boolean", "boolean" -> {
-                return "boolean";
-            }
-        }
+    private String type(GeneratedContents contents, Type type, FormatType formatType) {
+        return type(contents, type, formatType, true);
+    }
+
+    private String type(GeneratedContents contents, Type type, FormatType formatType, boolean style) {
         String content = switch (type.getTypeName()) {
+            case "void" -> "void";
+            case "java.lang.String", "String" -> "string";
+            case "java.lang.Character", "C", "char" -> "char";
+            case "java.lang.Byte", "B", "byte" -> "byte";
+            case "java.lang.Short", "S", "short" -> "short";
+            case "java.lang.Integer", "I", "int" -> "int";
+            case "java.lang.Long", "Long", "long" -> "long";
+            case "java.lang.Float", "Float", "float" -> "float";
+            case "java.lang.Double", "Double", "double" -> "double";
+            case "java.lang.Boolean", "Boolean", "boolean" -> "boolean";
+
             case "java.lang.String[]", "String[]" -> "string[]";
             case "[C", "java.lang.Character[]", "char[]" -> "char[]";
             case "[B", "java.lang.Byte[]", "byte[]" -> "byte[]";
@@ -704,9 +687,22 @@ public class LibraryContent {
             case "[F", "java.lang.Float[]", "float[]" -> "float[]";
             case "[D", "java.lang.Double[]", "double[]" -> "double[]";
             case "[Z", "java.lang.Boolean[]", "boolean[]" -> "boolean[]";
+
+
+            case "java.util.Map" -> "java.util.Map";
+            case "java.util.List" -> "java.util.List";
+            case "java.util.Collection" -> "java.util.Collection";
+
             default -> "";
         };
         if (!content.isEmpty()) {
+            content = switch (formatType) {
+                case Markdown -> style ? "_" : "";
+                case TypeScript -> "";
+            } + content + switch (formatType) {
+                case Markdown -> style ? "_" : "";
+                case TypeScript -> "";
+            };
             return content;
         }
         boolean objectTypeArray = false;
@@ -759,12 +755,20 @@ public class LibraryContent {
                 cls = Class.forName(clsName);
             } catch (java.lang.ClassNotFoundException e) {
                 content = switch (formatType) {
+                    case Markdown -> style ? "_" : "";
+                    case TypeScript -> "";
+                };
+                content += switch (formatType) {
                     case Markdown -> "?";
                     case TypeScript -> "any";
                 };
                 if (objectTypeArray) {
                     content += "[]";
                 }
+                content += switch (formatType) {
+                    case Markdown -> style ? "_" : "";
+                    case TypeScript -> "";
+                };
                 return content;
             }
             List<Class> resourcesTypes = new ArrayList<>();
@@ -804,6 +808,10 @@ public class LibraryContent {
                         case TypeScript -> " | ";
                     };
                 }
+                content += switch (formatType) {
+                    case Markdown -> style ? "_" : "";
+                    case TypeScript -> "";
+                };
                 Resource resource = (Resource) _class.getAnnotation(Resource.class);
                 if (formatType == FormatType.Markdown) {
                     content += "[" + _class.getSimpleName() + "](/docs/library/resources/" + resource.name() + ")";
@@ -821,6 +829,10 @@ public class LibraryContent {
                         content += "[]";
                     }
                 }
+                content += switch (formatType) {
+                    case Markdown -> style ? "_" : "";
+                    case TypeScript -> "";
+                };
             }
             for (Class _class : objectsTypes) {
                 if (!content.isEmpty()) {
@@ -829,6 +841,10 @@ public class LibraryContent {
                         case TypeScript -> " | ";
                     };
                 }
+                content += switch (formatType) {
+                    case Markdown -> style ? "_" : "";
+                    case TypeScript -> "";
+                };
                 if (formatType == FormatType.Markdown) {
                     content += "[" + _class.getSimpleName() + "](/docs/library/objects/" + _class.getSimpleName() + ")";
                     if (objectTypeArray) {
@@ -843,6 +859,10 @@ public class LibraryContent {
                         content += "[]";
                     }
                 }
+                content += switch (formatType) {
+                    case Markdown -> style ? "_" : "";
+                    case TypeScript -> "";
+                };
             }
             if (appendBaseClass && !content.isEmpty()) {
                 content += " | " + clsName;
@@ -850,9 +870,20 @@ public class LibraryContent {
         }
         if (content.isEmpty()) {
             content = switch (formatType) {
+                case Markdown -> style ? "_" : "";
+                case TypeScript -> "";
+            };
+            content += switch (formatType) {
                 case Markdown -> clsName;
                 case TypeScript -> clsName;
                 //case TypeScript -> clsName.contains(".") ? "any | "+ clsName : clsName;
+            };
+            if (objectTypeArray) {
+                content += "[]";
+            }
+            content += switch (formatType) {
+                case Markdown -> style ? "_" : "";
+                case TypeScript -> "";
             };
             if (formatType == FormatType.Markdown && type instanceof ParameterizedType pt) {
                 Type[] actualTypes = pt.getActualTypeArguments();
@@ -866,7 +897,7 @@ public class LibraryContent {
                         if (!first) {
                             content += ", ";
                         }
-                        content += type(contents, actualType, formatType);
+                        content += type(contents, actualType, formatType, style);
                         first = false;
                     }
                     content += switch (formatType) {
@@ -874,9 +905,6 @@ public class LibraryContent {
                         case TypeScript -> ">";
                     };
                 }
-            }
-            if (objectTypeArray) {
-                content += "[]";
             }
         }
         if (formatType == FormatType.TypeScript) {
