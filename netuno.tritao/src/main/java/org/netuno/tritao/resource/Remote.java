@@ -2610,15 +2610,21 @@ public class Remote extends org.netuno.psamata.net.Remote {
                     )
             }
     )
-    public String hostAddress(String host) {
+    public Response hostAddress(String host) {
+        Response response = new Response();
+        long time = System.currentTimeMillis();
         try {
             InetAddress target = InetAddress.getByName(host);
-            return target.getHostAddress();
+            String hostAddress = target.getHostAddress();
+            response.setHost(hostAddress);
+            response.setContent(hostAddress);
         } catch (Exception e) {
-            return "";
+            response.setError(e);
         }
+        response.setTime(System.currentTimeMillis() - time);
+        return response;
     }
-    public String getHostAddress(String host) {
+    public Response getHostAddress(String host) {
         return hostAddress(host);
     }
 
@@ -2660,26 +2666,29 @@ public class Remote extends org.netuno.psamata.net.Remote {
             returns = {
                     @ReturnTranslationDoc(
                             language = LanguageDoc.PT,
-                            description = "Resultado se endereço está disponível."
+                            description = "Indica se o endereço está disponível."
                     ),
                     @ReturnTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Result if address is available."
+                            description = "Indicates whether the address is available."
                     )
             }
     )
-    public boolean ping(String host, int timeout) {
+    public Response ping(String host, int timeout) {
+        Response response = new Response();
+        long time = System.currentTimeMillis();
         try {
             InetAddress target = InetAddress.getByName(host);
             if (target.isReachable(timeout)) {
-                return true;
+                response.setStatusCode(200);
             }
-            return false;
         } catch (Exception e) {
-            return false;
+            response.setError(e);
         }
+        response.setTime(System.currentTimeMillis() - time);
+        return response;
     }
-    public boolean ping(String host) {
+    public Response ping(String host) {
         return ping(host, 1000);
     }
 
@@ -2721,23 +2730,27 @@ public class Remote extends org.netuno.psamata.net.Remote {
             returns = {
                     @ReturnTranslationDoc(
                             language = LanguageDoc.PT,
-                            description = "Resultado se a porta está disponível."
+                            description = "Indica se a porta está disponível."
                     ),
                     @ReturnTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Result if port is available."
+                            description = "Indicates whether the port is available."
                     )
             }
     )
-    public boolean portListening(String host, int port) {
+    public Response portListening(String host, int port) {
+        Response response = new Response();
+        long time = System.currentTimeMillis();
         try {
             InetAddress target = InetAddress.getByName(host);
             Socket socket = new Socket(target, port);
             socket.close();
-            return true;
+            response.setStatusCode(200);
         } catch (Exception e) {
-            return false;
+            response.setError(e);
         }
+        response.setTime(System.currentTimeMillis() - time);
+        return response;
     }
 
     @LibraryDoc(translations = {
@@ -2759,6 +2772,7 @@ public class Remote extends org.netuno.psamata.net.Remote {
 
         public RemoteResponse(Proteu proteu, org.netuno.psamata.net.Remote.Response response) {
             this.proteu = proteu;
+            this.setTime(response.time);
             this.setMethod(response.method);
             this.setURL(response.url);
             this.setStatusCode(response.statusCode);
@@ -2766,6 +2780,16 @@ public class Remote extends org.netuno.psamata.net.Remote {
             this.setBytes(response.bytes);
             this.setContent(response.content);
             this.setError(response.error);
+        }
+
+        public RemoteResponse time(long time) {
+            super.method(method);
+            return this;
+        }
+
+        public RemoteResponse setTime(long time) {
+            super.setTime(time);
+            return this;
         }
         
         @MethodDoc(
