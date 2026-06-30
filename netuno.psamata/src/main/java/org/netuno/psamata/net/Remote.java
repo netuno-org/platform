@@ -577,6 +577,7 @@ public class Remote {
     }
 
     private Response submit(String method, String url, Values qs, String contentType, String dataReady, Values data) {
+        long time = System.currentTimeMillis();
         String queryString = qs.toString("&", "=", new Values().set("urlEncode", true));
         String fullUrl = urlPrefix;
         if (!fullUrl.isEmpty() && !url.isEmpty()
@@ -584,6 +585,7 @@ public class Remote {
             fullUrl += "/";
         }
         fullUrl += url + (queryString.isEmpty() ? "" : "?" + queryString);
+        Response response = new Response();
         try {
             // https://mkyong.com/java/java-11-httpclient-examples/
             // https://zetcode.com/java/httpclient/
@@ -642,7 +644,6 @@ public class Remote {
 
             String charset = Charset.defaultCharset().name();
 
-            Response response = new Response();
             response.setURL(fullUrl);
             response.setMethod(method.toUpperCase());
             response.setQSSent(qs);
@@ -708,6 +709,8 @@ public class Remote {
                             + (data != null && !data.isEmpty() ?
                             "\n>> "+ dataContent : ""),
                     t);
+        } finally {
+            response.setTime(System.currentTimeMillis() - time);
         }
     }
 
@@ -895,6 +898,8 @@ public class Remote {
     }
 
     public class Response {
+        public long time = 0L;
+        public String host = null;
         public String method = "";
         public String url = "";
         public Values qsSent = null;
@@ -909,7 +914,67 @@ public class Remote {
         public Response() {
 
         }
-        
+
+        public long time() {
+            return time;
+        }
+
+        public long getTime() {
+            return time;
+        }
+
+        public Response time(long time) {
+            return this.setTime(time);
+        }
+
+        public Response setTime(long time) {
+            this.time = time;
+            return this;
+        }
+
+        @MethodDoc(
+                translations = {
+                        @MethodTranslationDoc(
+                                language = LanguageDoc.PT,
+                                description = "Obtém o endereço do servidor.",
+                                howToUse = {}),
+                        @MethodTranslationDoc(
+                                language = LanguageDoc.EN,
+                                description = "Get the host address.",
+                                howToUse = {})
+                },
+                parameters = { },
+                returns = {
+                        @ReturnTranslationDoc(
+                                language = LanguageDoc.PT,
+                                description = "O nome do servidor."
+                        ),
+                        @ReturnTranslationDoc(
+                                language = LanguageDoc.EN,
+                                description = "The server name."
+                        )
+                }
+        )
+        public String host() {
+            if (host == null) {
+                host = getHeader().getString("Host");
+            }
+            return host;
+        }
+
+        public String getHost() {
+            return host();
+        }
+
+        public Response host(String host) {
+            return this.setHost(host);
+        }
+
+        public Response setHost(String host) {
+            this.host = host;
+            return this;
+        }
+
         @MethodDoc(
             translations = {
                 @MethodTranslationDoc(
