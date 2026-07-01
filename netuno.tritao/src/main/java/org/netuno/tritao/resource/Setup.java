@@ -150,6 +150,8 @@ public class Setup extends ResourceBase {
             result.set(result.get() && scriptStartResult.isSuccess());
             Config.getDBBuilder(getProteu(), "default").setup();
 
+            getProteu().getConfig().set("_setup:cleanup:forms", Values.newList());
+            getProteu().getConfig().set("_setup:cleanup:fields", Values.newList());
             getHili().event().run(EventId.SETUP_CLEANUP_BEFORE);
             Event.run("_setup:"+ Config.getApp(getProteu()) +":schema:cleanup");
             getHili().event().run(EventId.SETUP_CLEANUP);
@@ -217,6 +219,8 @@ public class Setup extends ResourceBase {
                     logger.fatal("When looking for setup scripts into the folder: " + Config.getPathAppSetup(getProteu()), e);
                 }
             }
+            getProteu().getConfig().unset("_setup:cleanup:forms");
+            getProteu().getConfig().unset("_setup:cleanup:fields");
 
             getHili().event().run(EventId.SETUP_END_BEFORE);
             Event.run("_setup:"+ Config.getApp(getProteu()) +":schema:end");

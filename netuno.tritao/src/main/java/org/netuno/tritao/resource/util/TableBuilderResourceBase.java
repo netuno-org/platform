@@ -133,6 +133,9 @@ public class TableBuilderResourceBase extends ResourceBase {
     }
 
     public boolean createComponentIfNotExists(int formId, Values data) {
+        if (getProteu().getConfig().getValues("_setup:cleanup:fields", Values.newList()).contains(formId +"~"+ data.getString("name"))) {
+            return false;
+        }
         return CoreData.createComponentIfNotExists(getProteu(), isReport(), formId, data);
     }
 
@@ -164,9 +167,14 @@ public class TableBuilderResourceBase extends ResourceBase {
         return dropFieldIfExists(data);
     }
 
-    public boolean dropFieldIfExists(Values data) {
-        if (data != null) {
-            return CoreData.dropField(getProteu(), isReport(), data.getInt("table_id"), data);
+    public boolean dropFieldIfExists(Values fieldData) {
+        if (fieldData != null) {
+            boolean result = CoreData.dropField(getProteu(), isReport(), fieldData.getInt("table_id"), fieldData);
+            if (result) {
+                getProteu().getConfig().getValues(
+                        "_setup:cleanup:fields", Values.newList()
+                ).add(fieldData.getInt("table_id") +"~"+ fieldData.getString("name"));
+            }
         }
         return false;
     }
