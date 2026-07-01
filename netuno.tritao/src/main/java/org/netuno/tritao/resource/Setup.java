@@ -160,7 +160,6 @@ public class Setup extends ResourceBase {
             getHili().event().run(EventId.SETUP_CLEANUP_SCRIPT_AFTER);
             getHili().event().run(EventId.SETUP_CLEANUP_AFTER);
             result.set(result.get() && scriptCleanupResult.isSuccess());
-            createSchema(true);
 
             if (setupConfig == null
                     || setupConfig.getValues("schema") == null
@@ -230,6 +229,9 @@ public class Setup extends ResourceBase {
             getHili().event().run(EventId.SETUP_END_SCRIPT_AFTER);
             getHili().event().run(EventId.SETUP_END_AFTER);
             result.set(result.get() && scriptEndResult.isSuccess());
+
+            createSchema(true);
+
             if (!result.get()) {
                 return RunResult.Error;
             }

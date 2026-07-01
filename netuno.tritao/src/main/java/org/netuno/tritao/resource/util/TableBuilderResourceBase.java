@@ -169,12 +169,10 @@ public class TableBuilderResourceBase extends ResourceBase {
 
     public boolean dropFieldIfExists(Values fieldData) {
         if (fieldData != null) {
-            boolean result = CoreData.dropField(getProteu(), isReport(), fieldData.getInt("table_id"), fieldData);
-            if (result) {
-                getProteu().getConfig().getValues(
-                        "_setup:cleanup:fields", Values.newList()
-                ).add(fieldData.getInt("table_id") +"~"+ fieldData.getString("name"));
-            }
+            getProteu().getConfig().getValues(
+                    "_setup:cleanup:fields", Values.newList()
+            ).add(fieldData.getInt("table_id") +"~"+ fieldData.getString("name"));
+            return CoreData.dropField(getProteu(), isReport(), fieldData.getInt("table_id"), fieldData);
         }
         return false;
     }
