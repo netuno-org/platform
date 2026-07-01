@@ -112,6 +112,14 @@ public class CoreData {
         }
         return false;
     }
+
+    public static boolean dropField(Proteu proteu, boolean isReport, int tableId, Values data) {
+        Values _data = new Values(data);
+        Builder builder = Config.getDBBuilder(proteu);
+        _data.set("table_id", tableId);
+        _data.set("report", isReport);
+        return builder.deleteTableField(data);
+    }
     
     public static List<String> uniqueFields(Proteu proteu, String tableName) {
         Builder builder = Config.getDBBuilder(proteu);
