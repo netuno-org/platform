@@ -403,6 +403,7 @@ public class App implements MainArg {
 
         AppPath.copyApp(appPath, AppPath.SERVER_SETUP, "README.md");
         AppPath.copyApp(appPath, AppPath.SERVER_SETUP, "_start.js");
+        AppPath.copyApp(appPath, AppPath.SERVER_SETUP, "_cleanup.js");
         AppPath.copyApp(appPath, AppPath.SERVER_SETUP, "_end.js");
 
         AppPath.copyApp(appPath, AppPath.SERVER_TEMPLATES, "README.md");
