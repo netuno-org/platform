@@ -308,28 +308,36 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
     }
 
     default boolean deleteTableField() {
+        getProteu().getRequestAll().set("netuno_table_id", getProteu().getRequestGet().getString("netuno_table_id"));
+        return deleteTableField(getProteu().getRequestAll());
+    }
+
+    default boolean deleteTableField(Values data) {
+        if (data.hasKey("netuno_table_id") && data.getInt("netuno_table_id") > 0) {
+            data.set("table_id", data.getInt("netuno_table_id"));
+        }
         boolean result = false;
         try {
-            List<Values> rsTableDesignField = selectTableDesign(getProteu().getRequestAll().getString("id"));
+            List<Values> rsTableDesignField = selectTableDesign(data.getString("id"));
             if (rsTableDesignField.size() == 1) {
                 Values field = rsTableDesignField.getFirst();
-                List<Values> rsTable = selectTable(getProteu().getRequestGet().getString("netuno_table_id"), "", "");
+                List<Values> rsTable = selectTable(data.getString("table_id"), "", "");
                 Values table = rsTable.getFirst();
-                if (!getProteu().getRequestAll().getBoolean("report")) {
+                if (!data.getBoolean("report")) {
                     org.netuno.tritao.com.Component com = Config.getNewComponent(getProteu(), getHili(),
                             field.getString("type"));
                     com.setProteu(getProteu());
                     com.setDesignData(field);
-                    for (ComponentData data : com.getDataStructure()) {
-                        if (data.getName().equals("id")
-                                || data.getName().equals("uid")
-                                || data.getName().equals("user_id")
-                                || data.getName().equals("group_id") || data.getName().equals("lastchange_time")
-                                || data.getName().equals("lastchange_user_id") || data.getName().equals("active")
-                                || data.getName().equals("lock")) {
+                    for (ComponentData comData : com.getDataStructure()) {
+                        if (comData.getName().equals("id")
+                                || comData.getName().equals("uid")
+                                || comData.getName().equals("user_id")
+                                || comData.getName().equals("group_id") || comData.getName().equals("lastchange_time")
+                                || comData.getName().equals("lastchange_user_id") || comData.getName().equals("active")
+                                || comData.getName().equals("lock")) {
                             continue;
                         }
-                        new Column(this).drop(table.getString("name"), data.getName());
+                        new Column(this).drop(table.getString("name"), comData.getName());
                     }
                 }
                 getExecutor().execute("delete from netuno_design where id = " + field.getString("id") + ";");
