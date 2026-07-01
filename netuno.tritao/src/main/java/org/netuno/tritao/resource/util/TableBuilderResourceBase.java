@@ -144,6 +144,33 @@ public class TableBuilderResourceBase extends ResourceBase {
         return createComponentIfNotExists(formData.getInt("id"), data);
     }
 
+    public boolean dropFieldIfExists(int formId, int fieldId) {
+        Values data = getComponent(formId, fieldId);
+        return dropFieldIfExists(data);
+    }
+
+    public boolean dropFieldIfExists(int formId, String fieldNameOrUid) {
+        Values data = getComponent(formId, fieldNameOrUid);
+        return dropFieldIfExists(data);
+    }
+
+    public boolean dropFieldIfExists(String formNameOrUid, int fieldId) {
+        Values data = getComponent(formNameOrUid, fieldId);
+        return dropFieldIfExists(data);
+    }
+
+    public boolean dropFieldIfExists(String formNameOrUid, String fieldNameOrUid) {
+        Values data = getComponent(formNameOrUid, fieldNameOrUid);
+        return dropFieldIfExists(data);
+    }
+
+    public boolean dropFieldIfExists(Values data) {
+        if (data != null) {
+            return CoreData.dropField(getProteu(), isReport(), data.getInt("table_id"), data);
+        }
+        return false;
+    }
+
     public List<String> mandatoryFields(int formId) {
         Values formData = get(formId);
         if (formData == null) {
