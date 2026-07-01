@@ -98,6 +98,12 @@ public class EventId {
     public static final String SETUP_START_SCRIPT_BEFORE = "_setup:start:script:before";
     public static final String SETUP_START_SCRIPT_AFTER = "_setup:start:script:after";
 
+    public static final String SETUP_CLEANUP = "_setup:cleanup";
+    public static final String SETUP_CLEANUP_BEFORE = "_setup:cleanup:before";
+    public static final String SETUP_CLEANUP_AFTER = "_setup:cleanup:after";
+    public static final String SETUP_CLEANUP_SCRIPT_BEFORE = "_setup:cleanup:script:before";
+    public static final String SETUP_CLEANUP_SCRIPT_AFTER = "_setup:cleanup:script:after";
+
     public static final String SETUP_END = "_setup:end";
     public static final String SETUP_END_BEFORE = "_setup:end:before";
     public static final String SETUP_END_AFTER = "_setup:end:after";
