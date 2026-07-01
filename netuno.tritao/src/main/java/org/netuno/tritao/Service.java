@@ -192,6 +192,7 @@ public class Service {
             }
             if (service.getPath().startsWith("_auth_provider/")
                     || service.getPath().equalsIgnoreCase("_auth")
+                    || service.getPath().equalsIgnoreCase("_altcha")
                     || Auth.isAuthenticated(proteu, hili)) {
                 service.allow();
             }
