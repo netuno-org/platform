@@ -29,12 +29,22 @@ import java.util.List;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class CoreData {
+    private static boolean isDropped(Proteu proteu, boolean isReport, Values data) {
+        return proteu.getConfig().getValues("_setup:cleanup:"+ (isReport ? "reports" : "forms"), Values.newList()).contains(data.getString("name"));
+    }
 
     public static Values getTable(Proteu proteu, boolean isReport, Values data) {
-        Values _data = new Values(data);
         Builder builder = Config.getDBBuilder(proteu);
-        _data.set("report", isReport);
-        List<Values> result = builder.selectTable(_data);
+        Values filter = Values.newMap();
+        filter.set("report", isReport);
+        if (data.hasKey("id") && data.getInt("id") > 0) {
+            filter.set("id", data.getString("id"));
+        } else if (data.hasKey("uid") && data.getString("uid").contains("-")) {
+            filter.set("uid", data.getString("uid"));
+        } else if (data.hasKey("name") && !data.getString("name").isEmpty()) {
+            filter.set("name", data.getString("name"));
+        }
+        List<Values> result = builder.selectTable(filter);
         if (result.size() > 0) {
             return result.get(0);
         } else {
@@ -48,6 +58,9 @@ public class CoreData {
     }
 
     public static boolean createTable(Proteu proteu, boolean isReport, Values data) {
+        if (isDropped(proteu, isReport, data)) {
+            return false;
+        }
         Values _data = new Values(data);
         Builder builder = Config.getDBBuilder(proteu);
         _data.set("report", isReport);
@@ -55,12 +68,48 @@ public class CoreData {
     }
 
     public static boolean createTableIfNotExists(Proteu proteu, boolean isReport, Values data) {
+        if (isDropped(proteu, isReport, data)) {
+            return false;
+        }
         Values _data = new Values(data);
         _data.set("report", isReport);
         Builder builder = Config.getDBBuilder(proteu);
-        Values result = getTable(proteu, isReport, new Values().set("name", _data.getString("name")));
+        Values result = getTable(proteu, isReport, data);
         if (result == null) {
             return builder.createTable(_data);
+        }
+        return false;
+    }
+
+    public static boolean syncTable(Proteu proteu, boolean isReport, Values data) {
+        if (isDropped(proteu, isReport, data)) {
+            return false;
+        }
+        Values _data = new Values(data);
+        _data.set("report", isReport);
+        Builder builder = Config.getDBBuilder(proteu);
+        Values result = getTable(proteu, isReport, data);
+        if (result == null) {
+            return builder.createTable(_data);
+        }
+        _data.set("id", result.getInt("id"));
+        if (_data.hasKey("id") && _data.getInt("id") > 0) {
+            return builder.updateTable(_data);
+        }
+        return false;
+    }
+
+    public static boolean dropTableIfExists(Proteu proteu, boolean isReport, Values data) {
+        Values result = getTable(proteu, isReport, data);
+        if (result != null) {
+            proteu.getConfig().getValues(
+                    "_setup:cleanup:"+ (isReport ? "reports" : "forms"), Values.newList()
+            ).add(result.getString("name"));
+            Values _data = new Values();
+            _data.set("report", isReport);
+            _data.set("id", result.getInt("id"));
+            Builder builder = Config.getDBBuilder(proteu);
+            return builder.deleteTable(_data);
         }
         return false;
     }

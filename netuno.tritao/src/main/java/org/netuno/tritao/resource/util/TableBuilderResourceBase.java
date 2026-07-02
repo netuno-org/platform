@@ -74,6 +74,21 @@ public class TableBuilderResourceBase extends ResourceBase {
         return CoreData.createTableIfNotExists(getProteu(), isReport(), data);
     }
 
+    public boolean sync(Values data) {
+        return CoreData.syncTable(getProteu(), isReport(), data);
+    }
+
+    public boolean dropIfExists(int id) {
+        return CoreData.dropTableIfExists(getProteu(), isReport(), Values.newMap().set("id", id));
+    }
+
+    public boolean dropIfExists(String nameOrUid) {
+        if (nameOrUid.contains("-")) {
+            return CoreData.dropTableIfExists(getProteu(), isReport(), Values.newMap().set("uid", nameOrUid));
+        }
+        return CoreData.dropTableIfExists(getProteu(), isReport(), Values.newMap().set("name", nameOrUid));
+    }
+
     public List<Values> getAllComponents(int formId) {
         return CoreData.getAllComponents(getProteu(), isReport(), formId);
     }
