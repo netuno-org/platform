@@ -162,6 +162,18 @@ public class TableBuilderResourceBase extends ResourceBase {
         return createComponentIfNotExists(formData.getInt("id"), data);
     }
 
+    public boolean syncField(int tableId, Values data) {
+        return CoreData.syncField(getProteu(), isReport(), tableId, data);
+    }
+
+    public boolean syncField(String formNameOrUid, Values data) {
+        Values formData = get(formNameOrUid);
+        if (formData == null) {
+            return false;
+        }
+        return syncField(formData.getInt("id"), data);
+    }
+
     public boolean dropFieldIfExists(int formId, int fieldId) {
         Values data = getComponent(formId, fieldId);
         return dropFieldIfExists(data);
@@ -184,9 +196,6 @@ public class TableBuilderResourceBase extends ResourceBase {
 
     public boolean dropFieldIfExists(Values fieldData) {
         if (fieldData != null) {
-            getProteu().getConfig().getValues(
-                    "_setup:cleanup:fields", Values.newList()
-            ).add(fieldData.getInt("table_id") +"~"+ fieldData.getString("name"));
             return CoreData.dropField(getProteu(), isReport(), fieldData.getInt("table_id"), fieldData);
         }
         return false;
