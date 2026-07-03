@@ -142,28 +142,32 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
     }
 
     default boolean updateTableField() {
+        return updateTableField(getProteu().getRequestAll());
+    }
+
+    default boolean updateTableField(Values data) {
         boolean result = false;
         try {
             List<Values> rsTableDesign = getExecutor().query("select * from netuno_design where table_id = "
-                    + DB.sqlInjectionInt(getProteu().getRequestGet().getString("netuno_table_id")) + " and name = '"
-                    + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "' and id != "
-                    + DB.sqlInjectionInt(getProteu().getRequestAll().getString("id")));
+                    + DB.sqlInjectionInt(data.getString("netuno_table_id")) + " and name = '"
+                    + DB.sqlInjection(data.getString("name")) + "' and id != "
+                    + DB.sqlInjectionInt(data.getString("id")));
             if (rsTableDesign.isEmpty()) {
-                List<Values> rsTable = selectTable(getProteu().getRequestGet().getString("netuno_table_id"), "", "");
+                List<Values> rsTable = selectTable(data.getString("netuno_table_id"), "", "");
                 Values table = rsTable.getFirst();
-                List<Values> rsTableDesignField = selectTableDesign(getProteu().getRequestAll().getString("id"));
+                List<Values> rsTableDesignField = selectTableDesign(data.getString("id"));
                 Values field = rsTableDesignField.getFirst();
-                if (getProteu().getRequestAll().getString("type").equals("user")) {
-                    getProteu().getRequestAll().set("link", "netuno_user:name");
-                } else if (getProteu().getRequestAll().getString("type").equals("group")) {
-                    getProteu().getRequestAll().set("link", "netuno_group:name");
+                if (data.getString("type").equals("user")) {
+                    data.set("link", "netuno_user:name");
+                } else if (data.getString("type").equals("group")) {
+                    data.set("link", "netuno_group:name");
                 }
-                getProteu().getRequestAll().set("properties", getComponentPropertiesFromRequestAll());
-                if (!getProteu().getRequestAll().getBoolean("report")) {
+                data.set("properties", getComponentPropertiesFromRequestAll());
+                if (!data.getBoolean("report")) {
                     org.netuno.tritao.com.Component comNew = Config.getNewComponent(getProteu(), getHili(),
-                            getProteu().getRequestAll().getString("type"));
+                            data.getString("type"));
                     comNew.setProteu(getProteu());
-                    comNew.setDesignData(getProteu().getRequestAll());
+                    comNew.setDesignData(data);
                     comNew.setTableData(table);
                     org.netuno.tritao.com.Component comOld = Config.getNewComponent(getProteu(), getHili(),
                             field.getString("type"));
@@ -215,7 +219,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                         }
                     }
 
-                    boolean changeMax = field.getInt("max") != getProteu().getRequestAll().getInt("max");
+                    boolean changeMax = field.getInt("max") != data.getInt("max");
                     if (changeMax) {
                         for (ComponentData dataNew : comNew.getDataStructure()) {
                             Column column = columnDataType(dataNew);
@@ -229,58 +233,58 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 }
 
                 Component com = Config.getNewComponent(getProteu(), getHili(),
-                        getProteu().getRequestAll().getString("type"));
+                        data.getString("type"));
                 com.getConfiguration().load(getComponentPropertiesFromRequestAll());
 
                 Values viewUser = null;
-                if (getProteu().getRequestAll().has("view_user") && !getProteu().getRequestAll().getString("view_user").isEmpty()) {
-                    viewUser = getItemById("netuno_user", getProteu().getRequestAll().getString("view_user"));
-                } else if (!getProteu().getRequestAll().getString("view_user_uid").isEmpty()) {
-                    viewUser = getItemByUId("netuno_user", getProteu().getRequestAll().getString("view_user_uid"));
+                if (data.has("view_user") && !data.getString("view_user").isEmpty()) {
+                    viewUser = getItemById("netuno_user", data.getString("view_user"));
+                } else if (!data.getString("view_user_uid").isEmpty()) {
+                    viewUser = getItemByUId("netuno_user", data.getString("view_user_uid"));
                 }
                 Values viewGroup = null;
-                if (getProteu().getRequestAll().has("view_group") && !getProteu().getRequestAll().getString("view_group").isEmpty()) {
-                    viewGroup = getItemById("netuno_group", getProteu().getRequestAll().getString("view_group"));
-                } else if (!getProteu().getRequestAll().getString("view_group_uid").isEmpty()) {
-                    viewGroup = getItemByUId("netuno_group", getProteu().getRequestAll().getString("view_group_uid"));
+                if (data.has("view_group") && !data.getString("view_group").isEmpty()) {
+                    viewGroup = getItemById("netuno_group", data.getString("view_group"));
+                } else if (!data.getString("view_group_uid").isEmpty()) {
+                    viewGroup = getItemByUId("netuno_group", data.getString("view_group_uid"));
                 }
                 Values editUser = null;
-                if (getProteu().getRequestAll().has("edit_user") && !getProteu().getRequestAll().getString("edit_user").isEmpty()) {
-                    viewUser = getItemById("netuno_user", getProteu().getRequestAll().getString("edit_user"));
-                } else if (!getProteu().getRequestAll().getString("edit_user_uid").isEmpty()) {
-                    editUser = getItemByUId("netuno_user", getProteu().getRequestAll().getString("edit_user_uid"));
+                if (data.has("edit_user") && !data.getString("edit_user").isEmpty()) {
+                    viewUser = getItemById("netuno_user", data.getString("edit_user"));
+                } else if (!data.getString("edit_user_uid").isEmpty()) {
+                    editUser = getItemByUId("netuno_user", data.getString("edit_user_uid"));
                 }
                 Values editGroup = null;
-                if (getProteu().getRequestAll().has("edit_group") && !getProteu().getRequestAll().getString("edit_group").isEmpty()) {
-                    viewGroup = getItemById("netuno_group", getProteu().getRequestAll().getString("edit_group"));
-                } else if (!getProteu().getRequestAll().getString("edit_group_uid").isEmpty()) {
-                    editGroup = getItemByUId("netuno_group", getProteu().getRequestAll().getString("edit_group_uid"));
+                if (data.has("edit_group") && !data.getString("edit_group").isEmpty()) {
+                    viewGroup = getItemById("netuno_group", data.getString("edit_group"));
+                } else if (!data.getString("edit_group_uid").isEmpty()) {
+                    editGroup = getItemByUId("netuno_group", data.getString("edit_group_uid"));
                 }
 
                 Values values = new Values();
-                values.set("name", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("name")) + "'");
-                values.set("title", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("title")) + "'");
-                values.set(getBuilder().escape("unique"), getProteu().getRequestAll().getBoolean("unique"));
-                values.set(getBuilder().escape("mandatory"), getProteu().getRequestAll().getBoolean("mandatory"));
-                values.set("description", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("description")) + "'");
-                values.set("x", DB.sqlInjectionInt(getProteu().getRequestAll().getString("x")));
-                values.set("y", DB.sqlInjectionInt(getProteu().getRequestAll().getString("y")));
+                values.set("name", "'" + DB.sqlInjection(data.getString("name")) + "'");
+                values.set("title", "'" + DB.sqlInjection(data.getString("title")) + "'");
+                values.set(getBuilder().escape("unique"), data.getBoolean("unique"));
+                values.set(getBuilder().escape("mandatory"), data.getBoolean("mandatory"));
+                values.set("description", "'" + DB.sqlInjection(data.getString("description")) + "'");
+                values.set("x", DB.sqlInjectionInt(data.getString("x")));
+                values.set("y", DB.sqlInjectionInt(data.getString("y")));
                 values.set(getBuilder().escape("type"),
-                        "'" + DB.sqlInjection(getProteu().getRequestAll().getString("type")) + "'");
-                values.set("width", DB.sqlInjectionInt(getProteu().getRequestAll().getString("width")));
-                values.set("height", DB.sqlInjectionInt(getProteu().getRequestAll().getString("height")));
-                values.set("max", DB.sqlInjectionInt(getProteu().getRequestAll().getString("max")));
-                values.set("min", DB.sqlInjectionInt(getProteu().getRequestAll().getString("min")));
-                values.set("colspan", DB.sqlInjectionInt(getProteu().getRequestAll().getString("colspan")));
-                values.set("rowspan", DB.sqlInjectionInt(getProteu().getRequestAll().getString("rowspan")));
-                values.set("tdwidth", DB.sqlInjectionInt(getProteu().getRequestAll().getString("tdwidth")));
-                values.set("tdheight", DB.sqlInjectionInt(getProteu().getRequestAll().getString("tdheight")));
-                values.set("whenresult", getProteu().getRequestAll().getBoolean("whenresult"));
-                values.set("whenfilter", getProteu().getRequestAll().getBoolean("whenfilter"));
-                values.set("whenedit", getProteu().getRequestAll().getBoolean("whenedit"));
-                values.set("whenview", getProteu().getRequestAll().getBoolean("whenview"));
-                values.set("whennew", getProteu().getRequestAll().getBoolean("whennew"));
-                values.set("whenexport", getProteu().getRequestAll().getBoolean("whenexport"));
+                        "'" + DB.sqlInjection(data.getString("type")) + "'");
+                values.set("width", DB.sqlInjectionInt(data.getString("width")));
+                values.set("height", DB.sqlInjectionInt(data.getString("height")));
+                values.set("max", DB.sqlInjectionInt(data.getString("max")));
+                values.set("min", DB.sqlInjectionInt(data.getString("min")));
+                values.set("colspan", DB.sqlInjectionInt(data.getString("colspan")));
+                values.set("rowspan", DB.sqlInjectionInt(data.getString("rowspan")));
+                values.set("tdwidth", DB.sqlInjectionInt(data.getString("tdwidth")));
+                values.set("tdheight", DB.sqlInjectionInt(data.getString("tdheight")));
+                values.set("whenresult", data.getBoolean("whenresult"));
+                values.set("whenfilter", data.getBoolean("whenfilter"));
+                values.set("whenedit", data.getBoolean("whenedit"));
+                values.set("whenview", data.getBoolean("whenview"));
+                values.set("whennew", data.getBoolean("whennew"));
+                values.set("whenexport", data.getBoolean("whenexport"));
 
                 values.set("view_user_id", viewUser != null ? viewUser.getString("id") : "0");
                 values.set("view_group_id", viewGroup != null ? viewGroup.getString("id") : "0");
@@ -289,13 +293,13 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
 
                 values.set("properties", "'" + DB.sqlInjection(com.getConfiguration().toString()) + "'");
 
-                values.set("firebase", "'" + DB.sqlInjection(getProteu().getRequestAll().getString("firebase")) + "'");
+                values.set("firebase", "'" + DB.sqlInjection(data.getString("firebase")) + "'");
 
                 getExecutor().execute("update netuno_design set "
                         + values.toString(", ", " = ",
                         new Values().set("booleanTrue", getBuilder().booleanTrue()).set("booleanFalse",
                                 getBuilder().booleanFalse()))
-                        + " where id = " + DB.sqlInjectionInt(getProteu().getRequestAll().getString("id")) + ";");
+                        + " where id = " + DB.sqlInjectionInt(data.getString("id")) + ";");
 
                 new org.netuno.tritao.resource.Setup(getProteu(), getHili()).autoCreateSchema();
 
