@@ -29,8 +29,12 @@ import java.util.List;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class CoreData {
-    private static boolean isDropped(Proteu proteu, boolean isReport, Values data) {
+    private static boolean isTableDropped(Proteu proteu, boolean isReport, Values data) {
         return proteu.getConfig().getValues("_setup:cleanup:"+ (isReport ? "reports" : "forms"), Values.newList()).contains(data.getString("name"));
+    }
+
+    private static boolean isFieldDropped(Proteu proteu, boolean isReport, int tableId, Values data) {
+        return proteu.getConfig().getValues("_setup:cleanup:"+ (isReport ? "reports" : "forms") +":fields", Values.newList()).contains(tableId +"~"+ data.getString("name"));
     }
 
     public static Values getTable(Proteu proteu, boolean isReport, Values data) {
@@ -58,7 +62,7 @@ public class CoreData {
     }
 
     public static boolean createTable(Proteu proteu, boolean isReport, Values data) {
-        if (isDropped(proteu, isReport, data)) {
+        if (isTableDropped(proteu, isReport, data)) {
             return false;
         }
         Values _data = new Values(data);
@@ -68,7 +72,7 @@ public class CoreData {
     }
 
     public static boolean createTableIfNotExists(Proteu proteu, boolean isReport, Values data) {
-        if (isDropped(proteu, isReport, data)) {
+        if (isTableDropped(proteu, isReport, data)) {
             return false;
         }
         Values _data = new Values(data);
@@ -82,13 +86,13 @@ public class CoreData {
     }
 
     public static boolean syncTable(Proteu proteu, boolean isReport, Values data) {
-        if (isDropped(proteu, isReport, data)) {
+        if (isTableDropped(proteu, isReport, data)) {
             return false;
         }
         Values _data = new Values(data);
         _data.set("report", isReport);
         Builder builder = Config.getDBBuilder(proteu);
-        Values result = getTable(proteu, isReport, data);
+        Values result = getTable(proteu, isReport, _data);
         if (result == null) {
             return builder.createTable(_data);
         }
@@ -138,6 +142,9 @@ public class CoreData {
     }
 
     public static boolean createComponent(Proteu proteu, boolean isReport, int tableId, Values data) {
+        if (isFieldDropped(proteu, isReport, tableId, data)) {
+            return false;
+        }
         Values _data = new Values(data);
         Builder builder = Config.getDBBuilder(proteu);
         _data.set("table_id", tableId);
@@ -146,6 +153,9 @@ public class CoreData {
     }
 
     public static boolean createComponentIfNotExists(Proteu proteu, boolean isReport, int tableId, Values data) {
+        if (isFieldDropped(proteu, isReport, tableId, data)) {
+            return false;
+        }
         Values tableData = getTable(proteu, isReport, new Values().set("id", tableId));
         if (tableData == null) {
             return false;
@@ -162,7 +172,28 @@ public class CoreData {
         return false;
     }
 
+    public static boolean syncField(Proteu proteu, boolean isReport, int tableId, Values data) {
+        if (isFieldDropped(proteu, isReport, tableId, data)) {
+            return false;
+        }
+        Values _data = new Values(data);
+        _data.set("report", isReport);
+        Builder builder = Config.getDBBuilder(proteu);
+        Values result = getComponent(proteu, isReport, tableId, _data);
+        if (result == null) {
+            return builder.createTableField(_data);
+        }
+        _data.set("id", result.getInt("id"));
+        if (_data.hasKey("id") && _data.getInt("id") > 0) {
+            return builder.updateTableField(_data);
+        }
+        return false;
+    }
+
     public static boolean dropField(Proteu proteu, boolean isReport, int tableId, Values data) {
+        proteu.getConfig().getValues(
+                "_setup:cleanup:"+ (isReport ? "reports" : "forms") +":fields", Values.newList()
+        ).add(data.getInt("table_id") +"~"+ data.getString("name"));
         Values _data = new Values(data);
         Builder builder = Config.getDBBuilder(proteu);
         _data.set("table_id", tableId);
