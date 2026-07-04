@@ -162,6 +162,67 @@ public class TableBuilderResourceBase extends ResourceBase {
         return createComponentIfNotExists(formData.getInt("id"), data);
     }
 
+    public Values getField(int formId, String nameOrUid) {
+        if (nameOrUid.contains("-")) {
+            return getField(formId, new Values().set("uid", nameOrUid));
+        }
+        return getField(formId, new Values().set("name", nameOrUid));
+    }
+
+    public Values getField(String formNameOrUid, String nameOrUid) {
+        if (nameOrUid.contains("-")) {
+            return getField(formNameOrUid, new Values().set("uid", nameOrUid));
+        }
+        return getField(formNameOrUid, new Values().set("name", nameOrUid));
+    }
+
+    public Values getField(int formId, int id) {
+        return getField(formId, new Values().set("id", id));
+    }
+
+    public Values getField(String formNameOrUid, int id) {
+        return getField(formNameOrUid, new Values().set("id", id));
+    }
+
+    public Values getField(int formId, Values data) {
+        return CoreData.getField(getProteu(), isReport(), formId, data);
+    }
+
+    public Values getField(String formNameOrUid, Values data) {
+        Values formData = get(formNameOrUid);
+        if (formData != null) {
+            return getField(formData.getInt("id"), data);
+        }
+        return null;
+    }
+
+    public boolean createField(int formId, Values data) {
+        return CoreData.createField(getProteu(), isReport(), formId, data);
+    }
+
+    public boolean createField(String formNameOrUid, Values data) {
+        Values formData = get(formNameOrUid);
+        if (formData != null) {
+            return createField(formData.getInt("id"), data);
+        }
+        return false;
+    }
+
+    public boolean createFieldIfNotExists(int formId, Values data) {
+        if (getProteu().getConfig().getValues("_setup:cleanup:fields", Values.newList()).contains(formId +"~"+ data.getString("name"))) {
+            return false;
+        }
+        return CoreData.createFieldIfNotExists(getProteu(), isReport(), formId, data);
+    }
+
+    public boolean createFieldIfNotExists(String formNameOrUid, Values data) {
+        Values formData = get(formNameOrUid);
+        if (formData == null) {
+            return false;
+        }
+        return createFieldIfNotExists(formData.getInt("id"), data);
+    }
+
     public boolean syncField(int tableId, Values data) {
         return CoreData.syncField(getProteu(), isReport(), tableId, data);
     }
