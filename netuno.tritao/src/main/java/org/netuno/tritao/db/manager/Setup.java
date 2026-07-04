@@ -516,6 +516,8 @@ public class Setup extends ManagerBase {
             }
             getExecutor().execute("update netuno_design set type = 'user' where type = 'tritaouser'");
             getExecutor().execute("update netuno_design set type = 'group' where type = 'tritaogroup'");
+            getExecutor().execute("update netuno_design set type = 'integer' where type = 'textnum'");
+            getExecutor().execute("update netuno_design set type = 'decimal' where type = 'textfloat'");
             if (!checkExists.column("netuno_table", "show_id")) {
                 table.create(
                         "netuno_table",
