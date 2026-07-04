@@ -622,8 +622,8 @@ public class Config {
             components.set("uid", new org.netuno.tritao.com.UID(proteu, hili).setName("uid"));
             components.set("text", new org.netuno.tritao.com.Text(proteu, hili).setName("text"));
             components.set("email", new org.netuno.tritao.com.Text(proteu, hili).setName("email"));
-            components.set("textnum", new org.netuno.tritao.com.Text(proteu, hili).setName("textnum"));
-            components.set("textfloat", new org.netuno.tritao.com.Text(proteu, hili).setName("textfloat"));
+            components.set("integer", new org.netuno.tritao.com.Text(proteu, hili).setName("integer"));
+            components.set("decimal", new org.netuno.tritao.com.Text(proteu, hili).setName("decimal"));
             components.set("textarea", new org.netuno.tritao.com.TextArea(proteu, hili).setName("textarea"));
             components.set("texthtml", new TextHTML(proteu, hili).setName("texthtml"));
             components.set("textmd", new org.netuno.tritao.com.TextMD(proteu, hili).setName("textmd"));

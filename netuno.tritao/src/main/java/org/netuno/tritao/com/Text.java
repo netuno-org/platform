@@ -43,13 +43,13 @@ public class Text extends ComponentBase {
     private void init() {
         if (getName().equals("email")) {
             super.getConfiguration().getParameters().clear();
-        } else if (getName().equals("textnum")) {
+        } else if (getName().equals("integer")) {
             super.getConfiguration().putParameter("SIGN", ParameterType.BOOLEAN, "false");
             super.getConfiguration().putParameter("LARGE_NUMBERS", ParameterType.BOOLEAN, "false");
             super.getConfiguration().putParameter("MASK", ParameterType.STRING, "#.##0");
             super.getConfiguration().putParameter("MASK_REVERSE", ParameterType.BOOLEAN, "true");
             super.getConfiguration().putParameter("MASK_SELECTONFOCUS", ParameterType.BOOLEAN, "false");
-        } else if (getName().equals("textfloat")) {
+        } else if (getName().equals("decimal")) {
             super.getConfiguration().putParameter("SIGN", ParameterType.BOOLEAN, "false");
             super.getConfiguration().putParameter("LARGE_NUMBERS", ParameterType.BOOLEAN, "false");
             super.getConfiguration().putParameter("MASK", ParameterType.STRING, "#.##0,00");
@@ -64,7 +64,7 @@ public class Text extends ComponentBase {
 
     public Component setDesignData(Values designData) {
         super.setDesignData(designData);
-        if (designData.getString("type").equals("textnum")) {
+        if (designData.getString("type").equals("integer")) {
             if (value.isEmpty()) {
                 value = "0";
             }
@@ -73,7 +73,7 @@ public class Text extends ComponentBase {
             } else {
                 getDataStructure().add(new ComponentData(designData.getString("name"), ComponentData.Type.Integer, 0));
             }
-        } else if (designData.getString("type").equals("textfloat")) {
+        } else if (designData.getString("type").equals("decimal")) {
             if (value.isEmpty()) {
                 value = "0";
             }
@@ -92,7 +92,7 @@ public class Text extends ComponentBase {
         super.setValues(prefix, values);
         value = getDataStructure().getFirst().getValue();
         String fieldName = getValuesPrefix().concat(getDesignData().getString("name"));
-        if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
+        if (getDesignData().getString("type").equals("integer") || getDesignData().getString("type").equals("decimal")) {
             if (getValues().hasKey(fieldName + ":sign") && getConfiguration().getParameter("SIGN").getValue().equalsIgnoreCase("true")) {
                 if (getValues().getString(fieldName + ":sign").equals("-")) {
                     value = "-" + value;
@@ -111,7 +111,7 @@ public class Text extends ComponentBase {
             getDesignData().set("com.text.size", !getDesignData().getString("width").equals("0") ? getDesignData().getString("width") : "size");
             getDesignData().set("com.text.maxlength", !getDesignData().getString("max").equals("0") ? getDesignData().getString("max") : "maxlength");
             getDesignData().set("com.text.validation", getValidation());
-            if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
+            if (getDesignData().getString("type").equals("integer") || getDesignData().getString("type").equals("decimal")) {
                 getDesignData().set("com.text.sign", getConfiguration().getParameter("SIGN").getValue());
             }
             if (!getDesignData().getString("type").equals("email")) {
@@ -139,7 +139,7 @@ public class Text extends ComponentBase {
             try {
                 getDesignData().set("com.text.type", getDesignData().getString("type"));
                 getDesignData().set("com.text.value", value);
-                if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
+                if (getDesignData().getString("type").equals("integer") || getDesignData().getString("type").equals("decimal")) {
                     getDesignData().set("com.text.sign", getConfiguration().getParameter("SIGN").getValue());
                 }
                 if (!getDesignData().getString("type").equals("email")) {
@@ -163,7 +163,7 @@ public class Text extends ComponentBase {
             if (getDesignData().getString("type").equals("email")) {
                 result += "email ";
             }
-            if (getDesignData().getString("type").equals("textnum") || getDesignData().getString("type").equals("textfloat")) {
+            if (getDesignData().getString("type").equals("integer") || getDesignData().getString("type").equals("decimal")) {
                 result += "numeric ";
             }
         }
