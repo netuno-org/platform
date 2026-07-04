@@ -129,6 +129,10 @@ public class CoreData {
     }
 
     public static Values getComponent(Proteu proteu, boolean isReport, int tableId, Values data) {
+        return getField(proteu, isReport, tableId, data);
+    }
+
+    public static Values getField(Proteu proteu, boolean isReport, int tableId, Values data) {
         Values _data = new Values(data);
         Builder builder = Config.getDBBuilder(proteu);
         _data.set("table_id", tableId);
@@ -142,6 +146,10 @@ public class CoreData {
     }
 
     public static boolean createComponent(Proteu proteu, boolean isReport, int tableId, Values data) {
+        return createField(proteu, isReport, tableId, data);
+    }
+
+    public static boolean createField(Proteu proteu, boolean isReport, int tableId, Values data) {
         if (isFieldDropped(proteu, isReport, tableId, data)) {
             return false;
         }
@@ -153,6 +161,10 @@ public class CoreData {
     }
 
     public static boolean createComponentIfNotExists(Proteu proteu, boolean isReport, int tableId, Values data) {
+        return createFieldIfNotExists(proteu, isReport, tableId, data);
+    }
+
+    public static boolean createFieldIfNotExists(Proteu proteu, boolean isReport, int tableId, Values data) {
         if (isFieldDropped(proteu, isReport, tableId, data)) {
             return false;
         }
