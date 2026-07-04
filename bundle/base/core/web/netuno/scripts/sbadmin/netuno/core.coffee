@@ -512,7 +512,7 @@ netuno.mask = (container)->
   container.find('[data-mask]').each(()->
     o = $(this)
     if (o.attr('data-mask') != null and o.attr('data-mask') != '')
-      if (o.attr('data-type') is 'textfloat')
+      if (o.attr('data-type') is 'decimal')
         value = if o.is(':input') then o.val() else o.text()
         maskDecimals = o.attr('data-mask').match(/0[.,](0+)/)
         if maskDecimals?
@@ -543,7 +543,7 @@ netuno.mask = (container)->
         reverse: o.attr('data-mask-reverse') is 'true'
         selectOnFocus: o.attr('data-mask-selectonfocus') is 'true'
         onChange: (val)->
-          if (o.attr('data-type') is 'textfloat')
+          if (o.attr('data-type') is 'decimal')
             decimals = o.attr('data-mask').match(/0[.,](0+)/)
             if decimals?
               decimalsLen = decimals[1].length

@@ -664,7 +664,7 @@
       var decimalsMultiple, i, j, k, l, maskDecimals, maskDecimalsLen, n, o, ref, ref1, ref2, ref3, val, valFloat, value;
       o = $(this);
       if (o.attr('data-mask') !== null && o.attr('data-mask') !== '') {
-        if (o.attr('data-type') === 'textfloat') {
+        if (o.attr('data-type') === 'decimal') {
           value = o.is(':input') ? o.val() : o.text();
           maskDecimals = o.attr('data-mask').match(/0[.,](0+)/);
           if (maskDecimals != null) {
@@ -706,7 +706,7 @@
           selectOnFocus: o.attr('data-mask-selectonfocus') === 'true',
           onChange: function(val) {
             var decimals, decimalsLen;
-            if (o.attr('data-type') === 'textfloat') {
+            if (o.attr('data-type') === 'decimal') {
               decimals = o.attr('data-mask').match(/0[.,](0+)/);
               if (decimals != null) {
                 decimalsLen = decimals[1].length;
