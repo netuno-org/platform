@@ -82,7 +82,7 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 if (data.hasKey("id") && data.getInt("id") > 0) {
                     values.set("id", data.getInt("id"));
                 }
-                values.set("uid", "'" + UUID.randomUUID().toString() + "'");
+                values.set("uid", "'" + data.getString("uid", UUID.randomUUID().toString()) + "'");
                 values.set("table_id", DB.sqlInjectionInt(data.getString("table_id")));
                 values.set("name", "'" + DB.sqlInjection(data.getString("name")) + "'");
                 values.set("title", "'" + DB.sqlInjection(data.getString("title")) + "'");
@@ -162,7 +162,9 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                 } else if (data.getString("type").equals("group")) {
                     data.set("link", "netuno_group:name");
                 }
-                data.set("properties", getComponentPropertiesFromRequestAll());
+                if (data == getProteu().getRequestAll()) {
+                    data.set("properties", getComponentPropertiesFromRequestAll());
+                }
                 if (!data.getBoolean("report")) {
                     org.netuno.tritao.com.Component comNew = Config.getNewComponent(getProteu(), getHili(),
                             data.getString("type"));
@@ -232,9 +234,8 @@ public interface TableDesignOperations extends BuilderBase, TableDesignSelect, T
                     }
                 }
 
-                Component com = Config.getNewComponent(getProteu(), getHili(),
-                        data.getString("type"));
-                com.getConfiguration().load(getComponentPropertiesFromRequestAll());
+                Component com = Config.getNewComponent(getProteu(), getHili(), data.getString("type"));
+                com.getConfiguration().load(data.getString("properties"));
 
                 Values viewUser = null;
                 if (data.has("view_user") && !data.getString("view_user").isEmpty()) {

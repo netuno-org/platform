@@ -50,6 +50,7 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
 
     default DataItem insert(String tableName, Values data) {
         DataItem dataItem = new DataItem(getProteu(), "0", "");
+        dataItem.setValues(data);
         dataItem.setStatus(DataItem.Status.Insert);
         insertByTableNameWithDataItem(tableName, dataItem);
         if (dataItem.getStatusType() == DataItem.StatusType.Error || dataItem.getId().isEmpty()) {
@@ -158,6 +159,7 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
     }
 
     default void update(Values table, Values values, DataItem dataItem) {
+        dataItem.setValues(values);
         dataItem.setFormName(table.getString("name"));
         dataItem.setFormTitle(Translation.formTitle(getProteu(), getHili(), table));
         if (dataItem.getRecord() == null || dataItem.getRecord().isEmpty()) {
@@ -168,7 +170,6 @@ public interface DataItemOperations extends BuilderBase, DataItemGet, TableOpera
             }
             dataItem.setRecord(item);
         }
-        dataItem.setValues(values);
         boolean insert = dataItem.getStatus() == DataItem.Status.Insert;
         if (!insert) {
             dataItem.setStatus(DataItem.Status.Update);
