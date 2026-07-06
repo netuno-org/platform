@@ -151,6 +151,11 @@ public class TableBuilderResourceBase extends ResourceBase {
         if (getProteu().getConfig().getValues("_setup:cleanup:fields", Values.newList()).contains(formId +"~"+ data.getString("name"))) {
             return false;
         }
+        if (data.getString("type").equalsIgnoreCase("textnum")) {
+            data.set("type", "integer");
+        } else if (data.getString("type").equalsIgnoreCase("textfloat")) {
+            data.set("type", "decimal");
+        }
         return CoreData.createComponentIfNotExists(getProteu(), isReport(), formId, data);
     }
 
@@ -212,6 +217,11 @@ public class TableBuilderResourceBase extends ResourceBase {
         if (getProteu().getConfig().getValues("_setup:cleanup:fields", Values.newList()).contains(formId +"~"+ data.getString("name"))) {
             return false;
         }
+        if (data.getString("type").equalsIgnoreCase("textnum")) {
+            data.set("type", "integer");
+        } else if (data.getString("type").equalsIgnoreCase("textfloat")) {
+            data.set("type", "decimal");
+        }
         return CoreData.createFieldIfNotExists(getProteu(), isReport(), formId, data);
     }
 
@@ -224,6 +234,11 @@ public class TableBuilderResourceBase extends ResourceBase {
     }
 
     public boolean syncField(int tableId, Values data) {
+        if (data.getString("type").equalsIgnoreCase("textnum")) {
+            data.set("type", "integer");
+        } else if (data.getString("type").equalsIgnoreCase("textfloat")) {
+            data.set("type", "decimal");
+        }
         return CoreData.syncField(getProteu(), isReport(), tableId, data);
     }
 
