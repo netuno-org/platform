@@ -848,7 +848,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
             try {
                 Object obj = get(key);
                 String result;
-                if (obj == null) {
+                if (obj == null || obj.toString().isEmpty()) {
                     return defaultValue;
                 } else if (obj instanceof java.io.InputStream) {
                     result = org.netuno.psamata.io.InputStream.readAll((java.io.InputStream) obj);
