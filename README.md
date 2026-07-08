@@ -62,7 +62,7 @@ To install the Netuno Platform, please follow the:
 
 ### ➡️  [Get Started](https://doc.netuno.org/docs/en/installation/)
 
-Continue with the steps below if you want to compile from scratch and change the Netuno Platform, then start cloning this repository.
+Continue with the steps below if you want to compile from scratch and contribute to the Netuno Platform. Start by cloning this repository.
 
 Make sure to use the GraalVM JDK as your Java environment:
 
@@ -141,6 +141,9 @@ It is mandatory to generate the bundle files because, in the process, the `bundl
 ```sh
  $ ./publish.sh
 ```
+
+When asked to choose the Publish Mode, you can choose Testing or the Stable, it doesn't make a big difference when compiling from source.
+Then, choose Upgrade when prompted to choose the Version Type and when the process is finished and you are asked to publish, choose no.
 
 The published Netuno version will be generated in `bundle/dist/netuno*`, which is based on the final output generated in `bundle/out/netuno`.
 
