@@ -251,6 +251,10 @@ public class Setup extends ManagerBase {
                 getBuilder().insertAuthProvider("Discord", "discord");
 	        }
 
+            if (getBuilder().getAuthProviderByCode("microsoft") == null) {
+                getBuilder().insertAuthProvider("Microsoft", "microsoft");
+            }
+
             table.create("netuno_user",
                     table.newColumn().setName("id").setType(Column.Type.INT).setPrimaryKey(true),
                     table.newColumn().setName("uid").setType(Column.Type.UUID).setNotNull(true).setDefault(),
