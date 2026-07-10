@@ -51,7 +51,7 @@ public class Microsoft implements Provider {
                     + "/oauth2/v2.0/authorize"
                     + "?response_type=code"
                     + "&redirect_uri=" + callbacks.getString(callback.toString())
-                    + "&scope=User.Read,ProfilePhoto.Read.All"
+                    + "&scope=User.Read" // ,ProfilePhoto.Read.All
                     + "&client_id=" + id
                     + "&state=" + STATE;
     }
@@ -74,9 +74,34 @@ public class Microsoft implements Provider {
         Values params = new Values();
         Values details = Requests.makeGet(url, params, "Bearer "+ data.getString("access_token"));
 
+        String username = details.getString("userPrincipalName");
+        if (username.indexOf("@") > 0) {
+            username = username.substring(0, username.indexOf("@"));
+        }
+        username = username.replace(".", "");
+        username = username.replace("-", "");
+        username = username.replace("_", "");
+
+        String name = details.getString("displayName");
+        if (name.indexOf(".") > 0 && name.matches("^[a-z.]*$")) {
+            String[] nameParts = name.split("\\.");
+            if (nameParts.length >= 2) {
+                String firstName = nameParts[0];
+                String lastName = nameParts[1];
+                if (firstName.length() > 1) {
+                    firstName = String.valueOf(firstName.charAt(0)).toUpperCase() + firstName.substring(1);
+                }
+                if (lastName.length() > 1) {
+                    lastName = String.valueOf(lastName.charAt(0)).toUpperCase() + lastName.substring(1);
+                }
+                name = firstName +" "+ lastName;
+            }
+        }
+
         details.put("id", details.getString("id"));
-        details.put("name", details.getString("displayName"));
-        details.put("username", details.getString("userPrincipalName"));
+        details.put("name", name);
+        details.put("username", username);
+        details.put("email", details.getString("mail"));
 
         // https://graph.microsoft.com/v1.0/me/photos/240x240/$value
         // Header Authorization Token
