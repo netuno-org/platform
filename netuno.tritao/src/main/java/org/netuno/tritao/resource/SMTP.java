@@ -17,6 +17,8 @@
 
 package org.netuno.tritao.resource;
 
+import org.apache.logging.log4j.LogManager;
+import org.netuno.cli.Config;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
@@ -28,6 +30,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
+import org.netuno.psamata.io.OutputStream;
 import org.netuno.psamata.mail.Mail;
 import org.netuno.psamata.mail.SMTPConfig;
 import org.netuno.psamata.mail.SMTPTransport;
@@ -35,6 +38,10 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.event.ResourceEvent;
 import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ResourceException;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.TimeZone;
 
 /**
  * SMTP Client - Resource
@@ -56,6 +63,7 @@ import org.netuno.tritao.resource.util.ResourceException;
         )
 })
 public class SMTP extends ResourceBase {
+    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(SMTP.class);
 
     public SMTPConfig config = null;
     public boolean enabled = false;
@@ -1211,6 +1219,14 @@ public class SMTP extends ResourceBase {
         transport.setHTML(html);
         transport.setMultipartSubtype(multipartSubtype);
         transport.send();
+        sendLog(
+                Values.newMap()
+                    .set("from", from)
+                    .set("to", to)
+                    .set("cc", cc)
+                    .set("bcc", bcc)
+                    .set("subject", subjectPrefix + subject)
+        );
     }
 
     public void send(Mail mail) {
@@ -1218,6 +1234,34 @@ public class SMTP extends ResourceBase {
             return;
         }
         transport.send(mail);
+        sendLog(
+                Values.newMap()
+                        .set("from", mail.from)
+                        .set("to", mail.to)
+                        .set("cc", mail.cc)
+                        .set("bcc", mail.bcc)
+                        .set("subject", mail.subject)
+        );
+    }
+
+    private void sendLog(Values data) {
+        data.set("timezone", TimeZone.getDefault().getID())
+                .set("moment", new java.sql.Timestamp(System.currentTimeMillis()).toString());
+        try {
+            Path logPath = Path.of(org.netuno.cli.Config.getLogsHome(), "smtp-"
+                    + new java.sql.Date(System.currentTimeMillis()).toString()
+                    .replace("-", "_") + ".log");
+            OutputStream.writeToFile(
+                    (Files.exists(logPath) && Files.size(logPath) > 0 ?
+                            "\n"
+                            : "")
+                            + data.toJSON(),
+                    logPath,
+                    true
+            );
+        } catch(Exception e) {
+            logger.error("SMTP send log failed to register.", e);
+        }
     }
 
     public Mail mail() {
