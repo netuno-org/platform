@@ -878,14 +878,11 @@ public class OutputStream extends java.io.OutputStream {
     
     public final OutputStream writeFile(java.io.File file) throws IOException {
     	ReadableByteChannel channelIn = Channels.newChannel(new java.io.FileInputStream(file));
-    	try {
-            WritableByteChannel channelOut = Channels.newChannel(out);
+    	try (WritableByteChannel channelOut = Channels.newChannel(out)) {
             ByteBuffer buf = ByteBuffer.allocate(1048576);
             while (channelIn.read(buf) <= 0) {
                 channelOut.write(buf);
             }
-    	} finally {
-            channelIn.close();
     	}
         return this;
     }
@@ -927,46 +924,34 @@ public class OutputStream extends java.io.OutputStream {
         out.close();
     }
 
-    public static void writeToFile(byte[] bytes, java.nio.file.Path path, boolean append) throws IOException {
-        writeToFile(bytes, path.toFile(), append);
+    public static int writeToFile(byte[] bytes, java.nio.file.Path path, boolean append) throws IOException {
+        return writeToFile(bytes, path.toFile(), append);
     }
 
-    public static void writeToFile(byte[] bytes, String path, boolean append) throws IOException {
-        writeToFile(bytes, new java.io.File(path), append);
+    public static int writeToFile(byte[] bytes, String path, boolean append) throws IOException {
+        return writeToFile(bytes, new java.io.File(path), append);
     }
 
-    public static void writeToFile(byte[] bytes, java.io.File path, boolean append) throws IOException {
-        FileOutputStream outputFile = null;
-        try {
-            outputFile = new FileOutputStream(path, append);
-            FileChannel outChannel = outputFile.getChannel();
-            outChannel.write(ByteBuffer.wrap(bytes));
-            outChannel.close();
-        } finally {
-            if (outputFile != null) {
-                outputFile.close();
+    public static int writeToFile(byte[] bytes, java.io.File path, boolean append) throws IOException {
+        try (FileOutputStream outputFile = new FileOutputStream(path, append)) {
+            try (FileChannel outChannel = outputFile.getChannel()) {
+                return outChannel.write(ByteBuffer.wrap(bytes));
             }
         }
     }
 
-    public static void writeToFile(String content, java.nio.file.Path path, boolean append) throws IOException {
-        writeToFile(content, path.toFile(), append);
+    public static int writeToFile(String content, java.nio.file.Path path, boolean append) throws IOException {
+        return writeToFile(content, path.toFile(), append);
     }
 
-    public static void writeToFile(String content, String path, boolean append) throws IOException {
-        writeToFile(content, new java.io.File(path), append);
+    public static int writeToFile(String content, String path, boolean append) throws IOException {
+        return writeToFile(content, new java.io.File(path), append);
     }
     
-    public static void writeToFile(String content, java.io.File path, boolean append) throws IOException {
-        FileOutputStream outputFile = null;
-        try {
-            outputFile = new FileOutputStream(path, append);
-            FileChannel outChannel = outputFile.getChannel();
-            outChannel.write(ByteBuffer.wrap(content.getBytes()));
-            outChannel.close();
-        } finally {
-            if (outputFile != null) {
-                outputFile.close();
+    public static int writeToFile(String content, java.io.File path, boolean append) throws IOException {
+        try (FileOutputStream outputFile = new FileOutputStream(path, append)) {
+            try (FileChannel outChannel = outputFile.getChannel()) {
+                return outChannel.write(ByteBuffer.wrap(content.getBytes()));
             }
         }
     }
