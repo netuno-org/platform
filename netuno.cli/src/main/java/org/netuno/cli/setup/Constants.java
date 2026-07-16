@@ -17,6 +17,8 @@
 
 package org.netuno.cli.setup;
 
+import org.netuno.psamata.Values;
+
 import java.nio.file.Path;
 
 /**
@@ -25,7 +27,27 @@ import java.nio.file.Path;
  * @author Eduardo Fonseca Velasques - @eduveks
  */
 public class Constants {
-    public static String GRAALVM_VERSION = "25.0.2";
+
+    public static Values GRAALVM_VERSIONS_DOWNLOAD_PATHS = new Values() {{
+        set("25.1.3", "graal-25.1.3/graalvm-community-jdk-25i1-25.0.3");
+        set("25.0.2", "jdk-25.0.2/graalvm-community-jdk-25.0.2");
+        set("25.0.1", "jdk-25.0.1/graalvm-community-jdk-25.0.1");
+        set("25.0.0", "jdk-25.0.0/graalvm-community-jdk-25.0.0");
+        set("24.0.2", "jdk-24.0.2/graalvm-community-jdk-24.0.2");
+        set("24.0.1", "jdk-24.0.1/graalvm-community-jdk-24.0.1");
+        set("24.0.0", "jdk-24.0.0/graalvm-community-jdk-24.0.0");
+        set("23.0.2", "jdk-23.0.2/graalvm-community-jdk-23.0.2");
+        set("23.0.1", "jdk-23.0.1/graalvm-community-jdk-23.0.1");
+        set("23.0.0", "jdk-23.0.0/graalvm-community-jdk-23.0.0");
+        set("22.0.2", "jdk-22.0.2/graalvm-community-jdk-22.0.2");
+        set("22.0.1", "jdk-22.0.1/graalvm-community-jdk-22.0.1");
+        set("22.0.0", "jdk-22.0.0/graalvm-community-jdk-22.0.0");
+        set("21.0.2", "jdk-21.0.2/graalvm-community-jdk-21.0.2");
+        set("21.0.1", "jdk-21.0.1/graalvm-community-jdk-21.0.1");
+        set("21.0.0", "jdk-21.0.0/graalvm-community-jdk-21.0.0");
+    }};
+
+    public static String GRAALVM_VERSION = "25.1.3";
 
     public static String GRAALVM_FOLDER = "graalvm";
 

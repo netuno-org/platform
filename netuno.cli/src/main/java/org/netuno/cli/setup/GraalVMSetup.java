@@ -126,11 +126,17 @@ public class GraalVMSetup {
             FileUtils.deleteDirectory(graalVMFolder);
         }
         if (installGraalVM == 0) {
-            String graalVMURLPrefix = String.format("https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-%s/graalvm-community-jdk-%s_", graalVMVersion, graalVMVersion);
+            if (!Constants.GRAALVM_VERSIONS_DOWNLOAD_PATHS.hasKey(graalVMVersion)) {
+                System.out.println();
+                System.out.println(OS.consoleOutput("@|red    The GraalVM "+ graalVMVersion +" version is not supported yet. |@"));
+                System.out.println();
+                return;
+            }
+            String graalVMURLPrefix = String.format("https://github.com/graalvm/graalvm-ce-builds/releases/download/%s_", Constants.GRAALVM_VERSIONS_DOWNLOAD_PATHS.getString(graalVMVersion));
             String graalVMURL = graalVMURLPrefix + "windows-x64_bin.zip";
             String graalVMFileName = "graalvm.zip";
             if (SystemUtils.IS_OS_MAC) {
-                if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x64") || SystemUtils.OS_ARCH.equals("x86_64")) {
+                if ("25.1.3".compareTo(graalVMVersion) > 0 && (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x64") || SystemUtils.OS_ARCH.equals("x86_64"))) {
                     graalVMURL = graalVMURLPrefix + "macos-x64_bin.tar.gz";
                 } else if (SystemUtils.OS_ARCH.equals("aarch64")) {
                     graalVMURL = graalVMURLPrefix + "macos-aarch64_bin.tar.gz";
