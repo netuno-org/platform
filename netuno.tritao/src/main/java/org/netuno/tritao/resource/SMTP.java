@@ -18,15 +18,7 @@
 package org.netuno.tritao.resource;
 
 import org.apache.logging.log4j.LogManager;
-import org.netuno.cli.Config;
-import org.netuno.library.doc.LanguageDoc;
-import org.netuno.library.doc.LibraryDoc;
-import org.netuno.library.doc.LibraryTranslationDoc;
-import org.netuno.library.doc.MethodDoc;
-import org.netuno.library.doc.MethodTranslationDoc;
-import org.netuno.library.doc.ParameterDoc;
-import org.netuno.library.doc.ParameterTranslationDoc;
-import org.netuno.library.doc.ReturnTranslationDoc;
+import org.netuno.library.doc.*;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.File;
@@ -63,8 +55,9 @@ import java.util.TimeZone;
         )
 })
 public class SMTP extends ResourceBase {
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(SMTP.class);
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(SMTP.class);
 
+    public String key = "";
     public SMTPConfig config = null;
     public boolean enabled = false;
     public String from = "";
@@ -84,8 +77,9 @@ public class SMTP extends ResourceBase {
         super(proteu, hili);
     }
 
-    private SMTP(Proteu proteu, Hili hili, SMTPConfig smtpConfig) {
+    private SMTP(Proteu proteu, Hili hili, String key, SMTPConfig smtpConfig) {
         super(proteu, hili);
+        this.key = key;
         this.transport = new SMTPTransport(smtpConfig);
         this.config = smtpConfig;
         this.enabled = smtpConfig.isEnabled();
@@ -131,6 +125,7 @@ public class SMTP extends ResourceBase {
                 return new SMTP(
                         getProteu(),
                         getHili(),
+                        "default",
                         config(getProteu().getConfig().getValues("_smtp").getValues("default"))
                 );
             }
@@ -180,6 +175,7 @@ public class SMTP extends ResourceBase {
                     return new SMTP(
                             getProteu(),
                             getHili(),
+                            configKey,
                             config(getProteu().getConfig().getValues("_smtp").getValues(configKey))
                     );
                 }
@@ -225,8 +221,41 @@ public class SMTP extends ResourceBase {
         return new SMTP(
                 getProteu(),
                 getHili(),
+                "",
                 config
         );
+    }
+
+    @MethodDoc(translations = {
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Obtém a chave da configuração de SMTP que está sendo utilizada.",
+                            howToUse = { }
+                    ),
+                    @MethodTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Obtain the SMTP configuration key that is being used.",
+                            howToUse = { }
+                    ),
+            },
+            parameters = {},
+            returns = {
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.PT,
+                            description = "Nome da chave de configuração SMTP que está sendo utilizada."
+                    ),
+                    @ReturnTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Name of the SMTP configuration key being used."
+                    )
+            }
+    )
+    public String key() {
+        return key;
+    }
+
+    public String getKey() {
+        return key();
     }
 
     @MethodDoc(translations = {
@@ -1245,6 +1274,8 @@ public class SMTP extends ResourceBase {
     }
 
     private void sendLog(Values data) {
+        data.set("app", org.netuno.tritao.config.Config.getApp(getProteu()));
+        data.set("key", key());
         data.set("timezone", TimeZone.getDefault().getID())
                 .set("moment", new java.sql.Timestamp(System.currentTimeMillis()).toString());
         try {

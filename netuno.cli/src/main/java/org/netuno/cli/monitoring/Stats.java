@@ -105,7 +105,7 @@ public class Stats implements MainArg {
     public static String getLogFilePath() {
         return Path.of(Config.getLogsHome(), "stats-"
                 + new java.sql.Date(System.currentTimeMillis())
-                        .toString().replaceAll("-", "_")
+                        .toString().replace("-", "_")
                 + ".log").toString();
     }
     
