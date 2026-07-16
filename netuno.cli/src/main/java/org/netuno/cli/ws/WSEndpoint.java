@@ -326,6 +326,12 @@ public class WSEndpoint {
 
     @OnClose
     public void onWebSocketClose(CloseReason reason) {
+        Values appSessionsEndpoints = allSessionsEndpoints.getValues(app);
+        for (int i = 0; i < appSessionsEndpoints.size(); i++) {
+            if (appSessionsEndpoints.get(i) == this.data) {
+                appSessionsEndpoints.remove(this.data);
+            }
+        }
         Session session = this.data.get("session", Session.class);
         String urlService = App.getURL(this.app, this.config.getString("service"));
         if (!urlService.isEmpty() && this.config.getBoolean("enabled", true)) {
@@ -368,12 +374,6 @@ public class WSEndpoint {
                 } catch (IOException ex) {
                     logger.warn("Error closing socket stream.", ex);
                 }
-            }
-        }
-        Values appSessionsEndpoints = allSessionsEndpoints.getValues(app);
-        for (int i = 0; i < appSessionsEndpoints.size(); i++) {
-            if (appSessionsEndpoints.get(i) == this.data) {
-                appSessionsEndpoints.remove(i);
             }
         }
         this.data.clear();
