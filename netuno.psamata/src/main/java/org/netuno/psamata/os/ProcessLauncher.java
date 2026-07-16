@@ -509,6 +509,7 @@ public class ProcessLauncher {
             } else if (errorOutputLineConsumer() != null) {
                 execRes.errorInputStreamGobbler = new StreamGobbler(execRes.errorInputStream, errorOutputLineConsumer());
             } else {
+                baosOutputError = new ByteArrayOutputStream();
                 execRes.errorInputStreamGobbler = new StreamGobbler(execRes.errorInputStream, baosOutputError);
             }
             execRes.errorInputStreamGobbler.start();
