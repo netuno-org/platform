@@ -3479,7 +3479,7 @@ public class Values implements java.io.Serializable, Map<String, Object>, Iterab
         } else {
             for (int i = 0; i < array.size(); i++) {
                 if (array.get(i) == o) {
-                    array.remove(i);
+                    array.remove(o);
                 }
             }
             return o;
