@@ -121,4 +121,14 @@ public class ProcessLauncherTest {
         assertTrue(counter.get() >= 4, "Counter");
         checkThreads();
     }
+
+    @Test
+    public void error() throws IOException, InterruptedException {
+        ProcessLauncher processLauncher = new ProcessLauncher();
+        processLauncher.readErrorOutput(true);
+        ProcessLauncher.Result result = processLauncher.execute("echo", "|", "openssl", "s_client", "-servername", "netuno.org", "-connect", "netuno.org:32998", "|", "openssl", "x509", "-noout", "-dates");
+        assertEquals(1, result.exitCode(), "Exit Code");
+        assertTrue(result.outputError() != null && !result.outputError().isEmpty(), "Output Error");
+        checkThreads();
+    }
 }
