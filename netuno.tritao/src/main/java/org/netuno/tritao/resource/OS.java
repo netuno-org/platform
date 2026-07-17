@@ -417,18 +417,18 @@ public class OS extends ResourceBase {
     @LibraryDoc(translations = {
             @LibraryTranslationDoc(
                     language = LanguageDoc.PT,
-                    title = "Process",
+                    title = "ProcessLauncher",
                     introduction = "Gerencia a execução de processos, permite executar programas externos e comandos de terminal.",
                     howToUse = {}
             ),
             @LibraryTranslationDoc(
                     language = LanguageDoc.EN,
-                    title = "Process",
-                    introduction = "Gerenciar a execução de processos permite executar programas externos e comandos de terminal.",
+                    title = "ProcessLauncher",
+                    introduction = "Managing process execution allows you to run external programs and terminal commands.",
                     howToUse = {}
             )
     })
-    public class ProcessLauncher extends org.netuno.psamata.os.ProcessLauncher {
+    public static class ProcessLauncher extends org.netuno.psamata.os.ProcessLauncher {
 
         private ProcessLauncher() {
             super();
