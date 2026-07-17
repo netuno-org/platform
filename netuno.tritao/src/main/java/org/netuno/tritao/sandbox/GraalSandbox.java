@@ -18,6 +18,10 @@
 
 package org.netuno.tritao.sandbox;
 
+import com.caoccao.javet.swc4j.Swc4j;
+import com.caoccao.javet.swc4j.enums.Swc4jMediaType;
+import com.caoccao.javet.swc4j.options.Swc4jTranspileOptions;
+import com.caoccao.javet.swc4j.outputs.Swc4jTranspileOutput;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +36,7 @@ import org.netuno.tritao.config.Config;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.AccessMode;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -47,7 +52,7 @@ import java.util.regex.Pattern;
  * Graal Sandbox
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@ScriptSandbox(extensions = {"js", "cjs", "mjs", "py"})
+@ScriptSandbox(extensions = {"js", "cjs", "mjs", "py", "ts"})
 public class GraalSandbox implements Scriptable, GraalPathEvents {
     private static final Logger logger = LogManager.getLogger(GraalSandbox.class);
     private static final Pattern REGEX_PATTER_IMPORT_SERVER_TYPES = Pattern.compile("^.*((import|const)\\s+([_a-zA-Z0-9,\\{\\}\\s]+)\\s*((=\\s*require)|from).*@netuno/server-types.*)$", Pattern.MULTILINE);
@@ -89,12 +94,12 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
     }
 
     private String getGraalLanguage(String extension) {
-        if (!extension.equals("js") && !extension.equals("cjs") && !extension.equals("mjs") && !extension.equals("py")) {
+        if (!extension.equals("js") && !extension.equals("cjs") && !extension.equals("mjs") && !extension.equals("ts") && !extension.equals("py")) {
             throw new UnsupportedOperationException("The extension "+ extension +" is not supported.");
         }
         return switch (extension) {
             case "py" -> "python";
-            case "cjs", "mjs" -> "js";
+            case "cjs", "mjs", "ts" -> "js";
             default -> extension;
         };
     }
@@ -138,6 +143,10 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
         if (lang.equals("js")) {
             source = buildSourceCode(source, ".");
             mimeType = isMJS(source) ? "mjs" : null;
+        }
+        if (script.extension().equalsIgnoreCase("ts")) {
+            String tsCode = typeScriptCompiler(source);
+            return graalRunner.eval(lang, script.scriptFile(), tsCode, "mjs");
         }
         if (script.scriptFile() == null) {
             return graalRunner.eval(lang, script.content());
@@ -190,7 +199,7 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
         }
         graalFileSystem.defaultCheckAccess(path, modes, linkOptions);
         String extension = FilenameUtils.getExtension(path.getFileName().toString());
-        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs")) {
+        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs") && !extension.equals("ts")) {
             return;
         }
         if (path.startsWith(Path.of(appServer, "node_modules"))) {
@@ -219,6 +228,9 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
             cjsPrefixPath += "..";
         }
         String source = buildSourceCode(InputStream.readFromFile(path), cjsPrefixPath);
+        if (extension.equals("ts")) {
+            source = typeScriptCompiler(source);
+        }
         OutputStream.writeToFile(source, outFile, false);
     }
 
@@ -229,7 +241,7 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
             path = Path.of(appServer, path.toString().substring(1));
         }
         String extension = FilenameUtils.getExtension(path.getFileName().toString());
-        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs")) {
+        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs") && !extension.equals("ts")) {
             return graalFileSystem.defaultToAbsolutePath(path);
         }
         if (path.startsWith(Path.of(appServer, "node_modules"))) {
@@ -250,7 +262,7 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
             path = Path.of(appServer, path.toString().substring(1));
         }
         String extension = FilenameUtils.getExtension(path.getFileName().toString());
-        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs")) {
+        if (!extension.equals("js") && !extension.equals("mjs") && !extension.equals("cjs") && !extension.equals("ts")) {
             return graalFileSystem.defaultToRealPath(path, linkOptions);
         }
         if (path.startsWith(Path.of(appServer, "node_modules"))) {
@@ -261,6 +273,18 @@ public class GraalSandbox implements Scriptable, GraalPathEvents {
             return Path.of(Config.getPathAppRun(manager.getProteu()), innerPath);
         } else {
             return path;
+        }
+    }
+
+    private String typeScriptCompiler(String code) {
+        try {
+            Swc4j swc4j = new Swc4j();
+            Swc4jTranspileOptions options = new Swc4jTranspileOptions()
+                    .setMediaType(Swc4jMediaType.TypeScript);
+            Swc4jTranspileOutput output = swc4j.transpile(code, options);
+            return output.getCode();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
