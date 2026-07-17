@@ -47,7 +47,7 @@
         <apache.velocity.version>2.4.1</apache.velocity.version>
         <classgraph.version>4.8.184</classgraph.version>
         <json.version>20260522</json.version>
-        <itext.version>9.6.0</itext.version>
+        <itext.version>9.7.0</itext.version>
         <pdfbox.version>3.0.7</pdfbox.version>
         <openhtml.version>1.1.37</openhtml.version>
         <log4j.version>2.26.0</log4j.version>
