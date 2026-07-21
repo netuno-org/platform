@@ -134,4 +134,24 @@ public class MongoFilters {
     public Bson type(final String fieldName, final String type) {
         return com.mongodb.client.model.Filters.type(fieldName, type);
     }
+
+    public Bson mod(String fieldName, long divisor, long remainder) {
+        return com.mongodb.client.model.Filters.mod(fieldName, divisor, remainder);
+    }
+
+    public Bson regex(String fieldName, String pattern) {
+        return com.mongodb.client.model.Filters.regex(fieldName, pattern);
+    }
+
+    public Bson regex(String fieldName, String pattern, String options) {
+        return com.mongodb.client.model.Filters.regex(fieldName, pattern, options);
+    }
+
+    public Bson where(String javaScriptExpression) {
+        return com.mongodb.client.model.Filters.where(javaScriptExpression);
+    }
+
+    public Bson size(String fieldName, int size) {
+        return com.mongodb.client.model.Filters.size(fieldName, size);
+    }
 }
