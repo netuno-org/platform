@@ -50,29 +50,13 @@ import java.util.*;
                 language = LanguageDoc.PT,
                 title = "MongoDB - Cliente",
                 introduction = "Recurso para integrações com o MongoDB.",
-                howToUse = {
-                        @SourceCodeDoc(
-                                type = SourceCodeTypeDoc.JavaScript,
-                                code = "// Exemplo de uso do cliente de IA com o fornecedor padrão\n"
-                                        + "const client = _ai.client();\n"
-                                        + "const response = client.chat('Hello, how can I help?');\n"
-                                        + "_log.info('Response: ' + response);\n"
-                        )
-                }
+                howToUse = { }
         ),
         @LibraryTranslationDoc(
                 language = LanguageDoc.EN,
                 title = "MongoDB - Client",
                 introduction = "Resource for MongoDB integrations.",
-                howToUse = {
-                        @SourceCodeDoc(
-                                type = SourceCodeTypeDoc.JavaScript,
-                                code = "// Example using the AI client with the default provider\n"
-                                        + "const client = _ai.client();\n"
-                                        + "const response = client.chat('Hello, how can I help?');\n"
-                                        + "_log.info('Response: ' + response);\n"
-                        )
-                }
+                howToUse = { }
         )
 })
 public class Mongo extends ResourceBase implements AutoCloseable {
