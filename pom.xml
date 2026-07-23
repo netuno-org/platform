@@ -54,7 +54,7 @@
         <oshi.version>7.4.0</oshi.version>
         <sshj.version>0.40.0</sshj.version>
         <twelvemonkeys.version>3.14.0</twelvemonkeys.version>
-        <junit.version>6.1.1</junit.version>
+        <junit.version>6.1.2</junit.version>
     </properties>
 
     <dependencies>
