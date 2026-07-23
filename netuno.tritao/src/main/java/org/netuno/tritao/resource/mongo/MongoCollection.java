@@ -25,6 +25,13 @@ import org.bson.conversions.Bson;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.MethodDoc;
+import org.netuno.library.doc.MethodTranslationDoc;
+import org.netuno.library.doc.ParameterDoc;
+import org.netuno.library.doc.ParameterTranslationDoc;
+import org.netuno.library.doc.ReturnTranslationDoc;
+import org.netuno.library.doc.SourceCodeDoc;
+import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.psamata.Values;
 
 import com.mongodb.MongoNamespace;
@@ -64,10 +71,43 @@ public class MongoCollection {
         this.collection = collection;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Exclui esta coleção do banco de dados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Drops this collection from the Database.",
+                    howToUse = {}),
+    }, parameters = {},
+    returns = {})
     public void drop() {
         collection.drop();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Exclui esta coleção do banco de dados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Drops this collection from the Database.",
+                    howToUse = {}),
+    }, parameters = {
+            @ParameterDoc(name = "options", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "opções",
+                            description = "Várias opções para excluir a coleção."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "Various options for dropping the collection."
+                    )
+            })
+    }, returns = {})
     public void drop(com.mongodb.client.model.DropCollectionOptions dropCollectionOptions) {
         collection.drop(dropCollectionOptions);
     }
@@ -82,30 +122,255 @@ public class MongoCollection {
         collection.renameCollection(newCollectionNamespace);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém uma estimativa da contagem de documentos em uma coleção utilizando os metadados da coleção.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.estimatedDocumentCount();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets an estimate of the count of documents in a collection using collection metadata.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.countDocuments();"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O número de documentos na coleção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The number of documents in the collection."
+            )
+    })
     public long estimatedDocumentCount() {
         return collection.estimatedDocumentCount();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém uma estimativa da contagem de documentos em uma coleção utilizando os metadados da coleção.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets an estimate of the count of documents in a collection using collection metadata.",
+                    howToUse = {}),
+    }, parameters = {
+            @ParameterDoc(name = "options", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "opções",
+                            description = "As opções que descrevem a contagem."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The options describing the count."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O número de documentos na coleção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The number of documents in the collection."
+            )
+    })
     public long estimatedDocumentCount(com.mongodb.client.model.EstimatedDocumentCountOptions options) {
         return collection.estimatedDocumentCount(options);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conta o número de documentos na coleção.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.countDocuments();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Counts the number of documents in the collection.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.countDocuments();"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O número de documentos na coleção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The number of documents in the collection."
+            )
+    })
     public long countDocuments() {
         return collection.countDocuments();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conta o número de documentos na coleção.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.countDocuments(_mongo.filters().eq('category', 'main'));"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Counts the number of documents in the collection.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.countDocuments(_mongo.filters().eq('category', 'main'));"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "filter", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "filtro",
+                            description = "O filtro da consulta."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The query filter."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O número de documentos na coleção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The number of documents in the collection."
+            )
+    })
     public long countDocuments(Bson filter) {
         return collection.countDocuments(filter);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Conta o número de documentos na coleção.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Counts the number of documents in the collection.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "filter", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "filtro",
+                            description = "O filtro da consulta."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The query filter."
+                    )
+            }),
+            @ParameterDoc(name = "options", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "opções",
+                            description = "As opções que descrevem a contagem."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The options describing the count."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O número de documentos na coleção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The number of documents in the collection."
+            )
+    })
     public long countDocuments(Bson filter, com.mongodb.client.model.CountOptions options) {
         return collection.countDocuments(filter, options);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Localizar todos os documentos na coleção.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Finds all documents in the collection.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A interface FindIterable."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The find iterable interface."
+            )
+    })
     public MongoFindIterable find() {
         return new MongoFindIterable(mongo, collection.find());
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Localizar todos os documentos na coleção.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Finds all documents in the collection.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "filter", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "filtro",
+                            description = "O filtro da consulta."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The query filter."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A interface FindIterable."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The find iterable interface."
+            )
+    })
     public MongoFindIterable find(Bson filter) {
         return new MongoFindIterable(mongo, collection.find(filter));
     }
@@ -135,21 +400,211 @@ public class MongoCollection {
         return insertedIds;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Atualiza um único documento na coleção de acordo com os argumentos especificados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Update a single document in the collection according to the specified arguments.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "filter", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "filtro",
+                            description = "Um documento que descreve o filtro de consulta, o qual não pode ser nulo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A document describing the query filter, which may not be null."
+                    )
+            }),
+            @ParameterDoc(name = "update", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "",
+                            description = "Um documento que descreve a atualização, o qual não pode ser nulo. A atualização a ser aplicada deve incluir pelo menos um operador de atualização."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A document describing the update, which may not be null. The update to apply must include at least one update operator."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O resultado da operação de atualização de um único documento."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The result of the update one operation."
+            )
+    })
     public long updateOne(Bson filter, Bson update) {
         var result = collection.updateOne(filter, update);
         return result.getModifiedCount();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Atualiza um único documento na coleção de acordo com os argumentos especificados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Update a single document in the collection according to the specified arguments.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "filter", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "filtro",
+                            description = "Um documento que descreve o filtro de consulta, o qual não pode ser nulo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A document describing the query filter, which may not be null."
+                    )
+            }),
+            @ParameterDoc(name = "update", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "",
+                            description = "Um documento que descreve a atualização, o qual não pode ser nulo. A atualização a ser aplicada deve incluir pelo menos um operador de atualização."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A document describing the update, which may not be null. The update to apply must include at least one update operator."
+                    )
+            }),
+            @ParameterDoc(name = "options", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "opções",
+                            description = "As opções a serem aplicadas à operação de atualização."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The options to apply to the update operation."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O resultado da operação de atualização de um único documento."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The result of the update one operation."
+            )
+    })
     public long updateOne(Bson filter, Bson update, UpdateOptions options) {
         var result = collection.updateOne(filter, update, options);
         return result.getModifiedCount();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Atualiza um único documento na coleção de acordo com os argumentos especificados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Update a single document in the collection according to the specified arguments.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "filter", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "filtro",
+                            description = "Um documento que descreve o filtro de consulta, o qual não pode ser nulo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A document describing the query filter, which may not be null."
+                    )
+            }),
+            @ParameterDoc(name = "update", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "",
+                            description = "Uma pipeline que descreve a atualização, que não pode ser nula."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A pipeline describing the update, which may not be null."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O resultado da operação de atualização de um único documento."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The result of the update one operation."
+            )
+    })
     public long updateOne(Bson filter, List<? extends Bson> update) {
         var result = collection.updateOne(filter, update);
         return result.getModifiedCount();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Atualiza um único documento na coleção de acordo com os argumentos especificados.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Update a single document in the collection according to the specified arguments.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "filter", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "filtro",
+                            description = "Um documento que descreve o filtro de consulta, o qual não pode ser nulo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A document describing the query filter, which may not be null."
+                    )
+            }),
+            @ParameterDoc(name = "update", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "",
+                            description = "Uma pipeline que descreve a atualização, que não pode ser nula."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A pipeline describing the update, which may not be null."
+                    )
+            }),
+            @ParameterDoc(name = "options", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "opções",
+                            description = "As opções a serem aplicadas à operação de atualização."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The options to apply to the update operation."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O resultado da operação de atualização de um único documento."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The result of the update one operation."
+            )
+    })
     public long updateOne(Bson filter, List<? extends Bson> update, UpdateOptions options) {
         var result = collection.updateOne(filter, update, options);
         return result.getModifiedCount();
