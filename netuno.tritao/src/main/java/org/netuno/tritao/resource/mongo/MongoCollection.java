@@ -17,7 +17,9 @@
 
 package org.netuno.tritao.resource.mongo;
 
-import com.mongodb.client.model.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.netuno.library.doc.LanguageDoc;
@@ -25,8 +27,15 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.psamata.Values;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.mongodb.MongoNamespace;
+import com.mongodb.client.model.DeleteOptions;
+import com.mongodb.client.model.FindOneAndDeleteOptions;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.InsertManyOptions;
+import com.mongodb.client.model.InsertOneOptions;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.UpdateOptions;
 
 /**
  * MongoCollection
@@ -59,12 +68,42 @@ public class MongoCollection {
         collection.drop();
     }
 
+    public void drop(com.mongodb.client.model.DropCollectionOptions dropCollectionOptions) {
+        collection.drop(dropCollectionOptions);
+    }
+
+    public void renameCollection(String fullName) {
+        MongoNamespace newCollectionNamespace = new MongoNamespace(fullName);
+        collection.renameCollection(newCollectionNamespace);
+    }
+
+    public void renameCollection(String databaseName, String collectionName) {
+        MongoNamespace newCollectionNamespace = new MongoNamespace(databaseName, collectionName);
+        collection.renameCollection(newCollectionNamespace);
+    }
+
     public long estimatedDocumentCount() {
         return collection.estimatedDocumentCount();
     }
 
+    public long estimatedDocumentCount(com.mongodb.client.model.EstimatedDocumentCountOptions options) {
+        return collection.estimatedDocumentCount(options);
+    }
+
+    public long countDocuments() {
+        return collection.countDocuments();
+    }
+
     public long countDocuments(Bson filter) {
         return collection.countDocuments(filter);
+    }
+
+    public long countDocuments(Bson filter, com.mongodb.client.model.CountOptions options) {
+        return collection.countDocuments(filter, options);
+    }
+
+    public MongoFindIterable find() {
+        return new MongoFindIterable(mongo, collection.find());
     }
 
     public MongoFindIterable find(Bson filter) {
@@ -106,6 +145,16 @@ public class MongoCollection {
         return result.getModifiedCount();
     }
 
+    public long updateOne(Bson filter, List<? extends Bson> update) {
+        var result = collection.updateOne(filter, update);
+        return result.getModifiedCount();
+    }
+
+    public long updateOne(Bson filter, List<? extends Bson> update, UpdateOptions options) {
+        var result = collection.updateOne(filter, update, options);
+        return result.getModifiedCount();
+    }
+
     public long updateMany(Bson filter, Bson update) {
         var result = collection.updateMany(filter, update);
         return result.getModifiedCount();
@@ -116,12 +165,32 @@ public class MongoCollection {
         return result.getModifiedCount();
     }
 
+    public long updateMany(Bson filter, List<? extends Bson> update) {
+        var result = collection.updateMany(filter, update);
+        return result.getModifiedCount();
+    }
+
+    public long updateMany(Bson filter, List<? extends Bson> update, UpdateOptions options) {
+        var result = collection.updateMany(filter, update, options);
+        return result.getModifiedCount();
+    }
+
     public Values findOneAndUpdate(Bson filter, Bson update) {
         var doc = collection.findOneAndUpdate(filter, update);
         return mongo.docToVal(doc);
     }
 
     public Values findOneAndUpdate(Bson filter, Bson update, FindOneAndUpdateOptions options) {
+        var doc = collection.findOneAndUpdate(filter, update, options);
+        return mongo.docToVal(doc);
+    }
+
+    public Values findOneAndUpdate(Bson filter, List<? extends Bson> update) {
+        var doc = collection.findOneAndUpdate(filter, update);
+        return mongo.docToVal(doc);
+    }
+
+    public Values findOneAndUpdate(Bson filter, List<? extends Bson> update, FindOneAndUpdateOptions options) {
         var doc = collection.findOneAndUpdate(filter, update, options);
         return mongo.docToVal(doc);
     }
@@ -160,5 +229,15 @@ public class MongoCollection {
 
     public void deleteMany(Bson filter, DeleteOptions options) {
         collection.deleteMany(filter, options);
+    }
+
+    public Values findOneAndDelete(Bson filter) {
+        var doc = collection.findOneAndDelete(filter);
+        return mongo.docToVal(doc);
+    }
+
+    public Values findOneAndDelete(Bson filter, FindOneAndDeleteOptions options) {
+        var doc = collection.findOneAndDelete(filter, options);
+        return mongo.docToVal(doc);
     }
 }
