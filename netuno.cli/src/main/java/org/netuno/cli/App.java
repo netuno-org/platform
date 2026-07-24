@@ -247,6 +247,7 @@ public class App implements MainArg {
                     System.out.println(OS.consoleOutput("\t@|green JP|@ - Japanese (ja_JP)"));
                     System.out.println(OS.consoleOutput("\t@|green KR|@ - Korean (ko_KR)"));
                     System.out.println(OS.consoleOutput("\t@|green PT|@ - Portuguese (pt_PT)"));
+                    System.out.println(OS.consoleOutput("\t@|green RU|@ - Portuguese (ru_RU)"));
                     System.out.println(OS.consoleOutput("\t@|green US|@ - American English (en_US)"));
                     System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [GB]|@ "));
                     String option = scanner.nextLine();
@@ -270,6 +271,8 @@ public class App implements MainArg {
                         language = "ko_KR";
                     } else if (option.equalsIgnoreCase("PT")) {
                         language = "pt_PT";
+                    } else if (option.equalsIgnoreCase("RU")) {
+                        language = "ru_RU";
                     } else if (option.equalsIgnoreCase("US")) {
                         language = "en_US";
                     }
