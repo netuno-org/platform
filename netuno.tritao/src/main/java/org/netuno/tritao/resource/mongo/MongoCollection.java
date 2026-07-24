@@ -640,6 +640,81 @@ public class MongoCollection {
         return mongo.docToVal(doc);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Encontra e atualiza um documento de forma atômica.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = """
+                                            const setUpdate = _mongo.updates().set('quantity', 42);
+                                            const renameUpdate = _mongo.updates().rename('other', 'more');
+                                            const updateList = _val.list(); 
+                                            updateList.add(setUpdate);
+                                            updateList.add(renameUpdate);
+                                            const combinedUpdates = _mongo.updates().combine(updateList);
+                                            c.findOneAndUpdate(
+                                              _mongo.filters().eq('name', 'Abc'),
+                                              combinedUpdates
+                                            );
+                                            """
+                        )
+                }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Atomically find a document and update it.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = """
+                                            const setUpdate = _mongo.updates().set('quantity', 42);
+                                            const renameUpdate = _mongo.updates().rename('other', 'more');
+                                            const updateList = _val.list(); 
+                                            updateList.add(setUpdate);
+                                            updateList.add(renameUpdate);
+                                            const combinedUpdates = _mongo.updates().combine(updateList);
+                                            c.findOneAndUpdate(
+                                              _mongo.filters().eq('name', 'Abc'),
+                                              combinedUpdates
+                                            );
+                                            """
+                        )
+                })
+    },
+    parameters = {
+            @ParameterDoc(name = "filter", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "filtro",
+                            description = "Um documento que descreve o filtro de consulta, o qual não pode ser nulo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A document describing the query filter, which may not be null."
+                    )
+            }),
+            @ParameterDoc(name = "update", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "",
+                            description = "Uma pipeline que descreve a atualização, que não pode ser nula."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "A pipeline describing the update, which may not be null."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O documento que foi atualizado antes da aplicação da atualização. Se nenhum documento corresponder ao filtro da consulta, então null será retornado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The document that was updated before the update was applied. If no documents matched the query filter, then null will be returned."
+            )
+    })
     public Values findOneAndUpdate(Bson filter, List<? extends Bson> update) {
         var doc = collection.findOneAndUpdate(filter, update);
         return mongo.docToVal(doc);
