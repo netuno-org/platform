@@ -216,8 +216,9 @@ public class ProteuEvents implements Events {
                 proteu.getConfig().set("_lang:it_IT", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "it_IT"));
                 proteu.getConfig().set("_lang:ja_JP", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "ja_JP"));
                 proteu.getConfig().set("_lang:ko_KR", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "ko_KR"));
-                proteu.getConfig().set("_lang:pt_PT", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "pt_PT"));
                 proteu.getConfig().set("_lang:pt_BR", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "pt_BR"));
+                proteu.getConfig().set("_lang:pt_PT", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "pt_PT"));
+                proteu.getConfig().set("_lang:ru_RU", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "ru_RU"));
                 proteu.getConfig().set("_lang:zh_CN", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "zh_CN"));
 
                 proteu.setLocale(new java.util.Locale(appConfig.getString("locale")));
