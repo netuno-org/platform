@@ -17,6 +17,8 @@
 
 package org.netuno.tritao.resource.mongo;
 
+import java.util.regex.Pattern;
+
 import org.bson.BsonType;
 import org.bson.conversions.Bson;
 import org.netuno.library.doc.LanguageDoc;
@@ -29,6 +31,8 @@ import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 import org.netuno.library.doc.SourceCodeDoc;
 import org.netuno.library.doc.SourceCodeTypeDoc;
+
+import com.mongodb.client.model.TextSearchOptions;
 
 /**
  * MongoFilters
@@ -98,6 +102,14 @@ public class MongoFilters {
         return com.mongodb.client.model.Filters.nin(fieldName, values);
     }
 
+    public Bson all(String fieldName, Iterable<Object> values) {
+        return com.mongodb.client.model.Filters.all(fieldName, values);
+    }
+
+    public Bson all(String fieldName, Object... values) {
+        return com.mongodb.client.model.Filters.all(fieldName, values);
+    }
+
     public Bson and(Iterable<Bson> filters) {
         return com.mongodb.client.model.Filters.and(filters);
     }
@@ -112,6 +124,10 @@ public class MongoFilters {
 
     public Bson or(Bson... filters) {
         return com.mongodb.client.model.Filters.or(filters);
+    }
+
+    public Bson empty() {
+        return com.mongodb.client.model.Filters.empty();
     }
 
     public Bson not(Bson filter) {
@@ -330,6 +346,18 @@ public class MongoFilters {
     })
     public Bson regex(String fieldName, String pattern, String options) {
         return com.mongodb.client.model.Filters.regex(fieldName, pattern, options);
+    }
+
+    public Bson regex(String fieldName, Pattern pattern) {
+        return com.mongodb.client.model.Filters.regex(fieldName, pattern);
+    }
+
+    public Bson text(String search) {
+        return com.mongodb.client.model.Filters.text(search);
+    }
+
+    public Bson text(String search, TextSearchOptions textSearchOptions) {
+        return com.mongodb.client.model.Filters.text(search, textSearchOptions);
     }
 
     @MethodDoc(translations = {
