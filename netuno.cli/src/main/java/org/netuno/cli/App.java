@@ -237,19 +237,37 @@ public class App implements MainArg {
                 if (language.length() == 0) {
                     System.out.println();
                     System.out.println(OS.consoleOutput("@|yellow Languages available:|@ "));
+                    System.out.println(OS.consoleOutput("\t@|green CN|@ - Chinese (zh_CN)"));
                     System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazilian Portuguese (pt_BR)"));
+                    System.out.println(OS.consoleOutput("\t@|green DE|@ - German (de_DE)"));
                     System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
+                    System.out.println(OS.consoleOutput("\t@|green FR|@ - French (fr_FR)"));
                     System.out.println(OS.consoleOutput("\t@|green GB|@ - British English (en_GB)"));
+                    System.out.println(OS.consoleOutput("\t@|green IT|@ - Italian (it_IT)"));
+                    System.out.println(OS.consoleOutput("\t@|green JP|@ - Japanese (ja_JP)"));
+                    System.out.println(OS.consoleOutput("\t@|green KR|@ - Korean (ko_KR)"));
                     System.out.println(OS.consoleOutput("\t@|green PT|@ - Portuguese (pt_PT)"));
                     System.out.println(OS.consoleOutput("\t@|green US|@ - American English (en_US)"));
                     System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [GB]|@ "));
                     String option = scanner.nextLine();
-                    if (option.equalsIgnoreCase("BR")) {
+                    if (option.equalsIgnoreCase("CN")) {
+                        language = "zh_CN";
+                    } else if (option.equalsIgnoreCase("BR")) {
                         language = "pt_BR";
+                    } else if (option.equalsIgnoreCase("DE")) {
+                        language = "de_DE";
                     } else if (option.equalsIgnoreCase("ES")) {
                         language = "es_ES";
+                    } else if (option.equalsIgnoreCase("FR")) {
+                        language = "fr_FR";
                     } else if (option.isEmpty() || option.equalsIgnoreCase("GB")) {
                         language = "en_GB";
+                    } else if (option.equalsIgnoreCase("IT")) {
+                        language = "it_IT";
+                    } else if (option.equalsIgnoreCase("JP")) {
+                        language = "ja_JP";
+                    } else if (option.equalsIgnoreCase("KR")) {
+                        language = "ko_KR";
                     } else if (option.equalsIgnoreCase("PT")) {
                         language = "pt_PT";
                     } else if (option.equalsIgnoreCase("US")) {
@@ -385,6 +403,7 @@ public class App implements MainArg {
 
         AppPath.copyApp(appPath, AppPath.SERVER, "README.md");
         AppPath.copyApp(appPath, AppPath.SERVER, "package.json");
+        AppPath.copyApp(appPath, AppPath.SERVER, "tsconfig.json");
 
         AppPath.copyApp(appPath, AppPath.SERVER_CORE, "README.md");
         AppPath.copyApp(appPath, AppPath.SERVER_CORE, "_config.js");
