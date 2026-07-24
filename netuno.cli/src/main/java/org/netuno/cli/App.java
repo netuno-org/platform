@@ -237,8 +237,8 @@ public class App implements MainArg {
                 if (language.length() == 0) {
                     System.out.println();
                     System.out.println(OS.consoleOutput("@|yellow Languages available:|@ "));
-                    System.out.println(OS.consoleOutput("\t@|green CN|@ - Chinese (zh_CN)"));
                     System.out.println(OS.consoleOutput("\t@|green BR|@ - Brazilian Portuguese (pt_BR)"));
+                    System.out.println(OS.consoleOutput("\t@|green CN|@ - Chinese (zh_CN)"));
                     System.out.println(OS.consoleOutput("\t@|green DE|@ - German (de_DE)"));
                     System.out.println(OS.consoleOutput("\t@|green ES|@ - Spanish (es_ES)"));
                     System.out.println(OS.consoleOutput("\t@|green FR|@ - French (fr_FR)"));
@@ -251,10 +251,10 @@ public class App implements MainArg {
                     System.out.println(OS.consoleOutput("\t@|green US|@ - American English (en_US)"));
                     System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan [GB]|@ "));
                     String option = scanner.nextLine();
-                    if (option.equalsIgnoreCase("CN")) {
-                        language = "zh_CN";
-                    } else if (option.equalsIgnoreCase("BR")) {
+                    if (option.equalsIgnoreCase("BR")) {
                         language = "pt_BR";
+                    } else if (option.equalsIgnoreCase("CN")) {
+                        language = "zh_CN";
                     } else if (option.equalsIgnoreCase("DE")) {
                         language = "de_DE";
                     } else if (option.equalsIgnoreCase("ES")) {
@@ -277,8 +277,8 @@ public class App implements MainArg {
                         language = "en_US";
                     }
                 }
-                if (language.equals("zh_CN")
-                        || language.equals("pt_BR")
+                if (language.equals("pt_BR")
+                        || language.equals("zh_CN")
                         || language.equals("de_DE")
                         || language.equals("es_ES")
                         || language.equals("fr_FR")
@@ -307,9 +307,10 @@ public class App implements MainArg {
                     System.out.println(OS.consoleOutput("\t@|green FR|@ - French (fr_FR)"));
                     System.out.println(OS.consoleOutput("\t@|green GB|@ - Great Britain (en_GB)"));
                     System.out.println(OS.consoleOutput("\t@|green IT|@ - Italy (it_IT)"));
-                    System.out.println(OS.consoleOutput("\t@|green JP|@ - Japan (jp_JP)"));
+                    System.out.println(OS.consoleOutput("\t@|green JP|@ - Japan (ja_JP)"));
                     System.out.println(OS.consoleOutput("\t@|green KR|@ - Korea (ko_KR)"));
                     System.out.println(OS.consoleOutput("\t@|green PT|@ - Portugal (pt_PT)"));
+                    System.out.println(OS.consoleOutput("\t@|green RU|@ - Russian (ru_RU)"));
                     System.out.println(OS.consoleOutput("\t@|green US|@ - United States (en_US)"));
 
                     System.out.print(OS.consoleOutput("@|yellow Choose your language:|@ @|cyan ["+ language.substring(3) +"]|@ "));
@@ -317,26 +318,36 @@ public class App implements MainArg {
                     if (option.equalsIgnoreCase("BR") ||
                             (option.isEmpty() && language.equalsIgnoreCase("pt_BR"))) {
                         locale = "pt_BR";
-                    } else if (option.equalsIgnoreCase("CN")) {
+                    } else if (option.equalsIgnoreCase("CN") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("zh_CN"))) {
                         locale = "zh_CN";
-                    } else if (option.equalsIgnoreCase("DE")) {
+                    } else if (option.equalsIgnoreCase("DE") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("de_DE"))) {
                         locale = "de_DE";
-                    } else if (option.equalsIgnoreCase("ES")) {
+                    } else if (option.equalsIgnoreCase("ES") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("es_ES"))) {
                         locale = "es_ES";
-                    } else if (option.equalsIgnoreCase("FR")) {
+                    } else if (option.equalsIgnoreCase("FR") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("fr_FR"))) {
                         locale = "fr_FR";
                     } else if (option.equalsIgnoreCase("GB") ||
                             (option.isEmpty() && language.equalsIgnoreCase("en_GB"))) {
                         locale = "en_GB";
-                    } else if (option.equalsIgnoreCase("IT")) {
+                    } else if (option.equalsIgnoreCase("IT") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("it_IT"))) {
                         locale = "it_IT";
-                    } else if (option.equalsIgnoreCase("JP")) {
-                        locale = "jp_JP";
-                    } else if (option.equalsIgnoreCase("KR")) {
+                    } else if (option.equalsIgnoreCase("JP") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("ja_JP"))) {
+                        locale = "ja_JP";
+                    } else if (option.equalsIgnoreCase("KR") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("ko_KR"))) {
                         locale = "ko_KR";
                     } else if (option.equalsIgnoreCase("PT") ||
                             (option.isEmpty() && language.equalsIgnoreCase("pt_PT"))) {
                         locale = "pt_PT";
+                    } else if (option.equalsIgnoreCase("RU") ||
+                            (option.isEmpty() && language.equalsIgnoreCase("ru_RU"))) {
+                        locale = "ru_RU";
                     } else if (option.equalsIgnoreCase("US") ||
                             (option.isEmpty() && language.equalsIgnoreCase("en_US"))) {
                         locale = "en_US";
@@ -347,11 +358,12 @@ public class App implements MainArg {
                         || locale.equals("de_DE")
                         || locale.equals("es_ES")
                         || locale.equals("fr_FR")
+                        || locale.equals("en_GB")
                         || locale.equals("it_IT")
-                        || locale.equals("jp_JP")
+                        || locale.equals("ja_JP")
                         || locale.equals("ko_KR")
                         || locale.equals("pt_PT")
-                        || locale.equals("en_GB")
+                        || locale.equals("ru_RU")
                         || locale.equals("en_US")) {
                     break;
                 } else {
