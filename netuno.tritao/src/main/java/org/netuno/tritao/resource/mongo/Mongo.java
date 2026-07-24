@@ -192,6 +192,22 @@ public class Mongo extends ResourceBase implements AutoCloseable {
         return new DeleteOptions();
     }
 
+    public FindOneAndDeleteOptions findOneAndDeleteOptions() {
+        return new FindOneAndDeleteOptions();
+    }
+
+    public DropCollectionOptions dropCollectionOptions() {
+        return new DropCollectionOptions();
+    }
+
+    public CountOptions countOptions() {
+        return new CountOptions();
+    }
+
+    public EstimatedDocumentCountOptions estimatedDocumentCountOptions() {
+        return new EstimatedDocumentCountOptions();
+    }
+
     public void close() {
         if (client != null) {
             client.close();
