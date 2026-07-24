@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "#actions/*": ["./actions/*"],
+      "#components/*": ["./components/*"],
+      "#core/*": ["./core/*"],
+      "#reports/*": ["./reports/*"],
+      "#services/*": ["./services/*"],
+      "#setup/*": ["./setup/*"],
+      "#templates/*": ["./templates/*"],
+    },
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true
+  }
+}
