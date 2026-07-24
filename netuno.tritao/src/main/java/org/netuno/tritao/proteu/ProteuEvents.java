@@ -208,11 +208,17 @@ public class ProteuEvents implements Events {
 
         try {
             if (!proteu.getConfig().getBoolean("_lang:disabled")) {
-                proteu.getConfig().set("_lang:en_GB", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "en_GB"));
+                proteu.getConfig().set("_lang:de_DE", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "de_DE"));
                 proteu.getConfig().set("_lang:en_US", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "en_US"));
+                proteu.getConfig().set("_lang:en_GB", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "en_GB"));
+                proteu.getConfig().set("_lang:es_ES", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "es_ES"));
+                proteu.getConfig().set("_lang:fr_FR", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "fr_FR"));
+                proteu.getConfig().set("_lang:it_IT", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "it_IT"));
+                proteu.getConfig().set("_lang:ja_JP", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "ja_JP"));
+                proteu.getConfig().set("_lang:ko_KR", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "ko_KR"));
                 proteu.getConfig().set("_lang:pt_PT", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "pt_PT"));
                 proteu.getConfig().set("_lang:pt_BR", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "pt_BR"));
-                proteu.getConfig().set("_lang:es_ES", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "es_ES"));
+                proteu.getConfig().set("_lang:zh_CN", new org.netuno.psamata.LangResource(Config.getTheme(proteu), Config.getPathLang(proteu), "zh_CN"));
 
                 proteu.setLocale(new java.util.Locale(appConfig.getString("locale")));
                 proteu.getConfig().set("_lang:default", proteu.getConfig().get("_lang:" + appConfig.getString("language")));
