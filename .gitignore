@@ -26,6 +26,9 @@ javadoc/
 .settings/
 nbactions.xml
 nb-configuration.xml
+.factorypath
+**/bin/
+
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
