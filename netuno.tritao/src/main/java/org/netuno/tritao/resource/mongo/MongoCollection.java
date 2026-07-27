@@ -316,6 +316,10 @@ public class MongoCollection {
         return collection.countDocuments(filter, options);
     }
 
+    public String createIndex(Bson keys) {
+        return collection.createIndex(keys);
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,

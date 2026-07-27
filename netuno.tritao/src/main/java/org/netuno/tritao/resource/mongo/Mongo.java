@@ -177,6 +177,10 @@ public class Mongo extends ResourceBase implements AutoCloseable {
         return new MongoUpdates();
     }
 
+    public MongoIndexes indexes() {
+        return new MongoIndexes();
+    }
+
     public InsertOneOptions insertOneOptions() {
         return new InsertOneOptions();
     }
