@@ -17,7 +17,11 @@
 
 package org.netuno.tritao.resource.mongo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.conversions.Bson;
+import org.netuno.psamata.Values;
 
 import com.mongodb.client.model.Indexes;
 
@@ -30,7 +34,25 @@ public class MongoIndexes {
         return Indexes.ascending(fieldNames);
     }
 
+    public Bson ascending(List<String> fieldNames) {
+        return Indexes.ascending(fieldNames);
+    }
+
+    public Bson ascending(Values fieldNames) {
+        List<String> strings = fieldNames.toList(String.class);
+        return Indexes.ascending(strings);
+    }
+
     public Bson descending(String... fieldNames) {
         return Indexes.descending(fieldNames);
+    }
+
+    public Bson descending(List<String> fieldNames) {
+        return Indexes.descending(fieldNames);
+    }
+
+    public Bson descending(Values fieldNames) {
+        List<String> strings = fieldNames.toList(String.class);
+        return Indexes.descending(strings);
     }
 }
