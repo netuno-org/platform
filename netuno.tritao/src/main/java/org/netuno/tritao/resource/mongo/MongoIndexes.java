@@ -17,7 +17,7 @@
 
 package org.netuno.tritao.resource.mongo;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import org.bson.conversions.Bson;
@@ -54,5 +54,13 @@ public class MongoIndexes {
     public Bson descending(Values fieldNames) {
         List<String> strings = fieldNames.toList(String.class);
         return Indexes.descending(strings);
+    }
+
+    public Bson compoundIndex(Bson... indexes) {
+        return Indexes.compoundIndex(indexes);
+    }
+
+    public Bson compoundIndex(List<? extends Bson> indexes) {
+        return Indexes.compoundIndex(indexes);
     }
 }
