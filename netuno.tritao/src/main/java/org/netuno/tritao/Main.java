@@ -28,6 +28,8 @@ import org.netuno.psamata.Values;
 
 import org.netuno.tritao.auth.Auth;
 import org.netuno.tritao.hili.Hili;
+import org.netuno.tritao.resource.Header;
+import org.netuno.tritao.resource.Req;
 import org.netuno.tritao.resource.Template;
 import org.netuno.tritao.util.MenuLoader;
 import org.netuno.tritao.util.Rule;
@@ -76,6 +78,14 @@ public class Main extends Web {
             data.set("user.dev", "true");
         } else {
             data.set("user.dev", "false");
+        }
+        Req req = resource(Req.class);
+        if (req.getString("js").equalsIgnoreCase("config")) {
+            Header header = resource(Header.class);
+            header.contentTypeJS();
+            Template template = resource(Template.class).initCore();
+            template.out("includes/config.js.vm", data);
+            return;
         }
         MenuLoader menuLoader = new MenuLoader(getProteu(), getHili());
         Values jsonMenu = new Values();
