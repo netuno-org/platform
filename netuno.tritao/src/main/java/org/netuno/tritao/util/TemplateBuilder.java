@@ -53,69 +53,31 @@ public class TemplateBuilder {
 
     synchronized public static String getContent(Proteu proteu, String path) throws IOException {
         String extension = FilenameUtils.getExtension(path);
-        File fileVM = extension == "" ? new File(path.concat(".vm")) : (extension.equalsIgnoreCase("vm") ? new File(path) : null);
-        File fileHTML = extension == "" ? new File(path.concat(".html")) : (extension.equalsIgnoreCase("html") ? new File(path) : null);
-        File fileText = extension == "" ? new File(path.concat(".txt")) : (extension.equalsIgnoreCase("txt") ? new File(path) : null);
-        if (path.startsWith(Config.getPathTemplates(proteu))) {
-            String appPath = Config.getPathAppTemplates(proteu) + "/" + "_" + path.substring(Config.getPathTemplates(proteu).length());
-            File appFileVM = extension == "" ? new File(appPath + ".vm") : (extension.equalsIgnoreCase("vm") ? new File(appPath) : null);
-            File appFileHTML = extension == "" ? new File(appPath + ".html") : (extension.equalsIgnoreCase("html") ? new File(appPath) : null);
-            File appFileText = extension == "" ? new File(appPath + ".txt") : (extension.equalsIgnoreCase("txt") ? new File(appPath) : null);
-            if (appFileVM.exists()) {
-                path = appPath;
-                fileVM = appFileVM;
-            } else if (appFileHTML.exists()) {
-                path = appPath;
-                fileHTML = appFileHTML;
-            } else if (appFileText.exists()) {
-                path = appPath;
-                fileText = appFileText;
+        for (String ext : new String[] { "vm", "vtl", "vsl", "html", "txt" }) {
+            File file = extension.isEmpty() ? new File(path + "." + ext) : (extension.equalsIgnoreCase(ext) ? new File(path) : null);
+            if (path.startsWith(Config.getPathTemplates(proteu))) {
+                String appPath = Config.getPathAppTemplates(proteu) + "/" + "_" + path.substring(Config.getPathTemplates(proteu).length());
+                File appFile = extension.isEmpty() ? new File(appPath + "." + ext) : (extension.equalsIgnoreCase(ext) ? new File(appPath) : null);
+                if (appFile != null && appFile.exists()) {
+                    path = appPath;
+                    file = appFile;
+                }
+            }
+            ImmutablePair<Long, String> cachedTemplate = cachedTemplates.get(path);
+            String content = "";
+            if (file != null && file.exists()) {
+                if (cachedTemplate == null || file.lastModified() != cachedTemplate.left.longValue()) {
+                    try (FileInputStream fileIn = new FileInputStream(file)) {
+                        content = InputStream.readAll(fileIn);
+                    }
+                    cachedTemplates.put(path, new ImmutablePair<>(file.lastModified(), content));
+                } else {
+                    content = cachedTemplate.right;
+                }
+                return content;
             }
         }
-        ImmutablePair<Long, String> cachedTemplate = cachedTemplates.get(path);
-        String content = "";
-        if (fileVM != null && fileVM.exists()) {
-            if (cachedTemplate == null || fileVM.lastModified() != cachedTemplate.left.longValue()) {
-                FileInputStream fileIn = new FileInputStream(fileVM);
-                content = InputStream.readAll(fileIn);
-                fileIn.close();
-                if (cachedTemplate == null) {
-                    cachedTemplates.remove(cachedTemplate);
-                }
-                cachedTemplates.put(path, new ImmutablePair<>(fileVM.lastModified(), content));
-            } else {
-                content = cachedTemplate.right;
-            }
-            return content;
-        } else if (fileHTML != null && fileHTML.exists()) {
-            if (cachedTemplate == null || fileHTML.lastModified() != cachedTemplate.left.longValue()) {
-                FileInputStream fileIn = new FileInputStream(fileHTML);
-                content = InputStream.readAll(fileIn);
-                fileIn.close();
-                if (cachedTemplate != null) {
-                    cachedTemplates.remove(cachedTemplate);
-                }
-                cachedTemplates.put(path, new ImmutablePair<>(fileHTML.lastModified(), content));
-            } else {
-                content = cachedTemplate.right;
-            }
-            return content;
-        } else if (fileText != null && fileText.exists()) {
-            if (cachedTemplate == null || fileText.lastModified() != cachedTemplate.left.longValue()) {
-                FileInputStream fileIn = new FileInputStream(fileText);
-                content = InputStream.readAll(fileIn);
-                fileIn.close();
-                if (cachedTemplate != null) {
-                    cachedTemplates.remove(cachedTemplate);
-                }
-                cachedTemplates.put(path, new ImmutablePair<>(fileHTML.lastModified(), content));
-            } else {
-                content = cachedTemplate.right;
-            }
-            return content;
-        } else {
-            logger.info("Template not found: " + fileHTML.getAbsolutePath());
-        }
+        logger.info("Template not found: " + path);
         return "";
     }
 
