@@ -1,12 +1,35 @@
 import { promises as fs } from 'fs';
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { viteExternalsPlugin } from 'vite-plugin-externals';
+
+const backendBaseURL = 'http://localhost:9000';
 
 const outputBasePath = './../public';
 const outputFilePath = 'scripts/ui.js';
 
 export default defineConfig({
+  server: {
+    port: 3001,
+    proxy: {
+      '/Main.netuno': {
+        target: backendBaseURL,
+        changeOrigin: true
+      },
+      '/netuno': {
+        target: backendBaseURL,
+        changeOrigin: true
+      },
+      '/services': {
+        target: backendBaseURL,
+        changeOrigin: true
+      }
+    }
+  },
   plugins: [
+    viteExternalsPlugin({
+      jquery: 'jQuery',
+    }),
     react(),
     {
       closeBundle: async() => {

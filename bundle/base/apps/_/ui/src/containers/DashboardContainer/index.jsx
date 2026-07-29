@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+import $ from 'jquery';
+
 import MyButton from "../../components/MyButton";
 
 import "./index.less";
