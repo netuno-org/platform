@@ -1,0 +1,63 @@
+netuno.config.app = {
+    name: '_{netuno-config=app}',
+    settings: ${_app.settings().getValues('public', $_val.map()).toJSON()}
+};
+netuno.config.isAdmin = function () { return '_{data=user.admin}' == 'true'; };
+netuno.config.user = function () { return '_{data=user}'; };
+netuno.config.userCode = function () { return '_{&data=user.code}'; };
+netuno.config.userName = function () { return '_{&data=user.name}'; };
+netuno.config.groupCode = function () { return '_{&data=group.code}'; };
+netuno.config.groupName = function () { return '_{&data=group.name}'; };
+netuno.config.extension = '_{netuno-config=extension}';
+netuno.config.urlAdmin = '_{netuno-config=url-admin}';
+netuno.config.urlServices = '_{netuno-config=url-services}';
+netuno.config.urlImages = '_{netuno-config=url-images}';
+netuno.config.urlScripts = '_{netuno-config=url-scripts}';
+netuno.config.urlStyles = '_{netuno-config=url-styles}';
+netuno.config.urlAppImages = '_{netuno-config=url-app-images}';
+netuno.config.urlAppScripts = '_{netuno-config=url-app-scripts}';
+netuno.config.urlAppStyles = '_{netuno-config=url-app-styles}';
+netuno.config.dataTable = _{lang=netuno.search.datatable};
+netuno.config.validation = {};
+netuno.config.validation.message = _{lang=netuno.validation};
+netuno.config.langCode = '_{netuno-config=lang-code}';
+netuno.config.com = {
+    lang: {
+        select: {
+            defaulttext: '_{lang=netuno.com.select.defaulttext}',
+            searching: '_{lang=netuno.com.select.searching}',
+            noresults: '_{lang=netuno.com.select.noresults}'
+        },
+        selectpath: {
+            defaulttext: '_{lang=netuno.com.selectpath.defaulttext}',
+            searching: '_{lang=netuno.com.selectpath.searching}',
+            noresults: '_{lang=netuno.com.selectpath.noresults}'
+        },
+        lastchange: {
+            defaulttext: '_{lang=netuno.com.lastchange.defaulttext}',
+            searching: '_{lang=netuno.com.lastchange.searching}',
+            noresults: '_{lang=netuno.com.lastchange.noresults}'
+        },
+        multiselect: {
+            defaulttext: '_{lang=netuno.com.multiselect.defaulttext}',
+            searching: '_{lang=netuno.com.multiselect.searching}',
+            noresults: '_{lang=netuno.com.multiselect.noresults}'
+        },
+        filesystem: {
+            deleteconfirm: '_{lang=netuno.com.filesystem.delete.confirm}'
+        }
+    }
+};
+netuno.lang = {
+    "menu.dashboard": "_{&lang=netuno.menu.dashboard}",
+    "menu.forms": "_{&lang=netuno.menu.forms}",
+    "menu.reports": "_{&lang=netuno.menu.reports}",
+    "com.select.clean": "_{&lang=netuno.com.select.clean}"
+};
+netuno.ws = {
+    endpoints: {
+        #foreach($endpoint in $_app.config().getValues("ws", $_val.map()).getValues("endpoints", $_val.list()))
+        "$endpoint.getString('name')": "$endpoint.getString('public')",
+        #end
+    }
+};
