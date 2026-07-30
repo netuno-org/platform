@@ -470,6 +470,7 @@ public class App implements MainArg {
         AppPath.copyApp(appPath, AppPath.UI_SRC, "index.jsx");
 
         AppPath.copyApp(appPath, AppPath.UI, "_.gitignore");
+        AppPath.copyApp(appPath, AppPath.UI, "index.html");
         AppPath.copyApp(appPath, AppPath.UI, "package.json");
         AppPath.copyApp(appPath, AppPath.UI, "README.md");
         AppPath.copyApp(appPath, AppPath.UI, "vite.config.js");
