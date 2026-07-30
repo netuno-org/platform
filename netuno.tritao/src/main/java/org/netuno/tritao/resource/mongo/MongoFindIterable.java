@@ -77,6 +77,21 @@ public class MongoFindIterable {
         return this;
     }
 
+    public MongoFindIterable max(Bson max) {
+        find.max(max);
+        return this;
+    }
+
+    public MongoFindIterable min(Bson min) {
+        find.min(min);
+        return this;
+    }
+
+    public MongoFindIterable hint(Bson hint) {
+        find.hint(hint);
+        return this;
+    }
+
     public Values first() {
         var doc = find.first();
         if (doc != null) {

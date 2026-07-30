@@ -17,11 +17,15 @@
 
 package org.netuno.tritao.resource.mongo;
 
-import com.mongodb.client.model.Updates;
+import java.util.List;
+
 import org.bson.conversions.Bson;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.psamata.Values;
+
+import com.mongodb.client.model.Updates;
 
 /**
  * MongoUpdates
@@ -56,5 +60,15 @@ public class MongoUpdates {
 
     public Bson push(String name, Object o) {
         return Updates.push(name, o);
+    }
+
+    public Bson combine(List<? extends Bson> updates) {
+        return Updates.combine(updates);
+    }
+
+    public Bson combine(Values updates) {
+        @SuppressWarnings("unchecked")
+        List<Bson> updatesList = (List<Bson>) (List<?>) updates.toList();
+        return Updates.combine(updatesList);
     }
 }

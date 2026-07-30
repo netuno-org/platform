@@ -17,15 +17,15 @@
 
 package org.netuno.tritao.resource.mongo;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.model.*;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.netuno.library.doc.*;
+import org.netuno.library.doc.LanguageDoc;
+import org.netuno.library.doc.LibraryDoc;
+import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.hili.Hili;
@@ -35,9 +35,22 @@ import org.netuno.tritao.resource.event.ResourceEvent;
 import org.netuno.tritao.resource.event.ResourceEventType;
 import org.netuno.tritao.resource.util.ResourceException;
 
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.*;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.model.CountOptions;
+import com.mongodb.client.model.DeleteOptions;
+import com.mongodb.client.model.DropCollectionOptions;
+import com.mongodb.client.model.EstimatedDocumentCountOptions;
+import com.mongodb.client.model.FindOneAndDeleteOptions;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.InsertManyOptions;
+import com.mongodb.client.model.InsertOneOptions;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.TextSearchOptions;
+import com.mongodb.client.model.UpdateOptions;
 
 // https://www.mongodb.com/docs/drivers/java/sync/current/connection/mongoclient/
 /**
@@ -164,6 +177,10 @@ public class Mongo extends ResourceBase implements AutoCloseable {
         return new MongoUpdates();
     }
 
+    public MongoIndexes indexes() {
+        return new MongoIndexes();
+    }
+
     public InsertOneOptions insertOneOptions() {
         return new InsertOneOptions();
     }
@@ -190,6 +207,26 @@ public class Mongo extends ResourceBase implements AutoCloseable {
 
     public DeleteOptions deleteOptions() {
         return new DeleteOptions();
+    }
+
+    public FindOneAndDeleteOptions findOneAndDeleteOptions() {
+        return new FindOneAndDeleteOptions();
+    }
+
+    public DropCollectionOptions dropCollectionOptions() {
+        return new DropCollectionOptions();
+    }
+
+    public CountOptions countOptions() {
+        return new CountOptions();
+    }
+
+    public EstimatedDocumentCountOptions estimatedDocumentCountOptions() {
+        return new EstimatedDocumentCountOptions();
+    }
+
+    public TextSearchOptions textSearchOptions() {
+        return new TextSearchOptions();
     }
 
     public void close() {
