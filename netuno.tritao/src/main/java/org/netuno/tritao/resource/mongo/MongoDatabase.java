@@ -17,7 +17,9 @@
 
 package org.netuno.tritao.resource.mongo;
 
-import com.mongodb.MongoException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.BsonDocument;
 import org.bson.BsonInt64;
 import org.bson.conversions.Bson;
@@ -26,8 +28,7 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.tritao.resource.util.ResourceException;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.mongodb.MongoException;
 
 /**
  * MongoDatabase

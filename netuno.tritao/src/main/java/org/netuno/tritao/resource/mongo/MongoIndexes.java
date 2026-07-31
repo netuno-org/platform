@@ -21,7 +21,6 @@ package org.netuno.tritao.resource.mongo;
 import java.util.List;
 
 import org.bson.conversions.Bson;
-import org.netuno.psamata.Values;
 
 import com.mongodb.client.model.Indexes;
 
@@ -30,6 +29,14 @@ import com.mongodb.client.model.Indexes;
  * @author Henrique Sousa - @Henrique-Sousa
  */
 public class MongoIndexes {
+    public Bson compoundIndex(Bson... indexes) {
+        return Indexes.compoundIndex(indexes);
+    }
+
+    public Bson compoundIndex(List<? extends Bson> indexes) {
+        return Indexes.compoundIndex(indexes);
+    }
+
     public Bson ascending(String... fieldNames) {
         return Indexes.ascending(fieldNames);
     }
@@ -38,29 +45,11 @@ public class MongoIndexes {
         return Indexes.ascending(fieldNames);
     }
 
-    public Bson ascending(Values fieldNames) {
-        List<String> strings = fieldNames.toList(String.class);
-        return Indexes.ascending(strings);
-    }
-
     public Bson descending(String... fieldNames) {
         return Indexes.descending(fieldNames);
     }
 
     public Bson descending(List<String> fieldNames) {
         return Indexes.descending(fieldNames);
-    }
-
-    public Bson descending(Values fieldNames) {
-        List<String> strings = fieldNames.toList(String.class);
-        return Indexes.descending(strings);
-    }
-
-    public Bson compoundIndex(Bson... indexes) {
-        return Indexes.compoundIndex(indexes);
-    }
-
-    public Bson compoundIndex(List<? extends Bson> indexes) {
-        return Indexes.compoundIndex(indexes);
     }
 }
