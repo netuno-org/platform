@@ -57,8 +57,8 @@ public class MongoFindIterable {
         this.find = find;
     }
 
-    public MongoFindIterable projection(Bson sort) {
-        find.projection(sort);
+    public MongoFindIterable projection(Bson projection) {
+        find.projection(projection);
         return this;
     }
 
