@@ -320,6 +320,14 @@ public class MongoCollection {
         return collection.createIndex(keys);
     }
 
+    public MongoAggregateIterable aggregate(Bson... pipeline) {
+        return new MongoAggregateIterable(mongo, collection.aggregate(List.of(pipeline)));
+    }
+
+    public MongoAggregateIterable aggregate(List<? extends Bson> pipeline) {
+        return new MongoAggregateIterable(mongo, collection.aggregate(pipeline));
+    }
+
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,

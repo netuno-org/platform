@@ -23,7 +23,6 @@ import org.bson.conversions.Bson;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
-import org.netuno.psamata.Values;
 
 import com.mongodb.client.model.Updates;
 
@@ -62,13 +61,11 @@ public class MongoUpdates {
         return Updates.push(name, o);
     }
 
-    public Bson combine(List<? extends Bson> updates) {
+    public Bson combine(Bson... updates) {
         return Updates.combine(updates);
     }
 
-    public Bson combine(Values updates) {
-        @SuppressWarnings("unchecked")
-        List<Bson> updatesList = (List<Bson>) (List<?>) updates.toList();
-        return Updates.combine(updatesList);
+    public Bson combine(List<? extends Bson> updates) {
+        return Updates.combine(updates);
     }
 }

@@ -17,7 +17,10 @@
 
 package org.netuno.tritao.resource.mongo;
 
-import com.mongodb.client.FindIterable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.graalvm.polyglot.Value;
@@ -26,9 +29,7 @@ import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.psamata.Values;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import com.mongodb.client.FindIterable;
 
 /**
  * MongoFindIterable
@@ -57,8 +58,8 @@ public class MongoFindIterable {
         this.find = find;
     }
 
-    public MongoFindIterable projection(Bson sort) {
-        find.projection(sort);
+    public MongoFindIterable projection(Bson projection) {
+        find.projection(projection);
         return this;
     }
 

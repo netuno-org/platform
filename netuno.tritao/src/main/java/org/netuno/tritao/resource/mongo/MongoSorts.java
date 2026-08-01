@@ -22,34 +22,34 @@ import java.util.List;
 
 import org.bson.conversions.Bson;
 
-import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Sorts;
 
 /**
- * MongoUpdates
+ * MongoSorts
  * @author Henrique Sousa - @Henrique-Sousa
  */
-public class MongoIndexes {
-    public Bson compoundIndex(Bson... indexes) {
-        return Indexes.compoundIndex(indexes);
+public class MongoSorts {
+    public Bson orderBy(Bson... sorts) {
+        return Sorts.orderBy(sorts);
     }
 
-    public Bson compoundIndex(List<? extends Bson> indexes) {
-        return Indexes.compoundIndex(indexes);
+    public Bson orderBy(List<? extends Bson> sorts) {
+        return Sorts.orderBy(sorts);
     }
 
     public Bson ascending(String... fieldNames) {
-        return Indexes.ascending(fieldNames);
+        return Sorts.ascending(fieldNames);
     }
 
     public Bson ascending(List<String> fieldNames) {
-        return Indexes.ascending(fieldNames);
+        return Sorts.ascending(fieldNames);
     }
 
     public Bson descending(String... fieldNames) {
-        return Indexes.descending(fieldNames);
+        return Sorts.descending(fieldNames);
     }
 
     public Bson descending(List<String> fieldNames) {
-        return Indexes.descending(fieldNames);
+        return Sorts.descending(fieldNames);
     }
 }

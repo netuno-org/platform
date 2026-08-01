@@ -181,6 +181,22 @@ public class Mongo extends ResourceBase implements AutoCloseable {
         return new MongoIndexes();
     }
 
+    public MongoSorts sorts() {
+        return new MongoSorts();
+    }
+
+    public MongoProjections projections() {
+        return new MongoProjections();
+    }
+
+    public MongoAggregates aggregates() {
+        return new MongoAggregates();
+    }
+
+    public MongoAccumulators accumulators() {
+        return new MongoAccumulators();
+    }
+
     public InsertOneOptions insertOneOptions() {
         return new InsertOneOptions();
     }
@@ -235,3 +251,4 @@ public class Mongo extends ResourceBase implements AutoCloseable {
         }
     }
 }
+
