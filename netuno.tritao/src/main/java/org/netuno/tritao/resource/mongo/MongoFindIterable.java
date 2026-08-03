@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.resource.mongo;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,6 +28,12 @@ import org.graalvm.polyglot.Value;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.MethodDoc;
+import org.netuno.library.doc.MethodTranslationDoc;
+import org.netuno.library.doc.ParameterDoc;
+import org.netuno.library.doc.ParameterTranslationDoc;
+import org.netuno.library.doc.SourceCodeDoc;
+import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.psamata.Values;
 
 import com.mongodb.client.FindIterable;
@@ -58,6 +65,38 @@ public class MongoFindIterable {
         this.find = find;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define um documento que descreve os campos a serem retornados para todos os documentos encontrados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = c.find().projection(_mongo.projections().include('name', 'quantity')).all();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets a document describing the fields to return for all matching documents.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = c.find().projection(_mongo.projections().include('name', 'quantity')).all();"
+                            )
+                    }),
+    }, parameters = {
+            @ParameterDoc(name = "projection", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "projeção",
+                            description = "O documento de projeção, que pode ser nulo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The project document, which may be null."
+                    )
+            })
+    }, returns = {})
     public MongoFindIterable projection(Bson projection) {
         find.projection(projection);
         return this;
@@ -78,6 +117,58 @@ public class MongoFindIterable {
         return this;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define o limite superior exclusivo para um índice específico. Um valor nulo significa que nenhum limite máximo está definido.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = """
+                                            c.createIndex(_mongo.indexes().compoundIndex(
+                                              _mongo.indexes().descending('price'),
+                                              _mongo.indexes().ascending('quantity')
+                                            ));
+
+                                            const indexHint = _mongo.valToDoc(_val.map().set('price', 1)).append('quantity', -1);
+                                            const maxBound = _mongo.valToDoc(_val.map().set('price', 200)).append('quantity', 23);
+
+                                            const docs = c.find().hint(indexHint).max(maxBound).all();
+                                            """
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the exclusive upper bound for a specific index. A null value means no max is set.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = """
+                                            c.createIndex(_mongo.indexes().compoundIndex(
+                                              _mongo.indexes().descending('price'),
+                                              _mongo.indexes().ascending('quantity')
+                                            ));
+
+                                            const indexHint = _mongo.valToDoc(_val.map().set('price', 1)).append('quantity', -1);
+                                            const maxBound = _mongo.valToDoc(_val.map().set('price', 200)).append('quantity', 23);
+
+                                            const docs = c.find().hint(indexHint).max(maxBound).all();
+                                            """
+                            )
+                    }),
+    }, parameters = {
+            @ParameterDoc(name = "max", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "máximo",
+                            description = "O limite máximo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The max."
+                    )
+            })
+    }, returns = {})
     public MongoFindIterable max(Bson max) {
         find.max(max);
         return this;

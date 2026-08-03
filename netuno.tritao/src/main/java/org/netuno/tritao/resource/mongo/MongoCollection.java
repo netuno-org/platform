@@ -316,10 +316,124 @@ public class MongoCollection {
         return collection.countDocuments(filter, options);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria um índice com as chaves fornecidas.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.createIndex(_mongo.indexes().ascending('quantity', 'price'));"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Create an index with the given keys.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.createIndex(_mongo.indexes().ascending('quantity', 'price'));"
+                            )
+                    }),
+    }, parameters = {
+            @ParameterDoc(name = "keys", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "atualizações",
+                            description = "Um objeto que descreve a(s) chave(s) do índice, que não pode ser nulo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "An object describing the index key(s), which may not be null."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O nome do índice."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The index name."
+            )
+    })
     public String createIndex(Bson keys) {
         return collection.createIndex(keys);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Agrega documentos de acordo com o pipeline de agregação especificado.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = """
+                                            const docs = collection.aggregate(
+                                              _mongo.aggregates().match(
+                                                _mongo.filters().eq('status', 'Active')
+                                              ),
+                                              _mongo.aggregates().group(
+                                                '$customerId',
+                                                _mongo.accumulators().sum('total', '$price')
+                                              ),
+                                              _mongo.aggregates().project(
+                                                _mongo.projections().fields(
+                                                  _mongo.projections().include('total'),
+                                                  _mongo.projections().excludeId()
+                                                )
+                                              )
+                                            ).all();
+                                            """
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Aggregates documents according to the specified aggregation pipeline.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = """
+                                            const docs = collection.aggregate(
+                                              _mongo.aggregates().match(
+                                                _mongo.filters().eq('status', 'Active')
+                                              ),
+                                              _mongo.aggregates().group(
+                                                '$customerId',
+                                                _mongo.accumulators().sum('total', '$price')
+                                              ),
+                                              _mongo.aggregates().project(
+                                                _mongo.projections().fields(
+                                                  _mongo.projections().include('total'),
+                                                  _mongo.projections().excludeId()
+                                                )
+                                              )
+                                            ).all();
+                                            """
+                            )
+                    }),
+    }, parameters = {
+            @ParameterDoc(name = "pipeline", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "pipeline",
+                            description = "O pipeline de agregação."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The aggregation pipeline."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Um iterável contendo o resultado da operação de agregação."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "An iterable containing the result of the aggregation operation."
+            )
+    })
     public MongoAggregateIterable aggregate(Bson... pipeline) {
         return new MongoAggregateIterable(mongo, collection.aggregate(List.of(pipeline)));
     }
@@ -662,10 +776,9 @@ public class MongoCollection {
                                     code = """
                                             const setUpdate = _mongo.updates().set('quantity', 42);
                                             const renameUpdate = _mongo.updates().rename('other', 'more');
-                                            const updateList = _val.list(); 
-                                            updateList.add(setUpdate);
-                                            updateList.add(renameUpdate);
-                                            const combinedUpdates = _mongo.updates().combine(updateList);
+
+                                            const combinedUpdates = _mongo.updates().combine(setUpdate, renameUpdate);
+
                                             c.findOneAndUpdate(
                                               _mongo.filters().eq('name', 'Abc'),
                                               combinedUpdates
@@ -682,10 +795,9 @@ public class MongoCollection {
                                     code = """
                                             const setUpdate = _mongo.updates().set('quantity', 42);
                                             const renameUpdate = _mongo.updates().rename('other', 'more');
-                                            const updateList = _val.list(); 
-                                            updateList.add(setUpdate);
-                                            updateList.add(renameUpdate);
-                                            const combinedUpdates = _mongo.updates().combine(updateList);
+
+                                            const combinedUpdates = _mongo.updates().combine(setUpdate, renameUpdate);
+
                                             c.findOneAndUpdate(
                                               _mongo.filters().eq('name', 'Abc'),
                                               combinedUpdates
@@ -709,7 +821,7 @@ public class MongoCollection {
             @ParameterDoc(name = "update", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
-                            name = "",
+                            name = "atualização",
                             description = "Uma pipeline que descreve a atualização, que não pode ser nula."
                     ),
                     @ParameterTranslationDoc(

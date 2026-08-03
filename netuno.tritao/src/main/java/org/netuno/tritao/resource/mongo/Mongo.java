@@ -26,6 +26,11 @@ import org.bson.Document;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.MethodDoc;
+import org.netuno.library.doc.MethodTranslationDoc;
+import org.netuno.library.doc.ReturnTranslationDoc;
+import org.netuno.library.doc.SourceCodeDoc;
+import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.hili.Hili;
@@ -177,6 +182,36 @@ public class Mongo extends ResourceBase implements AutoCloseable {
         return new MongoUpdates();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Uma factory para definir chaves de índice.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.createIndex(_mongo.indexes().ascending('quantity', 'price'));"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A factory for defining index keys.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.createIndex(_mongo.indexes().ascending('quantity', 'price'));"
+                            )
+                    }),
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A factory de índices."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The index factory."
+            )
+    })
     public MongoIndexes indexes() {
         return new MongoIndexes();
     }
