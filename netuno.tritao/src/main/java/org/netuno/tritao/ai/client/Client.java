@@ -22,8 +22,10 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.JsonValue;
 import com.openai.core.http.StreamResponse;
+import com.openai.errors.OpenAIServiceException;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
+import com.openai.models.ReasoningEffort;
 import com.openai.models.ResponseFormatJsonObject;
 import com.openai.models.ResponseFormatJsonSchema;
 import com.openai.models.ResponseFormatText;
@@ -555,11 +557,7 @@ public class Client {
             }
 
         } catch (Exception e) {
-            LOGGER.error(
-                    "Failed to load models for provider '{}'.",
-                    this.settings.provider,
-                    e
-            );
+            logProviderError("Models listing", null, e);
         }
 
         return models;
@@ -637,7 +635,7 @@ public class Client {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to validate model '{}'", modelName, e);
+            logProviderError("Model validation", modelName, e);
         }
 
         return false;
@@ -758,13 +756,29 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
-                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
-                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             })
     }, returns = {
@@ -911,13 +925,29 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
-                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
-                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -1071,13 +1101,29 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
-                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
-                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             })
     }, returns = {
@@ -1243,13 +1289,29 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
-                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
-                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -1348,12 +1410,7 @@ public class Client {
             return result;
 
         } catch (Exception e) {
-            LOGGER.error(
-                    "Chat completion failed for provider '{}', model '{}'.",
-                    this.settings.provider,
-                    model,
-                    e
-            );
+            logProviderError("Chat completion", model, e);
         }
 
         return result;
@@ -1473,13 +1530,29 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
-                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
-                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1631,13 +1704,29 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
-                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
-                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1799,13 +1888,29 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
-                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
-                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1979,13 +2084,29 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
-                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
-                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -2251,12 +2372,7 @@ public class Client {
             if (isCancelled()) {
                 LOGGER.info("Chat stream cancelled for provider '{}', model '{}'.", this.settings.provider, model);
             } else if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
-                LOGGER.error(
-                        "Chat stream failed for provider '{}', model '{}'.",
-                        this.settings.provider,
-                        model,
-                        e
-                );
+                logProviderError("Chat stream", model, e);
             }
         } finally {
             this.activeStream = null;
@@ -3373,12 +3489,7 @@ public class Client {
             accumulateUsage(result);
 
         } catch (Exception e) {
-            LOGGER.error(
-                    "Embeddings request failed for provider '{}', model '{}'.",
-                    this.settings.provider,
-                    model,
-                    e
-            );
+            logProviderError("Embeddings request", model, e);
         }
 
         return result;
@@ -3683,8 +3794,108 @@ public class Client {
             builder.topP(options.getDouble("top_p"));
         }
 
+        if (options.containsKey("max_completion_tokens")) {
+            builder.maxCompletionTokens(options.getLong("max_completion_tokens"));
+        }
+
+        if (options.containsKey("frequency_penalty")) {
+            builder.frequencyPenalty(options.getDouble("frequency_penalty"));
+        }
+
+        if (options.containsKey("presence_penalty")) {
+            builder.presencePenalty(options.getDouble("presence_penalty"));
+        }
+
+        if (options.containsKey("seed")) {
+            builder.seed(options.getLong("seed"));
+        }
+
+        if (options.containsKey("n")) {
+            builder.n(options.getLong("n"));
+        }
+
+        if (options.containsKey("stop")) {
+            applyStop(builder, options.get("stop"));
+        }
+
+        if (options.containsKey("logprobs")) {
+            builder.logprobs(options.getBoolean("logprobs"));
+        }
+
+        if (options.containsKey("top_logprobs")) {
+            builder.topLogprobs(options.getLong("top_logprobs"));
+        }
+
+        if (options.containsKey("reasoning_effort")) {
+            builder.reasoningEffort(ReasoningEffort.of(options.getString("reasoning_effort")));
+        }
+
+        if (options.containsKey("verbosity")) {
+            builder.verbosity(
+                    ChatCompletionCreateParams.Verbosity.of(options.getString("verbosity"))
+            );
+        }
+
+        if (options.containsKey("service_tier")) {
+            builder.serviceTier(
+                    ChatCompletionCreateParams.ServiceTier.of(options.getString("service_tier"))
+            );
+        }
+
+        // The providers reject this option when the request has no tools.
+        if (options.containsKey("parallel_tool_calls")) {
+            if (settings.tools != null && !settings.tools.isEmpty()) {
+                builder.parallelToolCalls(options.getBoolean("parallel_tool_calls"));
+            } else {
+                LOGGER.warn("Option 'parallel_tool_calls' ignored, there are no tools configured.");
+            }
+        }
+
+        if (options.containsKey("store")) {
+            builder.store(options.getBoolean("store"));
+        }
+
+        if (options.containsKey("prompt_cache_key")) {
+            builder.promptCacheKey(options.getString("prompt_cache_key"));
+        }
+
+        if (options.containsKey("safety_identifier")) {
+            builder.safetyIdentifier(options.getString("safety_identifier"));
+        }
+
+        if (options.containsKey("user")) {
+            builder.user(options.getString("user"));
+        }
+
         if (options.containsKey("response_format")) {
             applyResponseFormat(builder, options.getValues("response_format"));
+        }
+    }
+
+    /**
+     * The stop sequences accept a single text or a list of texts.
+     */
+    private void applyStop(ChatCompletionCreateParams.Builder builder, Object stop) {
+        if (stop == null) {
+            return;
+        }
+
+        if (stop instanceof Values && ((Values) stop).isList()) {
+            Values list = (Values) stop;
+            if (list.isEmpty()) {
+                return;
+            }
+            builder.stop(
+                    ChatCompletionCreateParams.Stop.ofStrings(
+                            Arrays.asList(list.toStringArray())
+                    )
+            );
+            return;
+        }
+
+        String text = stop.toString();
+        if (!text.isBlank()) {
+            builder.stop(ChatCompletionCreateParams.Stop.ofString(text));
         }
     }
 
@@ -3971,6 +4182,33 @@ public class Client {
                 .set("total", previous.getLong("total", 0) + current.getLong("total", 0))
                 .set("requests", previous.getInt("requests", 0) + 1)
                 .set("raw", current.getValues("raw"));
+    }
+
+    /**
+     * The errors answered by the provider are logged in a single line, the message already
+     * carries the status and the reason. The full trace stays available in debug.
+     */
+    private void logProviderError(String operation, String model, Exception e) {
+        String target = model == null || model.isBlank()
+                ? "provider '" + this.settings.provider + "'"
+                : "provider '" + this.settings.provider + "', model '" + model + "'";
+
+        if (e instanceof OpenAIServiceException) {
+            LOGGER.error("{} failed for {}: {}", operation, target, firstLine(e.getMessage()));
+            LOGGER.debug("{} error detail.", operation, e);
+            return;
+        }
+
+        LOGGER.error("{} failed for {}.", operation, target, e);
+    }
+
+    private String firstLine(String message) {
+        if (message == null || message.isBlank()) {
+            return "no message given";
+        }
+
+        int end = message.indexOf('\n');
+        return (end < 0 ? message : message.substring(0, end)).trim();
     }
 
     private Values parseJsonValues(String json) {
