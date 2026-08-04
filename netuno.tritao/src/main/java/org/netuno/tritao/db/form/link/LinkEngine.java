@@ -114,7 +114,7 @@ public class LinkEngine extends TableBuilderResourceBase {
             );
             for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                 Link link = linkEntry.getValue();
-                relation.getSubRelations().put(subLink.getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
+                relation.getSubRelations().put(link.getRelationLink().getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
             }
             return relation;
         } else { //OneToMany Relation
@@ -130,7 +130,7 @@ public class LinkEngine extends TableBuilderResourceBase {
                 );
                 for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                     Link link = linkEntry.getValue();
-                    relation.getSubRelations().put(subLink.getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
+                    relation.getSubRelations().put(link.getRelationLink().getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
                 }
                 return relation;
             } else {
