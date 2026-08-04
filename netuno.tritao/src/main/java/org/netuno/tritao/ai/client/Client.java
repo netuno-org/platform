@@ -114,6 +114,7 @@ public class Client {
         private String provider;
         private int maxToolLoops;
         private String streamKey;
+        private boolean usageTracking = true;
 
         private Values mcp;
         private Values tools;
@@ -144,6 +145,32 @@ public class Client {
 
     private final AtomicBoolean streamCancelled = new AtomicBoolean(false);
     private volatile StreamResponse<ChatCompletionChunk> activeStream;
+
+    private static final String[] USAGE_INPUT_KEYS = {
+            "prompt_tokens", "input_tokens", "promptTokenCount", "prompt_eval_count"
+    };
+    private static final String[] USAGE_OUTPUT_KEYS = {
+            "completion_tokens", "output_tokens", "candidatesTokenCount", "eval_count"
+    };
+    private static final String[] USAGE_TOTAL_KEYS = {
+            "total_tokens", "totalTokenCount"
+    };
+    private static final String[] USAGE_CACHED_KEYS = {
+            "cached_tokens", "cache_read_input_tokens", "cachedContentTokenCount",
+            "cached_content_token_count", "prompt_cache_hit_tokens"
+    };
+    private static final String[] USAGE_CACHE_WRITE_KEYS = {
+            "cache_write_tokens", "cache_creation_input_tokens"
+    };
+    private static final String[] USAGE_REASONING_KEYS = {
+            "reasoning_tokens", "thoughtsTokenCount", "reasoning_token_count"
+    };
+    private static final String[] USAGE_DETAILS_KEYS = {
+            "prompt_tokens_details", "input_tokens_details",
+            "completion_tokens_details", "output_tokens_details"
+    };
+
+    private volatile Values usageTotals = newUsage();
 
     public Client(Proteu proteu, Hili hili, String provider) {
         this.proteu = Objects.requireNonNull(proteu, "Proteu cannot be null");
@@ -1257,6 +1284,8 @@ public class Client {
             return result;
         }
 
+        this.usageTotals = newUsage();
+
         try {
             ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
 
@@ -1266,6 +1295,8 @@ public class Client {
                 String json = mapper.writeValueAsString(completion);
                 result = Values.fromJSON(json);
                 result.remove("valid");
+
+                accumulateUsage(result);
 
                 if (completion.choices() == null || completion.choices().isEmpty()) {
                     return result;
@@ -1990,6 +2021,7 @@ public class Client {
         String streamKey = this.settings.streamKey;
 
         this.streamCancelled.set(false);
+        this.usageTotals = newUsage();
 
         if (streamKey != null && !streamKey.isBlank()) {
             Client previous = ACTIVE_STREAMS.put(streamKey, this);
@@ -2002,6 +2034,14 @@ public class Client {
         try {
             ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
 
+            if (this.settings.usageTracking) {
+                builder.streamOptions(
+                        ChatCompletionStreamOptions.builder()
+                                .includeUsage(true)
+                                .build()
+                );
+            }
+
             for (int loop = 0;  loop < this.settings.maxToolLoops; loop++) {
                 if (isCancelled()) {
                     LOGGER.info("Chat stream cancelled for provider '{}', model '{}'.", this.settings.provider, model);
@@ -2010,6 +2050,7 @@ public class Client {
 
                 StringBuilder assistantText = new StringBuilder();
                 Map<Integer, ToolCallState> toolCallStates = new TreeMap<>();
+                Values streamUsage = null;
                 boolean streamHadChunks = false;
 
                 try (StreamResponse<ChatCompletionChunk> streamingResponse =
@@ -2030,6 +2071,10 @@ public class Client {
 
                             if (onToken != null) {
                                 onToken.accept(chunkValues);
+                            }
+
+                            if (usageNode(chunkValues) != null) {
+                                streamUsage = chunkValues;
                             }
 
                             Values choices = chunkValues.getValues("choices");
@@ -2102,6 +2147,10 @@ public class Client {
                     }
                 } finally {
                     this.activeStream = null;
+                }
+
+                if (streamUsage != null) {
+                    accumulateUsage(streamUsage);
                 }
 
                 if (isCancelled()) {
@@ -3276,6 +3325,8 @@ public class Client {
             return result;
         }
 
+        this.usageTotals = newUsage();
+
         try {
             EmbeddingCreateParams.Builder builder = EmbeddingCreateParams.builder()
                     .model(model)
@@ -3300,6 +3351,8 @@ public class Client {
             result = Values.fromJSON(json);
             result.remove("valid");
 
+            accumulateUsage(result);
+
         } catch (Exception e) {
             LOGGER.error(
                     "Embeddings request failed for provider '{}', model '{}'.",
@@ -3310,6 +3363,233 @@ public class Client {
         }
 
         return result;
+    }
+
+    // -------------------------------------------------------------------------
+    // USAGE
+    // -------------------------------------------------------------------------
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém os tokens consumidos na última execução de `chat`, `stream` ou `embeddings`, "
+                            + "somando todos os pedidos feitos ao fornecedor, incluindo os ciclos de chamadas a ferramentas.\n\n"
+                            + "Os contadores são normalizados e têm sempre o mesmo significado, independentemente do fornecedor:\n"
+                            + "- `input`: tokens de entrada, incluindo sempre os que vieram da cache\n"
+                            + "- `output`: tokens gerados\n"
+                            + "- `cached`: tokens de entrada lidos da cache\n"
+                            + "- `cache_write`: tokens de entrada escritos na cache\n"
+                            + "- `reasoning`: tokens de raciocínio, já incluídos no `output`\n"
+                            + "- `total`: total de tokens\n"
+                            + "- `requests`: número de pedidos feitos ao fornecedor\n"
+                            + "- `raw`: contadores originais tal como o fornecedor os devolveu no último pedido\n\n"
+                            + "Em streaming os contadores só ficam disponíveis no fim, porque o fornecedor envia-os no último fragmento.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const resposta = client.chat(messages)\n"
+                                            + "\n"
+                                            + "const tokens = client.usage()\n"
+                                            + "_log.info('Entrada: '+ tokens.getLong('input')\n"
+                                            + "    +' | Saída: '+ tokens.getLong('output')\n"
+                                            + "    +' | Cache: '+ tokens.getLong('cached'))"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the tokens consumed in the last `chat`, `stream` or `embeddings` execution, "
+                            + "summing every request made to the provider, including the tool call loops.\n\n"
+                            + "The counters are normalized and always have the same meaning, whatever the provider is:\n"
+                            + "- `input`: input tokens, always including the ones that came from the cache\n"
+                            + "- `output`: generated tokens\n"
+                            + "- `cached`: input tokens read from the cache\n"
+                            + "- `cache_write`: input tokens written to the cache\n"
+                            + "- `reasoning`: reasoning tokens, already included in `output`\n"
+                            + "- `total`: total tokens\n"
+                            + "- `requests`: number of requests made to the provider\n"
+                            + "- `raw`: original counters exactly as the provider returned them on the last request\n\n"
+                            + "On streaming the counters are only available at the end, because the provider sends them in the last chunk.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const response = client.chat(messages)\n"
+                                            + "\n"
+                                            + "const tokens = client.usage()\n"
+                                            + "_log.info('Input: '+ tokens.getLong('input')\n"
+                                            + "    +' | Output: '+ tokens.getLong('output')\n"
+                                            + "    +' | Cache: '+ tokens.getLong('cached'))"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto com os contadores de tokens normalizados da última execução."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Object with the normalized token counters of the last execution."
+            )
+    })
+    public Values usage() {
+        return this.usageTotals;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Normaliza os contadores de tokens de uma resposta devolvida por qualquer fornecedor, "
+                            + "aceitando a resposta completa do `chat`, um fragmento do `stream`, a resposta dos `embeddings` "
+                            + "ou apenas o objeto de contadores.\n\n"
+                            + "Reconhece as várias formas usadas pelas APIs, por exemplo `prompt_tokens` e `completion_tokens` (OpenAI), "
+                            + "`input_tokens` e `output_tokens` (Anthropic), `promptTokenCount` e `candidatesTokenCount` (Google) "
+                            + "ou `prompt_eval_count` e `eval_count` (Ollama), assim como as várias formas de indicar a cache: "
+                            + "`prompt_tokens_details.cached_tokens`, `cache_read_input_tokens`, `cachedContentTokenCount` ou `prompt_cache_hit_tokens`.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const resposta = client.chat(messages)\n"
+                                            + "const tokens = client.usage(resposta)\n"
+                                            + "\n"
+                                            + "_out.json(tokens.toJSON())"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Normalizes the token counters of a response returned by any provider, "
+                            + "accepting the full `chat` response, a `stream` chunk, the `embeddings` response "
+                            + "or just the counters object.\n\n"
+                            + "It recognizes the several forms used by the APIs, for example `prompt_tokens` and `completion_tokens` (OpenAI), "
+                            + "`input_tokens` and `output_tokens` (Anthropic), `promptTokenCount` and `candidatesTokenCount` (Google) "
+                            + "or `prompt_eval_count` and `eval_count` (Ollama), as well as the several forms of reporting the cache: "
+                            + "`prompt_tokens_details.cached_tokens`, `cache_read_input_tokens`, `cachedContentTokenCount` or `prompt_cache_hit_tokens`.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const response = client.chat(messages)\n"
+                                            + "const tokens = client.usage(response)\n"
+                                            + "\n"
+                                            + "_out.json(tokens.toJSON())"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "response", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "resposta",
+                            description = "Resposta, fragmento de streaming ou objeto de contadores a normalizar."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Response, streaming chunk or counters object to normalize."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto com os contadores de tokens normalizados, todos a zero se a resposta não os incluir."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Object with the normalized token counters, all zero if the response does not include them."
+            )
+    })
+    public Values usage(Values response) {
+        return normalizeUsage(response);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Ativa ou desativa a contagem de tokens em streaming, que por omissão está ativa.\n\n"
+                            + "Quando está ativa é enviado o parâmetro `stream_options.include_usage` para que o fornecedor "
+                            + "devolva os contadores no último fragmento. Desative apenas se o fornecedor não suportar esse parâmetro.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "client.usageTracking(false)"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Enables or disables the token counting on streaming, which is enabled by default.\n\n"
+                            + "When enabled the `stream_options.include_usage` parameter is sent so that the provider "
+                            + "returns the counters in the last chunk. Only disable it if the provider does not support that parameter.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "client.usageTracking(false)"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "enabled", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "ativo",
+                            description = "Verdadeiro para pedir os contadores de tokens em streaming."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "True to request the token counters on streaming."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A própria instância do cliente, permitindo encadear chamadas."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The client instance itself, allowing chained calls."
+            )
+    })
+    public Client usageTracking(boolean enabled) {
+        this.settings.usageTracking = enabled;
+        return this;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se a contagem de tokens em streaming está ativa.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isUsageTracking()) {\n"
+                                            + "    _log.info('Os tokens do streaming vão ser contabilizados.')\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks whether the token counting on streaming is enabled.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isUsageTracking()) {\n"
+                                            + "    _log.info('The streaming tokens will be counted.')\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se a contagem de tokens em streaming está ativa."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if the token counting on streaming is enabled."
+            )
+    })
+    public boolean isUsageTracking() {
+        return this.settings.usageTracking;
     }
 
     // -------------------------------------------------------------------------
@@ -3477,6 +3757,124 @@ public class Client {
                     .set("error", true)
                     .set("message", e.getMessage() != null ? e.getMessage() : "Tool execution failed.");
         }
+    }
+
+    private static Values newUsage() {
+        return new Values()
+                .set("input", 0L)
+                .set("output", 0L)
+                .set("cached", 0L)
+                .set("cache_write", 0L)
+                .set("reasoning", 0L)
+                .set("total", 0L)
+                .set("requests", 0);
+    }
+
+    /**
+     * Finds the node that holds the token counters, whatever the provider calls it.
+     */
+    private Values usageNode(Values response) {
+        if (response == null || response.isEmpty()) {
+            return null;
+        }
+
+        Values usage = response.getValues("usage");
+        if (usage == null) {
+            usage = response.getValues("usageMetadata");
+        }
+        if (usage == null) {
+            usage = response.getValues("usage_metadata");
+        }
+        if (usage == null
+                && (firstLong(response, USAGE_INPUT_KEYS) >= 0 || firstLong(response, USAGE_OUTPUT_KEYS) >= 0)) {
+            usage = response;
+        }
+
+        return usage;
+    }
+
+    private long firstLong(Values values, String[] keys) {
+        if (values == null) {
+            return -1;
+        }
+        for (String key : keys) {
+            long value = values.getLong(key, -1L);
+            if (value >= 0) {
+                return value;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Looks for the counter at the root of the usage node and also inside the details objects,
+     * where the OpenAI compatible providers place the cache and reasoning counters.
+     */
+    private long deepLong(Values usage, String[] keys) {
+        long value = firstLong(usage, keys);
+        if (value >= 0) {
+            return value;
+        }
+
+        for (String detailsKey : USAGE_DETAILS_KEYS) {
+            value = firstLong(usage.getValues(detailsKey), keys);
+            if (value >= 0) {
+                return value;
+            }
+        }
+
+        return -1;
+    }
+
+    private Values normalizeUsage(Values response) {
+        Values usage = usageNode(response);
+        if (usage == null) {
+            return newUsage();
+        }
+
+        long input = Math.max(firstLong(usage, USAGE_INPUT_KEYS), 0);
+        long output = Math.max(firstLong(usage, USAGE_OUTPUT_KEYS), 0);
+        long cached = Math.max(deepLong(usage, USAGE_CACHED_KEYS), 0);
+        long cacheWrite = Math.max(deepLong(usage, USAGE_CACHE_WRITE_KEYS), 0);
+        long reasoning = Math.max(deepLong(usage, USAGE_REASONING_KEYS), 0);
+
+        if (usage.hasKey("input_tokens") && !usage.hasKey("prompt_tokens")) {
+            input += cached + cacheWrite;
+        }
+
+        long total = firstLong(usage, USAGE_TOTAL_KEYS);
+        if (total < 0) {
+            total = input + output;
+        }
+
+        return newUsage()
+                .set("input", input)
+                .set("output", output)
+                .set("cached", cached)
+                .set("cache_write", cacheWrite)
+                .set("reasoning", reasoning)
+                .set("total", total)
+                .set("requests", 1)
+                .set("raw", usage);
+    }
+
+    private void accumulateUsage(Values response) {
+        Values current = normalizeUsage(response);
+        if (current.getInt("requests", 0) == 0) {
+            return;
+        }
+
+        Values previous = this.usageTotals;
+
+        this.usageTotals = newUsage()
+                .set("input", previous.getLong("input", 0) + current.getLong("input", 0))
+                .set("output", previous.getLong("output", 0) + current.getLong("output", 0))
+                .set("cached", previous.getLong("cached", 0) + current.getLong("cached", 0))
+                .set("cache_write", previous.getLong("cache_write", 0) + current.getLong("cache_write", 0))
+                .set("reasoning", previous.getLong("reasoning", 0) + current.getLong("reasoning", 0))
+                .set("total", previous.getLong("total", 0) + current.getLong("total", 0))
+                .set("requests", previous.getInt("requests", 0) + 1)
+                .set("raw", current.getValues("raw"));
     }
 
     private Values parseJsonValues(String json) {
