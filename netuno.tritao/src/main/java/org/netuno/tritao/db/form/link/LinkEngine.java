@@ -36,7 +36,8 @@ public class LinkEngine extends TableBuilderResourceBase {
 
     public Join buildJoin(Link link) {
         Join join = new Join();
-        join.setRelation(this.buildRelation(link.getForm(),link.getRelationLink()));
+        join.setRelation(this.buildRelation(link.getForm(), link.getRelationLink()));
+        join.setAlias(link.getAlias());
         join.setTable(link.getForm());
         join.setJoinType(link.getJoinType());
         join.setWhere(link.getWhere());
@@ -114,7 +115,9 @@ public class LinkEngine extends TableBuilderResourceBase {
             );
             for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                 Link link = linkEntry.getValue();
-                relation.getSubRelations().put(link.getRelationLink().getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
+                link.setAlias(subLink.getAlias());
+                link.setForm(subLink.getFormLink());
+                relation.getSubRelations().put(link.getRelationLink().getFormLink(), this.buildJoin(link));
             }
             return relation;
         } else { //OneToMany Relation
@@ -130,7 +133,9 @@ public class LinkEngine extends TableBuilderResourceBase {
                 );
                 for (Map.Entry<String, Link> linkEntry : subLink.getSubLinks().entrySet()) {
                     Link link = linkEntry.getValue();
-                    relation.getSubRelations().put(link.getRelationLink().getFormLink(), this.buildJoin(link.setForm(subLink.getFormLink())));
+                    link.setAlias(subLink.getAlias());
+                    link.setForm(subLink.getFormLink());
+                    relation.getSubRelations().put(link.getRelationLink().getFormLink(), this.buildJoin(link));
                 }
                 return relation;
             } else {
