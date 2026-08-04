@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.JsonValue;
+import com.openai.core.http.StreamResponse;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
 import com.openai.models.chat.completions.*;
@@ -48,6 +49,8 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 
@@ -110,6 +113,7 @@ public class Client {
         private String model;
         private String provider;
         private int maxToolLoops;
+        private String streamKey;
 
         private Values mcp;
         private Values tools;
@@ -131,10 +135,15 @@ public class Client {
     private final ObjectMapper mapper = new ObjectMapper();
     private static final Logger LOGGER = LogManager.getLogger(Client.class);
 
+    private static final Map<String, Client> ACTIVE_STREAMS = new ConcurrentHashMap<>();
+
     private final ChatSettings settings;
     private OpenAIClient client;
     private final Proteu proteu;
     private final Hili hili;
+
+    private final AtomicBoolean streamCancelled = new AtomicBoolean(false);
+    private volatile StreamResponse<ChatCompletionChunk> activeStream;
 
     public Client(Proteu proteu, Hili hili, String provider) {
         this.proteu = Objects.requireNonNull(proteu, "Proteu cannot be null");
@@ -1978,16 +1987,40 @@ public class Client {
             return;
         }
 
+        String streamKey = this.settings.streamKey;
+
+        this.streamCancelled.set(false);
+
+        if (streamKey != null && !streamKey.isBlank()) {
+            Client previous = ACTIVE_STREAMS.put(streamKey, this);
+            if (previous != null && previous != this) {
+                LOGGER.warn("Stream key '{}' is already in use, cancelling the previous stream.", streamKey);
+                previous.cancel();
+            }
+        }
+
         try {
             ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
 
             for (int loop = 0;  loop < this.settings.maxToolLoops; loop++) {
+                if (isCancelled()) {
+                    LOGGER.info("Chat stream cancelled for provider '{}', model '{}'.", this.settings.provider, model);
+                    return;
+                }
+
                 StringBuilder assistantText = new StringBuilder();
                 Map<Integer, ToolCallState> toolCallStates = new TreeMap<>();
                 boolean streamHadChunks = false;
 
-                try (var streamingResponse = instance().chat().completions().createStreaming(builder.build())) {
+                try (StreamResponse<ChatCompletionChunk> streamingResponse =
+                             instance().chat().completions().createStreaming(builder.build())) {
+                    this.activeStream = streamingResponse;
+
                     for (ChatCompletionChunk chunk : (Iterable<ChatCompletionChunk>) streamingResponse.stream()::iterator) {
+                        if (isCancelled()) {
+                            break;
+                        }
+
                         try {
                             streamHadChunks = true;
 
@@ -2067,6 +2100,13 @@ public class Client {
                             LOGGER.error("Failed to process stream chunk.", e);
                         }
                     }
+                } finally {
+                    this.activeStream = null;
+                }
+
+                if (isCancelled()) {
+                    LOGGER.info("Chat stream cancelled for provider '{}', model '{}'.", this.settings.provider, model);
+                    return;
                 }
 
                 if (!streamHadChunks) {
@@ -2140,13 +2180,21 @@ public class Client {
             LOGGER.warn("Max stream tool-call loops reached.");
 
         } catch (Exception e) {
-            if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
+            if (isCancelled()) {
+                LOGGER.info("Chat stream cancelled for provider '{}', model '{}'.", this.settings.provider, model);
+            } else if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
                 LOGGER.error(
                         "Chat stream failed for provider '{}', model '{}'.",
                         this.settings.provider,
                         model,
                         e
                 );
+            }
+        } finally {
+            this.activeStream = null;
+
+            if (streamKey != null && !streamKey.isBlank()) {
+                ACTIVE_STREAMS.remove(streamKey, this);
             }
         }
     }
@@ -2156,6 +2204,334 @@ public class Client {
         String type = "function";
         String name;
         StringBuilder arguments = new StringBuilder();
+    }
+
+    // -------------------------------------------------------------------------
+    // STREAM CANCELLATION
+    // -------------------------------------------------------------------------
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define a chave que identifica o streaming deste cliente, permitindo cancelá-lo a partir de outro pedido ou processo através do método `cancelStream`. "
+                            + "A chave é registada quando o streaming arranca e removida quando termina. "
+                            + "Se já existir um streaming ativo com a mesma chave, esse streaming anterior é cancelado.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "client.streamKey('conversa-'+ _user.code())\n"
+                                            + "\n"
+                                            + "client.stream(messages, (chunk) => {\n"
+                                            + "    _out.print(chunk.get('choices').get(0).get('delta').get('content'))\n"
+                                            + "})"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the key that identifies this client streaming, allowing it to be cancelled from another request or process through the `cancelStream` method. "
+                            + "The key is registered when the streaming starts and removed when it ends. "
+                            + "If a streaming is already active with the same key, that previous streaming is cancelled.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "client.streamKey('conversation-'+ _user.code())\n"
+                                            + "\n"
+                                            + "client.stream(messages, (chunk) => {\n"
+                                            + "    _out.print(chunk.get('choices').get(0).get('delta').get('content'))\n"
+                                            + "})"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave única que identifica o streaming. Use nulo ou vazio para não registar o streaming."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Unique key that identifies the streaming. Use null or empty to not register the streaming."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A própria instância do cliente, permitindo encadear chamadas."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The client instance itself, allowing chained calls."
+            )
+    })
+    public Client streamKey(String key) {
+        this.settings.streamKey = key;
+        return this;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém a chave que identifica o streaming deste cliente.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_out.print(client.getStreamKey())"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the key that identifies this client streaming.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_out.print(client.getStreamKey())"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Chave do streaming ou nulo se não estiver definida."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Streaming key or null if it is not defined."
+            )
+    })
+    public String getStreamKey() {
+        return this.settings.streamKey;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cancela o streaming em curso deste cliente. "
+                            + "Pode ser invocado dentro do próprio callback que recebe os tokens ou a partir de outro processo que tenha acesso a esta instância. "
+                            + "O streaming é interrompido de imediato, a ligação é fechada e não são executadas mais chamadas a ferramentas.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Interrompe o streaming a partir do próprio callback\n"
+                                            + "let total = 0\n"
+                                            + "\n"
+                                            + "client.stream(messages, (chunk) => {\n"
+                                            + "    _out.print(chunk.get('choices').get(0).get('delta').get('content'))\n"
+                                            + "\n"
+                                            + "    total++\n"
+                                            + "    if (total > 100) {\n"
+                                            + "        client.cancel()\n"
+                                            + "    }\n"
+                                            + "})"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Cancels the ongoing streaming of this client. "
+                            + "It can be invoked inside the callback that receives the tokens or from another process that has access to this instance. "
+                            + "The streaming is interrupted immediately, the connection is closed and no more tool calls are executed.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Interrupts the streaming from the callback itself\n"
+                                            + "let total = 0\n"
+                                            + "\n"
+                                            + "client.stream(messages, (chunk) => {\n"
+                                            + "    _out.print(chunk.get('choices').get(0).get('delta').get('content'))\n"
+                                            + "\n"
+                                            + "    total++\n"
+                                            + "    if (total > 100) {\n"
+                                            + "        client.cancel()\n"
+                                            + "    }\n"
+                                            + "})"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se o cancelamento foi registado agora, falso se o streaming já tinha sido cancelado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if the cancellation was registered now, false if the streaming was already cancelled."
+            )
+    })
+    public boolean cancel() {
+        boolean cancelledNow = this.streamCancelled.compareAndSet(false, true);
+
+        StreamResponse<ChatCompletionChunk> stream = this.activeStream;
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (Exception e) {
+                LOGGER.debug("Failed to close the stream while cancelling.", e);
+            }
+        }
+
+        return cancelledNow;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cancela o streaming registado com a chave indicada, mesmo que esteja a decorrer noutro pedido. "
+                            + "A chave é definida com o método `streamKey` antes de iniciar o streaming.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Serviço que para o streaming iniciado noutro pedido\n"
+                                            + "const cancelado = _ai.client().cancelStream('conversa-'+ _user.code())\n"
+                                            + "_out.json(_val.map().set('cancelled', cancelado))"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Cancels the streaming registered with the given key, even if it is running in another request. "
+                            + "The key is defined with the `streamKey` method before starting the streaming.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Service that stops the streaming started in another request\n"
+                                            + "const cancelled = _ai.client().cancelStream('conversation-'+ _user.code())\n"
+                                            + "_out.json(_val.map().set('cancelled', cancelled))"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave do streaming definida previamente com `streamKey`."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Streaming key previously defined with `streamKey`."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se existia um streaming ativo com essa chave e o cancelamento foi registado agora."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if there was an active streaming with that key and the cancellation was registered now."
+            )
+    })
+    public boolean cancelStream(String key) {
+        if (key == null || key.isBlank()) {
+            LOGGER.error("Stream key cannot be null or empty.");
+            return false;
+        }
+
+        Client target = ACTIVE_STREAMS.get(key);
+        if (target == null) {
+            LOGGER.warn("No active stream found with the key '{}'.", key);
+            return false;
+        }
+
+        return target.cancel();
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se o streaming em curso deste cliente foi cancelado. "
+                            + "O estado é reposto sempre que um novo streaming é iniciado.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isCancelled()) {\n"
+                                            + "    _log.info('Streaming cancelado.')\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks whether the ongoing streaming of this client was cancelled. "
+                            + "The state is reset whenever a new streaming is started.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isCancelled()) {\n"
+                                            + "    _log.info('Streaming cancelled.')\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se o streaming foi cancelado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if the streaming was cancelled."
+            )
+    })
+    public boolean isCancelled() {
+        return this.streamCancelled.get();
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se existe um streaming ativo registado com a chave indicada.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isStreaming('conversa-'+ _user.code())) {\n"
+                                            + "    _log.info('Já existe um streaming a decorrer.')\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks whether there is an active streaming registered with the given key.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isStreaming('conversation-'+ _user.code())) {\n"
+                                            + "    _log.info('There is already a streaming running.')\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave do streaming definida previamente com `streamKey`."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Streaming key previously defined with `streamKey`."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se existe um streaming ativo com essa chave."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if there is an active streaming with that key."
+            )
+    })
+    public boolean isStreaming(String key) {
+        if (key == null || key.isBlank()) {
+            return false;
+        }
+        return ACTIVE_STREAMS.containsKey(key);
     }
 
 
@@ -3115,7 +3491,7 @@ public class Client {
             return new Values();
         }
     }
-   @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     private Map<String, Object> convertToMap(Object input) {
         if (input == null) return new LinkedHashMap<>();
         if (input instanceof Map) {
