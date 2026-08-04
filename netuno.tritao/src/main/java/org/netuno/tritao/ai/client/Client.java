@@ -758,15 +758,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (verdadeiro para obrigar a resposta a ser um objeto JSON) e "
-                                    + "`response_format` (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (true to force the answer to be a JSON object) and "
-                                    + "`response_format` (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
                     )
             })
     }, returns = {
@@ -913,15 +911,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (verdadeiro para obrigar a resposta a ser um objeto JSON) e "
-                                    + "`response_format` (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (true to force the answer to be a JSON object) and "
-                                    + "`response_format` (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -1075,15 +1071,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (verdadeiro para obrigar a resposta a ser um objeto JSON) e "
-                                    + "`response_format` (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (true to force the answer to be a JSON object) and "
-                                    + "`response_format` (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
                     )
             })
     }, returns = {
@@ -1249,15 +1243,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (verdadeiro para obrigar a resposta a ser um objeto JSON) e "
-                                    + "`response_format` (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (true to force the answer to be a JSON object) and "
-                                    + "`response_format` (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -1481,15 +1473,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (verdadeiro para obrigar a resposta a ser um objeto JSON) e "
-                                    + "`response_format` (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (true to force the answer to be a JSON object) and "
-                                    + "`response_format` (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1641,15 +1631,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (verdadeiro para obrigar a resposta a ser um objeto JSON) e "
-                                    + "`response_format` (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (true to force the answer to be a JSON object) and "
-                                    + "`response_format` (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1811,15 +1799,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (verdadeiro para obrigar a resposta a ser um objeto JSON) e "
-                                    + "`response_format` (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (true to force the answer to be a JSON object) and "
-                                    + "`response_format` (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1993,15 +1979,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (verdadeiro para obrigar a resposta a ser um objeto JSON) e "
-                                    + "`response_format` (`text`, `json_object` ou `json_schema`)."
+                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p` e "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`, "
-                                    + "`json` (true to force the answer to be a JSON object) and "
-                                    + "`response_format` (`text`, `json_object` or `json_schema`)."
+                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p` and "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -3701,8 +3685,6 @@ public class Client {
 
         if (options.containsKey("response_format")) {
             applyResponseFormat(builder, options.getValues("response_format"));
-        } else if (options.getBoolean("json")) {
-            applyResponseFormat(builder, new Values().set("type", "json_object"));
         }
     }
 
