@@ -170,8 +170,17 @@ public class Client {
     private static final String[] USAGE_REASONING_KEYS = {
             "reasoning_tokens", "thoughtsTokenCount", "reasoning_token_count"
     };
+    private static final String[] USAGE_AUDIO_KEYS = {
+            "audio_tokens"
+    };
     private static final String[] USAGE_DETAILS_KEYS = {
             "prompt_tokens_details", "input_tokens_details",
+            "completion_tokens_details", "output_tokens_details"
+    };
+    private static final String[] USAGE_INPUT_DETAILS_KEYS = {
+            "prompt_tokens_details", "input_tokens_details"
+    };
+    private static final String[] USAGE_OUTPUT_DETAILS_KEYS = {
             "completion_tokens_details", "output_tokens_details"
     };
 
@@ -681,11 +690,31 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa. Cada mensagem deve ter os campos `role` (system, user, assistant) e `content`."
+                            description = "Lista de mensagens da conversa. Cada mensagem deve ter os campos `role` "
+                                    + "(system, user, assistant) e `content`.\n\n"
+                                    + "O `content` é normalmente texto, mas nas mensagens de `user` pode ser uma lista de partes, "
+                                    + "que é como se enviam imagens, ficheiros e áudio:\n"
+                                    + "- `type: 'text'` com o campo `text`\n"
+                                    + "- `type: 'image_url'` com o campo `image_url`, que leva o `url` e opcionalmente o `detail` "
+                                    + "(`low`, `high` ou `auto`). O `url` aceita um endereço público ou uma data URL com o conteúdo em base64\n"
+                                    + "- `type: 'file'` com o campo `file`, que leva o `file_data` numa data URL, por exemplo um PDF, "
+                                    + "ou em alternativa o `file_id` de um ficheiro já carregado no fornecedor, e opcionalmente o `filename`\n"
+                                    + "- `type: 'input_audio'` com o campo `input_audio`, que leva o `data` em base64 simples, sem prefixo, "
+                                    + "e o `format`, `wav` ou `mp3`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages. Each message must have the fields `role` (system, user, assistant) and `content`."
+                            description = "List of conversation messages. Each message must have the fields `role` "
+                                    + "(system, user, assistant) and `content`.\n\n"
+                                    + "The `content` is usually text, but on the `user` messages it can be a list of parts, "
+                                    + "which is how images, files and audio are sent:\n"
+                                    + "- `type: 'text'` with the `text` field\n"
+                                    + "- `type: 'image_url'` with the `image_url` field, which takes the `url` and optionally the `detail` "
+                                    + "(`low`, `high` or `auto`). The `url` accepts a public address or a data URL with the content in base64\n"
+                                    + "- `type: 'file'` with the `file` field, which takes the `file_data` in a data URL, a PDF for example, "
+                                    + "or instead the `file_id` of a file already uploaded to the provider, and optionally the `filename`\n"
+                                    + "- `type: 'input_audio'` with the `input_audio` field, which takes the `data` in plain base64, "
+                                    + "without a prefix, and the `format`, `wav` or `mp3`"
                     )
             })
     }, returns = {
@@ -745,11 +774,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
@@ -838,11 +869,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -914,11 +947,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
@@ -1020,11 +1055,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             })
     }, returns = {
@@ -1090,11 +1127,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
@@ -1191,11 +1230,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -1278,11 +1319,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
@@ -1456,11 +1499,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1519,11 +1564,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
@@ -1613,11 +1660,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1693,11 +1742,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
@@ -1803,11 +1854,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1877,11 +1930,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
@@ -1982,11 +2037,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -2073,11 +2130,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
@@ -3510,6 +3569,8 @@ public class Client {
                             + "- `cached`: tokens de entrada lidos da cache\n"
                             + "- `cache_write`: tokens de entrada escritos na cache\n"
                             + "- `reasoning`: tokens de raciocínio, já incluídos no `output`\n"
+                            + "- `audio_input`: tokens de áudio enviados, já incluídos no `input`\n"
+                            + "- `audio_output`: tokens de áudio gerados, já incluídos no `output`\n"
                             + "- `total`: total de tokens\n"
                             + "- `requests`: número de pedidos feitos ao fornecedor\n"
                             + "- `raw`: contadores originais tal como o fornecedor os devolveu no último pedido\n\n"
@@ -3536,6 +3597,8 @@ public class Client {
                             + "- `cached`: input tokens read from the cache\n"
                             + "- `cache_write`: input tokens written to the cache\n"
                             + "- `reasoning`: reasoning tokens, already included in `output`\n"
+                            + "- `audio_input`: audio tokens sent, already included in `input`\n"
+                            + "- `audio_output`: audio tokens generated, already included in `output`\n"
                             + "- `total`: total tokens\n"
                             + "- `requests`: number of requests made to the provider\n"
                             + "- `raw`: original counters exactly as the provider returned them on the last request\n\n"
@@ -3740,7 +3803,7 @@ public class Client {
     private void addMessages(ChatCompletionCreateParams.Builder builder, Values messages) {
         for (Values msg : messages.listOfValues()) {
             String role = msg.getString("role");
-            String content = msg.getString("content");
+            Object rawContent = msg.get("content");
 
             if (role == null || role.isBlank()) {
                 role = "user";
@@ -3748,6 +3811,7 @@ public class Client {
 
             if ("tool".equals(role)) {
                 String toolCallId = msg.getString("tool_call_id");
+                String content = msg.getString("content");
                 if (toolCallId != null && !toolCallId.isBlank() && content != null) {
                     builder.addMessage(
                             ChatCompletionToolMessageParam.builder()
@@ -3759,9 +3823,17 @@ public class Client {
                 continue;
             }
 
-            if (content == null) {
+            if (rawContent == null) {
                 continue;
             }
+
+            // The content in parts is how the API receives images along with the text.
+            if (rawContent instanceof Values && ((Values) rawContent).isList()) {
+                addContentParts(builder, role, (Values) rawContent);
+                continue;
+            }
+
+            String content = msg.getString("content");
 
             switch (role) {
                 case "system":
@@ -3775,6 +3847,204 @@ public class Client {
                     break;
             }
         }
+    }
+
+    /**
+     * Adds a message whose content is a list of parts, each one a text or an image.
+     * Only the user messages accept this format.
+     */
+    private void addContentParts(ChatCompletionCreateParams.Builder builder, String role, Values parts) {
+        if (!"user".equals(role)) {
+            LOGGER.error("Only the user messages accept the content in parts, '{}' message ignored.", role);
+            return;
+        }
+
+        List<ChatCompletionContentPart> contentParts = new ArrayList<>();
+
+        for (Values part : parts.listOfValues()) {
+            if (part == null || part.isEmpty()) {
+                continue;
+            }
+
+            String type = part.getString("type");
+            if (type == null || type.isBlank()) {
+                if (part.containsKey("image_url")) {
+                    type = "image_url";
+                } else if (part.containsKey("file")) {
+                    type = "file";
+                } else if (part.containsKey("input_audio")) {
+                    type = "input_audio";
+                } else {
+                    type = "text";
+                }
+            }
+
+            if (type.equals("image_url")) {
+                ChatCompletionContentPart image = buildImagePart(part);
+                if (image != null) {
+                    contentParts.add(image);
+                }
+                continue;
+            }
+
+            if (type.equals("file")) {
+                ChatCompletionContentPart file = buildFilePart(part);
+                if (file != null) {
+                    contentParts.add(file);
+                }
+                continue;
+            }
+
+            if (type.equals("input_audio")) {
+                ChatCompletionContentPart audio = buildAudioPart(part);
+                if (audio != null) {
+                    contentParts.add(audio);
+                }
+                continue;
+            }
+
+            if (type.equals("text")) {
+                String text = part.getString("text");
+                if (text == null) {
+                    LOGGER.error("The 'text' content part requires the 'text' field.");
+                    continue;
+                }
+                contentParts.add(
+                        ChatCompletionContentPart.ofText(
+                                ChatCompletionContentPartText.builder()
+                                        .text(text)
+                                        .build()
+                        )
+                );
+                continue;
+            }
+
+            LOGGER.error("Unsupported content part type: {}", type);
+        }
+
+        if (contentParts.isEmpty()) {
+            LOGGER.error("The message was ignored, none of its content parts is valid.");
+            return;
+        }
+
+        builder.addMessage(
+                ChatCompletionUserMessageParam.builder()
+                        .contentOfArrayOfContentParts(contentParts)
+                        .build()
+        );
+    }
+
+    /**
+     * The image accepts a public URL or a data URL with the content in base64.
+     */
+    private ChatCompletionContentPart buildImagePart(Values part) {
+        Values image = part.getValues("image_url");
+
+        if (image == null || image.isEmpty()) {
+            LOGGER.error("The 'image_url' content part requires the 'image_url' field.");
+            return null;
+        }
+
+        String url = image.getString("url");
+        if (url == null || url.isBlank()) {
+            LOGGER.error("The 'image_url' content part requires a 'url'.");
+            return null;
+        }
+
+        ChatCompletionContentPartImage.ImageUrl.Builder imageUrl =
+                ChatCompletionContentPartImage.ImageUrl.builder().url(url);
+
+        String detail = image.getString("detail");
+        if (detail != null && !detail.isBlank()) {
+            imageUrl.detail(ChatCompletionContentPartImage.ImageUrl.Detail.of(detail));
+        }
+
+        return ChatCompletionContentPart.ofImageUrl(
+                ChatCompletionContentPartImage.builder()
+                        .imageUrl(imageUrl.build())
+                        .build()
+        );
+    }
+
+    /**
+     * The file, a PDF for example, travels in base64 on the 'file_data' or is referenced
+     * by the 'file_id' of a file already uploaded to the provider.
+     */
+    private ChatCompletionContentPart buildFilePart(Values part) {
+        Values file = part.getValues("file");
+
+        if (file == null || file.isEmpty()) {
+            LOGGER.error("The 'file' content part requires the 'file' field.");
+            return null;
+        }
+
+        String fileData = file.getString("file_data");
+        String fileId = file.getString("file_id");
+
+        if ((fileData == null || fileData.isBlank()) && (fileId == null || fileId.isBlank())) {
+            LOGGER.error("The 'file' content part requires the 'file_data' or the 'file_id'.");
+            return null;
+        }
+
+        ChatCompletionContentPart.File.FileObject.Builder fileObject =
+                ChatCompletionContentPart.File.FileObject.builder();
+
+        if (fileData != null && !fileData.isBlank()) {
+            fileObject.fileData(fileData);
+        }
+
+        if (fileId != null && !fileId.isBlank()) {
+            fileObject.fileId(fileId);
+        }
+
+        String filename = file.getString("filename");
+        if (filename != null && !filename.isBlank()) {
+            fileObject.filename(filename);
+        }
+
+        return ChatCompletionContentPart.ofFile(
+                ChatCompletionContentPart.File.builder()
+                        .file(fileObject.build())
+                        .build()
+        );
+    }
+
+    /**
+     * The audio travels in plain base64, without the data URL prefix, and the format
+     * is given apart, only 'wav' and 'mp3' being accepted.
+     */
+    private ChatCompletionContentPart buildAudioPart(Values part) {
+        Values audio = part.getValues("input_audio");
+
+        if (audio == null || audio.isEmpty()) {
+            LOGGER.error("The 'input_audio' content part requires the 'input_audio' field.");
+            return null;
+        }
+
+        String data = audio.getString("data");
+        if (data == null || data.isBlank()) {
+            LOGGER.error("The 'input_audio' content part requires the 'data' in base64.");
+            return null;
+        }
+
+        String format = audio.getString("format");
+        if (format == null || format.isBlank()) {
+            LOGGER.error("The 'input_audio' content part requires the 'format', 'wav' or 'mp3'.");
+            return null;
+        }
+
+        return ChatCompletionContentPart.ofInputAudio(
+                ChatCompletionContentPartInputAudio.builder()
+                        .inputAudio(
+                                ChatCompletionContentPartInputAudio.InputAudio.builder()
+                                        .data(data)
+                                        .format(
+                                                ChatCompletionContentPartInputAudio.InputAudio.Format.of(format)
+                                        )
+                                        .build()
+                        )
+                        .build()
+        );
     }
 
     private void applyChatOptions(ChatCompletionCreateParams.Builder builder, Values options) {
@@ -4078,6 +4348,8 @@ public class Client {
                 .set("cached", 0L)
                 .set("cache_write", 0L)
                 .set("reasoning", 0L)
+                .set("audio_input", 0L)
+                .set("audio_output", 0L)
                 .set("total", 0L)
                 .set("requests", 0);
     }
@@ -4133,6 +4405,21 @@ public class Client {
         return -1;
     }
 
+    /**
+     * Looks for the counter only inside the given details objects, which is how the audio
+     * of the entry is told apart from the audio of the answer, both named 'audio_tokens'.
+     */
+    private long groupLong(Values usage, String[] detailsKeys, String[] keys) {
+        for (String detailsKey : detailsKeys) {
+            long value = firstLong(usage.getValues(detailsKey), keys);
+            if (value >= 0) {
+                return value;
+            }
+        }
+
+        return -1;
+    }
+
     private Values normalizeUsage(Values response) {
         Values usage = usageNode(response);
         if (usage == null) {
@@ -4144,6 +4431,8 @@ public class Client {
         long cached = Math.max(deepLong(usage, USAGE_CACHED_KEYS), 0);
         long cacheWrite = Math.max(deepLong(usage, USAGE_CACHE_WRITE_KEYS), 0);
         long reasoning = Math.max(deepLong(usage, USAGE_REASONING_KEYS), 0);
+        long audioInput = Math.max(groupLong(usage, USAGE_INPUT_DETAILS_KEYS, USAGE_AUDIO_KEYS), 0);
+        long audioOutput = Math.max(groupLong(usage, USAGE_OUTPUT_DETAILS_KEYS, USAGE_AUDIO_KEYS), 0);
 
         if (usage.hasKey("input_tokens") && !usage.hasKey("prompt_tokens")) {
             input += cached + cacheWrite;
@@ -4160,6 +4449,8 @@ public class Client {
                 .set("cached", cached)
                 .set("cache_write", cacheWrite)
                 .set("reasoning", reasoning)
+                .set("audio_input", audioInput)
+                .set("audio_output", audioOutput)
                 .set("total", total)
                 .set("requests", 1)
                 .set("raw", usage);
@@ -4179,6 +4470,8 @@ public class Client {
                 .set("cached", previous.getLong("cached", 0) + current.getLong("cached", 0))
                 .set("cache_write", previous.getLong("cache_write", 0) + current.getLong("cache_write", 0))
                 .set("reasoning", previous.getLong("reasoning", 0) + current.getLong("reasoning", 0))
+                .set("audio_input", previous.getLong("audio_input", 0) + current.getLong("audio_input", 0))
+                .set("audio_output", previous.getLong("audio_output", 0) + current.getLong("audio_output", 0))
                 .set("total", previous.getLong("total", 0) + current.getLong("total", 0))
                 .set("requests", previous.getInt("requests", 0) + 1)
                 .set("raw", current.getValues("raw"));
