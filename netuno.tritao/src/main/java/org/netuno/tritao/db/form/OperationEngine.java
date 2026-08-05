@@ -81,14 +81,19 @@ public class OperationEngine extends Data {
             case RIGHT_JOIN -> "RIGHT JOIN";
         };
         final Relationship relation = join.getRelation();
-        joinSQL += this.buildRelation(relation, join.getTable());
+        joinSQL += this.buildRelation(
+                relation,
+                join.getAlias() != null && !join.getAlias().isEmpty() && !join.getAlias().isBlank()
+                        ? join.getAlias()
+                        : join.getTable()
+                );
         return "\n\t" + joinSQL;
     }
 
     public String buildRelation(Relationship relation, String table) {
         String relationSQL = "";
-        relationSQL = (relation.getAlias() != null ? this.escape(relation.getTableName()) + " " + relation.getAlias() : this.escape(relation.getTableName())) + " ON ";
-        String finalRelationName = relation.getAlias() != null && !relation.getAlias().isEmpty() && !relation.getAlias().isBlank() ? relation.getAlias() : this.escape(relation.getTableName());
+        relationSQL = (relation.getAlias() != null ? this.escape(relation.getTableName()) + " " + this.escape(relation.getAlias()) : this.escape(relation.getTableName())) + " ON ";
+        String finalRelationName = relation.getAlias() != null && !relation.getAlias().isEmpty() && !relation.getAlias().isBlank() ? this.escape(relation.getAlias()) : this.escape(relation.getTableName());
         switch (relation.getType()) {
             case ManyToOne -> relationSQL += this.escape(table)+"."+this.escape(relation.getColumn()) + " = " + finalRelationName+".\"id\"";
             case OneToMany -> relationSQL += finalRelationName+"."+this.escape(relation.getColumn()) + " = " + this.escape(table)+".\"id\"";
