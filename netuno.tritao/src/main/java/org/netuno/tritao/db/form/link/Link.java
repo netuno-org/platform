@@ -321,6 +321,13 @@ public class Link {
         return this;
     }
 
+    public Link link(String formLink, String alias) {
+        Link link = new Link(new RelationshipLink(formLink, alias));
+        link.setForm(this.form);
+        this.relationLink.getSubLinks().put(formLink, link);
+        return this;
+    }
+
     public Link link(Link link) {
         link.setForm(this.getForm());
         this.relationLink.getSubLinks().put(link.getRelationLink().getFormLink(), link);
