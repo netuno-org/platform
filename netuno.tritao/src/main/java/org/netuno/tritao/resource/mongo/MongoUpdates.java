@@ -52,18 +52,215 @@ import com.mongodb.client.model.Updates;
         )
 })
 public class MongoUpdates {
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define o valor de um campo em um documento.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.updates().set('name', 'new value');"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the value of a field in a document.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.updates().set('name', 'new value');"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "name", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "nome",
+                            description = "O nome do campo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The field name."
+                    )
+            }),
+            @ParameterDoc(name = "o", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "valor",
+                            description = "O valor a ser definido."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The value to set."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A atualização no formato Bson."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The update in Bson format."
+            )
+    })
     public Bson set(String name, Object o) {
         return Updates.set(name, o);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Remove o valor de um campo em um documento.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.updates().unset('name');"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Removes the value of a field in a document.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.updates().unset('name');"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "name", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "nome",
+                            description = "O nome do campo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The field name."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A atualização no formato Bson."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The update in Bson format."
+            )
+    })
     public Bson unset(String name) {
         return Updates.unset(name);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Renomeia um campo em um documento.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.updates().rename('oldName', 'newName');"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Renames a field in a document.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.updates().rename('oldName', 'newName');"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "name", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "nome",
+                            description = "O nome atual do campo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The current field name."
+                    )
+            }),
+            @ParameterDoc(name = "newName", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "novoNome",
+                            description = "O novo nome do campo."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The new field name."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A atualização no formato Bson."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The update in Bson format."
+            )
+    })
     public Bson rename(String name, String newName) {
         return Updates.rename(name, newName);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Adiciona um valor a um array em um documento.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.updates().push('tags', 'newTag');"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Adds a value to an array in a document.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.updates().push('tags', 'newTag');"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "name", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "nome",
+                            description = "O nome do campo array."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The array field name."
+                    )
+            }),
+            @ParameterDoc(name = "o", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "valor",
+                            description = "O valor a ser adicionado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The value to add."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A atualização no formato Bson."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The update in Bson format."
+            )
+    })
     public Bson push(String name, Object o) {
         return Updates.push(name, o);
     }
@@ -81,7 +278,7 @@ public class MongoUpdates {
 
                                             const combinedUpdates = _mongo.updates().combine(setUpdate, renameUpdate);
 
-                                            c.findOneAndUpdate(
+                                            collection.findOneAndUpdate(
                                               _mongo.filters().eq('name', 'Abc'),
                                               combinedUpdates
                                             );
@@ -100,7 +297,7 @@ public class MongoUpdates {
 
                                             const combinedUpdates = _mongo.updates().combine(setUpdate, renameUpdate);
 
-                                            c.findOneAndUpdate(
+                                            collection.findOneAndUpdate(
                                               _mongo.filters().eq('name', 'Abc'),
                                               combinedUpdates
                                             );
@@ -133,6 +330,37 @@ public class MongoUpdates {
         return Updates.combine(updates);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Combina uma lista de atualizações em uma única atualização.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Combine a list of updates into a single update.",
+                    howToUse = {}),
+    }, parameters = {
+            @ParameterDoc(name = "updates", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "atualizações",
+                            description = "A lista de atualizações."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The list of updates."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Uma atualização combinada."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A combined update."
+            )
+    })
     public Bson combine(List<? extends Bson> updates) {
         return Updates.combine(updates);
     }

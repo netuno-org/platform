@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.bson.conversions.Bson;
 import org.netuno.library.doc.LanguageDoc;
+import org.netuno.library.doc.LibraryDoc;
+import org.netuno.library.doc.LibraryTranslationDoc;
 import org.netuno.library.doc.MethodDoc;
 import org.netuno.library.doc.MethodTranslationDoc;
 import org.netuno.library.doc.ParameterDoc;
@@ -36,6 +38,20 @@ import com.mongodb.client.model.Projections;
  * MongoProjections
  * @author Henrique Sousa - @Henrique-Sousa
  */
+@LibraryDoc(translations = {
+        @LibraryTranslationDoc(
+                language = LanguageDoc.PT,
+                title = "MongoProjections",
+                introduction = "Definição das projeções em **Bson** que são utilizadas nas consultas das coleções do MongoDB para selecionar campos específicos.",
+                howToUse = {}
+        ),
+        @LibraryTranslationDoc(
+                language = LanguageDoc.EN,
+                title = "MongoProjections",
+                introduction = "Definition of the projections in **Bson** that are used in MongoDB collection queries to select specific fields.",
+                howToUse = {}
+        )
+})
 public class MongoProjections {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
@@ -82,18 +98,151 @@ public class MongoProjections {
         return Projections.include(fieldNames);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma projeção que inclui todos os campos de uma lista.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a projection that includes all fields from a list.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "fieldNames", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "campos",
+                            description = "A lista de nomes dos campos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The list of field names."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A projeção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The projection."
+            )
+    })
     public Bson include(List<String> fieldNames) {
         return Projections.include(fieldNames);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma projeção que exclui todos os campos informados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = collection.find().projection(_mongo.projections().exclude('internalField')).all();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a projection that excludes all of the given fields.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = collection.find().projection(_mongo.projections().exclude('internalField')).all();"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "fieldNames", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "campos",
+                            description = "Os nomes dos campos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The field names."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A projeção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The projection."
+            )
+    })
     public Bson exclude(String... fieldNames) {
         return Projections.exclude(fieldNames);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma projeção que exclui todos os campos de uma lista.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a projection that excludes all fields from a list.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "fieldNames", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "campos",
+                            description = "A lista de nomes dos campos."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The list of field names."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A projeção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The projection."
+            )
+    })
     public Bson exclude(List<String> fieldNames) {
         return Projections.exclude(fieldNames);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma projeção que exclui o campo _id.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = collection.find().projection(_mongo.projections().excludeId()).all();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a projection that excludes the _id field.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = collection.find().projection(_mongo.projections().excludeId()).all();"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A projeção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The projection."
+            )
+    })
     public Bson excludeId() {
         return Projections.excludeId();
     }
@@ -106,7 +255,7 @@ public class MongoProjections {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
                                     code = """
-                                        const docs = c.find().projection( _mongo.projections().fields(
+                                        const docs = collection.find().projection( _mongo.projections().fields(
                                                 _mongo.projections().include("name", "quantity"),
                                                 _mongo.projections().excludeId()
                                                 )
@@ -122,7 +271,7 @@ public class MongoProjections {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
                                     code = """
-                                        const docs = c.find().projection( _mongo.projections().fields(
+                                        const docs = collection.find().projection( _mongo.projections().fields(
                                                 _mongo.projections().include("name", "quantity"),
                                                 _mongo.projections().excludeId()
                                                 )
@@ -135,7 +284,7 @@ public class MongoProjections {
             @ParameterDoc(name = "projections", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
-                            name = "campos",
+                            name = "projeções",
                             description = "A lista de projeções a ser combinada."
                     ),
                     @ParameterTranslationDoc(
@@ -157,14 +306,160 @@ public class MongoProjections {
         return Projections.fields(projections);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma projeção que combina a lista de projeções a partir de uma lista.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a projection that combines the list of projections from a list.",
+                    howToUse = {})
+    }, parameters = {
+            @ParameterDoc(name = "projections", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "projeções",
+                            description = "A lista de projeções a ser combinada."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The list of projections to combine."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A projeção combinada."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The combined projection."
+            )
+    })
     public Bson fields(List<? extends Bson> projections) {
         return Projections.fields(projections);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma projeção que retorna apenas os primeiros N elementos de um array.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = collection.find().projection(_mongo.projections().slice('tags', 5)).all();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a projection that returns only the first N elements of an array.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = collection.find().projection(_mongo.projections().slice('tags', 5)).all();"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "fieldName", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "campo",
+                            description = "O nome do campo cujo valor é o array."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The field name whose value is the array."
+                    )
+            }),
+            @ParameterDoc(name = "limit", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "limite",
+                            description = "O número de elementos a serem retornados."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The number of elements to return."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A projeção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The projection."
+            )
+    })
     public Bson slice(String fieldName, int limit) {
         return Projections.slice(fieldName, limit);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma projeção que pula N elementos e retorna os próximos M elementos de um array.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = collection.find().projection(_mongo.projections().slice('tags', 2, 5)).all();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a projection that skips N elements and returns the next M elements of an array.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const docs = collection.find().projection(_mongo.projections().slice('tags', 2, 5)).all();"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "fieldName", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "campo",
+                            description = "O nome do campo cujo valor é o array."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The field name whose value is the array."
+                    )
+            }),
+            @ParameterDoc(name = "skip", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "pular",
+                            description = "O número de elementos a serem pulados."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The number of elements to skip."
+                    )
+            }),
+            @ParameterDoc(name = "limit", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "limite",
+                            description = "O número de elementos a serem retornados."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The number of elements to return."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A projeção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The projection."
+            )
+    })
     public Bson slice(String fieldName, int skip, int limit) {
         return Projections.slice(fieldName, skip, limit);
     }
@@ -176,7 +471,7 @@ public class MongoProjections {
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
-                                    code = "const docs = c.find(_mongo.filters().gt('array', 7)).projection(_mongo.projections().elemMatch('array')).all();"
+                                    code = "const docs = collection.find(_mongo.filters().gt('array', 7)).projection(_mongo.projections().elemMatch('array')).all();"
                             )
                     }),
             @MethodTranslationDoc(
@@ -185,14 +480,14 @@ public class MongoProjections {
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
-                                    code = "const docs = c.find(_mongo.filters().gt('array', 7)).projection(_mongo.projections().elemMatch('array')).all();"
+                                    code = "const docs = collection.find(_mongo.filters().gt('array', 7)).projection(_mongo.projections().elemMatch('array')).all();"
                             )
                     }),
     }, parameters = {
             @ParameterDoc(name = "fieldName", translations = {
                     @ParameterTranslationDoc(
                             language=LanguageDoc.PT,
-                            name = "campos",
+                            name = "campo",
                             description = "O nome do campo cujo valor é o array."
                     ),
                     @ParameterTranslationDoc(
@@ -284,6 +579,58 @@ public class MongoProjections {
         return Projections.elemMatch(fieldName, filter);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma projeção que adiciona um campo calculado ao resultado.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.projections().computed('fullName', expression);"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a projection that adds a computed field to the result.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.projections().computed('fullName', expression);"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "fieldName", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "campo",
+                            description = "O nome do campo de saída."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The output field name."
+                    )
+            }),
+            @ParameterDoc(name = "expression", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "expressão",
+                            description = "A expressão do campo calculado."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The computed field expression."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A projeção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The projection."
+            )
+    })
     public Bson computed(String fieldName, Bson expression) {
         return Projections.computed(fieldName, expression);
     }
