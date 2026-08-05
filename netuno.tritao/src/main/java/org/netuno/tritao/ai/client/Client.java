@@ -22,7 +22,7 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.JsonValue;
 import com.openai.core.http.StreamResponse;
-import com.openai.errors.OpenAIServiceException;
+import com.openai.errors.OpenAIException;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
 import com.openai.models.ReasoningEffort;
@@ -4478,16 +4478,16 @@ public class Client {
     }
 
     /**
-     * The errors answered by the provider are logged in a single line, the message already
-     * carries the status and the reason. The full trace stays available in debug.
+     * The errors coming from the provider are logged in a single line, whether they are an
+     * answer with a status or a connection that did not happen. The full trace stays in debug.
      */
     private void logProviderError(String operation, String model, Exception e) {
         String target = model == null || model.isBlank()
                 ? "provider '" + this.settings.provider + "'"
                 : "provider '" + this.settings.provider + "', model '" + model + "'";
 
-        if (e instanceof OpenAIServiceException) {
-            LOGGER.error("{} failed for {}: {}", operation, target, firstLine(e.getMessage()));
+        if (e instanceof OpenAIException) {
+            LOGGER.error("{} failed for {}: {}", operation, target, causeChain(e));
             LOGGER.debug("{} error detail.", operation, e);
             return;
         }
@@ -4495,9 +4495,33 @@ public class Client {
         LOGGER.error("{} failed for {}.", operation, target, e);
     }
 
+    /**
+     * Joins the messages of the exception and of its causes, because the useful reason is
+     * often in the cause, the address that refused the connection for example.
+     */
+    private String causeChain(Throwable error) {
+        StringBuilder text = new StringBuilder();
+        Throwable current = error;
+
+        for (int depth = 0; current != null && depth < 4; depth++) {
+            String message = firstLine(current.getMessage());
+
+            if (message != null && text.indexOf(message) < 0) {
+                if (text.length() > 0) {
+                    text.append(": ");
+                }
+                text.append(message);
+            }
+
+            current = current.getCause();
+        }
+
+        return text.length() == 0 ? error.getClass().getSimpleName() : text.toString();
+    }
+
     private String firstLine(String message) {
         if (message == null || message.isBlank()) {
-            return "no message given";
+            return null;
         }
 
         int end = message.indexOf('\n');
