@@ -19,7 +19,7 @@
  *  config file (the "mongo" block) or a connection URL directly.
  */
 
-const mongo = _mongo.init("products");
+def mongo = _mongo.init("products")
 
 /*
  *  Get the database and the collection
@@ -27,24 +27,24 @@ const mongo = _mongo.init("products");
  *  be created once.
  */
 
-const database = mongo.database("product_db")
+def database = mongo.database("product_db")
 
 database.createCollection("product")
 
-const collection = database.collection("product")
+def collection = database.collection("product")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(database.collectionNames())
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Insert a single document
  *  Documents are built with _val.map() and _val.list().
  */
 
-_out.println(`<h4>Insert</h4>`)
+_out.println("<h4>Insert</h4>")
 
-const laptopId = collection.insertOne(
+def laptopId = collection.insertOne(
   _val.map()
     .set("name", "Laptop")
     .set("quantity", 22)
@@ -58,13 +58,13 @@ const laptopId = collection.insertOne(
     )
 )
 
-_out.println(`<p>Inserted id: ${laptopId}</p>`)
+_out.println("<p>Inserted id: ${laptopId}</p>")
 
 /*
  *  Insert multiple documents at once
  */
 
-const ids = collection.insertMany(
+def ids = collection.insertMany(
   _val.list()
     .add(
       _val.map()
@@ -82,9 +82,9 @@ const ids = collection.insertMany(
     )
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(ids)
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Find documents
@@ -92,40 +92,40 @@ _out.println(`</pre>`)
  *  first() returns only the first one (or null if there is none).
  */
 
-_out.println(`<h4>Find all</h4>`)
+_out.println("<h4>Find all</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(collection.find().all())
-_out.println(`</pre>`)
+_out.println("</pre>")
 
-_out.println(`<h4>Find with a filter</h4>`)
+_out.println("<h4>Find with a filter</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find(
     _mongo.filters().eq("name", "Laptop")
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
-_out.println(`<h4>Find first match</h4>`)
+_out.println("<h4>Find first match</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find(
     _mongo.filters().eq("name", "Laptop")
   ).first()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Combine filters
  *  Filters can be combined with and(), or() and not().
  */
 
-_out.println(`<h4>Filter: price &gt; 50 and quantity &lt; 30</h4>`)
+_out.println("<h4>Filter: price &gt; 50 and quantity &lt; 30</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find(
     _mongo.filters().and(
@@ -134,55 +134,55 @@ _out.json(
     )
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
-_out.println(`<h4>Filter: name matches a regular expression</h4>`)
+_out.println("<h4>Filter: name matches a regular expression</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find(
     _mongo.filters().regex("name", "^[LS]")
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Iterate over the results
  *  You can use a for loop or forEach().
  */
 
-_out.println(`<h4>Iterate (names)</h4>`)
+_out.println("<h4>Iterate (names)</h4>")
 
-_out.println(`<ul>`)
-for (const doc of collection.find().all()) {
-  _out.println(`<li>${doc.getString("name")}</li>`)
+_out.println("<ul>")
+for (doc in collection.find().all()) {
+  _out.println("<li>${doc.getString('name')}</li>")
 }
-_out.println(`</ul>`)
+_out.println("</ul>")
 
-_out.println(`<ul>`)
-collection.find().forEach((doc) => {
-  _out.println(`<li>forEach -> ${doc.getString("name")}</li>`)
-})
-_out.println(`</ul>`)
+_out.println("<ul>")
+collection.find().all().each { doc ->
+  _out.println("<li>forEach -> ${doc.getString('name')}</li>")
+}
+_out.println("</ul>")
 
 /*
  *  Sort the results
  *  Use ascending(), descending() or orderBy() for multiple fields.
  */
 
-_out.println(`<h4>Sort by price (descending)</h4>`)
+_out.println("<h4>Sort by price (descending)</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find().sort(
     _mongo.sorts().descending("price")
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
-_out.println(`<h4>Sort by multiple fields</h4>`)
+_out.println("<h4>Sort by multiple fields</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find().sort(
     _mongo.sorts().orderBy(
@@ -191,22 +191,22 @@ _out.json(
     )
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Project the fields to return
  *  Only the listed fields are returned, saving bandwidth.
  */
 
-_out.println(`<h4>Projection: only name and quantity</h4>`)
+_out.println("<h4>Projection: only name and quantity</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find().projection(
     _mongo.projections().include("name", "quantity")
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Limit and skip
@@ -214,9 +214,9 @@ _out.println(`</pre>`)
  *  which is useful for pagination.
  */
 
-_out.println(`<h4>Limit and skip (pagination)</h4>`)
+_out.println("<h4>Limit and skip (pagination)</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find()
     .sort(_mongo.sorts().ascending("name"))
@@ -224,7 +224,7 @@ _out.json(
     .limit(2)
     .all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Update documents
@@ -232,37 +232,37 @@ _out.println(`</pre>`)
  *  The changes are described with _mongo.updates().
  */
 
-_out.println(`<h4>Update one</h4>`)
+_out.println("<h4>Update one</h4>")
 
 collection.updateOne(
   _mongo.filters().eq("name", "Laptop"),
   _mongo.updates().set("quantity", 42)
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find(
     _mongo.filters().eq("name", "Laptop")
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
-_out.println(`<h4>Update many</h4>`)
+_out.println("<h4>Update many</h4>")
 
 collection.updateMany(
   _mongo.filters().eq("category", "computers"),
   _mongo.updates().set("category", "featured")
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(collection.find().all())
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Combine several updates in a single operation
  */
 
-_out.println(`<h4>Combined updates</h4>`)
+_out.println("<h4>Combined updates</h4>")
 
 collection.updateOne(
   _mongo.filters().eq("name", "Laptop"),
@@ -272,13 +272,13 @@ collection.updateOne(
   )
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find(
     _mongo.filters().eq("name", "Laptop")
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Find and update
@@ -286,16 +286,16 @@ _out.println(`</pre>`)
  *  original one before the change.
  */
 
-_out.println(`<h4>Find one and update</h4>`)
+_out.println("<h4>Find one and update</h4>")
 
-const oldLaptop = collection.findOneAndUpdate(
+def oldLaptop = collection.findOneAndUpdate(
   _mongo.filters().eq("name", "Laptop"),
   _mongo.updates().set("quantity", 42)
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(oldLaptop)
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Replace a document
@@ -303,7 +303,7 @@ _out.println(`</pre>`)
  *  update operators).
  */
 
-_out.println(`<h4>Replace one</h4>`)
+_out.println("<h4>Replace one</h4>")
 
 collection.replaceOne(
   _mongo.filters().eq("name", "Laptop"),
@@ -314,17 +314,17 @@ collection.replaceOne(
     .set("category", "featured")
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find(
     _mongo.filters().eq("name", "Laptop")
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
-_out.println(`<h4>Find one and replace</h4>`)
+_out.println("<h4>Find one and replace</h4>")
 
-const oldTablet = collection.findOneAndReplace(
+def oldTablet = collection.findOneAndReplace(
   _mongo.filters().eq("name", "Tablet"),
   _val.map()
     .set("name", "Tablet")
@@ -333,31 +333,31 @@ const oldTablet = collection.findOneAndReplace(
     .set("category", "computers")
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(oldTablet)
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Count documents
  *  countDocuments() accepts an optional filter.
  */
 
-_out.println(`<h4>Count</h4>`)
+_out.println("<h4>Count</h4>")
 
-const computers = collection.countDocuments(
+def computers = collection.countDocuments(
   _mongo.filters().eq("category", "computers")
 )
 
-_out.println(`<p>Total: ${collection.countDocuments()}</p>`)
-_out.println(`<p>Computers: ${computers}</p>`)
-_out.println(`<p>Estimated: ${collection.estimatedDocumentCount()}</p>`)
+_out.println("<p>Total: ${collection.countDocuments()}</p>")
+_out.println("<p>Computers: ${computers}</p>")
+_out.println("<p>Estimated: ${collection.estimatedDocumentCount()}</p>")
 
 /*
  *  Create indexes
  *  Indexes speed up the queries on the indexed fields.
  */
 
-_out.println(`<h4>Indexes</h4>`)
+_out.println("<h4>Indexes</h4>")
 
 collection.createIndex(
   _mongo.indexes().ascending("quantity")
@@ -370,7 +370,7 @@ collection.createIndex(
   )
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.find()
     .hint(
@@ -380,66 +380,66 @@ _out.json(
     )
     .all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Aggregate
  *  The aggregation pipeline groups and processes the documents in stages.
  */
 
-_out.println(`<h4>Aggregate: total price per category</h4>`)
+_out.println("<h4>Aggregate: total price per category</h4>")
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(
   collection.aggregate(
     _mongo.aggregates().group(
-      "$category",
-      _mongo.accumulators().sum("total", "$price")
+      '$category',
+      _mongo.accumulators().sum("total", '$price')
     ),
     _mongo.aggregates().sort(
       _mongo.sorts().descending("total")
     )
   ).all()
 )
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Delete documents
  */
 
-_out.println(`<h4>Delete one</h4>`)
+_out.println("<h4>Delete one</h4>")
 
 collection.deleteOne(
   _mongo.filters().eq("name", "Laptop")
 )
 
-_out.println(`<h4>Find one and delete</h4>`)
+_out.println("<h4>Find one and delete</h4>")
 
-const removed = collection.findOneAndDelete(
+def removed = collection.findOneAndDelete(
   _mongo.filters().eq("name", "Tablet")
 )
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(removed)
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Convert between Netuno values and BSON documents
  */
 
-_out.println(`<h4>Values &lt;-&gt; BSON</h4>`)
+_out.println("<h4>Values &lt;-&gt; BSON</h4>")
 
-const bsonDoc = _mongo.valToDoc(
+def bsonDoc = _mongo.valToDoc(
   _val.map()
     .set("name", "Laptop")
     .set("quantity", 22)
 )
 
-const valuesFromBson = _mongo.docToVal(bsonDoc)
+def valuesFromBson = _mongo.docToVal(bsonDoc)
 
-_out.println(`<pre>`)
+_out.println("<pre>")
 _out.json(valuesFromBson)
-_out.println(`</pre>`)
+_out.println("</pre>")
 
 /*
  *  Clean up and close the connection
@@ -448,6 +448,6 @@ _out.println(`</pre>`)
 
 collection.deleteMany(_mongo.valToDoc(_val.map()))
 
-_out.println(`<p>Remaining documents: ${collection.countDocuments()}</p>`)
+_out.println("<p>Remaining documents: ${collection.countDocuments()}</p>")
 
 _mongo.close()
