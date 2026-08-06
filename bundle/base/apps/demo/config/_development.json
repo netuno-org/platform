@@ -64,5 +64,14 @@
     "scripts": {
       "execution": false
     }
+  },
+  "mongo": {
+    "products": {
+      "username": "products_user",
+      "password": "12345678",
+      "host": "127.0.0.1",
+      "port": "27017",
+      "database": "products_db"
+    }
   }
 }
