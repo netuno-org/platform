@@ -26,6 +26,13 @@ import org.bson.Document;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
+import org.netuno.library.doc.MethodDoc;
+import org.netuno.library.doc.MethodTranslationDoc;
+import org.netuno.library.doc.ParameterDoc;
+import org.netuno.library.doc.ParameterTranslationDoc;
+import org.netuno.library.doc.ReturnTranslationDoc;
+import org.netuno.library.doc.SourceCodeDoc;
+import org.netuno.library.doc.SourceCodeTypeDoc;
 import org.netuno.proteu.Proteu;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.hili.Hili;
@@ -92,10 +99,67 @@ public class Mongo extends ResourceBase implements AutoCloseable {
         getProteu().getConfig().set("_mongo", getProteu().getConfig().getValues("_app:config").getValues("mongo"));
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Inicializa a conexão com o MongoDB utilizando a configuração padrão.",
+                    howToUse = {}
+    )}, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A instância do cliente MongoDB."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The MongoDB client instance."
+            )
+    })
     public Mongo init() {
         return init("default");
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Inicializa a conexão com o MongoDB utilizando uma chave de configuração ou URL de conexão.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const mongo = _mongo.init('mongodb://localhost:27017/mydb');"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Initializes the connection to MongoDB using a configuration key or connection URL.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const mongo = _mongo.init('mongodb://localhost:27017/mydb');"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "configKeyOrUrl", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "chaveOuUrl",
+                            description = "A chave de configuração ou a URL de conexão do MongoDB."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The configuration key or the MongoDB connection URL."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A instância do cliente MongoDB."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The MongoDB client instance."
+            )
+    })
     public Mongo init(String configKeyOrUrl) {
         try {
             if (configKeyOrUrl == null || configKeyOrUrl.isEmpty()) {
@@ -151,100 +215,730 @@ public class Mongo extends ResourceBase implements AutoCloseable {
         }
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém uma instância de uma base de dados MongoDB.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = """
+                                            const mongo = _mongo.init('netunoapp');
+                                            cont db = mongo.database('mydb');
+                                            """
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets an instance of a MongoDB database.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = """
+                                            const mongo = _mongo.init('netunoapp');
+                                            cont db = mongo.database('mydb');
+                                            """
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "name", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "nome",
+                            description = "O nome da base de dados."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The database name."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A instância da base de dados MongoDB."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The MongoDB database instance."
+            )
+    })
     public MongoDatabase database(String name) {
         return new MongoDatabase(this, client.getDatabase(name));
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria um novo documento vazio.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const doc = _mongo.document();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates a new empty document.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const doc = _mongo.document();"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Um novo documento vazio."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A new empty document."
+            )
+    })
     public Document document() {
         return new Document();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Converte um objeto Values para um documento BSON.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const doc = _mongo.valToDoc(values);"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Converts a Values object to a BSON document.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const doc = _mongo.valToDoc(values);"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "values", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "valores",
+                            description = "O objeto Values a ser convertido."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The Values object to convert."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O documento BSON resultante."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The resulting BSON document."
+            )
+    })
     public Document valToDoc(Values values) {
         var doc = new Document();
         doc.putAll(values.unvaluedMap());
         return doc;
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Converte um documento BSON para um objeto Values.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const values = _mongo.docToVal(doc);"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Converts a BSON document to a Values object.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const values = _mongo.docToVal(doc);"
+                            )
+                    })
+    }, parameters = {
+            @ParameterDoc(name = "doc", translations = {
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.PT,
+                            name = "documento",
+                            description = "O documento BSON a ser convertido."
+                    ),
+                    @ParameterTranslationDoc(
+                            language=LanguageDoc.EN,
+                            description = "The BSON document to convert."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "O objeto Values resultante."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The resulting Values object."
+            )
+    })
     public Values docToVal(Document doc) {
         return new Values(doc);
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma factory para definir filtros de consulta.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.find(_mongo.filters().eq('status', 'Active'));"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A factory for defining query filters.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.find(_mongo.filters().eq('status', 'Active'));"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A factory de filtros."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The filter factory."
+            )
+    })
     public MongoFilters filters() {
         return new MongoFilters();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma factory para definir alterações de dados.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.updateOne(filter, _mongo.updates().set('name', 'New Name'));"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A factory for defining data updates.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.updateOne(filter, _mongo.updates().set('name', 'New Name'));"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A factory de atualizações."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The updates factory."
+            )
+    })
     public MongoUpdates updates() {
         return new MongoUpdates();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Uma factory para definir chaves de índice.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.createIndex(_mongo.indexes().ascending('quantity', 'price'));"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A factory for defining index keys.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.createIndex(_mongo.indexes().ascending('quantity', 'price'));"
+                            )
+                    }),
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A factory de índices."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The index factory."
+            )
+    })
     public MongoIndexes indexes() {
         return new MongoIndexes();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma factory para definir ordenações.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.find().sort(_mongo.sorts().ascending('name')).all();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A factory for defining sorts.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.find().sort(_mongo.sorts().ascending('name')).all();"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A factory de ordenações."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The sort factory."
+            )
+    })
     public MongoSorts sorts() {
         return new MongoSorts();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma factory para definir projeções de campos.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.find().projection(_mongo.projections().include('name', 'quantity')).all();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A factory for defining field projections.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.find().projection(_mongo.projections().include('name', 'quantity')).all();"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A factory de projeções."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The projection factory."
+            )
+    })
     public MongoProjections projections() {
         return new MongoProjections();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma factory para definir etapas de agregação.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.aggregate(_mongo.aggregates().match(_mongo.filters().eq('status', 'Active')));"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A factory for defining aggregation stages.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "collection.aggregate(_mongo.aggregates().match(_mongo.filters().eq('status', 'Active')));"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A factory de agregação."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The aggregation factory."
+            )
+    })
     public MongoAggregates aggregates() {
         return new MongoAggregates();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria uma factory para definir acumuladores de agregação.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.aggregates().group('$customerId', _mongo.accumulators().sum('total', '$price'));"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "A factory for defining aggregation accumulators.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.aggregates().group('$customerId', _mongo.accumulators().sum('total', '$price'));"
+                            )
+                    })
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A factory de acumuladores."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The accumulator factory."
+            )
+    })
     public MongoAccumulators accumulators() {
         return new MongoAccumulators();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para inserção de um único documento.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for inserting a single document.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de inserção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The insert one options."
+            )
+    })
     public InsertOneOptions insertOneOptions() {
         return new InsertOneOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para inserção de múltiplos documentos.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for inserting multiple documents.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de inserção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The insert many options."
+            )
+    })
     public InsertManyOptions insertManyOptions() {
         return new InsertManyOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para operações de atualização.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for update operations.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de atualização."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The update options."
+            )
+    })
     public UpdateOptions updateOptions() {
         return new UpdateOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para encontrar e atualizar um único documento.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for finding and updating a single document.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de encontrar e atualizar."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The find one and update options."
+            )
+    })
     public FindOneAndUpdateOptions findOneAndUpdateOptions() {
         return new FindOneAndUpdateOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para operações de substituição.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for replace operations.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de substituição."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The replace options."
+            )
+    })
     public ReplaceOptions replaceOptions() {
         return new ReplaceOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para encontrar e substituir um único documento.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for finding and replacing a single document.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de encontrar e substituir."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The find one and replace options."
+            )
+    })
     public FindOneAndReplaceOptions findOneAndReplaceOptions() {
         return new FindOneAndReplaceOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para operações de remoção de documentos.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for delete operations.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de remoção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The delete options."
+            )
+    })
     public DeleteOptions deleteOptions() {
         return new DeleteOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para encontrar e remover um único documento.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for finding and deleting a single document.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de encontrar e remover."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The find one and delete options."
+            )
+    })
     public FindOneAndDeleteOptions findOneAndDeleteOptions() {
         return new FindOneAndDeleteOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para remoção de uma coleção.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for dropping a collection.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de remoção da coleção."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The drop collection options."
+            )
+    })
     public DropCollectionOptions dropCollectionOptions() {
         return new DropCollectionOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para contagem de documentos.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for counting documents.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de contagem."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The count options."
+            )
+    })
     public CountOptions countOptions() {
         return new CountOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para contagem estimada de documentos.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for estimated document count.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de contagem estimada."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The estimated document count options."
+            )
+    })
     public EstimatedDocumentCountOptions estimatedDocumentCountOptions() {
         return new EstimatedDocumentCountOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cria opções para pesquisa de texto.",
+                    howToUse = {}),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Creates options for text search.",
+                    howToUse = {})
+    }, parameters = {},
+    returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "As opções de pesquisa de texto."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The text search options."
+            )
+    })
     public TextSearchOptions textSearchOptions() {
         return new TextSearchOptions();
     }
 
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Fecha a conexão com o MongoDB.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.close();"
+                            )
+                    }),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Closes the MongoDB connection.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_mongo.close();"
+                            )
+                    })
+    }, parameters = {},
+    returns = {})
     public void close() {
         if (client != null) {
             client.close();
