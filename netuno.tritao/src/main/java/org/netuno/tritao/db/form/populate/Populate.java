@@ -9,6 +9,7 @@ public class Populate {
     private String form;
     private RelationshipPopulate relationship;
     private List<Field> fields = new ArrayList<>();
+    private String Alias;
 
     public Populate() {}
 
@@ -42,6 +43,15 @@ public class Populate {
 
     public Populate setFields(List<Field> fields) {
         this.fields = fields;
+        return this;
+    }
+
+    public String getAlias() {
+        return Alias;
+    }
+
+    public Populate setAlias(String alias) {
+        Alias = alias;
         return this;
     }
 }

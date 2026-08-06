@@ -240,8 +240,10 @@ public class OperationEngine extends Data {
             StringBuilder populateQuerySQL = new StringBuilder();
             populateQuerySQL.append("SELECT ")
                     .append(!populate.getFields().isEmpty()
-                            ? populate.getFields().stream().map(field -> populate.getRelationship().getForm() + "." + field.getColumn()).collect(Collectors.joining(", "))
-                            : populate.getRelationship().getForm() + ".*"
+                                    ? populate.getFields().stream().map(
+                                    field -> populate.getRelationship().getForm() + "." + field.getColumn() + ((field.getAlias() != null && !field.getAlias().isBlank() && !field.getAlias().isEmpty()) ? " AS " + field.getAlias().trim() : "")
+                            ).collect(Collectors.joining(", "))
+                                    : populate.getRelationship().getForm() + ".*"
                     );
 
             for (int i = 0; i < items.size(); i++) {
