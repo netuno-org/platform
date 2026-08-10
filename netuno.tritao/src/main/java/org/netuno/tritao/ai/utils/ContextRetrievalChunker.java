@@ -178,6 +178,14 @@ public class ContextRetrievalChunker {
     public static final String UNIT_CHARS = "chars";
     public static final String UNIT_TOKENS = "tokens";
 
+    /**
+     * What goes into the `text` field, which is always the string meant to be embedded.
+     * `content` is always the real chunk, untouched, and is what a search should give back.
+     */
+    public static final String EMBED_FULL = "full";
+    public static final String EMBED_CONTEXT = "context";
+    public static final String EMBED_CONTENT = "content";
+
     private static final String DEFAULT_ENCODING = "cl100k_base";
 
     private static final int MIN_CHUNK_SIZE_LIMIT = 32;
@@ -212,10 +220,7 @@ public class ContextRetrievalChunker {
 
     private static final Pattern FENCE = Pattern.compile("^ {0,3}(`{3,}|~{3,})[ \\t]*(.*)$");
 
-    /**
-     * Numbered section titles such as "3.1 Instalação", the only heading shape reliable
-     * enough to detect in plain text and in text extracted from PDF.
-     */
+
     private static final Pattern NUMBERED_SECTION = Pattern.compile(
             "^ {0,3}(\\d{1,2}(?:\\.\\d{1,2}){0,4})\\.?[ \\t]+(\\p{Lu}[^\\n]{0,90})$"
     );
@@ -224,11 +229,7 @@ public class ContextRetrievalChunker {
 
     private static final Pattern DIGITS = Pattern.compile("\\d+");
 
-    /**
-     * Sentence boundary: whitespace preceded by terminal punctuation (optionally followed by a
-     * closing quote or bracket) and followed by something that can open a sentence. The negative
-     * lookbehinds keep initials ("J. R. Tolkien") and common PT/EN abbreviations from splitting.
-     */
+
     private static final Pattern SENTENCE_BOUNDARY = Pattern.compile(
             "(?<=[.!?\\u2026][\"'\\u201D\\u2019)\\]]{0,2})"
                     + "(?<!\\b\\p{Lu}\\.)"
@@ -237,38 +238,59 @@ public class ContextRetrievalChunker {
                     + "[ \\t]+(?=[\\p{Lu}\\p{Nd}\"'\\u201C(\\[])"
     );
 
-    /**
-     * Hyphenation across a line break where the continuation is lowercase: the word is joined.
-     * When the continuation is uppercase the hyphen is kept, because it is most likely a compound.
-     */
+
     private static final Pattern PDF_HYPHEN_LOWER = Pattern.compile("(\\p{L})-\\n[ \\t]*(\\p{Ll})");
     private static final Pattern PDF_HYPHEN_UPPER = Pattern.compile("(\\p{L})-\\n[ \\t]*(\\p{Lu})");
 
     private static final String CONTEXTUALIZE_TEMPLATE =
             "<document>\n{document}\n</document>\n\n"
-                    + "<chunk breadcrumb=\"{breadcrumb}\">\n{chunk}\n</chunk>\n\n"
-                    + "Write a context note for the chunk above. It will be prepended to the chunk before "
-                    + "computing its search embedding, so every word has to earn its place as something a "
-                    + "person might search for.\n\n"
-                    + "Rules:\n"
-                    + "- Name the concrete subjects: the product, component, version, platform, file or command "
-                    + "the chunk is about. Replace every pronoun and vague reference, \"it\", \"this process\", "
-                    + "\"the tool\", with the real name taken from the document.\n"
-                    + "- State what the chunk lets someone do or decide, in the words they would type when "
-                    + "searching for it, including obvious synonyms the chunk itself never spells out.\n"
-                    + "- Add the facts the chunk assumes but leaves implicit, when the document states them.\n"
-                    + "- Never describe the document or its layout. Do not write \"this chunk\", \"this section\", "
-                    + "\"the document\", \"the text above\", or any equivalent. Write plain statements about the "
-                    + "subject matter itself.\n"
-                    + "- At most three sentences, declarative prose, no lists, no markdown, no preamble.\n"
-                    + "- Write in the same language as the document.\n\n"
-                    + "Answer with the context note and nothing else.";
+                    + "<fragment breadcrumb=\"{breadcrumb}\" heading=\"{heading}\">\n{chunk}\n</fragment>\n\n"
+                    + "Write a retrieval note for the fragment, in two parts separated by a blank line, with no "
+                    + "labels and no titles.\n\n"
+                    + "First part, two or three sentences that could stand as the opening lines of the fragment: "
+                    + "plain factual statements about its subject, supplying what the fragment leaves implicit. "
+                    + "State, when the fragment does not already:\n"
+                    + "- the product, component, module, service, platform, version, file, endpoint or command it "
+                    + "concerns, by name, taken from the document\n"
+                    + "- what every dangling pronoun or vague reference points to\n"
+                    + "- the task it serves and the problem it solves, in the ordinary words someone would use to "
+                    + "ask about it\n"
+                    + "- the conditions it holds under: platform, version, mode, role, prerequisite, limit or "
+                    + "default value\n\n"
+                    + "Second part, a single line of terms separated by commas, most specific first, every one of "
+                    + "them present in or directly implied by the document. Include whichever exist:\n"
+                    + "- names of products, components, modules, libraries, services, standards, formats and "
+                    + "protocols\n"
+                    + "- identifiers exactly as written: functions, classes, methods, parameters, configuration "
+                    + "keys, environment variables, commands and flags, endpoints, file names and paths, tables "
+                    + "and fields, error codes and error messages, status codes\n"
+                    + "- acronyms together with what they stand for, both forms\n"
+                    + "- other wording for the same thing: synonyms, the everyday word for internal jargon, the "
+                    + "words someone would actually type into a search box\n"
+                    + "- the numbers that identify this material: versions, limits, defaults, sizes, ports, dates\n"
+                    + "- when the document is not in English, the English term for each domain concept, next to "
+                    + "the original\n\n"
+                    + "Hard rules:\n"
+                    + "- Only what the document supports. Never invent a name, a number or a capability, and "
+                    + "never add a term the document does not back.\n"
+                    + "- Write about the subject matter and nothing else. Never mention the document, its "
+                    + "sections, this fragment, the reader, or the act of searching. Openings like \"Esta "
+                    + "seccao\", \"Este trecho\", \"O documento\", \"This section\" are forbidden.\n"
+                    + "- Never copy a whole sentence from the fragment.\n"
+                    + "- Keep identifiers exactly as they appear, case included, and never translate them.\n"
+                    + "- Sentences in the language of the document.\n"
+                    + "- Plain text: no markdown, no backticks, no bullet points, no headings, no quotes.\n"
+                    + "- Three sentences at most, and at most thirty terms.\n\n"
+                    + "Answer with the note and nothing else.";
 
     private static final String CONTEXTUALIZE_SYSTEM =
-            "You write retrieval context notes. Your output is never read by a person: it is concatenated "
-                    + "to a document fragment and turned into a search embedding. Notes that describe the "
-                    + "structure of a document are worthless for that. Notes that name entities and use the "
-                    + "vocabulary of a real search query are what make the fragment findable.";
+            "You write retrieval context notes. Your output is never read by a person: it is "
+                    + "concatenated to a document fragment and turned into a search embedding, and it is what a "
+                    + "keyword search matches against as well. Notes that describe the structure of a document are "
+                    + "worthless for that, and so are notes that repeat what the fragment already says. What makes "
+                    + "a fragment findable is naming the entities it leaves implicit, spelling out the identifiers "
+                    + "and acronyms it takes for granted, and covering the vocabulary a real query arrives in: the "
+                    + "words of the user, the words of the manual, and the exact strings of the code.";
 
     private int chunkSize = DEFAULT_CHUNK_SIZE;
     private int overlap = DEFAULT_OVERLAP;
@@ -276,6 +298,7 @@ public class ContextRetrievalChunker {
     private boolean chunkSizeExplicit = false;
     private boolean overlapExplicit = false;
     private String unit = UNIT_CHARS;
+    private String embed = EMBED_FULL;
     private String encoding = DEFAULT_ENCODING;
     private boolean prependHeading = true;
     private boolean headingPath = true;
@@ -467,6 +490,85 @@ public class ContextRetrievalChunker {
 
     public String getUnit() {
         return unit;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define o que entra no campo `text`, que é sempre a cadeia destinada a ser embebida. "
+                            + "O campo `content` mantém sempre o bloco real e é o que uma pesquisa deve devolver.\n\n"
+                            + "- `full`, predefinido: cabeçalho de contexto, contexto gerado e corpo do bloco\n"
+                            + "- `context`: apenas cabeçalho e contexto gerado, deixando o corpo de fora\n"
+                            + "- `content`: apenas o corpo, sem cabeçalho nem contexto\n\n"
+                            + "O modo `context` indexa a nota gerada em vez do bloco. A nota é prosa densa, enquanto o "
+                            + "corpo traz blocos de código, canos de tabelas e marcação que diluem o vetor. Em troca, "
+                            + "um termo exato que exista no corpo e não na nota deixa de ser pesquisável, por isso este "
+                            + "modo só faz sentido depois de correr `contextualize`. Enquanto o contexto estiver vazio, "
+                            + "o corpo é usado na mesma, para não se indexar um cabeçalho sozinho.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Indexar o contexto, devolver o texto real\n"
+                                            + "const chunks = chunker.embed('context').markdown(documento)\n"
+                                            + "chunker.contextualize(client, documento, chunks)\n"
+                                            + "\n"
+                                            + "for (const chunk of chunks.listOfValues()) {\n"
+                                            + "    const resposta = client.embeddings(modelo, chunk.getString('text'))\n"
+                                            + "    const embedding = resposta.getValues('data').getValues(0).getValues('embedding')\n"
+                                            + "    vector.add('docs', chunk.getString('id'), embedding, chunk.getString('content'), metadados)\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets what goes into the `text` field, which is always the string meant to be embedded. "
+                            + "The `content` field always keeps the real chunk and is what a search should return.\n\n"
+                            + "- `full`, the default: context header, generated context and chunk body\n"
+                            + "- `context`: header and generated context only, leaving the body out\n"
+                            + "- `content`: body only, with no header and no context\n\n"
+                            + "The `context` mode indexes the generated note instead of the chunk. The note is dense "
+                            + "prose, while the body carries code blocks, table pipes and markup that dilute the vector. "
+                            + "In exchange, an exact term that exists in the body but not in the note stops being "
+                            + "searchable, so this mode only makes sense after running `contextualize`. While the "
+                            + "context is still empty the body is used anyway, so a heading is never indexed on its own.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Index the context, return the real text\n"
+                                            + "const chunks = chunker.embed('context').markdown(document)\n"
+                                            + "chunker.contextualize(client, document, chunks)\n"
+                                            + "\n"
+                                            + "for (const chunk of chunks.listOfValues()) {\n"
+                                            + "    const response = client.embeddings(model, chunk.getString('text'))\n"
+                                            + "    const embedding = response.getValues('data').getValues(0).getValues('embedding')\n"
+                                            + "    vector.add('docs', chunk.getString('id'), embedding, chunk.getString('content'), metadata)\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "embed", translations = {
+                    @ParameterTranslationDoc(language = LanguageDoc.PT, name = "embeber", description = "`full`, `context` ou `content`."),
+                    @ParameterTranslationDoc(language = LanguageDoc.EN, description = "`full`, `context` or `content`.")
+            })
+    }, returns = {
+            @ReturnTranslationDoc(language = LanguageDoc.PT, description = "A própria instância, para encadear configurações."),
+            @ReturnTranslationDoc(language = LanguageDoc.EN, description = "The instance itself, to chain configuration calls.")
+    })
+    public ContextRetrievalChunker embed(String embed) {
+        if (EMBED_CONTEXT.equalsIgnoreCase(embed)) {
+            this.embed = EMBED_CONTEXT;
+        } else if (EMBED_CONTENT.equalsIgnoreCase(embed)) {
+            this.embed = EMBED_CONTENT;
+        } else {
+            this.embed = EMBED_FULL;
+        }
+        return this;
+    }
+
+    public String getEmbed() {
+        return embed;
     }
 
     @MethodDoc(translations = {
@@ -898,7 +1000,7 @@ public class ContextRetrievalChunker {
                             + "`hash` (resumo do conteúdo), `index` e `total` (posição e total), `start` e `end` (posições no texto normalizado), "
                             + "`length` e `tokens` (tamanho em caracteres e em tokens), `heading` e `headingLevel` (cabeçalho mais próximo e nível), "
                             + "`path` (lista da árvore de cabeçalhos), `breadcrumb` (a mesma árvore em texto), `sections` (todas as secções que o bloco toca), `header` (cabeçalho de contexto já renderizado), `content` (corpo do bloco), "
-                            + "`context` (frase de situação, preenchida por `contextualize`), `text` (o que se deve embeber: cabeçalho de contexto + contexto + corpo), "
+                            + "`context` (nota de recuperação, frases de situação mais termos, preenchida por `contextualize`), `text` (a cadeia a embeber, composta segundo `embed`), `embed` (modo usado), "
                             + "`type` (`markdown`, `text` ou `pdf`), `blocks` (tipos de bloco presentes), `overlap` (caracteres repetidos do bloco anterior), "
                             + "`page` (página em que o bloco começa) e `pages` (todas as páginas que o bloco atravessa), ambos apenas em PDF paginado, `metadata` (metadados configurados) e `synthetic` "
                             + "(verdadeiro quando o corpo não é uma fatia literal da origem, por reabertura de marcação de código ou repetição de cabeçalho de tabela)."
@@ -909,7 +1011,7 @@ public class ContextRetrievalChunker {
                             + "`hash` (content digest), `index` and `total` (position and total), `start` and `end` (positions in the normalized text), "
                             + "`length` and `tokens` (size in characters and in tokens), `heading` and `headingLevel` (nearest heading and level), "
                             + "`path` (heading tree as a list), `breadcrumb` (the same tree as text), `sections` (every section the chunk touches), `header` (the rendered context header), `content` (chunk body), "
-                            + "`context` (situating sentence, filled in by `contextualize`), `text` (what to embed: context header + context + body), "
+                            + "`context` (retrieval note, situating sentences plus terms, filled in by `contextualize`), `text` (the string to embed, composed according to `embed`), `embed` (the mode used), "
                             + "`type` (`markdown`, `text` or `pdf`), `blocks` (block types present), `overlap` (characters repeated from the previous chunk), "
                             + "`page` (the page the chunk starts on) and `pages` (every page the chunk spans), both only on paginated PDF, `metadata` (configured metadata) and `synthetic` "
                             + "(true when the body is not a literal slice of the source, because a code fence was reopened or a table header repeated)."
@@ -967,7 +1069,7 @@ public class ContextRetrievalChunker {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
                     description = "Divide um documento Markdown em blocos com opções, que sobrepõem a configuração da instância apenas nesta chamada.\n\n"
-                            + "Opções aceites: `chunkSize`, `overlap`, `minChunkSize`, `unit` (`chars` ou `tokens`), `encoding`, "
+                            + "Opções aceites: `chunkSize`, `overlap`, `minChunkSize`, `unit` (`chars` ou `tokens`), `embed` (`full`, `context` ou `content`), `encoding`, "
                             + "`prependHeading`, `headingPath`, `splitOnHeadings`, `stripDataUri`, `stripHtmlComments`, `source` e `metadata`.",
                     howToUse = {
                             @SourceCodeDoc(
@@ -984,7 +1086,7 @@ public class ContextRetrievalChunker {
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
                     description = "Splits a Markdown document into chunks with options, overriding the instance configuration for this call only.\n\n"
-                            + "Accepted options: `chunkSize`, `overlap`, `minChunkSize`, `unit` (`chars` or `tokens`), `encoding`, "
+                            + "Accepted options: `chunkSize`, `overlap`, `minChunkSize`, `unit` (`chars` or `tokens`), `embed` (`full`, `context` or `content`), `encoding`, "
                             + "`prependHeading`, `headingPath`, `splitOnHeadings`, `stripDataUri`, `stripHtmlComments`, `source` and `metadata`.",
                     howToUse = {
                             @SourceCodeDoc(
@@ -1250,16 +1352,22 @@ public class ContextRetrievalChunker {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Preenche o campo `context` de cada bloco com uma frase curta, gerada pelo modelo, que situa o bloco "
-                            + "no documento completo, e reconstrói o campo `text` com essa frase incluída. É a técnica de *contextual "
+                    description = "Preenche o campo `context` de cada bloco com uma nota de recuperação, gerada pelo modelo a partir do "
+                            + "documento completo, e reconstrói o campo `text` com essa nota incluída. É a técnica de *contextual "
                             + "retrieval*: um bloco que diz apenas \"o valor subiu 3%\" passa a dizer também de que empresa e de que "
                             + "trimestre se trata, o que reduz muito as falhas de recuperação.\n\n"
+                            + "A nota tem duas partes, porque uma pesquisa chega em duas formas. Duas ou três frases situam o bloco "
+                            + "nomeando o produto, a tarefa e as condições que o bloco dá como garantidas, para responder a quem "
+                            + "descreve o problema por palavras suas. A seguir, uma linha de termos reúne o vocabulário exato: nomes, "
+                            + "identificadores, chaves de configuração, comandos, códigos de erro, siglas com o respetivo significado, "
+                            + "sinónimos e, em documentos que não estejam em inglês, o termo inglês ao lado do original. É isto que "
+                            + "encontra quem cola uma mensagem de erro ou o nome de um parâmetro.\n\n"
                             + "É uma operação paga: faz uma chamada ao modelo por bloco. Correr apenas na fase de ingestão, nunca por pedido.\n\n"
                             + "As chamadas são sequenciais de propósito, porque o `Client` mantém estado de sessão e de contabilização "
                             + "de tokens que não é seguro partilhar entre chamadas em paralelo. Um erro num bloco não interrompe os "
                             + "restantes: fica registado no log, o `context` desse bloco fica vazio e o processamento continua.\n\n"
                             + "Opções aceites: `model`, `temperature` (0 por omissão, para o resultado ser reproduzível), "
-                            + "`documentMaxChars` (trunca documentos muito grandes), `template` (com os marcadores `{document}` e `{chunk}`), "
+                            + "`documentMaxChars` (trunca documentos muito grandes), `template` (marcadores `{document}`, `{chunk}`, `{breadcrumb}` e `{heading}`), `system` (mensagem de sistema), "
                             + "`skipIfPresent` (não repete blocos que já tenham contexto) e `failFast`.",
                     howToUse = {
                             @SourceCodeDoc(
@@ -1278,16 +1386,22 @@ public class ContextRetrievalChunker {
             ),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Fills the `context` field of each chunk with a short model-generated sentence situating the chunk "
-                            + "within the whole document, and rebuilds the `text` field with that sentence included. This is the "
+                    description = "Fills the `context` field of each chunk with a retrieval note, generated by the model from the whole "
+                            + "document, and rebuilds the `text` field with that note included. This is the "
                             + "*contextual retrieval* technique: a chunk that only says \"the value went up 3%\" also comes to say "
                             + "which company and which quarter it is about, which greatly reduces retrieval misses.\n\n"
+                            + "The note has two parts, because a query arrives in two shapes. Two or three sentences situate the chunk "
+                            + "by naming the product, the task and the conditions it takes for granted, which answers whoever describes "
+                            + "the problem in their own words. Then a line of terms gathers the exact vocabulary: names, identifiers, "
+                            + "configuration keys, commands, error codes, acronyms with what they stand for, synonyms and, on documents "
+                            + "not written in English, the English term next to the original. That is what finds whoever pastes an error "
+                            + "message or the name of a parameter.\n\n"
                             + "It is a paid operation: it makes one model call per chunk. Run it during ingestion only, never per request.\n\n"
                             + "The calls are sequential on purpose, because `Client` keeps session and token accounting state that is "
                             + "not safe to share across parallel calls. An error on one chunk does not stop the rest: it is logged, "
                             + "that chunk's `context` stays empty and processing continues.\n\n"
                             + "Accepted options: `model`, `temperature` (0 by default, so the result is reproducible), "
-                            + "`documentMaxChars` (truncates very large documents), `template` (with the `{document}` and `{chunk}` placeholders), "
+                            + "`documentMaxChars` (truncates very large documents), `template` (placeholders `{document}`, `{chunk}`, `{breadcrumb}` and `{heading}`), `system` (system message), "
                             + "`skipIfPresent` (does not redo chunks that already have context) and `failFast`.",
                     howToUse = {
                             @SourceCodeDoc(
@@ -1454,7 +1568,10 @@ public class ContextRetrievalChunker {
                 chunk.set("text", composeText(
                         chunk.getString("header", ""),
                         context.strip(),
-                        body
+                        body,
+                        // The chunk remembers how it was built, so contextualize rebuilds the
+                        // embedding text the same way even on a different chunker instance.
+                        opts.getString("embed", chunk.getString("embed", embed))
                 ));
                 firstChunk = false;
             } catch (Exception e) {
@@ -1681,6 +1798,7 @@ public class ContextRetrievalChunker {
         int minChunkSize;
         Measure measure;
         String encoding;
+        String embed;
         boolean prependHeading;
         boolean headingPath;
         boolean splitOnHeadings;
@@ -1729,10 +1847,21 @@ public class ContextRetrievalChunker {
         s.splitOnHeadings = opts.getBoolean("splitOnHeadings", splitOnHeadings);
         s.stripDataUri = opts.getBoolean("stripDataUri", stripDataUri);
         s.stripHtmlComments = opts.getBoolean("stripHtmlComments", stripHtmlComments);
+        s.embed = normalizeEmbed(opts.getString("embed", embed));
         s.source = opts.getString("source", source);
         s.metadata = opts.getValues("metadata") != null ? opts.getValues("metadata") : metadata;
 
         return s;
+    }
+
+    private static String normalizeEmbed(String value) {
+        if (EMBED_CONTEXT.equalsIgnoreCase(value)) {
+            return EMBED_CONTEXT;
+        }
+        if (EMBED_CONTENT.equalsIgnoreCase(value)) {
+            return EMBED_CONTENT;
+        }
+        return EMBED_FULL;
     }
 
     private static int clamp(int value, int min, int max) {
@@ -2486,10 +2615,16 @@ public class ContextRetrievalChunker {
             String body = block.text.substring(lines.start[from], lines.end[to - 1]);
             boolean whole = from == 1 && to - 1 == lastBody;
 
+            // The first part owns the opening fence line and the last one owns the closing
+            // fence, so the parts together still cover the whole block. Without this the
+            // fence lines would belong to no chunk at all in the offsets.
+            int partStart = from == 1 ? block.start : block.start + lines.start[from];
+            int partEnd = to - 1 == lastBody ? block.end : block.start + lines.end[to - 1];
+
             out.add(block.derive(
                     BlockType.CODE,
-                    block.start + lines.start[from],
-                    block.start + lines.end[to - 1],
+                    partStart,
+                    partEnd,
                     open + "\n" + body + "\n" + closing,
                     !whole
             ));
@@ -2532,9 +2667,12 @@ public class ContextRetrievalChunker {
             String body = block.text.substring(lines.start[from], lines.end[to - 1]);
             boolean whole = from == 2 && to == lines.count;
 
+            // The first part owns the header rows, so the parts together cover the block.
+            int partStart = from == 2 ? block.start : block.start + lines.start[from];
+
             out.add(block.derive(
                     BlockType.TABLE,
-                    block.start + (whole ? 0 : lines.start[from]),
+                    partStart,
                     block.start + lines.end[to - 1],
                     whole ? block.text : header + "\n" + body,
                     !whole
@@ -2970,7 +3108,8 @@ public class ContextRetrievalChunker {
             chunk.set("header", contextHeader);
             chunk.set("content", content);
             chunk.set("context", "");
-            chunk.set("text", composeText(contextHeader, "", content));
+            chunk.set("text", composeText(contextHeader, "", content, s.embed));
+            chunk.set("embed", s.embed);
             chunk.set("type", s.kind.label());
             chunk.set("blocks", blockTypes(blocks, pack));
             chunk.set("overlap", pack.overlapText.isEmpty() ? 0 : pack.overlapText.length());
@@ -3017,14 +3156,37 @@ public class ContextRetrievalChunker {
         return out.toString().strip();
     }
 
-    private String composeText(String header, String context, String content) {
+    /**
+     * Builds the string to embed. In `context` mode the chunk body is deliberately left out:
+     * the generated note is dense prose, while the body carries fences, table pipes and
+     * markup that dilute the vector. The body is never lost, it stays in `content`, which is
+     * what a search should return. When there is no context yet, the body is used instead,
+     * because embedding a heading on its own would match nothing.
+     */
+    private String composeText(String header, String context, String content, String mode) {
         StringBuilder out = new StringBuilder();
+
         if (header != null && !header.isEmpty()) {
             out.append(header).append("\n\n");
         }
-        if (context != null && !context.isEmpty()) {
-            out.append(context).append("\n\n");
+
+        if (EMBED_CONTENT.equals(mode)) {
+            return content;
         }
+
+        boolean hasContext = context != null && !context.isBlank();
+
+        if (hasContext) {
+            out.append(context);
+            if (EMBED_CONTEXT.equals(mode)) {
+                return out.toString();
+            }
+            out.append("\n\n");
+        } else if (EMBED_CONTEXT.equals(mode)) {
+            out.append(content);
+            return out.toString();
+        }
+
         out.append(content);
         return out.toString();
     }
