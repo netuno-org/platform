@@ -12,6 +12,8 @@ fi
 
 error() {
     echo -e "${red}error${color_off}:" "$@" >&2
+    cd ..
+    rm -rf ./netuno
     exit 1
 }
 
@@ -83,12 +85,12 @@ else
 fi
 
 info "Downloading GraalVM version $graalvm_version"
-curl --fail --location --progress-bar --output=$graalvm_tar $graalvm_url || { error 'Failed to download GraalVM'; cd ..; rm -rf ./netuno; exit 1; }
+curl --fail --location --progress-bar --output=$graalvm_tar $graalvm_url || { error 'Failed to download GraalVM'; }
 
 mkdir -p core/graalvm
 
 info 'Extracting GraalVM'
-tar --extract --ungzip --checkpoint=1000 --checkpoint-action=dot --file=$graalvm_tar --directory=core/graalvm --strip-components=1 || { error 'Failed to extract GraalVM'; cd ..; rm -rf ./netuno; exit 1; }
+tar --extract --ungzip --checkpoint=1000 --checkpoint-action=dot --file=$graalvm_tar --directory=core/graalvm --strip-components=1 || { error 'Failed to extract GraalVM'; }
 
 rm $graalvm_tar
 
