@@ -29,6 +29,7 @@ import java.nio.file.Path;
 public class Constants {
 
     public static Values GRAALVM_VERSIONS_DOWNLOAD_PATHS = new Values() {{
+        set("25.2.4", "graal-25.2.4/graalvm-community-jdk-25i2-25.0.4");
         set("25.1.3", "graal-25.1.3/graalvm-community-jdk-25i1-25.0.3");
         set("25.0.2", "jdk-25.0.2/graalvm-community-jdk-25.0.2");
         set("25.0.1", "jdk-25.0.1/graalvm-community-jdk-25.0.1");
