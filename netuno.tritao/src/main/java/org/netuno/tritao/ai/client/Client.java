@@ -21,8 +21,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.JsonValue;
+import com.openai.core.http.StreamResponse;
+import com.openai.errors.OpenAIException;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
+import com.openai.models.ReasoningEffort;
+import com.openai.models.ResponseFormatJsonObject;
+import com.openai.models.ResponseFormatJsonSchema;
+import com.openai.models.ResponseFormatText;
 import com.openai.models.chat.completions.*;
 import com.openai.models.embeddings.CreateEmbeddingResponse;
 import com.openai.models.embeddings.EmbeddingCreateParams;
@@ -48,6 +54,8 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 
@@ -110,6 +118,8 @@ public class Client {
         private String model;
         private String provider;
         private int maxToolLoops;
+        private String streamKey;
+        private boolean usageTracking = true;
 
         private Values mcp;
         private Values tools;
@@ -131,10 +141,50 @@ public class Client {
     private final ObjectMapper mapper = new ObjectMapper();
     private static final Logger LOGGER = LogManager.getLogger(Client.class);
 
+    private static final Map<String, Client> ACTIVE_STREAMS = new ConcurrentHashMap<>();
+
     private final ChatSettings settings;
     private OpenAIClient client;
     private final Proteu proteu;
     private final Hili hili;
+
+    private final AtomicBoolean streamCancelled = new AtomicBoolean(false);
+    private volatile StreamResponse<ChatCompletionChunk> activeStream;
+
+    private static final String[] USAGE_INPUT_KEYS = {
+            "prompt_tokens", "input_tokens", "promptTokenCount", "prompt_eval_count"
+    };
+    private static final String[] USAGE_OUTPUT_KEYS = {
+            "completion_tokens", "output_tokens", "candidatesTokenCount", "eval_count"
+    };
+    private static final String[] USAGE_TOTAL_KEYS = {
+            "total_tokens", "totalTokenCount"
+    };
+    private static final String[] USAGE_CACHED_KEYS = {
+            "cached_tokens", "cache_read_input_tokens", "cachedContentTokenCount",
+            "cached_content_token_count", "prompt_cache_hit_tokens"
+    };
+    private static final String[] USAGE_CACHE_WRITE_KEYS = {
+            "cache_write_tokens", "cache_creation_input_tokens"
+    };
+    private static final String[] USAGE_REASONING_KEYS = {
+            "reasoning_tokens", "thoughtsTokenCount", "reasoning_token_count"
+    };
+    private static final String[] USAGE_AUDIO_KEYS = {
+            "audio_tokens"
+    };
+    private static final String[] USAGE_DETAILS_KEYS = {
+            "prompt_tokens_details", "input_tokens_details",
+            "completion_tokens_details", "output_tokens_details"
+    };
+    private static final String[] USAGE_INPUT_DETAILS_KEYS = {
+            "prompt_tokens_details", "input_tokens_details"
+    };
+    private static final String[] USAGE_OUTPUT_DETAILS_KEYS = {
+            "completion_tokens_details", "output_tokens_details"
+    };
+
+    private volatile Values usageTotals = newUsage();
 
     public Client(Proteu proteu, Hili hili, String provider) {
         this.proteu = Objects.requireNonNull(proteu, "Proteu cannot be null");
@@ -516,11 +566,7 @@ public class Client {
             }
 
         } catch (Exception e) {
-            LOGGER.error(
-                    "Failed to load models for provider '{}'.",
-                    this.settings.provider,
-                    e
-            );
+            logProviderError("Models listing", null, e);
         }
 
         return models;
@@ -598,7 +644,7 @@ public class Client {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to validate model '{}'", modelName, e);
+            logProviderError("Model validation", modelName, e);
         }
 
         return false;
@@ -644,11 +690,31 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa. Cada mensagem deve ter os campos `role` (system, user, assistant) e `content`."
+                            description = "Lista de mensagens da conversa. Cada mensagem deve ter os campos `role` "
+                                    + "(system, user, assistant) e `content`.\n\n"
+                                    + "O `content` é normalmente texto, mas nas mensagens de `user` pode ser uma lista de partes, "
+                                    + "que é como se enviam imagens, ficheiros e áudio:\n"
+                                    + "- `type: 'text'` com o campo `text`\n"
+                                    + "- `type: 'image_url'` com o campo `image_url`, que leva o `url` e opcionalmente o `detail` "
+                                    + "(`low`, `high` ou `auto`). O `url` aceita um endereço público ou uma data URL com o conteúdo em base64\n"
+                                    + "- `type: 'file'` com o campo `file`, que leva o `file_data` numa data URL, por exemplo um PDF, "
+                                    + "ou em alternativa o `file_id` de um ficheiro já carregado no fornecedor, e opcionalmente o `filename`\n"
+                                    + "- `type: 'input_audio'` com o campo `input_audio`, que leva o `data` em base64 simples, sem prefixo, "
+                                    + "e o `format`, `wav` ou `mp3`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages. Each message must have the fields `role` (system, user, assistant) and `content`."
+                            description = "List of conversation messages. Each message must have the fields `role` "
+                                    + "(system, user, assistant) and `content`.\n\n"
+                                    + "The `content` is usually text, but on the `user` messages it can be a list of parts, "
+                                    + "which is how images, files and audio are sent:\n"
+                                    + "- `type: 'text'` with the `text` field\n"
+                                    + "- `type: 'image_url'` with the `image_url` field, which takes the `url` and optionally the `detail` "
+                                    + "(`low`, `high` or `auto`). The `url` accepts a public address or a data URL with the content in base64\n"
+                                    + "- `type: 'file'` with the `file` field, which takes the `file_data` in a data URL, a PDF for example, "
+                                    + "or instead the `file_id` of a file already uploaded to the provider, and optionally the `filename`\n"
+                                    + "- `type: 'input_audio'` with the `input_audio` field, which takes the `data` in plain base64, "
+                                    + "without a prefix, and the `format`, `wav` or `mp3`"
                     )
             })
     }, returns = {
@@ -708,22 +774,42 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             })
     }, returns = {
@@ -783,11 +869,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -859,22 +947,42 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -947,11 +1055,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             })
     }, returns = {
@@ -1017,22 +1127,42 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             })
     }, returns = {
@@ -1100,11 +1230,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -1187,22 +1319,42 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "toolCallback", translations = {
@@ -1248,6 +1400,8 @@ public class Client {
             return result;
         }
 
+        this.usageTotals = newUsage();
+
         try {
             ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
 
@@ -1257,6 +1411,8 @@ public class Client {
                 String json = mapper.writeValueAsString(completion);
                 result = Values.fromJSON(json);
                 result.remove("valid");
+
+                accumulateUsage(result);
 
                 if (completion.choices() == null || completion.choices().isEmpty()) {
                     return result;
@@ -1297,12 +1453,7 @@ public class Client {
             return result;
 
         } catch (Exception e) {
-            LOGGER.error(
-                    "Chat completion failed for provider '{}', model '{}'.",
-                    this.settings.provider,
-                    model,
-                    e
-            );
+            logProviderError("Chat completion", model, e);
         }
 
         return result;
@@ -1348,11 +1499,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1411,22 +1564,42 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1487,11 +1660,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1567,22 +1742,42 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1659,11 +1854,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1733,22 +1930,42 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1820,11 +2037,13 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1911,22 +2130,42 @@ public class Client {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "mensagens",
-                            description = "Lista de mensagens da conversa."
+                            description = "Lista de mensagens da conversa. O `content` pode ser texto ou, nas mensagens de `user`, "
+                                    + "uma lista de partes com `type` `text`, `image_url`, `file` ou `input_audio`."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "List of conversation messages."
+                            description = "List of conversation messages. The `content` can be text or, on the `user` messages, "
+                                    + "a list of parts with `type` `text`, `image_url`, `file` or `input_audio`."
                     )
             }),
             @ParameterDoc(name = "options", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "opcoes",
-                            description = "Opções adicionais: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Opções adicionais, com os mesmos nomes da API:\n"
+                                    + "- Geração: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (texto ou lista de textos)\n"
+                                    + "- Limites: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Raciocínio e formato: `reasoning_effort` (`none` a `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` para a resposta em JSON (`text`, `json_object` ou `json_schema`)\n"
+                                    + "- Ferramentas: `parallel_tool_calls`, ignorado se não houver ferramentas configuradas\n"
+                                    + "- Diagnóstico: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identificação e infraestrutura: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Additional options: `temperature` (0.0–2.0), `max_tokens`, `top_p`."
+                            description = "Additional options, with the same names as the API:\n"
+                                    + "- Generation: `temperature` (0.0–2.0), `top_p`, `frequency_penalty` (-2.0–2.0), "
+                                    + "`presence_penalty` (-2.0–2.0), `seed`, `n`, `stop` (text or list of texts)\n"
+                                    + "- Limits: `max_tokens`, `max_completion_tokens`\n"
+                                    + "- Reasoning and format: `reasoning_effort` (`none` to `max`), `verbosity` (`low`, `medium`, `high`), "
+                                    + "`response_format` for the answer in JSON (`text`, `json_object` or `json_schema`)\n"
+                                    + "- Tools: `parallel_tool_calls`, ignored when there are no tools configured\n"
+                                    + "- Diagnostics: `logprobs`, `top_logprobs` (0–20)\n"
+                                    + "- Identification and infrastructure: `user`, `safety_identifier`, `prompt_cache_key`, "
+                                    + "`store`, `service_tier`"
                     )
             }),
             @ParameterDoc(name = "onToken", translations = {
@@ -1978,16 +2217,50 @@ public class Client {
             return;
         }
 
+        String streamKey = this.settings.streamKey;
+
+        this.streamCancelled.set(false);
+        this.usageTotals = newUsage();
+
+        if (streamKey != null && !streamKey.isBlank()) {
+            Client previous = ACTIVE_STREAMS.put(streamKey, this);
+            if (previous != null && previous != this) {
+                LOGGER.warn("Stream key '{}' is already in use, cancelling the previous stream.", streamKey);
+                previous.cancel();
+            }
+        }
+
         try {
             ChatCompletionCreateParams.Builder builder = createChatBuilder(model, messages, options);
 
+            if (this.settings.usageTracking) {
+                builder.streamOptions(
+                        ChatCompletionStreamOptions.builder()
+                                .includeUsage(true)
+                                .build()
+                );
+            }
+
             for (int loop = 0;  loop < this.settings.maxToolLoops; loop++) {
+                if (isCancelled()) {
+                    LOGGER.info("Chat stream cancelled for provider '{}', model '{}'.", this.settings.provider, model);
+                    return;
+                }
+
                 StringBuilder assistantText = new StringBuilder();
                 Map<Integer, ToolCallState> toolCallStates = new TreeMap<>();
+                Values streamUsage = null;
                 boolean streamHadChunks = false;
 
-                try (var streamingResponse = instance().chat().completions().createStreaming(builder.build())) {
+                try (StreamResponse<ChatCompletionChunk> streamingResponse =
+                             instance().chat().completions().createStreaming(builder.build())) {
+                    this.activeStream = streamingResponse;
+
                     for (ChatCompletionChunk chunk : (Iterable<ChatCompletionChunk>) streamingResponse.stream()::iterator) {
+                        if (isCancelled()) {
+                            break;
+                        }
+
                         try {
                             streamHadChunks = true;
 
@@ -1997,6 +2270,10 @@ public class Client {
 
                             if (onToken != null) {
                                 onToken.accept(chunkValues);
+                            }
+
+                            if (usageNode(chunkValues) != null) {
+                                streamUsage = chunkValues;
                             }
 
                             Values choices = chunkValues.getValues("choices");
@@ -2067,6 +2344,17 @@ public class Client {
                             LOGGER.error("Failed to process stream chunk.", e);
                         }
                     }
+                } finally {
+                    this.activeStream = null;
+                }
+
+                if (streamUsage != null) {
+                    accumulateUsage(streamUsage);
+                }
+
+                if (isCancelled()) {
+                    LOGGER.info("Chat stream cancelled for provider '{}', model '{}'.", this.settings.provider, model);
+                    return;
                 }
 
                 if (!streamHadChunks) {
@@ -2140,13 +2428,16 @@ public class Client {
             LOGGER.warn("Max stream tool-call loops reached.");
 
         } catch (Exception e) {
-            if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
-                LOGGER.error(
-                        "Chat stream failed for provider '{}', model '{}'.",
-                        this.settings.provider,
-                        model,
-                        e
-                );
+            if (isCancelled()) {
+                LOGGER.info("Chat stream cancelled for provider '{}', model '{}'.", this.settings.provider, model);
+            } else if (e.getMessage() == null || !e.getMessage().contains("Stream closed")) {
+                logProviderError("Chat stream", model, e);
+            }
+        } finally {
+            this.activeStream = null;
+
+            if (streamKey != null && !streamKey.isBlank()) {
+                ACTIVE_STREAMS.remove(streamKey, this);
             }
         }
     }
@@ -2156,6 +2447,334 @@ public class Client {
         String type = "function";
         String name;
         StringBuilder arguments = new StringBuilder();
+    }
+
+    // -------------------------------------------------------------------------
+    // STREAM CANCELLATION
+    // -------------------------------------------------------------------------
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Define a chave que identifica o streaming deste cliente, permitindo cancelá-lo a partir de outro pedido ou processo através do método `cancelStream`. "
+                            + "A chave é registada quando o streaming arranca e removida quando termina. "
+                            + "Se já existir um streaming ativo com a mesma chave, esse streaming anterior é cancelado.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "client.streamKey('conversa-'+ _user.code())\n"
+                                            + "\n"
+                                            + "client.stream(messages, (chunk) => {\n"
+                                            + "    _out.print(chunk.get('choices').get(0).get('delta').get('content'))\n"
+                                            + "})"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Sets the key that identifies this client streaming, allowing it to be cancelled from another request or process through the `cancelStream` method. "
+                            + "The key is registered when the streaming starts and removed when it ends. "
+                            + "If a streaming is already active with the same key, that previous streaming is cancelled.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "client.streamKey('conversation-'+ _user.code())\n"
+                                            + "\n"
+                                            + "client.stream(messages, (chunk) => {\n"
+                                            + "    _out.print(chunk.get('choices').get(0).get('delta').get('content'))\n"
+                                            + "})"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave única que identifica o streaming. Use nulo ou vazio para não registar o streaming."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Unique key that identifies the streaming. Use null or empty to not register the streaming."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A própria instância do cliente, permitindo encadear chamadas."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The client instance itself, allowing chained calls."
+            )
+    })
+    public Client streamKey(String key) {
+        this.settings.streamKey = key;
+        return this;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém a chave que identifica o streaming deste cliente.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_out.print(client.getStreamKey())"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the key that identifies this client streaming.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "_out.print(client.getStreamKey())"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Chave do streaming ou nulo se não estiver definida."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Streaming key or null if it is not defined."
+            )
+    })
+    public String getStreamKey() {
+        return this.settings.streamKey;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cancela o streaming em curso deste cliente. "
+                            + "Pode ser invocado dentro do próprio callback que recebe os tokens ou a partir de outro processo que tenha acesso a esta instância. "
+                            + "O streaming é interrompido de imediato, a ligação é fechada e não são executadas mais chamadas a ferramentas.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Interrompe o streaming a partir do próprio callback\n"
+                                            + "let total = 0\n"
+                                            + "\n"
+                                            + "client.stream(messages, (chunk) => {\n"
+                                            + "    _out.print(chunk.get('choices').get(0).get('delta').get('content'))\n"
+                                            + "\n"
+                                            + "    total++\n"
+                                            + "    if (total > 100) {\n"
+                                            + "        client.cancel()\n"
+                                            + "    }\n"
+                                            + "})"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Cancels the ongoing streaming of this client. "
+                            + "It can be invoked inside the callback that receives the tokens or from another process that has access to this instance. "
+                            + "The streaming is interrupted immediately, the connection is closed and no more tool calls are executed.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Interrupts the streaming from the callback itself\n"
+                                            + "let total = 0\n"
+                                            + "\n"
+                                            + "client.stream(messages, (chunk) => {\n"
+                                            + "    _out.print(chunk.get('choices').get(0).get('delta').get('content'))\n"
+                                            + "\n"
+                                            + "    total++\n"
+                                            + "    if (total > 100) {\n"
+                                            + "        client.cancel()\n"
+                                            + "    }\n"
+                                            + "})"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se o cancelamento foi registado agora, falso se o streaming já tinha sido cancelado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if the cancellation was registered now, false if the streaming was already cancelled."
+            )
+    })
+    public boolean cancel() {
+        boolean cancelledNow = this.streamCancelled.compareAndSet(false, true);
+
+        StreamResponse<ChatCompletionChunk> stream = this.activeStream;
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (Exception e) {
+                LOGGER.debug("Failed to close the stream while cancelling.", e);
+            }
+        }
+
+        return cancelledNow;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Cancela o streaming registado com a chave indicada, mesmo que esteja a decorrer noutro pedido. "
+                            + "A chave é definida com o método `streamKey` antes de iniciar o streaming.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Serviço que para o streaming iniciado noutro pedido\n"
+                                            + "const cancelado = _ai.client().cancelStream('conversa-'+ _user.code())\n"
+                                            + "_out.json(_val.map().set('cancelled', cancelado))"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Cancels the streaming registered with the given key, even if it is running in another request. "
+                            + "The key is defined with the `streamKey` method before starting the streaming.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "// Service that stops the streaming started in another request\n"
+                                            + "const cancelled = _ai.client().cancelStream('conversation-'+ _user.code())\n"
+                                            + "_out.json(_val.map().set('cancelled', cancelled))"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave do streaming definida previamente com `streamKey`."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Streaming key previously defined with `streamKey`."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se existia um streaming ativo com essa chave e o cancelamento foi registado agora."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if there was an active streaming with that key and the cancellation was registered now."
+            )
+    })
+    public boolean cancelStream(String key) {
+        if (key == null || key.isBlank()) {
+            LOGGER.error("Stream key cannot be null or empty.");
+            return false;
+        }
+
+        Client target = ACTIVE_STREAMS.get(key);
+        if (target == null) {
+            LOGGER.warn("No active stream found with the key '{}'.", key);
+            return false;
+        }
+
+        return target.cancel();
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se o streaming em curso deste cliente foi cancelado. "
+                            + "O estado é reposto sempre que um novo streaming é iniciado.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isCancelled()) {\n"
+                                            + "    _log.info('Streaming cancelado.')\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks whether the ongoing streaming of this client was cancelled. "
+                            + "The state is reset whenever a new streaming is started.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isCancelled()) {\n"
+                                            + "    _log.info('Streaming cancelled.')\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se o streaming foi cancelado."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if the streaming was cancelled."
+            )
+    })
+    public boolean isCancelled() {
+        return this.streamCancelled.get();
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se existe um streaming ativo registado com a chave indicada.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isStreaming('conversa-'+ _user.code())) {\n"
+                                            + "    _log.info('Já existe um streaming a decorrer.')\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks whether there is an active streaming registered with the given key.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isStreaming('conversation-'+ _user.code())) {\n"
+                                            + "    _log.info('There is already a streaming running.')\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "key", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "chave",
+                            description = "Chave do streaming definida previamente com `streamKey`."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Streaming key previously defined with `streamKey`."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se existe um streaming ativo com essa chave."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if there is an active streaming with that key."
+            )
+    })
+    public boolean isStreaming(String key) {
+        if (key == null || key.isBlank()) {
+            return false;
+        }
+        return ACTIVE_STREAMS.containsKey(key);
     }
 
 
@@ -2900,6 +3519,8 @@ public class Client {
             return result;
         }
 
+        this.usageTotals = newUsage();
+
         try {
             EmbeddingCreateParams.Builder builder = EmbeddingCreateParams.builder()
                     .model(model)
@@ -2924,16 +3545,244 @@ public class Client {
             result = Values.fromJSON(json);
             result.remove("valid");
 
+            accumulateUsage(result);
+
         } catch (Exception e) {
-            LOGGER.error(
-                    "Embeddings request failed for provider '{}', model '{}'.",
-                    this.settings.provider,
-                    model,
-                    e
-            );
+            logProviderError("Embeddings request", model, e);
         }
 
         return result;
+    }
+
+    // -------------------------------------------------------------------------
+    // USAGE
+    // -------------------------------------------------------------------------
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Obtém os tokens consumidos na última execução de `chat`, `stream` ou `embeddings`, "
+                            + "somando todos os pedidos feitos ao fornecedor, incluindo os ciclos de chamadas a ferramentas.\n\n"
+                            + "Os contadores são normalizados e têm sempre o mesmo significado, independentemente do fornecedor:\n"
+                            + "- `input`: tokens de entrada, incluindo sempre os que vieram da cache\n"
+                            + "- `output`: tokens gerados\n"
+                            + "- `cached`: tokens de entrada lidos da cache\n"
+                            + "- `cache_write`: tokens de entrada escritos na cache\n"
+                            + "- `reasoning`: tokens de raciocínio, já incluídos no `output`\n"
+                            + "- `audio_input`: tokens de áudio enviados, já incluídos no `input`\n"
+                            + "- `audio_output`: tokens de áudio gerados, já incluídos no `output`\n"
+                            + "- `total`: total de tokens\n"
+                            + "- `requests`: número de pedidos feitos ao fornecedor\n"
+                            + "- `raw`: contadores originais tal como o fornecedor os devolveu no último pedido\n\n"
+                            + "Em streaming os contadores só ficam disponíveis no fim, porque o fornecedor envia-os no último fragmento.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const resposta = client.chat(messages)\n"
+                                            + "\n"
+                                            + "const tokens = client.usage()\n"
+                                            + "_log.info('Entrada: '+ tokens.getLong('input')\n"
+                                            + "    +' | Saída: '+ tokens.getLong('output')\n"
+                                            + "    +' | Cache: '+ tokens.getLong('cached'))"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Gets the tokens consumed in the last `chat`, `stream` or `embeddings` execution, "
+                            + "summing every request made to the provider, including the tool call loops.\n\n"
+                            + "The counters are normalized and always have the same meaning, whatever the provider is:\n"
+                            + "- `input`: input tokens, always including the ones that came from the cache\n"
+                            + "- `output`: generated tokens\n"
+                            + "- `cached`: input tokens read from the cache\n"
+                            + "- `cache_write`: input tokens written to the cache\n"
+                            + "- `reasoning`: reasoning tokens, already included in `output`\n"
+                            + "- `audio_input`: audio tokens sent, already included in `input`\n"
+                            + "- `audio_output`: audio tokens generated, already included in `output`\n"
+                            + "- `total`: total tokens\n"
+                            + "- `requests`: number of requests made to the provider\n"
+                            + "- `raw`: original counters exactly as the provider returned them on the last request\n\n"
+                            + "On streaming the counters are only available at the end, because the provider sends them in the last chunk.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const response = client.chat(messages)\n"
+                                            + "\n"
+                                            + "const tokens = client.usage()\n"
+                                            + "_log.info('Input: '+ tokens.getLong('input')\n"
+                                            + "    +' | Output: '+ tokens.getLong('output')\n"
+                                            + "    +' | Cache: '+ tokens.getLong('cached'))"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto com os contadores de tokens normalizados da última execução."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Object with the normalized token counters of the last execution."
+            )
+    })
+    public Values usage() {
+        return this.usageTotals;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Normaliza os contadores de tokens de uma resposta devolvida por qualquer fornecedor, "
+                            + "aceitando a resposta completa do `chat`, um fragmento do `stream`, a resposta dos `embeddings` "
+                            + "ou apenas o objeto de contadores.\n\n"
+                            + "Reconhece as várias formas usadas pelas APIs, por exemplo `prompt_tokens` e `completion_tokens` (OpenAI), "
+                            + "`input_tokens` e `output_tokens` (Anthropic), `promptTokenCount` e `candidatesTokenCount` (Google) "
+                            + "ou `prompt_eval_count` e `eval_count` (Ollama), assim como as várias formas de indicar a cache: "
+                            + "`prompt_tokens_details.cached_tokens`, `cache_read_input_tokens`, `cachedContentTokenCount` ou `prompt_cache_hit_tokens`.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const resposta = client.chat(messages)\n"
+                                            + "const tokens = client.usage(resposta)\n"
+                                            + "\n"
+                                            + "_out.json(tokens.toJSON())"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Normalizes the token counters of a response returned by any provider, "
+                            + "accepting the full `chat` response, a `stream` chunk, the `embeddings` response "
+                            + "or just the counters object.\n\n"
+                            + "It recognizes the several forms used by the APIs, for example `prompt_tokens` and `completion_tokens` (OpenAI), "
+                            + "`input_tokens` and `output_tokens` (Anthropic), `promptTokenCount` and `candidatesTokenCount` (Google) "
+                            + "or `prompt_eval_count` and `eval_count` (Ollama), as well as the several forms of reporting the cache: "
+                            + "`prompt_tokens_details.cached_tokens`, `cache_read_input_tokens`, `cachedContentTokenCount` or `prompt_cache_hit_tokens`.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "const response = client.chat(messages)\n"
+                                            + "const tokens = client.usage(response)\n"
+                                            + "\n"
+                                            + "_out.json(tokens.toJSON())"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "response", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "resposta",
+                            description = "Resposta, fragmento de streaming ou objeto de contadores a normalizar."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "Response, streaming chunk or counters object to normalize."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto com os contadores de tokens normalizados, todos a zero se a resposta não os incluir."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Object with the normalized token counters, all zero if the response does not include them."
+            )
+    })
+    public Values usage(Values response) {
+        return normalizeUsage(response);
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Ativa ou desativa a contagem de tokens em streaming, que por omissão está ativa.\n\n"
+                            + "Quando está ativa é enviado o parâmetro `stream_options.include_usage` para que o fornecedor "
+                            + "devolva os contadores no último fragmento. Desative apenas se o fornecedor não suportar esse parâmetro.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "client.usageTracking(false)"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Enables or disables the token counting on streaming, which is enabled by default.\n\n"
+                            + "When enabled the `stream_options.include_usage` parameter is sent so that the provider "
+                            + "returns the counters in the last chunk. Only disable it if the provider does not support that parameter.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "client.usageTracking(false)"
+                            )
+                    }
+            )
+    }, parameters = {
+            @ParameterDoc(name = "enabled", translations = {
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.PT,
+                            name = "ativo",
+                            description = "Verdadeiro para pedir os contadores de tokens em streaming."
+                    ),
+                    @ParameterTranslationDoc(
+                            language = LanguageDoc.EN,
+                            description = "True to request the token counters on streaming."
+                    )
+            })
+    }, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "A própria instância do cliente, permitindo encadear chamadas."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "The client instance itself, allowing chained calls."
+            )
+    })
+    public Client usageTracking(boolean enabled) {
+        this.settings.usageTracking = enabled;
+        return this;
+    }
+
+    @MethodDoc(translations = {
+            @MethodTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verifica se a contagem de tokens em streaming está ativa.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isUsageTracking()) {\n"
+                                            + "    _log.info('Os tokens do streaming vão ser contabilizados.')\n"
+                                            + "}"
+                            )
+                    }
+            ),
+            @MethodTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Checks whether the token counting on streaming is enabled.",
+                    howToUse = {
+                            @SourceCodeDoc(
+                                    type = SourceCodeTypeDoc.JavaScript,
+                                    code = "if (client.isUsageTracking()) {\n"
+                                            + "    _log.info('The streaming tokens will be counted.')\n"
+                                            + "}"
+                            )
+                    }
+            )
+    }, parameters = {}, returns = {
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Verdadeiro se a contagem de tokens em streaming está ativa."
+            ),
+            @ReturnTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "True if the token counting on streaming is enabled."
+            )
+    })
+    public boolean isUsageTracking() {
+        return this.settings.usageTracking;
     }
 
     // -------------------------------------------------------------------------
@@ -2954,7 +3803,7 @@ public class Client {
     private void addMessages(ChatCompletionCreateParams.Builder builder, Values messages) {
         for (Values msg : messages.listOfValues()) {
             String role = msg.getString("role");
-            String content = msg.getString("content");
+            Object rawContent = msg.get("content");
 
             if (role == null || role.isBlank()) {
                 role = "user";
@@ -2962,6 +3811,7 @@ public class Client {
 
             if ("tool".equals(role)) {
                 String toolCallId = msg.getString("tool_call_id");
+                String content = msg.getString("content");
                 if (toolCallId != null && !toolCallId.isBlank() && content != null) {
                     builder.addMessage(
                             ChatCompletionToolMessageParam.builder()
@@ -2973,9 +3823,17 @@ public class Client {
                 continue;
             }
 
-            if (content == null) {
+            if (rawContent == null) {
                 continue;
             }
+
+            // The content in parts is how the API receives images along with the text.
+            if (rawContent instanceof Values && ((Values) rawContent).isList()) {
+                addContentParts(builder, role, (Values) rawContent);
+                continue;
+            }
+
+            String content = msg.getString("content");
 
             switch (role) {
                 case "system":
@@ -2989,6 +3847,204 @@ public class Client {
                     break;
             }
         }
+    }
+
+    /**
+     * Adds a message whose content is a list of parts, each one a text or an image.
+     * Only the user messages accept this format.
+     */
+    private void addContentParts(ChatCompletionCreateParams.Builder builder, String role, Values parts) {
+        if (!"user".equals(role)) {
+            LOGGER.error("Only the user messages accept the content in parts, '{}' message ignored.", role);
+            return;
+        }
+
+        List<ChatCompletionContentPart> contentParts = new ArrayList<>();
+
+        for (Values part : parts.listOfValues()) {
+            if (part == null || part.isEmpty()) {
+                continue;
+            }
+
+            String type = part.getString("type");
+            if (type == null || type.isBlank()) {
+                if (part.containsKey("image_url")) {
+                    type = "image_url";
+                } else if (part.containsKey("file")) {
+                    type = "file";
+                } else if (part.containsKey("input_audio")) {
+                    type = "input_audio";
+                } else {
+                    type = "text";
+                }
+            }
+
+            if (type.equals("image_url")) {
+                ChatCompletionContentPart image = buildImagePart(part);
+                if (image != null) {
+                    contentParts.add(image);
+                }
+                continue;
+            }
+
+            if (type.equals("file")) {
+                ChatCompletionContentPart file = buildFilePart(part);
+                if (file != null) {
+                    contentParts.add(file);
+                }
+                continue;
+            }
+
+            if (type.equals("input_audio")) {
+                ChatCompletionContentPart audio = buildAudioPart(part);
+                if (audio != null) {
+                    contentParts.add(audio);
+                }
+                continue;
+            }
+
+            if (type.equals("text")) {
+                String text = part.getString("text");
+                if (text == null) {
+                    LOGGER.error("The 'text' content part requires the 'text' field.");
+                    continue;
+                }
+                contentParts.add(
+                        ChatCompletionContentPart.ofText(
+                                ChatCompletionContentPartText.builder()
+                                        .text(text)
+                                        .build()
+                        )
+                );
+                continue;
+            }
+
+            LOGGER.error("Unsupported content part type: {}", type);
+        }
+
+        if (contentParts.isEmpty()) {
+            LOGGER.error("The message was ignored, none of its content parts is valid.");
+            return;
+        }
+
+        builder.addMessage(
+                ChatCompletionUserMessageParam.builder()
+                        .contentOfArrayOfContentParts(contentParts)
+                        .build()
+        );
+    }
+
+    /**
+     * The image accepts a public URL or a data URL with the content in base64.
+     */
+    private ChatCompletionContentPart buildImagePart(Values part) {
+        Values image = part.getValues("image_url");
+
+        if (image == null || image.isEmpty()) {
+            LOGGER.error("The 'image_url' content part requires the 'image_url' field.");
+            return null;
+        }
+
+        String url = image.getString("url");
+        if (url == null || url.isBlank()) {
+            LOGGER.error("The 'image_url' content part requires a 'url'.");
+            return null;
+        }
+
+        ChatCompletionContentPartImage.ImageUrl.Builder imageUrl =
+                ChatCompletionContentPartImage.ImageUrl.builder().url(url);
+
+        String detail = image.getString("detail");
+        if (detail != null && !detail.isBlank()) {
+            imageUrl.detail(ChatCompletionContentPartImage.ImageUrl.Detail.of(detail));
+        }
+
+        return ChatCompletionContentPart.ofImageUrl(
+                ChatCompletionContentPartImage.builder()
+                        .imageUrl(imageUrl.build())
+                        .build()
+        );
+    }
+
+    /**
+     * The file, a PDF for example, travels in base64 on the 'file_data' or is referenced
+     * by the 'file_id' of a file already uploaded to the provider.
+     */
+    private ChatCompletionContentPart buildFilePart(Values part) {
+        Values file = part.getValues("file");
+
+        if (file == null || file.isEmpty()) {
+            LOGGER.error("The 'file' content part requires the 'file' field.");
+            return null;
+        }
+
+        String fileData = file.getString("file_data");
+        String fileId = file.getString("file_id");
+
+        if ((fileData == null || fileData.isBlank()) && (fileId == null || fileId.isBlank())) {
+            LOGGER.error("The 'file' content part requires the 'file_data' or the 'file_id'.");
+            return null;
+        }
+
+        ChatCompletionContentPart.File.FileObject.Builder fileObject =
+                ChatCompletionContentPart.File.FileObject.builder();
+
+        if (fileData != null && !fileData.isBlank()) {
+            fileObject.fileData(fileData);
+        }
+
+        if (fileId != null && !fileId.isBlank()) {
+            fileObject.fileId(fileId);
+        }
+
+        String filename = file.getString("filename");
+        if (filename != null && !filename.isBlank()) {
+            fileObject.filename(filename);
+        }
+
+        return ChatCompletionContentPart.ofFile(
+                ChatCompletionContentPart.File.builder()
+                        .file(fileObject.build())
+                        .build()
+        );
+    }
+
+    /**
+     * The audio travels in plain base64, without the data URL prefix, and the format
+     * is given apart, only 'wav' and 'mp3' being accepted.
+     */
+    private ChatCompletionContentPart buildAudioPart(Values part) {
+        Values audio = part.getValues("input_audio");
+
+        if (audio == null || audio.isEmpty()) {
+            LOGGER.error("The 'input_audio' content part requires the 'input_audio' field.");
+            return null;
+        }
+
+        String data = audio.getString("data");
+        if (data == null || data.isBlank()) {
+            LOGGER.error("The 'input_audio' content part requires the 'data' in base64.");
+            return null;
+        }
+
+        String format = audio.getString("format");
+        if (format == null || format.isBlank()) {
+            LOGGER.error("The 'input_audio' content part requires the 'format', 'wav' or 'mp3'.");
+            return null;
+        }
+
+        return ChatCompletionContentPart.ofInputAudio(
+                ChatCompletionContentPartInputAudio.builder()
+                        .inputAudio(
+                                ChatCompletionContentPartInputAudio.InputAudio.builder()
+                                        .data(data)
+                                        .format(
+                                                ChatCompletionContentPartInputAudio.InputAudio.Format.of(format)
+                                        )
+                                        .build()
+                        )
+                        .build()
+        );
     }
 
     private void applyChatOptions(ChatCompletionCreateParams.Builder builder, Values options) {
@@ -3006,6 +4062,188 @@ public class Client {
 
         if (options.containsKey("top_p")) {
             builder.topP(options.getDouble("top_p"));
+        }
+
+        if (options.containsKey("max_completion_tokens")) {
+            builder.maxCompletionTokens(options.getLong("max_completion_tokens"));
+        }
+
+        if (options.containsKey("frequency_penalty")) {
+            builder.frequencyPenalty(options.getDouble("frequency_penalty"));
+        }
+
+        if (options.containsKey("presence_penalty")) {
+            builder.presencePenalty(options.getDouble("presence_penalty"));
+        }
+
+        if (options.containsKey("seed")) {
+            builder.seed(options.getLong("seed"));
+        }
+
+        if (options.containsKey("n")) {
+            builder.n(options.getLong("n"));
+        }
+
+        if (options.containsKey("stop")) {
+            applyStop(builder, options.get("stop"));
+        }
+
+        if (options.containsKey("logprobs")) {
+            builder.logprobs(options.getBoolean("logprobs"));
+        }
+
+        if (options.containsKey("top_logprobs")) {
+            builder.topLogprobs(options.getLong("top_logprobs"));
+        }
+
+        if (options.containsKey("reasoning_effort")) {
+            builder.reasoningEffort(ReasoningEffort.of(options.getString("reasoning_effort")));
+        }
+
+        if (options.containsKey("verbosity")) {
+            builder.verbosity(
+                    ChatCompletionCreateParams.Verbosity.of(options.getString("verbosity"))
+            );
+        }
+
+        if (options.containsKey("service_tier")) {
+            builder.serviceTier(
+                    ChatCompletionCreateParams.ServiceTier.of(options.getString("service_tier"))
+            );
+        }
+
+        // The providers reject this option when the request has no tools.
+        if (options.containsKey("parallel_tool_calls")) {
+            if (settings.tools != null && !settings.tools.isEmpty()) {
+                builder.parallelToolCalls(options.getBoolean("parallel_tool_calls"));
+            } else {
+                LOGGER.warn("Option 'parallel_tool_calls' ignored, there are no tools configured.");
+            }
+        }
+
+        if (options.containsKey("store")) {
+            builder.store(options.getBoolean("store"));
+        }
+
+        if (options.containsKey("prompt_cache_key")) {
+            builder.promptCacheKey(options.getString("prompt_cache_key"));
+        }
+
+        if (options.containsKey("safety_identifier")) {
+            builder.safetyIdentifier(options.getString("safety_identifier"));
+        }
+
+        if (options.containsKey("user")) {
+            builder.user(options.getString("user"));
+        }
+
+        if (options.containsKey("response_format")) {
+            applyResponseFormat(builder, options.getValues("response_format"));
+        }
+    }
+
+    /**
+     * The stop sequences accept a single text or a list of texts.
+     */
+    private void applyStop(ChatCompletionCreateParams.Builder builder, Object stop) {
+        if (stop == null) {
+            return;
+        }
+
+        if (stop instanceof Values && ((Values) stop).isList()) {
+            Values list = (Values) stop;
+            if (list.isEmpty()) {
+                return;
+            }
+            builder.stop(
+                    ChatCompletionCreateParams.Stop.ofStrings(
+                            Arrays.asList(list.toStringArray())
+                    )
+            );
+            return;
+        }
+
+        String text = stop.toString();
+        if (!text.isBlank()) {
+            builder.stop(ChatCompletionCreateParams.Stop.ofString(text));
+        }
+    }
+
+    /**
+     * Applies the response format, which makes the model answer in JSON,
+     * optionally following a JSON Schema.
+     */
+    private void applyResponseFormat(ChatCompletionCreateParams.Builder builder, Values responseFormat) {
+        if (responseFormat == null || responseFormat.isEmpty()) {
+            return;
+        }
+
+        String type = responseFormat.getString("type");
+        if (type == null || type.isBlank()) {
+            type = "json_object";
+        }
+
+        switch (type) {
+            case "text":
+                builder.responseFormat(ResponseFormatText.builder().build());
+                return;
+            case "json_object":
+                builder.responseFormat(ResponseFormatJsonObject.builder().build());
+                return;
+            case "json_schema":
+                break;
+            default:
+                LOGGER.error("Unsupported response format type: {}", type);
+                return;
+        }
+
+        Values jsonSchema = responseFormat.getValues("json_schema");
+        if (jsonSchema == null || jsonSchema.isEmpty()) {
+            LOGGER.error("Response format 'json_schema' requires the 'json_schema' field.");
+            return;
+        }
+
+        String name = jsonSchema.getString("name");
+        if (name == null || name.isBlank()) {
+            LOGGER.error("Response format 'json_schema' requires a 'name'.");
+            return;
+        }
+
+        try {
+            ResponseFormatJsonSchema.JsonSchema.Builder schemaBuilder =
+                    ResponseFormatJsonSchema.JsonSchema.builder().name(name);
+
+            String description = jsonSchema.getString("description");
+            if (description != null && !description.isBlank()) {
+                schemaBuilder.description(description);
+            }
+
+            if (jsonSchema.containsKey("strict")) {
+                schemaBuilder.strict(jsonSchema.getBoolean("strict"));
+            }
+
+            Values schema = jsonSchema.getValues("schema");
+            if (schema != null && !schema.isEmpty()) {
+                ResponseFormatJsonSchema.JsonSchema.Schema.Builder valuesBuilder =
+                        ResponseFormatJsonSchema.JsonSchema.Schema.builder();
+
+                for (Map.Entry<String, Object> entry : convertToMap(schema).entrySet()) {
+                    valuesBuilder.putAdditionalProperty(
+                            entry.getKey(),
+                            JsonValue.from(entry.getValue())
+                    );
+                }
+
+                schemaBuilder.schema(valuesBuilder.build());
+            }
+
+            builder.responseFormat(
+                    ResponseFormatJsonSchema.builder()
+                            .jsonSchema(schemaBuilder.build())
+                            .build()
+            );
+        } catch (Exception e) {
+            LOGGER.error("Failed to apply the JSON Schema response format '{}'.", name, e);
         }
     }
 
@@ -3103,6 +4341,193 @@ public class Client {
         }
     }
 
+    private static Values newUsage() {
+        return new Values()
+                .set("input", 0L)
+                .set("output", 0L)
+                .set("cached", 0L)
+                .set("cache_write", 0L)
+                .set("reasoning", 0L)
+                .set("audio_input", 0L)
+                .set("audio_output", 0L)
+                .set("total", 0L)
+                .set("requests", 0);
+    }
+
+
+    private Values usageNode(Values response) {
+        if (response == null || response.isEmpty()) {
+            return null;
+        }
+
+        Values usage = response.getValues("usage");
+        if (usage == null) {
+            usage = response.getValues("usageMetadata");
+        }
+        if (usage == null) {
+            usage = response.getValues("usage_metadata");
+        }
+        if (usage == null
+                && (firstLong(response, USAGE_INPUT_KEYS) >= 0 || firstLong(response, USAGE_OUTPUT_KEYS) >= 0)) {
+            usage = response;
+        }
+
+        return usage;
+    }
+
+    private long firstLong(Values values, String[] keys) {
+        if (values == null) {
+            return -1;
+        }
+        for (String key : keys) {
+            long value = values.getLong(key, -1L);
+            if (value >= 0) {
+                return value;
+            }
+        }
+        return -1;
+    }
+
+
+    private long deepLong(Values usage, String[] keys) {
+        long value = firstLong(usage, keys);
+        if (value >= 0) {
+            return value;
+        }
+
+        for (String detailsKey : USAGE_DETAILS_KEYS) {
+            value = firstLong(usage.getValues(detailsKey), keys);
+            if (value >= 0) {
+                return value;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * Looks for the counter only inside the given details objects, which is how the audio
+     * of the entry is told apart from the audio of the answer, both named 'audio_tokens'.
+     */
+    private long groupLong(Values usage, String[] detailsKeys, String[] keys) {
+        for (String detailsKey : detailsKeys) {
+            long value = firstLong(usage.getValues(detailsKey), keys);
+            if (value >= 0) {
+                return value;
+            }
+        }
+
+        return -1;
+    }
+
+    private Values normalizeUsage(Values response) {
+        Values usage = usageNode(response);
+        if (usage == null) {
+            return newUsage();
+        }
+
+        long input = Math.max(firstLong(usage, USAGE_INPUT_KEYS), 0);
+        long output = Math.max(firstLong(usage, USAGE_OUTPUT_KEYS), 0);
+        long cached = Math.max(deepLong(usage, USAGE_CACHED_KEYS), 0);
+        long cacheWrite = Math.max(deepLong(usage, USAGE_CACHE_WRITE_KEYS), 0);
+        long reasoning = Math.max(deepLong(usage, USAGE_REASONING_KEYS), 0);
+        long audioInput = Math.max(groupLong(usage, USAGE_INPUT_DETAILS_KEYS, USAGE_AUDIO_KEYS), 0);
+        long audioOutput = Math.max(groupLong(usage, USAGE_OUTPUT_DETAILS_KEYS, USAGE_AUDIO_KEYS), 0);
+
+        if (usage.hasKey("input_tokens") && !usage.hasKey("prompt_tokens")) {
+            input += cached + cacheWrite;
+        }
+
+        long total = firstLong(usage, USAGE_TOTAL_KEYS);
+        if (total < 0) {
+            total = input + output;
+        }
+
+        return newUsage()
+                .set("input", input)
+                .set("output", output)
+                .set("cached", cached)
+                .set("cache_write", cacheWrite)
+                .set("reasoning", reasoning)
+                .set("audio_input", audioInput)
+                .set("audio_output", audioOutput)
+                .set("total", total)
+                .set("requests", 1)
+                .set("raw", usage);
+    }
+
+    private void accumulateUsage(Values response) {
+        Values current = normalizeUsage(response);
+        if (current.getInt("requests", 0) == 0) {
+            return;
+        }
+
+        Values previous = this.usageTotals;
+
+        this.usageTotals = newUsage()
+                .set("input", previous.getLong("input", 0) + current.getLong("input", 0))
+                .set("output", previous.getLong("output", 0) + current.getLong("output", 0))
+                .set("cached", previous.getLong("cached", 0) + current.getLong("cached", 0))
+                .set("cache_write", previous.getLong("cache_write", 0) + current.getLong("cache_write", 0))
+                .set("reasoning", previous.getLong("reasoning", 0) + current.getLong("reasoning", 0))
+                .set("audio_input", previous.getLong("audio_input", 0) + current.getLong("audio_input", 0))
+                .set("audio_output", previous.getLong("audio_output", 0) + current.getLong("audio_output", 0))
+                .set("total", previous.getLong("total", 0) + current.getLong("total", 0))
+                .set("requests", previous.getInt("requests", 0) + 1)
+                .set("raw", current.getValues("raw"));
+    }
+
+    /**
+     * The errors coming from the provider are logged in a single line, whether they are an
+     * answer with a status or a connection that did not happen. The full trace stays in debug.
+     */
+    private void logProviderError(String operation, String model, Exception e) {
+        String target = model == null || model.isBlank()
+                ? "provider '" + this.settings.provider + "'"
+                : "provider '" + this.settings.provider + "', model '" + model + "'";
+
+        if (e instanceof OpenAIException) {
+            LOGGER.error("{} failed for {}: {}", operation, target, causeChain(e));
+            LOGGER.debug("{} error detail.", operation, e);
+            return;
+        }
+
+        LOGGER.error("{} failed for {}.", operation, target, e);
+    }
+
+    /**
+     * Joins the messages of the exception and of its causes, because the useful reason is
+     * often in the cause, the address that refused the connection for example.
+     */
+    private String causeChain(Throwable error) {
+        StringBuilder text = new StringBuilder();
+        Throwable current = error;
+
+        for (int depth = 0; current != null && depth < 4; depth++) {
+            String message = firstLine(current.getMessage());
+
+            if (message != null && text.indexOf(message) < 0) {
+                if (text.length() > 0) {
+                    text.append(": ");
+                }
+                text.append(message);
+            }
+
+            current = current.getCause();
+        }
+
+        return text.length() == 0 ? error.getClass().getSimpleName() : text.toString();
+    }
+
+    private String firstLine(String message) {
+        if (message == null || message.isBlank()) {
+            return null;
+        }
+
+        int end = message.indexOf('\n');
+        return (end < 0 ? message : message.substring(0, end)).trim();
+    }
+
     private Values parseJsonValues(String json) {
         if (json == null || json.isBlank()) {
             return new Values();
@@ -3115,7 +4540,7 @@ public class Client {
             return new Values();
         }
     }
-   @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     private Map<String, Object> convertToMap(Object input) {
         if (input == null) return new LinkedHashMap<>();
         if (input instanceof Map) {

@@ -25,6 +25,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class Join {
     private String table;
+    private String alias;
     private JoinType joinType = JoinType.INNER_JOIN;
     private Relationship relation;
     private Where where;
@@ -101,7 +102,16 @@ public class Join {
         return this;
     }
 
-       @MethodDoc(
+    public String getAlias() {
+        return alias;
+    }
+
+    public Join setAlias(String alias) {
+        this.alias = alias;
+        return this;
+    }
+
+    @MethodDoc(
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,

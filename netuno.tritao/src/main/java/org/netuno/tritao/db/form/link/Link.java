@@ -26,6 +26,7 @@ import org.netuno.library.doc.ReturnTranslationDoc;
 })
 public class Link {
     private String form;
+    private String alias;
     private RelationshipLink relationLink;
     private JoinType joinType = JoinType.INNER_JOIN;
     private Where where;
@@ -115,6 +116,14 @@ public class Link {
         return this;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public Link setAlias(String alias) {
+        this.alias = alias;
+        return this;
+    }
 
     @MethodDoc(
         translations = {
@@ -307,6 +316,13 @@ public class Link {
 
     public Link link(String formLink) {
         Link link = new Link(new RelationshipLink(formLink));
+        link.setForm(this.form);
+        this.relationLink.getSubLinks().put(formLink, link);
+        return this;
+    }
+
+    public Link link(String formLink, String alias) {
+        Link link = new Link(new RelationshipLink(formLink, alias));
         link.setForm(this.form);
         this.relationLink.getSubLinks().put(formLink, link);
         return this;
