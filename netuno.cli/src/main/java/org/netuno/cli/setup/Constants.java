@@ -48,7 +48,7 @@ public class Constants {
         set("21.0.0", "jdk-21.0.0/graalvm-community-jdk-21.0.0");
     }};
 
-    public static String GRAALVM_VERSION = "25.1.3";
+    public static String GRAALVM_VERSION = "25.2.4";
 
     public static String GRAALVM_FOLDER = "graalvm";
 
