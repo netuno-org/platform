@@ -89,8 +89,9 @@ curl --fail --location --progress-bar --output $graalvm_tar $graalvm_url || { er
 
 mkdir -p core/graalvm
 
+# Extract the GraalVM into de folder core/graalvm
 info 'Extracting GraalVM'
-tar --extract --ungzip --checkpoint=1000 --checkpoint-action=dot --file=$graalvm_tar --directory=core/graalvm --strip-components=1 || { error 'Failed to extract GraalVM'; }
+tar -xzvf $graalvm_tar -C core/graalvm --strip-components=1 || { error 'Failed to extract GraalVM'; }
 
 rm $graalvm_tar
 
