@@ -91,7 +91,7 @@ mkdir -p core/graalvm
 
 # Extract the GraalVM into de folder core/graalvm
 info 'Extracting GraalVM'
-tar -xzvf $graalvm_tar -C core/graalvm --strip-components=1 || { error 'Failed to extract GraalVM'; }
+tar -xzf $graalvm_tar -C core/graalvm --strip-components=1 || { error 'Failed to extract GraalVM'; }
 
 rm $graalvm_tar
 
