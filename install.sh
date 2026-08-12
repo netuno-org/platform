@@ -85,7 +85,7 @@ else
 fi
 
 info "Downloading GraalVM version $graalvm_version"
-curl --fail --location --progress-bar --output=$graalvm_tar $graalvm_url || { error 'Failed to download GraalVM'; }
+curl --fail --location --progress-bar --output $graalvm_tar $graalvm_url || { error 'Failed to download GraalVM'; }
 
 mkdir -p core/graalvm
 
@@ -97,7 +97,7 @@ rm $graalvm_tar
 echo
 info "Downloading Netuno version $netuno_version"
 netuno_url="https://github.com/netuno-org/platform/releases/download/${netuno_version//./_}/netuno-setup.jar"
-curl --fail --location --progress-bar --output=netuno-setup.jar $netuno_url
+curl --fail --location --progress-bar --output netuno-setup.jar $netuno_url
 
 ./core/graalvm/bin/java -jar netuno-setup.jar install version=$netuno_version
 
