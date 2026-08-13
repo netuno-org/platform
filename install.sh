@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 color_off=''
 red=''
@@ -7,6 +9,7 @@ dim='' # white
 if [[ -t 1 ]]; then
     color_off='\033[0m' # text reset
     red='\033[0;31m'   # red
+    green='\033[0;32m' # green
     dim='\033[0;2m'    # white
 fi
 
@@ -21,15 +24,27 @@ info() {
     echo -e "${dim}$@ ${color_off}"
 }
 
-declare -A graalvm_versions 
-graalvm_versions['stable']='25.0.2'
-graalvm_versions['testing']='25.2.4'
-graalvm_versions['2026.02']='25.0.2'
-graalvm_versions['2025.10']='25.0.1'
-# graalvm_versions['2025.08']='24.0.2'
-# graalvm_versions['2025.04']='24.0.0'
-# graalvm_versions['2025.03']='23.0.2'
- 
+success() {
+    echo -e "${green}$@ ${color_off}"
+}
+
+graalVMVersion() {
+    versions=(
+        'stable::25.0.2'
+        'testing::25.2.4'
+        '2026.02::25.0.2'
+        '2025.10::25.0.1'
+    )
+    for entry in "${versions[@]}" ; do
+        KEY="${entry%%::*}"
+        VALUE="${entry##*::}"
+        if [[ "$KEY" == $@ ]]; then
+            echo "$VALUE"
+            break
+        fi
+    done
+}
+
 if [[ $# = 0 ]]; then
     PS3='Choose the Netuno version: '
     netuno_versions=('stable' 'testing' '2026.02' '2025.10')
@@ -42,8 +57,10 @@ else
     netuno_version=$1
 fi
 
+echo
+
 # Select GraalVM version based on Netuno version
-graalvm_version=${graalvm_versions["$netuno_version"]}
+graalvm_version=$(graalVMVersion $netuno_version)
 
 # Detect the Operating System and the CPU architecture
 platform=$(uname -ms)
@@ -87,6 +104,10 @@ fi
 info "Downloading GraalVM version $graalvm_version"
 curl --fail --location --progress-bar --output $graalvm_tar $graalvm_url || { error 'Failed to download GraalVM'; }
 
+if [ -d "core/graalvm" ]; then
+    rm -rf core/graalvm
+fi
+
 mkdir -p core/graalvm
 
 # Extract the GraalVM into de folder core/graalvm
@@ -95,14 +116,29 @@ tar -xzf $graalvm_tar -C core/graalvm --strip-components=1 || { error 'Failed to
 
 rm $graalvm_tar
 
+if [[ $platform = Darwin* ]]; then
+    mv core/graalvm/Contents/Home/* core/graalvm/
+    rm -rf core/graalvm/Contents
+fi
+
 echo
-info "Downloading Netuno version $netuno_version"
+info "Downloading Netuno Setup for the version: $netuno_version"
 netuno_url="https://github.com/netuno-org/platform/releases/download/${netuno_version//./_}/netuno-setup.jar"
 curl --fail --location --progress-bar --output netuno-setup.jar $netuno_url
 
-./core/graalvm/bin/java -jar netuno-setup.jar install version=$netuno_version
+./core/graalvm/bin/java --enable-native-access=ALL-UNNAMED -jar netuno-setup.jar install version=$netuno_version
 
 # Ensure that Netuno works without permission errors on macOS
 if [[ $platform = Darwin* ]]; then
+    echo
     sudo xattr -r -d com.apple.quarantine .
 fi
+
+echo
+echo "Netuno platform installed in the local folder:"
+success "    ./netuno"
+echo
+
+rm install.sh
+
+exit $?
