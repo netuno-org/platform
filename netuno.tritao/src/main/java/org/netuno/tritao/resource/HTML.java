@@ -197,8 +197,8 @@ public class HTML extends ResourceBase {
             )
     })
     public Document parse(File file, String charset, String baseUri) {
-        try {
-            return Jsoup.parse(file.getInputStream(), charset, baseUri);
+        try (java.io.InputStream in = file.getInputStream()) {
+            return Jsoup.parse(in, charset, baseUri);
         } catch (IOException e) {
             throw new ResourceException("_html.parse("+ file.getPath() +"):\n "+ e.getMessage(), e);
         }
@@ -258,8 +258,8 @@ public class HTML extends ResourceBase {
             )
     })
     public Document parse(Storage storage, String charset, String baseUri) {
-        try {
-            return Jsoup.parse(storage.inputStream(), charset, baseUri);
+        try (java.io.InputStream in = storage.inputStream()) {
+            return Jsoup.parse(in, charset, baseUri);
         } catch (IOException e) {
             throw new ResourceException("_html.parse("+ storage.path() +"):\n "+ e.getMessage(), e);
         }
