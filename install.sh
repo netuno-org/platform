@@ -130,7 +130,6 @@ curl --fail --location --progress-bar --output netuno-setup.jar $netuno_url
 
 # Ensure that Netuno works without permission errors on macOS
 if [[ $platform = Darwin* ]]; then
-    echo
     sudo xattr -r -d com.apple.quarantine .
 fi
 
@@ -139,6 +138,7 @@ echo "Netuno platform installed in the local folder:"
 success "    ./netuno"
 echo
 
+cd ..
 rm install.sh
 
 exit $?
