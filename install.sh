@@ -106,3 +106,10 @@ curl --fail --location --progress-bar --output netuno-setup.jar $netuno_url
 if [[ $platform = Darwin* ]]; then
     sudo xattr -r -d com.apple.quarantine .
 fi
+
+echo
+echo "Netuno platform installed in the local folder:"
+success "    ./netuno"
+echo
+
+exit $?
