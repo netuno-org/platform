@@ -138,7 +138,4 @@ echo "Netuno platform installed in the local folder:"
 success "    ./netuno"
 echo
 
-cd ..
-rm install.sh
-
 exit $?
