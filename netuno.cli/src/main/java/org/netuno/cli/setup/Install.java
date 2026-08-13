@@ -482,7 +482,7 @@ public class Install implements MainArg {
 
                 if (SystemUtils.IS_OS_MAC) {
                     System.out.println();
-                    System.out.println(OS.consoleOutput("@|white On MAC OS X, you need to disable the quarantine, please run: |@ "));
+                    System.out.println(OS.consoleOutput("@|white On macOS, it's recommended to run this command to disable the quarantine and avoid restrictions: |@ "));
                     System.out.println(OS.consoleOutput("@|yellow \tsudo xattr -r -d com.apple.quarantine . |@ "));
                 }
 
