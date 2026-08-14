@@ -181,9 +181,3 @@ Write-Host ""
 Write-Host "Netuno platform installed in the local folder:"
 Write-SuccessCustom "    ./netuno"
 Write-Host ""
-
-Set-Location ..
-
-if (Test-Path "./install.ps1") {
-    Remove-Item -Force "./install.ps1"
-}
