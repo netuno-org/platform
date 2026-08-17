@@ -76,30 +76,31 @@ public class GraalVMSetup {
     public static boolean graalCheck(String path, String graalVMVersion) throws IOException {
         File graalVMFolder = new File(path, Constants.GRAALVM_FOLDER);
         if (graalVMFolder.exists()) {
+            File binFolder = new File(graalVMFolder, "bin");
+            File javaExecutable = new File(binFolder, SystemUtils.IS_OS_WINDOWS ? "java.exe" : "java");
+            if (!javaExecutable.exists()) {
+                logger.debug("The GraalVM executable was not found: "+ javaExecutable);
+                return false;
+            }
             StringBuilder versionOutput = new StringBuilder();
             StringBuilder versionError = new StringBuilder();
-            for (int i = 0; i < 2; i++) {
-                try {
-                    ProcessLauncher process = new ProcessLauncher();
-                    process.directory(new File(graalVMFolder, "bin").toString());
-                    process.outputLineConsumer(versionOutput::append);
-                    process.errorOutputLineConsumer(versionError::append);
-                    process.execute((i == 0 ? "./" : "") + "java", "-version");
-                    break;
-                } catch (Exception e) {
-                    if (i == 0 && SystemUtils.IS_OS_WINDOWS) {
-                        continue;
-                    }
-                    logger.debug("Fail getting the GraalVM version.", e);
-                    FileUtils.deleteDirectory(graalVMFolder);
-                    break;
+            try {
+                ProcessLauncher process = new ProcessLauncher();
+                process.shell(false);
+                process.directory(binFolder.toString());
+                process.outputLineConsumer(versionOutput::append);
+                process.errorOutputLineConsumer(versionError::append);
+                ProcessLauncher.Result result = process.execute(javaExecutable.getAbsolutePath(), "-version");
+                logger.debug("GraalVM Version - Exit Code: "+ result.exitCode());
+                logger.debug("GraalVM Version - Output:\n"+ versionOutput);
+                logger.debug("GraalVM Version - Error:\n"+ versionError);
+                if (result.exitCode() != 0) {
+                    return false;
                 }
+            } catch (Exception e) {
+                logger.debug("Fail getting the GraalVM version.", e);
+                return false;
             }
-            /*
-            logger.debug("GraalVM Version - Exit Code: "+ exitCode);
-            logger.debug("GraalVM Version - Output:\n"+ versionOutput);
-            logger.debug("GraalVM Version - Error:\n"+ versionError);
-            */
 
             String graalVMMainVersion = graalVMVersion.substring(0, graalVMVersion.indexOf("."));
             /*
