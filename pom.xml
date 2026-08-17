@@ -49,7 +49,7 @@
         <json.version>20260719</json.version>
         <itext.version>9.7.1</itext.version>
         <pdfbox.version>3.0.8</pdfbox.version>
-        <openhtml.version>1.1.62</openhtml.version>
+        <openhtml.version>1.1.73</openhtml.version>
         <log4j.version>2.26.1</log4j.version>
         <oshi.version>7.4.0</oshi.version>
         <sshj.version>0.40.0</sshj.version>
