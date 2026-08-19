@@ -288,8 +288,7 @@ public class WSEndpoint {
                             .toJSON()
             );
         } catch (Throwable e) {
-            if (e instanceof org.eclipse.jetty.io.EofException
-                || e instanceof java.io.IOException) {
+            if (IOException.class.isAssignableFrom(e.getClass())) {
                 logger.trace("Sending text message to session: "+ session.getId(), e);
             } else {
                 throw e;
