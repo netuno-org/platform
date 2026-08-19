@@ -37,7 +37,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -85,7 +84,8 @@ public class Install implements MainArg {
     public void run() throws IOException, InterruptedException {
         Config.setHome(path);
         System.out.println();
-        System.out.println(OS.consoleOutput("@|cyan All will set up into "+ (path.equals(Config.HOME_DEFAULT) ? "this current directory." : path +"/") +" |@ "));
+        System.out.println(OS.consoleOutput("@|white All will be set up in the directory: |@ "));
+        System.out.println(OS.consoleOutput("@|yellow     "+ new java.io.File(path).getAbsolutePath() +" |@ "));
         System.out.println();
         try (Scanner scanner = new Scanner(System.in)) {
             if (remove) {
@@ -97,7 +97,7 @@ public class Install implements MainArg {
                     remove = scanner.nextLine().equalsIgnoreCase("y");
                 }
                 System.out.println();
-                if (remove == false) {
+                if (!remove) {
                     return;
                 }
             }
@@ -111,7 +111,7 @@ public class Install implements MainArg {
                         force = scanner.nextLine().equalsIgnoreCase("y");
                 }
                 System.out.println();
-                if (force == false) {
+                if (!force) {
                     return;
                 }
             }
@@ -125,7 +125,7 @@ public class Install implements MainArg {
                     checksum = scanner.nextLine().equalsIgnoreCase("y");
                 }
                 System.out.println();
-                if (checksum == false) {
+                if (!checksum) {
                     return;
                 }
             }
@@ -175,7 +175,7 @@ public class Install implements MainArg {
         installNetuno: while (installNetuno <= 1) {
             File netunoJar = new File(path, "netuno.jar");
             File netunoJarNew = new File(path, "netuno.jar.new");
-            if (keep == false) {
+            if (!keep) {
                 String bundleFileName = "netuno";
                 File bundleFile = new File(path, bundleFileName + ".zip");
 
@@ -336,7 +336,7 @@ public class Install implements MainArg {
                             entryDestination.mkdirs();
                         } else {
                             File localFile = null;
-                            if (force == false && entryDestination.exists()
+                            if (!force && entryDestination.exists()
                                     && !getChecksum(entryDestination)
                                     .equalsIgnoreCase(checksumLocal.getString(name))) {
                                 localFile = new File(entryDestination.getPath() + ".local");
@@ -349,7 +349,7 @@ public class Install implements MainArg {
                             out.flush();
                             in.close();
                             out.close();
-                            if (force == false && localFile != null) {
+                            if (!force && localFile != null) {
                                 allFilesUpdated = false;
                                 File newBundleFile = new File(entryDestination.getPath() + ".new");
                                 new File(entryDestination.getPath()).renameTo(newBundleFile);
@@ -410,7 +410,7 @@ public class Install implements MainArg {
                             System.out.println(OS.consoleOutput("\t@|red > chmod +x netuno.sh && cp netuno.sh netuno |@ "));
                         }
                     }
-                    List.of("stable", "testing").stream().forEach((type) -> {
+                    Stream.of("stable", "testing").forEach((type) -> {
                         try {
                             ProcessBuilder builder = new ProcessBuilder();
                             builder.command(new String[]{"sh", "-c", "chmod +x install-"+ type +".sh && cp install-"+ type +".sh install-"+ type});

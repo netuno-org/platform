@@ -19,8 +19,6 @@ package org.netuno.cli.setup;
 
 import org.netuno.psamata.Values;
 
-import java.nio.file.Path;
-
 /**
  * Default values.
  *
