@@ -210,6 +210,6 @@ if ($setup_exit_code -ne 0) {
 Set-Location $script:original_location
 
 Write-Host ""
-Write-Host "Netuno platform installed in the local folder:"
-Write-SuccessCustom "    ./netuno"
+Write-Host "Netuno platform installed in:"
+Write-SuccessCustom "    $((Get-Item .).FullName)"
 Write-Host ""

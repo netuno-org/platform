@@ -134,8 +134,10 @@ if [[ $platform = Darwin* ]]; then
 fi
 
 echo
-echo "Netuno platform installed in the local folder:"
-success "    ./netuno"
+echo "Netuno platform installed in:"
+success "    $(pwd)"
 echo
+
+cd ..
 
 exit $?
