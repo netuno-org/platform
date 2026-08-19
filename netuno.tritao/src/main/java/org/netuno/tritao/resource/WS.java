@@ -128,6 +128,11 @@ public class WS extends ResourceBase {
             this.message = new WSMessage(ws.getValues("message"));
         }
     }
+
+    private boolean isConnectionProblem(Throwable t) {
+        return java.io.IOException.class.isAssignableFrom(t.getClass())
+                || t.getClass().getSimpleName().equals("WebSocketException");
+    }
     
     public String sessionId() {
         return getSessionId();
@@ -463,8 +468,7 @@ public class WS extends ResourceBase {
                 );
                 return true;
             } catch (Throwable e) {
-                if (e instanceof java.nio.channels.ClosedChannelException
-                        || e.getClass().getSimpleName().equals("WebSocketException")) {
+                if (isConnectionProblem(e)) {
                     throw new ResourceException("Service "+ url +" failed to send the output to closed session "+ session.getId() +".");
                 } else {
                     throw new ResourceException("Service "+ url +" failed to send the output to session "+ session.getId() +".", e);
@@ -541,8 +545,7 @@ public class WS extends ResourceBase {
                         session.getAsyncRemote().sendText(data.toJSON());
                         return true;
                     } catch (Throwable e) {
-                        if (e instanceof java.nio.channels.ClosedChannelException
-                                || e.getClass().getSimpleName().equals("WebSocketException")) {
+                        if (isConnectionProblem(e)) {
                             throw new ResourceException(" Sending a message to closed session "+ session.getId() +":\n"+ data.toJSON(2));
                         } else {
                             throw new ResourceException(" Sending a message to session "+ session.getId() +" failed:\n"+ data.toJSON(2), e);
@@ -568,8 +571,7 @@ public class WS extends ResourceBase {
                     try {
                         session.getAsyncRemote().sendText(content);
                     } catch (Throwable e) {
-                        if (e instanceof java.nio.channels.ClosedChannelException
-                                || e.getClass().getSimpleName().equals("WebSocketException")) {
+                        if (isConnectionProblem(e)) {
                             throw new ResourceException("Sending a text message to closed session "+ session.getId() +":\n"+ content);
                         } else {
                             throw new ResourceException("Sending a text message to session "+ session.getId() +" failed:\n"+ content, e);
@@ -596,8 +598,7 @@ public class WS extends ResourceBase {
                     try {
                         session.getAsyncRemote().sendBinary(ByteBuffer.wrap(content));
                     } catch (Throwable e) {
-                        if (e instanceof java.nio.channels.ClosedChannelException
-                                || e.getClass().getSimpleName().equals("WebSocketException")) {
+                        if (isConnectionProblem(e)) {
                             throw new ResourceException("Sending a binary message to closed session "+ session.getId() +":\n"+ content);
                         } else {
                             throw new ResourceException("Sending a binary message to session "+ session.getId() +" failed:\n"+ content, e);
@@ -668,8 +669,7 @@ public class WS extends ResourceBase {
                             try {
                                 session.getBasicRemote().sendText(responseData.toJSON());
                             } catch (Throwable e) {
-                                if (e instanceof java.nio.channels.ClosedChannelException
-                                        || e.getClass().getSimpleName().equals("WebSocketException")) {
+                                if (isConnectionProblem(e)) {
                                     logger.warn("App "+ app +" broadcast to closed session "+ session.getId() +":\n"+ data.toJSON(2));
                                 } else {
                                     logger.warn("App "+ app +" broadcast to session "+ session.getId() +" failed:\n"+ data.toJSON(2), e);
@@ -731,8 +731,7 @@ public class WS extends ResourceBase {
                         try {
                             session.getBasicRemote().sendText(data.toJSON());
                         } catch (Throwable e) {
-                            if (e instanceof java.nio.channels.ClosedChannelException
-                                    || e.getClass().getSimpleName().equals("WebSocketException")) {
+                            if (isConnectionProblem(e)) {
                                 logger.warn("App "+ app +" broadcast to closed session "+ session.getId() +":\n"+ data.toJSON(2));
                             } else {
                                 logger.warn("App "+ app +" broadcast to session "+ session.getId() +" failed:\n"+ data.toJSON(2), e);
@@ -755,8 +754,7 @@ public class WS extends ResourceBase {
                         try {
                             session.getBasicRemote().sendText(message);
                         } catch (Throwable e) {
-                            if (e instanceof java.nio.channels.ClosedChannelException
-                                    || e.getClass().getSimpleName().equals("WebSocketException")) {
+                            if (isConnectionProblem(e)) {
                                 logger.warn("App "+ app +" text broadcast to closed session "+ session.getId() +":\n"+ message);
                             } else {
                                 logger.warn("App "+ app +" text broadcast to session "+ session.getId() +" failed:\n"+ message, e);
@@ -783,8 +781,7 @@ public class WS extends ResourceBase {
                         try {
                             session.getBasicRemote().sendBinary(ByteBuffer.wrap(content));
                         } catch (Throwable e) {
-                            if (e instanceof java.nio.channels.ClosedChannelException
-                                    || e.getClass().getSimpleName().equals("WebSocketException")) {
+                            if (isConnectionProblem(e)) {
                                 logger.warn("App "+ app +" binary broadcast to closed session "+ session.getId() +":\n"+ message);
                             } else {
                                 logger.warn("App "+ app +" binary broadcast to session "+ session.getId() +" failed:\n"+ message, e);
