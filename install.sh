@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+is_installed=false
+if [ -f "./netuno.jar" ]; then
+    is_installed=true
+fi
+
 versions=(
     'stable::jdk-25.0.2/graalvm-community-jdk-25.0.2'
     'testing::graal-25.2.4/graalvm-community-jdk-25i2-25.0.4'
@@ -11,8 +16,6 @@ versions=(
 
 error() {
     echo -e "\033[0;31merror\033[0m:" "$@" >&2
-    cd ..
-    rm -rf ./netuno
     exit 1
 }
 
@@ -55,7 +58,11 @@ echo -e "\033[0;36m   ,td&=}~'                                  '~;=%&t,  \033[0
 echo
 echo -e "\033[0;32mINSTALL SCRIPT\033[0m"
 echo
-echo -e "Installation folder: \033[0;33m./netuno\033[0m"
+if [ "$is_installed" = true ]; then
+  echo -e "Installation will update the current folder."
+else
+  echo -e "Installation folder: \033[0;33m./netuno\033[0m"
+fi
 echo
 info "Versions available:"
 
@@ -105,8 +112,10 @@ case $platform in
     ;;
 esac
 
-mkdir -p netuno
-cd netuno
+if [ "$is_installed" = false ]; then
+    mkdir -p netuno
+    cd netuno
+fi
 
 prefix="https://github.com/graalvm/graalvm-ce-builds/releases/download"
 graalvm_url="${prefix}/${graalvm_version_path}_${target}_bin.tar.gz"
@@ -143,11 +152,12 @@ if [[ $platform = Darwin* ]]; then
     sudo xattr -r -d com.apple.quarantine .
 fi
 
-echo
-echo "The Netuno commands above must be executed inside the folder path:"
-warn "$(pwd)"
-echo
-
-cd ..
+if [ "$is_installed" = false ]; then
+    echo
+    echo "The Netuno commands above must be executed inside the folder path:"
+    warn "$(pwd)"
+    echo
+    cd ..
+fi
 
 exit $?
