@@ -2,39 +2,33 @@
 
 set -euo pipefail
 
-color_off=''
-red=''
-dim='' # white
-
-if [[ -t 1 ]]; then
-    color_off='\033[0m' # text reset
-    red='\033[0;31m'   # red
-    green='\033[0;32m' # green
-    dim='\033[0;2m'    # white
-fi
+versions=(
+    'stable::jdk-25.0.2/graalvm-community-jdk-25.0.2'
+    'testing::graal-25.2.4/graalvm-community-jdk-25i2-25.0.4'
+    '2026.06::jdk-25.0.2/graalvm-community-jdk-25.0.2'
+    '2026.02::jdk-25.0.2/graalvm-community-jdk-25.0.2'
+)
 
 error() {
-    echo -e "${red}error${color_off}:" "$@" >&2
+    echo -e "\033[0;31merror\033[0m:" "$@" >&2
     cd ..
     rm -rf ./netuno
     exit 1
 }
 
+warn() {
+    echo -e "\033[0;33m$@ \033[0m"
+}
+
 info() {
-    echo -e "${dim}$@ ${color_off}"
+    echo -e "\033[0;2m$@ \033[0m"
 }
 
 success() {
-    echo -e "${green}$@ ${color_off}"
+    echo -e "\033[0;32m$@ \033[0m"
 }
 
-graalVMVersion() {
-    versions=(
-        'stable::25.0.2'
-        'testing::25.2.4'
-        '2026.02::25.0.2'
-        '2025.10::25.0.1'
-    )
+graalVMVersionPath() {
     for entry in "${versions[@]}" ; do
         KEY="${entry%%::*}"
         VALUE="${entry##*::}"
@@ -45,13 +39,41 @@ graalVMVersion() {
     done
 }
 
+echo
+echo
+echo -e "\033[0;37m                            .,;o'                      \033[0m"
+echo -e "\033[0;37m                'o;,.   .,;oo~'                        \033[0m"
+echo -e "\033[0;37m  N     N  eEEEee  TtttttT  u     u  N     N   oOOo    \033[0m"
+echo -e "\033[0;37m  n n   N  E         |T|    u     u  n n   N  O    O   \033[0m"
+echo -e "\033[0;37m  n  N  n  eEEE      !t!    U     U  n  N  n  o    o   \033[0m"
+echo -e "\033[0;37m  N   n n  E         't'    U     U  N   n n  O    O   \033[0m"
+echo -e "\033[0;37m  N     n  eEEEee     T      UuuuU   N     n   OooO    \033[0m"
+echo -e "\033[0;36m                  ..,;ooddQOPttoc;,..                  \033[0m"
+echo -e "\033[0;36m          .,;odlKWQ[~;'         '~;]QWKldo;,.          \033[0m"
+echo -e "\033[0;36m      ,codloll=~'                     '~-+:={ldoc,     \033[0m"
+echo -e "\033[0;36m   ,td&=}~'                                  '~;=%&t,  \033[0m"
+echo
+echo -e "\033[0;32mINSTALL SCRIPT\033[0m"
+echo
+echo -e "Installation folder: \033[0;33m./netuno\033[0m"
+echo
+info "Versions available:"
+
 if [[ $# = 0 ]]; then
-    PS3='Choose the Netuno version: '
-    netuno_versions=('stable' 'testing' '2026.02' '2025.10')
-    select version in "${netuno_versions[@]}"
+    netuno_versions=()
+    i=0
+    for entry in "${versions[@]}" ; do
+        k="${entry%%::*}"
+        netuno_versions[$i]=$k
+        i=$(expr $i + 1)
+    done
+    PS3='Version to install: '
+    select v in "${netuno_versions[@]}"
     do
-        netuno_version="$version"
-        break
+        netuno_version="$v"
+        if [ -n "$netuno_version" ]; then
+          break
+        fi
     done
 else
     netuno_version=$1
@@ -60,7 +82,7 @@ fi
 echo
 
 # Select GraalVM version based on Netuno version
-graalvm_version=$(graalVMVersion $netuno_version)
+graalvm_version_path=$(graalVMVersionPath $netuno_version)
 
 # Detect the Operating System and the CPU architecture
 platform=$(uname -ms)
@@ -75,9 +97,6 @@ case $platform in
 'Linux aarch64' | 'Linux arm64')
     target=linux-aarch64
     ;;
-'MINGW64'*)
-    target=windows-x64
-    ;;
 'Linux riscv64')
     error 'Not supported on riscv64'
     ;;
@@ -90,19 +109,10 @@ mkdir -p netuno
 cd netuno
 
 prefix="https://github.com/graalvm/graalvm-ce-builds/releases/download"
-if [[ $graalvm_version = '25.1.3' ]]; then
-    graalvm_tar=graalvm-community-jdk-25i1-25.0.3_${target}_bin.tar.gz
-    graalvm_url="${prefix}/graal-${graalvm_version}/${graalvm_tar}"
-elif [[ $graalvm_version = '25.2.4' ]]; then
-    graalvm_tar=graalvm-community-jdk-25i2-25.0.4_${target}_bin.tar.gz
-    graalvm_url="${prefix}/graal-${graalvm_version}/${graalvm_tar}"
-else
-    graalvm_tar=graalvm-community-jdk-${graalvm_version}_${target}_bin.tar.gz 
-    graalvm_url="${prefix}/jdk-${graalvm_version}/${graalvm_tar}"
-fi
-
-info "Downloading GraalVM version $graalvm_version"
-curl --fail --location --progress-bar --output $graalvm_tar $graalvm_url || { error 'Failed to download GraalVM'; }
+graalvm_url="${prefix}/${graalvm_version_path}_${target}_bin.tar.gz"
+graalvm_version_part=${graalvm_version_path%%/*}
+info "Downloading GraalVM: ${graalvm_version_part##*-}"
+curl --fail --location --progress-bar --output graalvm.tar.gz $graalvm_url || { error 'Failed to download GraalVM'; }
 
 if [ -d "core/graalvm" ]; then
     rm -rf core/graalvm
@@ -111,10 +121,10 @@ fi
 mkdir -p core/graalvm
 
 # Extract the GraalVM into de folder core/graalvm
-info 'Extracting GraalVM'
-tar -xzf $graalvm_tar -C core/graalvm --strip-components=1 || { error 'Failed to extract GraalVM'; }
+info 'Extracting GraalVM...'
+tar -xzf graalvm.tar.gz -C core/graalvm --strip-components=1 || { error 'Failed to extract GraalVM'; }
 
-rm $graalvm_tar
+rm graalvm.tar.gz
 
 if [[ $platform = Darwin* ]]; then
     mv core/graalvm/Contents/Home/* core/graalvm/
@@ -134,8 +144,8 @@ if [[ $platform = Darwin* ]]; then
 fi
 
 echo
-echo "Netuno platform installed in:"
-success "    $(pwd)"
+echo "The Netuno commands above must be executed inside the folder path:"
+warn "$(pwd)"
 echo
 
 cd ..
