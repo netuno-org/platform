@@ -85,7 +85,7 @@ public class Install implements MainArg {
         Config.setHome(path);
         System.out.println();
         System.out.println(OS.consoleOutput("@|white All will be set up in the directory: |@ "));
-        System.out.println(OS.consoleOutput("@|yellow     "+ new java.io.File(path).getAbsolutePath() +" |@ "));
+        System.out.println(OS.consoleOutput("@|yellow "+ (path.equalsIgnoreCase(Config.HOME_DEFAULT) ? new java.io.File(path).getParentFile() : new java.io.File(path)).getAbsolutePath() +" |@ "));
         System.out.println();
         try (Scanner scanner = new Scanner(System.in)) {
             if (remove) {
