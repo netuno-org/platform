@@ -44,21 +44,24 @@ public class Link {
         if (!proteu.getRequestAll().getString("table_uid").isEmpty()) {
             rsTables = Config.getDBBuilder(proteu).selectTable("", "", proteu.getRequestAll().getString("table_uid"));
             if (rsTables.size() == 1) {
-                proteu.getRequestAll().set("table_id", rsTables.get(0).getString("id"));
-                proteu.getRequestPost().set("table_id", rsTables.get(0).getString("id"));
-                proteu.getRequestGet().set("table_id", rsTables.get(0).getString("id"));
+                Values firstTable = rsTables.getFirst();
+                proteu.getRequestAll().set("table_id", firstTable.getString("id"));
+                proteu.getRequestPost().set("table_id", firstTable.getString("id"));
+                proteu.getRequestGet().set("table_id", firstTable.getString("id"));
             }
         } else {
             rsTables = Config.getDBBuilder(proteu).selectTable(proteu.getRequestAll().getString("table_id"), "");
         }
+        data.set("tables", rsTables);
         if (rsTables.size() == 1) {
-            Values rowTable = rsTables.get(0);
+            Values rowTable = rsTables.getFirst();
             data.set("table.id", rowTable.getString("id"));
             data.set("table.uid", rowTable.getString("uid"));
             data.set("table.name", rowTable.getString("name"));
             data.set("table.title", rowTable.getString("title"));
-            TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_fields_head", data);
             List<Values> rsFields = Config.getDBBuilder(proteu).selectTableDesign(rowTable.getString("id"), "");
+            data.set("fields", rsFields);
+            TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_fields_head", data);
             for (Values rowField : rsFields) {
                 data.set("field.id", rowField.getString("id"));
                 data.set("field.uid", rowField.getString("uid"));
@@ -68,13 +71,15 @@ public class Link {
             }
             TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_fields_foot", data);
         } else {
+            TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_tables_head", data);
             for (Values rowTable : rsTables) {
                 data.set("table.id", rowTable.getString("id"));
                 data.set("table.uid", rowTable.getString("uid"));
                 data.set("table.name", rowTable.getString("name"));
                 data.set("table.title", rowTable.getString("title"));
-                TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_table_item", data);
+                TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_tables_item", data);
             }
+            TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_tables_foot", data);
         }
         TemplateBuilder.output(proteu, hili, "dev/component/config/link_popup_foot", data);
     }
