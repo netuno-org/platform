@@ -361,14 +361,14 @@ netuno.componentConfig = {
     ,
     contentLoaded: ()->
       popup = netuno.componentConfig.link.popup
-      if $('.component_config_link_popup_table_item').length
+      if popup.find('.component_config_link_popup_table_item').length
         popup.find("[data-netuno-back]").hide()
         $('.component_config_link_popup_table_item').on 'click', (e)->
           e.preventDefault()
           e.stopPropagation()
           item = $(this)
           netuno.componentConfig.link.openTable(item.attr('data-netuno-table-uid'), item.attr('data-parameter-key'), item.attr('data-table-uid'))
-      if $('.component_config_link_popup_fields_title').length
+      if popup.find('.component_config_link_popup_fields_title').length
         popup.find("[data-netuno-back]").off('click').on('click', ()->
           back = $(this);
           popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?mode=#{ back.attr('data-mode') }&netuno_table_uid=#{ back.attr('data-table-uid') }&parameter_key=#{ back.attr('data-parameter-key') }&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)
@@ -378,7 +378,21 @@ netuno.componentConfig = {
           e.stopPropagation();
           item = $(this);
           netuno.componentConfig.link.setField(item.attr('data-netuno-table-uid'), item.attr('data-parameter-key'), item.attr('data-table-uid'), item.attr('data-table-name'), item.attr('data-field-uid'), item.attr('data-field-name'))
-        netuno.componentConfig.link.updateFields popup.attr('data-netuno-table-uid'), popup.attr('data-parameter-key'), popup.attr('data-table-uid'), popup.attr('data-table-name')        
+        netuno.componentConfig.link.updateFields popup.attr('data-netuno-table-uid'), popup.attr('data-parameter-key'), popup.attr('data-table-uid'), popup.attr('data-table-name')
+      if popup.find('input[data-search]').length
+        input = popup.find("input[data-search]")
+        input.off("keyup").on("keyup", ()->
+          val = input.val()
+          netuno.componentConfig.link.popup.find('ul.component_config_link_popup_list > li').each(
+            () ->
+              item = $(this)
+              dataName = item.attr('data-field-name') or item.attr('data-table-name')
+              if dataName.indexOf(val) < 0
+                item.hide()
+              else
+                item.show()
+          )
+        )
     ,
     openTable: (netunoTableUid, parameterKey, tableUid)->
       netuno.componentConfig.link.popup.find(".modal-body").empty().load("#{ netuno.config.urlAdmin }dev/Link#{ netuno.config.extension }?netuno_table_uid=#{ netunoTableUid }&parameter_key=#{ parameterKey }&table_uid=#{ tableUid }&report=#{netuno.componentConfig.link.report}", netuno.componentConfig.link.contentLoaded)

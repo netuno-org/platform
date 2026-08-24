@@ -466,9 +466,9 @@
         return netuno.componentConfig.link.popup.modal("show");
       },
       contentLoaded: function() {
-        var popup;
+        var input, popup;
         popup = netuno.componentConfig.link.popup;
-        if ($('.component_config_link_popup_table_item').length) {
+        if (popup.find('.component_config_link_popup_table_item').length) {
           popup.find("[data-netuno-back]").hide();
           $('.component_config_link_popup_table_item').on('click', function(e) {
             var item;
@@ -478,7 +478,7 @@
             return netuno.componentConfig.link.openTable(item.attr('data-netuno-table-uid'), item.attr('data-parameter-key'), item.attr('data-table-uid'));
           });
         }
-        if ($('.component_config_link_popup_fields_title').length) {
+        if (popup.find('.component_config_link_popup_fields_title').length) {
           popup.find("[data-netuno-back]").off('click').on('click', function() {
             var back;
             back = $(this);
@@ -491,7 +491,24 @@
             item = $(this);
             return netuno.componentConfig.link.setField(item.attr('data-netuno-table-uid'), item.attr('data-parameter-key'), item.attr('data-table-uid'), item.attr('data-table-name'), item.attr('data-field-uid'), item.attr('data-field-name'));
           });
-          return netuno.componentConfig.link.updateFields(popup.attr('data-netuno-table-uid'), popup.attr('data-parameter-key'), popup.attr('data-table-uid'), popup.attr('data-table-name'));
+          netuno.componentConfig.link.updateFields(popup.attr('data-netuno-table-uid'), popup.attr('data-parameter-key'), popup.attr('data-table-uid'), popup.attr('data-table-name'));
+        }
+        if (popup.find('input[data-search]').length) {
+          input = popup.find("input[data-search]");
+          return input.off("keyup").on("keyup", function() {
+            var val;
+            val = input.val();
+            return netuno.componentConfig.link.popup.find('ul.component_config_link_popup_list > li').each(function() {
+              var dataName, item;
+              item = $(this);
+              dataName = item.attr('data-field-name') || item.attr('data-table-name');
+              if (dataName.indexOf(val) < 0) {
+                return item.hide();
+              } else {
+                return item.show();
+              }
+            });
+          });
         }
       },
       openTable: function(netunoTableUid, parameterKey, tableUid) {
