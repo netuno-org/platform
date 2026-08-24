@@ -24,6 +24,12 @@
     margin-bottom: 20px;
 }
 
+.component_config_link_popup_list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
 .component_config_link_popup_table_item {
     cursor: pointer;
     padding: 5px;
