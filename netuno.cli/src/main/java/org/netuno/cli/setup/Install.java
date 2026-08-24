@@ -82,7 +82,11 @@ public class Install implements MainArg {
     private final String checksumFileName = ".checksum.json";
 
     public void run() throws IOException, InterruptedException {
-        Config.setHome(path);
+        if (path.isBlank()) {
+            path = Config.getHome();
+        } else {
+            Config.setHome(path);
+        }
         System.out.println();
         System.out.println(OS.consoleOutput("@|white All will be set up in the directory: |@ "));
         System.out.println(OS.consoleOutput("@|yellow "+ (path.equalsIgnoreCase(Config.HOME_DEFAULT) ? new java.io.File(path).getParentFile() : new java.io.File(path)).getAbsolutePath() +" |@ "));
