@@ -1,215 +1,185 @@
-$OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = 'Stop'
 
 $script:original_location = Get-Location
-$script:netuno_created = $false
 
-$graalvm_versions_by_netuno = [ordered]@{
-    'stable'  = '25.0.2'
-    'testing' = '25.2.4'
-    '2026.02' = '25.0.2'
-    '2025.10' = '25.0.1'
+$is_installed = Test-Path './netuno.jar' -PathType Leaf
+
+$versions = [ordered]@{
+    'stable'  = 'jdk-25.0.2/graalvm-community-jdk-25.0.2'
+    'testing' = 'graal-25.2.4/graalvm-community-jdk-25i2-25.0.4'
+    '2026.06' = 'jdk-25.0.2/graalvm-community-jdk-25.0.2'
+    '2026.02' = 'jdk-25.0.2/graalvm-community-jdk-25.0.2'
 }
 
 function Write-ErrorCustom {
     param([string]$Message)
 
-    Write-Host "error: $Message" -ForegroundColor Red
+    Write-Host 'error' -ForegroundColor DarkRed -NoNewline
+    Write-Host ": $Message"
 
     Set-Location $script:original_location
 
-    if ($script:netuno_created -and (Test-Path ./netuno)) {
-        Remove-Item -Recurse -Force ./netuno -ErrorAction SilentlyContinue
-    }
+    exit 1
+}
 
-    Exit 1
+function Write-WarnCustom {
+    param([string]$Message)
+
+    Write-Host "$Message " -ForegroundColor DarkYellow
 }
 
 function Write-InfoCustom {
     param([string]$Message)
 
-    Write-Host $Message -ForegroundColor DarkGray
+    Write-Host "$Message " -ForegroundColor DarkGray
 }
 
 function Write-SuccessCustom {
     param([string]$Message)
 
-    Write-Host $Message -ForegroundColor Green
+    Write-Host "$Message " -ForegroundColor DarkGreen
 }
 
-function Get-GraalVMVersion {
+function Get-GraalVMVersionPath {
     param([string]$NetunoVersion)
 
-    if (-not $graalvm_versions_by_netuno.Contains($NetunoVersion)) {
-        Write-ErrorCustom "Unknown Netuno version: $NetunoVersion"
+    foreach ($key in $script:versions.Keys) {
+        if ($key -eq $NetunoVersion) {
+            return $script:versions[$key]
+        }
     }
 
-    return $graalvm_versions_by_netuno[$NetunoVersion]
+    return ''
 }
 
-function Get-GraalVMDownload {
-    param(
-        [string]$GraalVMVersion,
-        [string]$Target
-    )
-
-    $parts = $GraalVMVersion.Split('.')
-
-    if ($parts.Count -ne 3) {
-        Write-ErrorCustom "Invalid GraalVM version: $GraalVMVersion"
-    }
-
-    $major = $parts[0]
-    $minor = [int]$parts[1]
-    $security = $parts[2]
-
-    if ($minor -eq 0) {
-        $tag = "jdk-$GraalVMVersion"
-        $archive = "graalvm-community-jdk-${GraalVMVersion}_${Target}_bin.zip"
-    }
-    else {
-        $tag = "graal-$GraalVMVersion"
-        $archive = "graalvm-community-jdk-${major}i${minor}-${major}.0.${security}_${Target}_bin.zip"
-    }
-
-    return [pscustomobject]@{
-        Archive = $archive
-        Url     = "https://github.com/graalvm/graalvm-ce-builds/releases/download/$tag/$archive"
-    }
+trap {
+    Write-ErrorCustom $_.Exception.Message
 }
 
-$netuno_version = ""
+$banner_top = @'
+                            .,;o'                      
+                'o;,.   .,;oo~'                        
+  N     N  eEEEee  TtttttT  u     u  N     N   oOOo    
+  n n   N  E         |T|    u     u  n n   N  O    O   
+  n  N  n  eEEE      !t!    U     U  n  N  n  o    o   
+  N   n n  E         't'    U     U  N   n n  O    O   
+  N     n  eEEEee     T      UuuuU   N     n   OooO    
+'@
+
+$banner_bottom = @'
+                  ..,;ooddQOPttoc;,..                  
+          .,;odlKWQ[~;'         '~;]QWKldo;,.          
+      ,codloll=~'                     '~-+:={ldoc,     
+   ,td&=}~'                                  '~;=%&t,  
+'@
+
+Write-Host ''
+Write-Host ''
+Write-Host $banner_top -ForegroundColor Gray
+Write-Host $banner_bottom -ForegroundColor DarkCyan
+Write-Host ''
+Write-SuccessCustom 'INSTALL SCRIPT'
+Write-Host ''
+
+if ($is_installed) {
+    Write-Host 'Installation will update the current folder.'
+}
+else {
+    Write-Host 'Installation folder: ' -NoNewline
+    Write-Host './netuno' -ForegroundColor DarkYellow
+}
+
+Write-Host ''
+Write-InfoCustom 'Versions available:'
+
+$netuno_version = ''
 
 if ($args.Count -eq 0) {
-    $available_versions = @($graalvm_versions_by_netuno.Keys)
+    $netuno_versions = @($versions.Keys)
 
-    Write-Host "Choose the Netuno version:"
-
-    for ($i = 0; $i -lt $available_versions.Count; $i++) {
-        Write-Host "$($i + 1)) $($available_versions[$i])"
-    }
-
-    do {
-        $selection = Read-Host "Number"
-
-        if ($selection -match '^\d+$' -and [int]$selection -ge 1 -and [int]$selection -le $available_versions.Count) {
-            $netuno_version = $available_versions[[int]$selection - 1]
+    while (-not $netuno_version) {
+        for ($i = 0; $i -lt $netuno_versions.Count; $i++) {
+            Write-Host "$($i + 1)) $($netuno_versions[$i])"
         }
-    } while (-not $netuno_version)
+
+        do {
+            $selection = Read-Host 'Version to install'
+
+            if ($selection -match '^\d+$' -and [int]$selection -ge 1 -and [int]$selection -le $netuno_versions.Count) {
+                $netuno_version = $netuno_versions[[int]$selection - 1]
+            }
+        } while (-not $netuno_version -and $selection)
+    }
 }
 else {
     $netuno_version = $args[0]
 }
 
-Write-Host ""
+Write-Host ''
 
-$target = "windows-x64"
-$graalvm_version = Get-GraalVMVersion $netuno_version
-$graalvm_download = Get-GraalVMDownload $graalvm_version $target
+$graalvm_version_path = Get-GraalVMVersionPath $netuno_version
 
-if (-not (Test-Path ./netuno)) {
-    $script:netuno_created = $true
+$target = 'windows-x64'
+
+if (-not $is_installed) {
+    New-Item -ItemType Directory -Force -Path 'netuno' | Out-Null
+    Set-Location 'netuno'
 }
 
-New-Item -ItemType Directory -Force -Path netuno | Out-Null
-Set-Location netuno
+$prefix = 'https://github.com/graalvm/graalvm-ce-builds/releases/download'
+$graalvm_url = "$prefix/${graalvm_version_path}_${target}_bin.zip"
+$graalvm_version_part = $graalvm_version_path.Split('/')[0]
+$graalvm_version = $graalvm_version_part.Substring($graalvm_version_part.LastIndexOf('-') + 1)
 
-Write-InfoCustom "Downloading GraalVM version $graalvm_version"
+Write-InfoCustom "Downloading GraalVM: $graalvm_version"
 
-$old_progress_preference = $ProgressPreference
-$ProgressPreference = 'SilentlyContinue'
+curl.exe --fail --location --progress-bar --output 'graalvm.zip' $graalvm_url
 
-try {
-    Invoke-WebRequest -Uri $graalvm_download.Url -OutFile $graalvm_download.Archive -UserAgent "Mozilla/5.0" -UseBasicParsing
-}
-catch {
-    Write-ErrorCustom "Failed to download GraalVM from $($graalvm_download.Url)"
-}
-finally {
-    $ProgressPreference = $old_progress_preference
+if ($LASTEXITCODE -ne 0) {
+    Write-ErrorCustom 'Failed to download GraalVM'
 }
 
-$graalvm_path = "core/graalvm"
-
-if (Test-Path $graalvm_path) {
-    Remove-Item -Recurse -Force $graalvm_path
+if (Test-Path 'core/graalvm' -PathType Container) {
+    Remove-Item -Recurse -Force 'core/graalvm'
 }
 
-New-Item -ItemType Directory -Force -Path $graalvm_path | Out-Null
+New-Item -ItemType Directory -Force -Path 'core/graalvm' | Out-Null
 
-Write-InfoCustom "Extracting GraalVM"
+Write-InfoCustom 'Extracting GraalVM...'
 
-$extracted = $false
+tar.exe -xf 'graalvm.zip' -C 'core/graalvm' --strip-components=1
 
-if (Get-Command tar -ErrorAction SilentlyContinue) {
-    tar -xf $graalvm_download.Archive -C $graalvm_path --strip-components=1
-    $extracted = $LASTEXITCODE -eq 0
+if ($LASTEXITCODE -ne 0) {
+    Write-ErrorCustom 'Failed to extract GraalVM'
 }
 
-if (-not $extracted) {
-    try {
-        $temp_extract = "core/graalvm_temp"
+Remove-Item -Force 'graalvm.zip'
 
-        if (Test-Path $temp_extract) {
-            Remove-Item -Recurse -Force $temp_extract
-        }
-
-        Expand-Archive -Path $graalvm_download.Archive -DestinationPath $temp_extract -Force
-
-        $inner_folder = Get-ChildItem -Path $temp_extract -Directory | Select-Object -First 1
-        Move-Item -Path "$($inner_folder.FullName)\*" -Destination $graalvm_path -Force
-
-        Remove-Item -Recurse -Force $temp_extract
-    }
-    catch {
-        Write-ErrorCustom "Failed to extract GraalVM: $_"
-    }
-}
-
-if (-not (Test-Path "$graalvm_path/bin/java.exe")) {
-    Write-ErrorCustom "GraalVM extraction did not produce a valid JDK layout"
-}
-
-if (Test-Path $graalvm_download.Archive) {
-    Remove-Item -Force $graalvm_download.Archive
-}
-
-Write-Host ""
+Write-Host ''
 Write-InfoCustom "Downloading Netuno Setup for the version: $netuno_version"
 
 $netuno_version_tag = $netuno_version -replace '\.', '_'
 $netuno_url = "https://github.com/netuno-org/platform/releases/download/$netuno_version_tag/netuno-setup.jar"
 
-try {
-    Invoke-WebRequest -Uri $netuno_url -OutFile "netuno-setup.jar" -UserAgent "Mozilla/5.0" -UseBasicParsing
-}
-catch {
-    Write-ErrorCustom "Failed to download Netuno Setup from $netuno_url"
-}
+curl.exe --fail --location --progress-bar --output 'netuno-setup.jar' $netuno_url
 
-Write-InfoCustom "Running Netuno Setup..."
-
-$run_path = "core/graalvm_run"
-
-if (Test-Path $run_path) {
-    Remove-Item -Recurse -Force $run_path
+if ($LASTEXITCODE -ne 0) {
+    Write-ErrorCustom 'Failed to download Netuno Setup'
 }
 
-New-Item -ItemType Directory -Force -Path $run_path | Out-Null
-Copy-Item -Path "$graalvm_path/*" -Destination $run_path -Recurse -Force
+& './core/graalvm/bin/java.exe' --enable-native-access=ALL-UNNAMED -jar netuno-setup.jar install version=$netuno_version
 
-& "$run_path/bin/java" --enable-native-access=ALL-UNNAMED -jar netuno-setup.jar install version=$netuno_version
-$setup_exit_code = $LASTEXITCODE
+if ($LASTEXITCODE -ne 0) {
+    Write-ErrorCustom "Netuno Setup failed with exit code $LASTEXITCODE"
+}
 
-Remove-Item -Recurse -Force $run_path -ErrorAction SilentlyContinue
-
-if ($setup_exit_code -ne 0) {
-    Write-ErrorCustom "Netuno Setup failed with exit code $setup_exit_code"
+if (-not $is_installed) {
+    Write-Host ''
+    Write-Host 'The Netuno commands above must be executed inside the folder path:'
+    Write-WarnCustom (Get-Location).Path
+    Write-Host ''
 }
 
 Set-Location $script:original_location
 
-Write-Host ""
-Write-Host "Netuno platform installed in:"
-Write-SuccessCustom "    $((Get-Item .).FullName)"
-Write-Host ""
+exit 0
