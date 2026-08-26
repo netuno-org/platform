@@ -55,9 +55,13 @@ public class Update {
                     System.out.println(OS.consoleOutput("@|red    Critical upgrade required! |@"));
                 }
                 System.out.println();
-                System.out.println("   " + OS.consoleOutput("@|green New version released! |@") + " You can upgrade with this command:");
+                System.out.println("   " + OS.consoleOutput("@|green New version released! |@") + " Upgrade with this command:");
                 System.out.println();
-                System.err.println(OS.consoleCommand("install-"+ mode));
+                if (!OS.isWindows()) {
+                    System.err.println(OS.consoleGlobalCommand("bash <(curl -fsSL https://netu.no/install.sh)"));
+                } else {
+                    System.err.println(OS.consoleGlobalCommand("powershell -c \"irm https://netu.no/install.ps1|iex\""));
+                }
                 System.out.println();
                 System.out.println();
                 //Thread.sleep(1000);
