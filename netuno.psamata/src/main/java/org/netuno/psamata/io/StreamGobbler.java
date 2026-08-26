@@ -69,8 +69,8 @@ public class StreamGobbler extends Thread {
                         }
                     }
                 } catch (IOException ex) {
-                    if (!ex.getMessage().equals("Stream closed")) {
-                        logger.fatal(ex.getMessage(), ex);
+                    if (!ex.getMessage().equalsIgnoreCase("stream closed")) {
+                        logger.debug(ex.getMessage(), ex);
                     }
                     break;
                 }
