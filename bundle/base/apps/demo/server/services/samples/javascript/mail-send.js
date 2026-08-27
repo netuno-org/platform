@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: MAIL SEND
@@ -24,39 +23,42 @@
  *      }
  *  }
  */
+import {_out, _smtp, _storage} from "@netuno/server-types";
 
-var smtp = _smtp.init()
+const smtp = _smtp.init();
 
-smtp.to = "*****@gmail.com"
+smtp.to = "*****@gmail.com";
 
-smtp.from = "*****@gmail.com"
+smtp.from = "*****@gmail.com";
 
-smtp.subject = "Test from Netuno"
+smtp.subject = "Test from Netuno";
 
-smtp.text = "Did you receive this email?"
+smtp.text = "Did you receive this email?";
 
-smtp.html = "<div>"
-smtp.html += "<img src=\"cid:logo\" width=\"200\" />"
-smtp.html += "<p>Did you receive this email?</p>"
-smtp.html += "</div>"
+smtp.html = `
+<div>
+  <img src="cid:logo" width="200" />
+  <p>Did you receive this email?</p>
+</div>
+`;
 
 smtp.attachment(
     "logo.png",
     "image/png",
     _storage.filesystem("server", "samples/mail", "logo.png").file(),
     "logo"
-)
+);
 
 smtp.attachment(
     "doc.text",
     "text/plain",
     _storage.filesystem("server", "samples/mail", "doc.txt").file()
-)
+);
 
 if (smtp.enabled) {
-    smtp.send()
-    _out.println("<h2>Mail sent...</h2>")
+    smtp.send();
+    _out.println("<h2>Mail sent...</h2>");
 } else {
-    _out.println("<h2>The SMTP configuration is disabled!</h2>")
-    _out.println("<p>Please define your configurations and enable it.</p>")
+    _out.println("<h2>The SMTP configuration is disabled!</h2>");
+    _out.println("<p>Please define your configurations and enable it.</p>");
 }

@@ -9,20 +9,22 @@
  *
  */
 
+import {_header, _pdf} from "@netuno/server-types";
+
 _header.contentType("pdf")
 
-const pdfDocument = _pdf.newDocument(_pdf.pageSize("A4"))
+const pdfDocument = _pdf.newDocument(_pdf.pageSize("A4"));
 
-const viksiScript = _pdf.font(_storage.filesystem("server", "samples/export-pdf", "viksi-script.ttf"), true)
-const helvetica = _pdf.font("helvetica")
-const helveticaBold = _pdf.font("helvetica-bold")
-const helveticaBoldOblique = _pdf.font("helvetica-boldoblique")
-const helveticaOblique = _pdf.font("helvetica-oblique")
+const viksiScript = _pdf.font(_storage.filesystem("server", "samples/export-pdf", "viksi-script.ttf"), true);
+const helvetica = _pdf.font("helvetica");
+const helveticaBold = _pdf.font("helvetica-bold");
+const helveticaBoldOblique = _pdf.font("helvetica-boldoblique");
+const helveticaOblique = _pdf.font("helvetica-oblique");
 
 pdfDocument.add(
     _pdf.image(_storage.filesystem("server", "samples/export-pdf", "logo.png"))
         .scaleAbsolute(120, 36)
-)
+);
 
 pdfDocument.add(
     _pdf.paragraph("My Custom Font!")
@@ -30,42 +32,41 @@ pdfDocument.add(
         .setFont(viksiScript)
         .setFontSize(30)
         .setFontColor(_pdf.color("#1abc9c"))
-)
+);
 
 pdfDocument.add(
     _pdf.paragraph("Helvetica!")
         .setFixedPosition(37, 730, 100)
         .setFont(helvetica)
         .setFontSize(15)
-)
+);
 
 pdfDocument.add(
     _pdf.paragraph("Helvetica Bold!")
         .setFixedPosition(130, 730, 150)
         .setFont(helveticaBold)
         .setFontSize(15)
-)
+);
 
 pdfDocument.add(
     _pdf.paragraph("Helvetica Bold Oblique!")
         .setFixedPosition(260, 730, 200)
         .setFont(helveticaBoldOblique)
         .setFontSize(15)
-)
-
+);
 
 pdfDocument.add(
     _pdf.paragraph("Helvetica Oblique!")
         .setFixedPosition(450, 730, 200)
         .setFont(helveticaOblique)
         .setFontSize(15)
-)
+);
 
 pdfDocument.add(
     _pdf.paragraph("\n\nTable with flexible columns:\n")
         .setFont(helvetica)
         .setFontSize(15)
-)
+);
 
 pdfDocument.add(
     _pdf.table(3)
@@ -174,13 +175,13 @@ pdfDocument.add(
                         .setFontSize(10)
                 )
         )
-)
+);
 
 pdfDocument.add(
     _pdf.paragraph("\nTable with fixed columns width:\n")
         .setFont(helvetica)
         .setFontSize(15)
-)
+);
 
 pdfDocument.add(
     _pdf.table(_val.init().add(150).add(150))
@@ -222,12 +223,11 @@ pdfDocument.add(
                 .setBorderBottom(_pdf.border("dashed", 2))
                 .setBorderRight(_pdf.border("solid", _pdf.colorRGB(1, 0, 0), 1))
         )
-)
-
+);
 
 pdfDocument.add(
     _pdf.areaBreak()
-)
+);
 
 pdfDocument.add(
     _pdf.paragraph("My Second Page!")
@@ -235,6 +235,6 @@ pdfDocument.add(
         .setFont(viksiScript)
         .setFontSize(30)
         .setFontColor(_pdf.color("#d28809"))
-)
+);
 
-pdfDocument.close()
+pdfDocument.close();

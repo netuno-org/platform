@@ -7,10 +7,12 @@
  *
  */
 
-_header.contentType("text/plain")
+import {_header, _out} from "@netuno/server-types";
 
-_out.println("line number: 1")
+_header.contentType("text/plain");
 
-_out.print("line number: ")
-_out.print(2)
-_out.println()
+_out.println("line number: 1");
+
+_out.print("line number: ");
+_out.print(2);
+_out.println();

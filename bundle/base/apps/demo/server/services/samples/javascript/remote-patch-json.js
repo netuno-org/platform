@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: Service REST with PATCH
@@ -10,11 +9,13 @@
  *  PT: patch e enviar um JSON.
  *
  */
+import {_out, _remote} from "@netuno/server-types";
 
-const client = _remote.init()
+
+const client = _remote.init();
 
 const response = client.asJSON().patch(
     "http://httpbin.org/patch"
-)
+);
 
-_out.json(response)
+_out.json(response);

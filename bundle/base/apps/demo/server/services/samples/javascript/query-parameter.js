@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: EXECUTE A QUERY WITH PARAMETERS AND RETURN THE RESULT AS JSON
@@ -6,13 +5,14 @@
  *  PT: EXECUTA UMA QUERY COM PARÂMETROS E RETORNA O RESULTADO COMO JSON
  *
  */
+import {_db, _out, _req} from "@netuno/server-types";
 
-let tableName = 'worker'
-let columnName = 'name'
+let tableName = 'worker';
+let columnName = 'name';
 
-if (_db.config().getString('name') == 'demo_pt') {
-  tableName = 'trabalhador'
-  columnName = 'nome'
+if (_db.config().getString('name') === 'demo_pt') {
+  tableName = 'trabalhador';
+  columnName = 'nome';
 }
 
 _out.json(
@@ -24,4 +24,4 @@ _out.json(
     _req.getInt("id"),
     _req.getString("name")
   )
-)
+);

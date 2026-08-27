@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: SEND SMS
@@ -8,16 +7,17 @@
  *  PT: Vamos enviar um SMS, configure o YOUR_TOKEN e o YOUR_INTERNATIONAL_PHONE_NUMBER.
  *
  */
+import {_out, _remote, _val} from "@netuno/server-types";
 
-const sendSMS = _remote.init()
+const sendSMS = _remote.init();
 
-sendSMS.setAuthorization("Bearer YOUR_TOKEN")
+sendSMS.setAuthorization("Bearer YOUR_TOKEN");
 
 const sms = _val.init()
   .set("From", "Netuno.org")
   .set("To", "YOUR_INTERNATIONAL_PHONE_NUMBER")
-  .set("Text", "Hello from Netuno!")
+  .set("Text", "Hello from Netuno!");
 
 _out.json(
   sendSMS.post("https://api.mailjet.com/v4/sms-send", sms)
-)
+);

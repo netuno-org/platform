@@ -8,5 +8,6 @@
  *  PT: Gera um UID/GUID, uma string aleatório de identificação única.
  *
  */
+import {_out, _uid} from "@netuno/server-types";
 
-_out.println(_uid.generate())
+_out.println(_uid.generate());

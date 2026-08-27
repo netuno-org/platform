@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: USER
@@ -8,12 +7,13 @@
  *  PT: Apresenta a informação do utilizador logado.
  *
  */
+import {_template, _user, _val} from "@netuno/server-types";
 
-var data = _val.init()
+const data = _val.init()
     .set("title", "This is your user data...")
     .set("id", _user.id)
     .set("name", _user.name)
     .set("code", _user.code)
-    .set("full", _user.data())
+    .set("full", _user.data());
 
-_template.output("samples/identity", data)
+_template.output("samples/identity", data);

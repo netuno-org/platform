@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: DATE AND TIME FORMAT
@@ -11,40 +10,41 @@
  *
  */
 
+import {_log, _out, _time} from "@netuno/server-types";
+
 /**
  *  EN: Default ISO Format
  *
  *  PT: Padrão do formato ISO
  */
 
+const instant = _time.instant().atZone(_time.zoneOffset());
 
-const instant = _time.instant().atZone(_time.zoneOffset())
-
-const localDateTime = _time.localDateTimeFrom(instant)
+const localDateTime = _time.localDateTimeFrom(instant);
 
 _out.println("<h4>Default ISO Format</h4>");
 try {
-    _out.println("Format: ")
+    _out.println("Format: ");
     _out.println(
             _time.dateTimeFormatter("iso-local-date-time").format(localDateTime)
-    )
+    );
 } catch (e) {
-    _log.error("Formatting ISO date.", e)
+    _log.error("Formatting ISO date.", e);
 }
-_out.println("<br/>")
+_out.println("<br/>");
 
 try {
-    _out.println("Parse: ")
+    _out.println("Parse: ");
     const dateTimeParsed = _time.localDateTimeParse(
             "2017-09-11T20:10:10",
             _time.dateTimeFormatter("iso-local-date-time")
-    )
+    );
     _out.println(`
             ${ dateTimeParsed.getYear() }/${ dateTimeParsed.getMonthValue() }/${ dateTimeParsed.getDayOfMonth() }
             ${ dateTimeParsed.getHour() }:${ dateTimeParsed.getMinute() }:${ dateTimeParsed.getSecond() }
-    `)
+    `);
 } catch (e) {
-    _log.error("Parsing ISO date.", e)
+    _log.error("Parsing ISO date.", e);
 }
 
 /**
@@ -55,24 +55,24 @@ try {
 
 _out.println("<h4>SQL Timestamp</h4>");
 try {
-    _out.println("Format: ")
-    _out.println(_time.dateTimeFormatter("yyyy-MM-dd HH:mm:ss").format(localDateTime))
+    _out.println("Format: ");
+    _out.println(_time.dateTimeFormatter("yyyy-MM-dd HH:mm:ss").format(localDateTime));
 } catch (e) {
-    _log.error("Formatting date.", e)
+    _log.error("Formatting date.", e);
 }
-_out.println("<br/>")
+_out.println("<br/>");
 try {
     const dateTimeParsed = _time.localDateTimeParse(
             "2017-09-11 20:10:10",
             _time.dateTimeFormatter("yyyy-MM-dd HH:mm:ss")
-    )
-    _out.println("Parse: ")
+    );
+    _out.println("Parse: ");
     _out.println(`
             ${ dateTimeParsed.getYear() }/${ dateTimeParsed.getMonthValue() }/${ dateTimeParsed.getDayOfMonth() }
             ${ dateTimeParsed.getHour() }:${ dateTimeParsed.getMinute() }:${ dateTimeParsed.getSecond() }
-    `)
+    `);
 } catch (e) {
-    _log.error("Parsing date.", e)
+    _log.error("Parsing date.", e);
 }
 
 /**
@@ -83,22 +83,22 @@ try {
 
 _out.println("<h4>Custom</h4>");
 try {
-    _out.println("Format: ")
-    _out.println(_time.dateTimeFormatter("yyyy MM dd HH mm ss").format(localDateTime))
+    _out.println("Format: ");
+    _out.println(_time.dateTimeFormatter("yyyy MM dd HH mm ss").format(localDateTime));
 } catch (e) {
-    _log.error("Formatting custom.", e)
+    _log.error("Formatting custom.", e);
 }
-_out.println("<br/>")
+_out.println("<br/>");
 try {
     const dateTimeParsed = _time.localDateTimeParse(
             "2018 02 10 19 09 50",
             _time.dateTimeFormatter("yyyy MM dd HH mm ss")
-    )
-    _out.println("Parse: ")
+    );
+    _out.println("Parse: ");
     _out.println(`
             ${ dateTimeParsed.getYear() }/${ dateTimeParsed.getMonthValue() }/${ dateTimeParsed.getDayOfMonth() }
             ${ dateTimeParsed.getHour() }:${ dateTimeParsed.getMinute() }:${ dateTimeParsed.getSecond() }
-    `)
+    `);
 } catch (e) {
-    _log.error("Parsing custom.", e)
+    _log.error("Parsing custom.", e);
 }

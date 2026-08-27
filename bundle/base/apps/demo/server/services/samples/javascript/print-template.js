@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: RETURN THE CONTENT OF TEMPLATES
@@ -10,18 +9,18 @@
  *  EN: Verifique o conteúdo da pasta server/templates/samples.
  *
  */
+import {_out, _template, _val} from "@netuno/server-types";
 
-
-var data = _val.init()
+const data = _val.init()
     .set("title", "Netuno")
-    .set("link", "<a href=\"https://www.netuno.org\">https://www.netuno.org</a>")
+    .set("link", "<a href=\"https://www.netuno.org\">https://www.netuno.org</a>");
 
-var header = _template.getOutput("samples/header", data)
-_out.print(header)
+const header = _template.getOutput("samples/header", data);
+_out.print(header);
 
-_template.output("samples/content-1", data)
+_template.output("samples/content-1", data);
 
-_template.output("samples/content-2", data)
+_template.output("samples/content-2", data);
 
-var footer = _template.getOutput("samples/footer")
-_out.print(footer)
+const footer = _template.getOutput("samples/footer");
+_out.print(footer);

@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: Service REST with POST
@@ -10,14 +9,15 @@
  *  PT: post e enviar um JSON.
  *
  */
+import {_out, _remote, _val} from "@netuno/server-types";
 
-const client = _remote.init()
+const client = _remote.init();
 
 const response = client.asJSON().post(
     "http://httpbin.org/post",
     _val.init()
         .set("name", "morpheus")
         .set("job", "leader")
-)
+);
 
-_out.json(response)
+_out.json(response);
