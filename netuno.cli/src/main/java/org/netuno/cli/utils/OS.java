@@ -53,7 +53,7 @@ public class OS {
     }
 
     public static Ansi consoleGlobalCommand(String command) {
-        return consoleCommand(command, null);
+        return consoleGlobalCommand(command, null);
     }
 
     public static Ansi consoleGlobalCommand(String command, String parameters) {
