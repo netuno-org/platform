@@ -1,0 +1,14 @@
+Table record {
+  id int [pk, increment]
+  end timestamp [note: 'End']
+  start timestamp [not null, note: 'Start']
+  worker_id int [not null, ref: > worker.id, note: 'Worker']
+  Note: 'Record'
+}
+
+Table worker {
+  id int [pk, increment]
+  name varchar(250) [not null, unique, note: 'Name']
+  Note: 'Worker'
+}
+
