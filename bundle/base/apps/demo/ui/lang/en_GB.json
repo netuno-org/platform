@@ -93,9 +93,17 @@
                     "title": "UUID",
                     "intro": "<p>Generates a uuid/guid which is a random string of unique identification.</p>"
                 },
+                "mongo": {
+                    "title": "Mongo",
+                    "intro": "<p>Complete example of integration with MongoDB.</p>"
+                },
                 "upload": {
                     "title": "Upload",
                     "intro": "<p>Demonstrates how file uploads are performed.</p>"
+                },
+                "csv": {
+                    "title": "CSV",
+                    "intro": "<p>Generates and processes a file with data in CSV format.</p>"
                 },
                 "remote-delete-json": {
                     "title": "Remote Delete JSON",
