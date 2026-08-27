@@ -20,4 +20,8 @@ bun.lock
 
 /dbs/*.trace.db
 
+/server/setup/_db-schema.dbml
+/server/setup/_schema-*.js
+
 /storage/filesystem/server/data.csv
+
