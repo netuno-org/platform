@@ -29,5 +29,8 @@
   },
   "dependencies": {
     "server": "file:"
+  },
+  "devDependencies": {
+    "@netuno/server-types": "^1.4.4"
   }
 }
