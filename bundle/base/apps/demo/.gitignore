@@ -19,3 +19,5 @@ bun.lock
 *#*
 
 /dbs/*.trace.db
+
+/storage/filesystem/server/data.csv
