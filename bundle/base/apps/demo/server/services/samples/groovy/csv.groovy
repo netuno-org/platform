@@ -1,4 +1,3 @@
-
 /**
  *
  *  EN: CSV
@@ -17,6 +16,7 @@ def csvPrinter = _csv.printer(
 try {
     csvPrinter.printRecord("id", "userName", "firstName", "lastName", "birthday")
     csvPrinter.printRecord(1, "john73", "John", "Doe", 123)
+    csvPrinter.printRecord(2, "mary86", "Mary", "Green", "1989-04-25")
 } finally {
     csvPrinter.close()
 }
@@ -25,10 +25,13 @@ def csvParser = _csv.parser(_storage.filesystem("server", "data.csv").file().rea
 
 try {
     for (record in csvParser) {
-        def columnOne = record.get(0)
-        def columnTwo = record.get(1)
-        _out.println(columnOne)
-        _out.println(columnTwo)
+        for(def i = 0; i < 5; i++) {
+            if (i > 0) {
+                _out.print(" | ")
+            }
+            _out.print(record.get(i))
+        }
+        _out.println("<br>");
     }
 } finally {
     csvParser.close()
