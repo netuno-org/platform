@@ -408,7 +408,7 @@ public class Install implements MainArg {
                 if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
                     if (new File(path, "netuno.sh").exists()) {
                         ProcessBuilder builder = new ProcessBuilder();
-                        builder.command(new String[]{"sh", "-c", "chmod +x netuno.sh && cp netuno.sh netuno"});
+                        builder.command("sh", "-c", "chmod +x netuno.sh && cp netuno.sh netuno");
                         builder.directory(new File(path));
                         Process process = builder.start();
                         int exitCode = process.waitFor();
@@ -418,25 +418,9 @@ public class Install implements MainArg {
                             System.out.println(OS.consoleOutput("\t@|red > chmod +x netuno.sh && cp netuno.sh netuno |@ "));
                         }
                     }
-                    Stream.of("stable", "testing").forEach((type) -> {
-                        try {
-                            ProcessBuilder builder = new ProcessBuilder();
-                            builder.command(new String[]{"sh", "-c", "chmod +x install-"+ type +".sh && cp install-"+ type +".sh install-"+ type});
-                            builder.directory(new File(path));
-                            Process process = builder.start();
-                            int exitCode = process.waitFor();
-                            if (exitCode != 0) {
-                                System.out.println();
-                                System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
-                                System.out.println(OS.consoleOutput("\t@|red > chmod +x install-"+ type +".sh && cp install-"+ type +".sh install-"+ type +" |@ "));
-                            }
-                        } catch (Exception e) {
-                            logger.fatal("Not possible to create the install-" + type +" script.", e);
-                        }
-                    });
                     if (new File(path, "bin-unix").isDirectory()) {
                     	ProcessBuilder builder = new ProcessBuilder();
-                        builder.command(new String[]{"sh", "-c", "chmod +x bin-unix/*.sh"});
+                        builder.command("sh", "-c", "chmod +x bin-unix/*.sh");
                         builder.directory(new File(path));
                         Process process = builder.start();
                         int exitCode = process.waitFor();
