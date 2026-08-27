@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import { Modal, Button } from 'antd';
 
-import Editor from '@monaco-editor/react';
+import Editor, {useMonaco} from '@monaco-editor/react';
 
 import { useIntl } from 'react-intl';
 
@@ -11,19 +11,21 @@ import "./index.less";
 const messages = 'dashboardcontainer.listservices';
 
 const langTitles = {
-    groovy: "Groovy",
     javascript: "JavaScript",
-    kotlin: "Kotlin",
+    typescript: "TypeScript",
     python: "Python",
-    ruby: "Ruby"
+    ruby: "Ruby",
+    kotlin: "Kotlin",
+    groovy: "Groovy",
 };
 
 const langExtensions = {
-    groovy: "groovy",
     javascript: "js",
-    kotlin: "kts",
+    typescript: "ts",
     python: "py",
-    ruby: "rb"
+    ruby: "rb",
+    kotlin: "kts",
+    groovy: "groovy",
 };
 
 function ServiceSample({name, title, intro, langs, params}) {
@@ -35,12 +37,22 @@ function ServiceSample({name, title, intro, langs, params}) {
   const [modalSource, setModalSource] = useState('');
   const [content, setContent] = useState('');
   const editor = useRef();
+  const monaco = useMonaco();
 
   const encodeData = (data)=> {
     return Object.keys(data).map((key) => {
       return [key, data[key]].map(encodeURIComponent).join("=");
     }).join("&");
   };
+
+  useEffect(() => {
+    monaco?.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      diagnosticCodesToIgnore: [2792],
+    });
+    if (monaco) {
+      console.log('here is the monaco instance:', monaco);
+    }
+  }, [monaco]);
 
   const handleEditorDidMount = (valueGetter, editor) => {
     editor.current = editor;
