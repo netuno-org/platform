@@ -127,7 +127,7 @@ function releaseDescription(version) {
   const template = [
     "Netuno platform is open-source, polyglot, and low-code, for fast development of reliable web solutions.",
     "Easy database and back-office modeling with the supported databases: PostgreSQL, MariaDB/MySQL, and MSSQL.",
-    "Real-time API development with the supported languages: JavaScript, Python, Ruby, Groovy, Kotlin, and Java.",
+    "Real-time API development with the supported languages: JavaScript, TypeScript, Python, Ruby, Groovy, Kotlin, and Java.",
     "You can use it to run over Linux, Windows, and MacOS.",
     "# Installation",
     "[Here is more about the installation process, in the official documentation.](https://doc.netuno.org/docs/get-started/installation/)",
