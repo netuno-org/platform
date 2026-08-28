@@ -8,7 +8,7 @@ if [ -f "./netuno.jar" ]; then
 fi
 
 versions=(
-    'stable::jdk-25.0.2/graalvm-community-jdk-25.0.2'
+    'stable::graal-25.2.4/graalvm-community-jdk-25i2-25.0.4'
     'testing::graal-25.2.4/graalvm-community-jdk-25i2-25.0.4'
     '2026.06::jdk-25.0.2/graalvm-community-jdk-25.0.2'
     '2026.02::jdk-25.0.2/graalvm-community-jdk-25.0.2'
