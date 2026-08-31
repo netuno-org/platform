@@ -341,7 +341,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>7.4.5.Final</version>
+            <version>7.4.6.Final</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
