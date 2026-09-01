@@ -1,3 +1,3 @@
 # Netuno Bundle
 
-Netuno platform bundle generate.
+Scripts and base assets used to generate Netuno Platform distribution bundles.

@@ -34,7 +34,7 @@ Configure the fields like this:
 <img src="https://raw.githubusercontent.com/netuno-org/platform/main/docs/images/intellij-idea/run-debug-configurations.png" width="525"/>
 
 Make sure of:
-- [GraalVM with Java 25](https://github.com/graalvm/graalvm-ce-builds/releases/tag/jdk-25.0.2)
+- [GraalVM with Java 25](https://www.graalvm.org/downloads/)
 - Module is `netuno-cli`
 - Main class is `org.netuno.cli.Main`
 - Working directory is `bundle/base`

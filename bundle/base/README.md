@@ -2,7 +2,7 @@
 
 Quickly build applications adapted to your business logic.
 
-More about Netuno in [netuno.org](https://www.netuno.org/) and learn how tu use it in [doc.netuno.org](https://doc.netuno.org/).
+Learn more about Netuno at [netuno.org](https://www.netuno.org/) and how to use it at [doc.netuno.org](https://doc.netuno.org/).
 
 Feel free to use and please report any [issues](https://github.com/netuno-org/platform/issues) you may find.
 
@@ -42,7 +42,7 @@ To start the server, by default it'll use the demo application:
 ./netuno server
 ```
 
-To start the server with a specific application in the following example you shoukd replace the app value (my_app_name) by the name of the app you want to launch:
+To start the server with a specific application, replace the `app` value (`my_app_name` in this example) with the name of the app you want to launch:
 
 ```
 ./netuno server app=my_app_name

@@ -15,11 +15,12 @@ Databases supported:
 ### Languages
 
 Polyglot script execution support:
-- [JavaScript/ES6](https://www.graalvm.org/javascript/)
-- [Groovy](https://groovy-lang.org)
+- [JavaScript/ES6 and TypeScript](https://www.graalvm.org/javascript/)
+- [Groovy](https://groovy.apache.org/)
 - [JRuby (Ruby)](https://www.jruby.org)
-- [Jython (Python)](https://www.jython.org)
+- [GraalPy (Python)](https://www.graalvm.org/python/)
 - [Kotlin](https://kotlinlang.org)
+- CajuScript
 
 ### Resources Low-Code
 
@@ -37,4 +38,4 @@ Many programming resources supported, some to low-code integration with:
 - Database
 - Performance Monitor
 
-> Find more and detailed information in the [library documentation](https://doc.netuno.org/docs/en/library/overview/).
+> Find more detailed information in the [library documentation](https://doc.netuno.org/docs/library/overview/).

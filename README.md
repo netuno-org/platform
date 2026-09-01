@@ -37,17 +37,18 @@ Documentation highlights:
 
 ![Application Architecture](https://raw.githubusercontent.com/netuno-org/platform/main/docs/images/app-architecture.png)
 
-Netuno is written in Java and runs in GraalVM to facilitate web application development, it currently suppports the following programming languages:
+Netuno is written in Java and runs in GraalVM to facilitate web application development. It currently supports the following programming languages:
 
-- [JavaScript/ES6](https://www.graalvm.org/javascript/)
-- [Groovy](https://groovy-lang.org)
+- [JavaScript/ES6 and TypeScript](https://www.graalvm.org/javascript/)
+- [Groovy](https://groovy.apache.org/)
 - [JRuby (Ruby)](https://www.jruby.org)
-- [Jython (Python)](https://www.jython.org)
+- [GraalPy (Python)](https://www.graalvm.org/python/)
 - [Kotlin](https://kotlinlang.org)
+- CajuScript
 
 > 😎 While you are programming you won't need to restart the server to compile the newly updated code.
 >
-> All log outputs such as server-side, client-side (NPM `run watch`) and other outputs are integrated in the same console. By having this feature you'll only need to look to one console thus easing your work.
+> All log outputs, such as server-side, client-side (`pnpm run watch`), and other command outputs, are integrated in the same console. This means you only need to monitor one console while developing.
 
 ## Build Requirements
 
@@ -66,7 +67,7 @@ Continue with the steps below if you want to compile from scratch and contribute
 
 Make sure to use the GraalVM JDK as your Java environment:
 
-- [GraalVM with Java 25](https://github.com/graalvm/graalvm-ce-builds/releases/tag/jdk-25.0.2)
+- [GraalVM with Java 25](https://www.graalvm.org/downloads/)
 
 ## Linux or Mac
 
@@ -104,7 +105,7 @@ After installation and following the steps indicated by the script, run option 1
 
 If you see the error:
 
-```java.lang.NoClassDefFoundError: io/github/classgraph/ClassGraph```
+   `java.lang.NoClassDefFoundError: io/github/classgraph/ClassGraph`
 
 It means the **ClassGraph** library is missing.
 
@@ -116,7 +117,7 @@ It means the **ClassGraph** library is missing.
 
 2. **Install the library**  
    Place the downloaded `.jar` in:  
-   ```.\bundle\base\web\WEB-INF\lib```
+   `.\bundle\base\core\web\WEB-INF\lib`
 
 ## Bundle
 
@@ -149,12 +150,12 @@ The published Netuno version will be generated in `bundle/dist/netuno*`, which i
 
 ## Build
 
-The build script executes the Maven phases: clean and package.
+The build script executes the Maven phases `clean`, `compile`, and `package`.
 
 ### Windows Commands
 
-```sh
- $ ./build.ps1
+```ps1
+ $ .\build.ps1
 ```
 
 ### Linux or Mac Commands

@@ -1,4 +1,4 @@
 
 # Library Doc
 
-Java annotations to manage the generation of the Netuno documentation, such as ressource.
+Java annotations used to generate Netuno library resource documentation.
