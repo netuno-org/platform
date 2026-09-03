@@ -37,13 +37,14 @@ Documentation highlights:
 
 ![Application Architecture](https://raw.githubusercontent.com/netuno-org/platform/main/docs/images/app-architecture.png)
 
-Netuno is written in Java and runs in GraalVM to facilitate web application development, it currently suppports the following programming languages:
+Netuno is written in Java and runs in GraalVM to facilitate web application development. It currently supports the following programming languages:
 
-- [JavaScript/ES6](https://www.graalvm.org/javascript/)
-- [Groovy](https://groovy-lang.org)
+- [JavaScript/ES6 and TypeScript](https://www.graalvm.org/javascript/)
+- [Groovy](https://groovy.apache.org/)
 - [JRuby (Ruby)](https://www.jruby.org)
-- [Jython (Python)](https://www.jython.org)
+- [GraalPy (Python)](https://www.graalvm.org/python/)
 - [Kotlin](https://kotlinlang.org)
+- CajuScript
 
 > 😎 While you are programming you won't need to restart the server to compile the newly updated code.
 >
