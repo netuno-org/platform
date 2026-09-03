@@ -1,8 +1,8 @@
 
 ### Install Packages
 
-`bun install`
+`pnpm install`
 
 ### Watch changes and auto recompile
 
-`bun run watch`
+`pnpm run watch`
