@@ -6,13 +6,15 @@ The polyglot scripting framework makes the REST API development easy and fast.
 
 The supported languages with their code file extensions are:
 
-- JavaScript`.js`
-- Python`.py`
-- Ruby`.rb`
-- Kotlin`.kts`
-- Groovy`.groovy`
+- JavaScript: `.js`, `.cjs`, `.mjs`
+- TypeScript: `.ts`
+- Python (GraalPy): `.py`
+- Ruby (JRuby): `.rb`
+- Kotlin: `.kts`
+- Groovy: `.groovy`
+- CajuScript: `.cj`
 
-The backend folders and their purpose are:
+The backend folders and their purpose are listed below. A new application ships with `core`, `services`, `setup`, and `templates`; the others (`actions`, `components`, `reports`) are optional and can be created when you need them.
 
 - `actions` - Injects code behavior in form and database modifications, more about [Actions](https://doc.netuno.org/docs/academy/server/actions).
 - `components` - Custom form fields and data structures.
