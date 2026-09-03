@@ -13,7 +13,11 @@ Useful for using with VisualVM to find leaks.
 
 ### POST
 
-Parameters are loaded in `post.json`.
+`post.sh` sends the request body from a `post.json` file (`ab -p post.json -T application/json`). That file is not included, so create it in this directory first, for example:
+
+```json
+{}
+```
 
 ```
 ./post.sh http://localhost:9000/services/my-service
