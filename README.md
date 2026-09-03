@@ -116,7 +116,7 @@ It means the **ClassGraph** library is missing.
 
 2. **Install the library**  
    Place the downloaded `.jar` in:  
-   ```.\bundle\base\web\WEB-INF\lib```
+   ```.\bundle\base\core\web\WEB-INF\lib```
 
 ## Bundle
 
@@ -149,7 +149,7 @@ The published Netuno version will be generated in `bundle/dist/netuno*`, which i
 
 ## Build
 
-The build script executes the Maven phases: clean and package.
+The build script executes the Maven phases `clean`, `compile`, and `package`.
 
 ### Windows Commands
 
