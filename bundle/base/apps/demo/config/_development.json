@@ -19,7 +19,7 @@
     {
       "enabled": false,
       "path": "ui",
-      "command": "pnpm run watch"
+      "command": "bun run watch"
     }
   ],
   "cron": {
