@@ -524,8 +524,8 @@ public class App implements MainArg {
                     .set("enabled", false)
                     .set("path", AppPath.UI.toString())
                     //.set("env", new Values().add("PORT=9001"))
-                    .set("command", "pnpm run watch")
-                    .set("install", "pnpm install")
+                    .set("command", "bun run watch")
+                    .set("install", "bun install")
         );
         if (website.equals("Y")) {
             commands.add(
@@ -533,8 +533,8 @@ public class App implements MainArg {
                         .set("enabled", true)
                         .set("path", AppPath.WEBSITE.toString())
                         //.set("env", new Values().add("PORT=9002"))
-                        .set("command", "pnpm run start")
-                        .set("install", "pnpm install")
+                        .set("command", "bun run start")
+                        .set("install", "bun install")
             );
         }
         configJSON.set("commands", commands);
