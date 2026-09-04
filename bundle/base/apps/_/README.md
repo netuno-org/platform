@@ -1,8 +1,6 @@
-# Application Template (`_`)
+# Application
 
-This directory (`_`) is the template used as the base for new applications on the Netuno Platform.
-
-When you create a new application with the Netuno CLI, this structure is copied to form the foundation of your new app.
+This is a Netuno Platform application.
 
 ## Structure Overview
 
