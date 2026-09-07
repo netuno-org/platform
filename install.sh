@@ -9,7 +9,7 @@ fi
 
 versions=(
     'stable::graal-25.2.4/graalvm-community-jdk-25i2-25.0.4'
-    'testing::graal-25.2.4/graalvm-community-jdk-25i2-25.0.4'
+    'testing::graal-25.3.4.1/graalvm-community-jdk-25i3-25.0.4.1'
     '2026.06::jdk-25.0.2/graalvm-community-jdk-25.0.2'
     '2026.02::jdk-25.0.2/graalvm-community-jdk-25.0.2'
 )
