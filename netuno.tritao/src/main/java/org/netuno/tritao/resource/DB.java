@@ -2661,7 +2661,7 @@ public class DB extends ResourceBase {
     @MethodDoc(translations = {
             @MethodTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Executa a eliminação de várias linhas numa tabela atravás de um Array de Objetos ou uma Lista de Valores. É necessário que cada objeto possua o id ou uid do dado que será alterado",
+                    description = "Executa a eliminação de várias linhas numa tabela através de um Array de Objetos ou uma Lista de Valores. É necessário que cada objeto possua o id ou uid do dado que será eliminado.",
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
@@ -2679,7 +2679,7 @@ public class DB extends ResourceBase {
                             )}),
             @MethodTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Executes the update of multiple rows into a table of an Array of Objects or a List of Values. It's necessary that the object has id or uid for the data that will be updated.",
+                    description = "Executes the deletion of multiple rows from a table using an Array of Objects or a List of Values. It's necessary that each object has the id or uid for the data that will be deleted.",
                     howToUse = {
                             @SourceCodeDoc(
                                     type = SourceCodeTypeDoc.JavaScript,
@@ -2700,22 +2700,22 @@ public class DB extends ResourceBase {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "tabela",
-                            description = "Nome da tabela na base de dados que deve receber os dados que serão inseridos."
+                            description = "Nome da tabela na base de dados de onde os dados serão eliminados."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Name of the table in the database that should receive the data to be entered."
+                            description = "Name of the table in the database from which the data will be deleted."
                     )
             }),
             @ParameterDoc(name = "dataItems", translations = {
                     @ParameterTranslationDoc(
                             language = LanguageDoc.PT,
                             name = "listaDados",
-                            description = "Array ou lista de objetos com a estrutura de dados que será inserida."
+                            description = "Array ou lista de objetos com a identificação dos dados que serão eliminados."
                     ),
                     @ParameterTranslationDoc(
                             language = LanguageDoc.EN,
-                            description = "Array or list of objects with the data structure to be inserted."
+                            description = "Array or list of objects identifying the data to be deleted."
                     )
             })
     }, returns = {
