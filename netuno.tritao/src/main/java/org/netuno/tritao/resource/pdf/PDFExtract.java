@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.resource.pdf;
 
+import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.pdf.PDFParser;
@@ -112,7 +113,9 @@ public interface PDFExtract {
         ParseContext pContext = new ParseContext();
 
         PDFParser pdfparser = new PDFParser();
-        pdfparser.parse(in, handler, metadata, pContext);
+        try (TikaInputStream tikaIn = TikaInputStream.get(in)) {
+            pdfparser.parse(tikaIn, handler, metadata, pContext);
+        }
 
         Values result = new Values();
         Values resultMetadata = new Values();
