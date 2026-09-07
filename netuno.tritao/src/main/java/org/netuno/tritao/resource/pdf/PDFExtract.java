@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.resource.pdf;
 
+import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.pdf.PDFParser;
@@ -112,7 +113,10 @@ public interface PDFExtract {
         ParseContext pContext = new ParseContext();
 
         PDFParser pdfparser = new PDFParser();
-        pdfparser.parse(in, handler, metadata, pContext);
+
+        try (TikaInputStream tikaIn = TikaInputStream.get(closeShield(in))) {
+            pdfparser.parse(tikaIn, handler, metadata, pContext);
+        }
 
         Values result = new Values();
         Values resultMetadata = new Values();
@@ -123,5 +127,12 @@ public interface PDFExtract {
         result.set("metadata", resultMetadata);
         result.set("content", handler.toString());
         return result;
+    }
+
+    private static java.io.InputStream closeShield(java.io.InputStream in) {
+        return new java.io.FilterInputStream(in) {
+            @Override
+            public void close() { }
+        };
     }
 }
