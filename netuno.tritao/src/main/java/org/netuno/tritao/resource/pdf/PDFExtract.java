@@ -113,7 +113,6 @@ public interface PDFExtract {
         ParseContext pContext = new ParseContext();
 
         PDFParser pdfparser = new PDFParser();
-
         try (TikaInputStream tikaIn = TikaInputStream.get(closeShield(in))) {
             pdfparser.parse(tikaIn, handler, metadata, pContext);
         }
