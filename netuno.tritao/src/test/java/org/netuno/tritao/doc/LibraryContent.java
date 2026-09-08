@@ -320,10 +320,12 @@ public class LibraryContent {
                 if (methodDoc == null) {
                     List<Method> methodsWithDoc = methods.stream().filter(
                             (m) -> (m.getName().equals(method.getName())
-                                    || lowerCamelCase("get", m.getName()).equals(method.getName())
-                                    || m.getName().equals(lowerCamelCase("get", method.getName()))
-                                    || lowerCamelCase("set", m.getName()).equals(method.getName())
-                                    || m.getName().equals(lowerCamelCase("set", method.getName())))
+                                    || camelCase("is", m.getName()).equalsIgnoreCase(method.getName())
+                                    || m.getName().equalsIgnoreCase(camelCase("is", method.getName()))
+                                    || camelCase("get", m.getName()).equalsIgnoreCase(method.getName())
+                                    || m.getName().equalsIgnoreCase(camelCase("get", method.getName()))
+                                    || camelCase("set", m.getName()).equalsIgnoreCase(method.getName())
+                                    || m.getName().equalsIgnoreCase(camelCase("set", method.getName())))
                             && m.getParameterCount() >= method.getParameterCount()
                             && m.getAnnotation(MethodDoc.class) != null
                             && ((m.getReturnType() == null && method.getReturnType() == null)
@@ -940,9 +942,9 @@ public class LibraryContent {
         return signature;
     }
 
-    private String lowerCamelCase(String first, String second) {
+    private String camelCase(String first, String second) {
         return first.toLowerCase()
-                + second.toLowerCase().substring(0, 1).toUpperCase()
-                + second.toLowerCase().substring(1);
+                + second.substring(0, 1).toUpperCase()
+                + second.substring(1);
     }
 }
