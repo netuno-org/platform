@@ -156,6 +156,19 @@ public class Server implements MainArg {
             boolean forceApp = false;
 
             if (!app.isEmpty()) {
+                if (!App.checkAppName(app)) {
+                    logger.error("" +
+                            "\n# " +
+                            "\n# Invalid application name: " + app +
+                            "\n# " +
+                            "\n# The application name must have only basic alphabetic characters, numbers, and underscores." +
+                            "\n# " +
+                            "\n# This same rule applies to app folder names and home JSON files." +
+                            "\n# " +
+                            "\n"
+                    );
+                    return;
+                }
                 if (new File(app).exists() && new File(app).isDirectory()) {
                     appConfig = Config.loadAppConfig(app);
                     Config.setAppForce(appConfig.getString("name"));
