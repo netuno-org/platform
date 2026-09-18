@@ -978,6 +978,10 @@ public final class Config {
     }
 
     public static Values loadAppConfig(String appName) {
+        if (!App.checkAppName(appName)) {
+            logger.error("App name "+ appName +" is invalid.");
+            return null;
+        }
     	File homeConfigFile = new File(Config.getAppsHome(), appName + "-" + Config.getEnv() + ".json");
         if (!homeConfigFile.exists()) {
             homeConfigFile = new File(Config.getAppsHome(), appName + ".json");
