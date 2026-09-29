@@ -512,6 +512,16 @@
             <artifactId>kotlin-scripting-compiler-embeddable</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-scripting-jvm</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-scripting-jvm-host</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
         
         <!--dependency>
             <groupId>org.jetbrains.kotlin</groupId>
