@@ -23,17 +23,17 @@ public class PopulateEngine extends TableBuilderResourceBase {
     }
 
     public Populate buildRelation(Populate populate) {
-        final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
+        final Values manyToOneLink = getManyToOneLink(populate.getForm(), populate.getRelationship().getForm());
 
-        if(oneToManyLink != null) {
-            String column = oneToManyLink.getString("name");
-            populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.OneToMany);
+        if(manyToOneLink != null) {
+            String column = manyToOneLink.getString("name");
+            populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.ManyToOne);
             return populate;
         } else {
-            final Values manyToOneLink = getManyToOneLink(populate.getForm(), populate.getRelationship().getForm());
-            if(manyToOneLink != null) {
-                String column = manyToOneLink.getString("name");
-                populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.ManyToOne);
+            final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
+            if(oneToManyLink != null) {
+                String column = oneToManyLink.getString("name");
+                populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.OneToMany);
                 return populate;
             } else {
                 final Values manyToManyLink = getManyToManyLink(populate.getForm(), populate.getRelationship().getForm());
@@ -82,7 +82,7 @@ public class PopulateEngine extends TableBuilderResourceBase {
         return value.split(":")[0];
     }
 
-    public Values getOneToManyLink(String form, String formToLink) {
+    public Values getManyToOneLink(String form, String formToLink) {
         List<Values> componentsOfTheForm = getSelectComponents(form);
         for (Values value : componentsOfTheForm) {
             String properties = value.getString("properties");
@@ -93,7 +93,7 @@ public class PopulateEngine extends TableBuilderResourceBase {
         return null;
     }
 
-    public Values getManyToOneLink(String form, String formToLink) {
+    public Values getOneToManyLink(String form, String formToLink) {
         List<Values> componentsOfTheForm = getSelectComponents(formToLink);
         for (Values value : componentsOfTheForm) {
             String properties = value.getString("properties");

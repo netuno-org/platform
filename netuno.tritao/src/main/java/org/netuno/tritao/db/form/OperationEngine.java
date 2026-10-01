@@ -251,24 +251,11 @@ public class OperationEngine extends Data {
                     case ManyToOne -> {
                         populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
                                 .append("INNER JOIN ").append(populate.getForm())
-                                .append(" ON ").append(populate.getForm()).append(".id")
-                                .append(" = ").append(populate.getRelationship().getForm()).append(".").append(populate.getRelationship().getColumnLink()).append("\n")
-                                .append("WHERE ").append(populate.getForm()).append(".id")
-                                .append(" = ").append(recordsId.get(i).getInt("id"));
-                        final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
-                        items.get(i).set(
-                                populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
-                                    ? populate.getAlias()
-                                    : populate.getRelationship().getForm()
-                                , populateRecords);
-                    }
-                    case OneToMany -> {
-                        populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
-                                .append("INNER JOIN ").append(populate.getForm())
                                 .append(" ON ").append(populate.getForm()).append(".").append(populate.getRelationship().getColumnLink())
                                 .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
                                 .append("WHERE ").append(populate.getForm()).append(".id")
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
+                        var sql = populateQuerySQL.toString();
                         logger.warn(populateQuerySQL.toString());
                         final Values populateRecord = getExecutor().queryFirst(populateQuerySQL.toString());
                         items.get(i).set(
@@ -276,6 +263,22 @@ public class OperationEngine extends Data {
                                     ? populate.getAlias()
                                     : populate.getRelationship().getForm()
                                 , populateRecord);
+                    }
+                    case OneToMany -> {
+                        populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                                .append("INNER JOIN ").append(populate.getForm())
+                                .append(" ON ").append(populate.getForm()).append(".id")
+                                .append(" = ").append(populate.getRelationship().getForm()).append(".").append(populate.getRelationship().getColumnLink()).append("\n")
+                                .append("WHERE ").append(populate.getForm()).append(".id")
+                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        var sql = populateQuerySQL.toString();
+                        logger.warn(populateQuerySQL.toString());
+                        final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
+                        items.get(i).set(
+                                populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
+                                        ? populate.getAlias()
+                                        : populate.getRelationship().getForm()
+                                , populateRecords);
                     }
                     case ManyToMany -> {
                         populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
