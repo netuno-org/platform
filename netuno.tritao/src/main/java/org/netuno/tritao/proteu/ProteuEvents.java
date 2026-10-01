@@ -140,25 +140,23 @@ public class ProteuEvents implements Events {
         String environment = "";
 
         try {
-            Class<?> cls = Class.forName("org.netuno.cli.Config");
             String appsHome = org.netuno.cli.Config.getAppsHome();
             Config.setAppsHome(appsHome);
             appConfig = org.netuno.cli.Config.getAppConfigByHost(host);
-            if (appConfig == null) {
-	            appConfig = org.netuno.cli.Config.getAppConfig(app);
-	            if (appConfig == null) {
-	                app = org.netuno.cli.Config.getAppDefault();
-	                appConfig = org.netuno.cli.Config.getAppConfig(app);
-	            }
-            }
             String forceApp = org.netuno.cli.Config.getAppForce();
             if (forceApp != null && !forceApp.isEmpty()) {
                 app = forceApp;
                 appConfig = org.netuno.cli.Config.getAppConfig(app);
             }
+            if (appConfig == null) {
+                if (!app.isEmpty()) {
+                    appConfig = org.netuno.cli.Config.getAppConfig(app);
+                }
+                app = org.netuno.cli.Config.getAppDefault();
+                appConfig = org.netuno.cli.Config.getAppConfig(app);
+            }
             environment = org.netuno.cli.Config.getEnv();
-            @SuppressWarnings("unchecked")
-            List<String> permittedLanguages = (List<String>)cls.getMethod("getPermittedLanguages").invoke(null);
+            List<String> permittedLanguages = org.netuno.cli.Config.getPermittedLanguages();
             Config.setPermittedLanguages(permittedLanguages.toArray(new String[0]));
         } catch (Exception e) {
             logger.fatal("Error loading app config.", e);
