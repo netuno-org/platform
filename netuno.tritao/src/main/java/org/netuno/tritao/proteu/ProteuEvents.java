@@ -399,6 +399,14 @@ public class ProteuEvents implements Events {
                         }
                         loadHikariConfig(app, config, db);
                         org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
+                    } else if (dbEngine.equalsIgnoreCase("duck") || dbEngine.equalsIgnoreCase("duckdb")) {
+                        HikariConfig config = new HikariConfig();
+                        config.setDriverClassName("org.duckdb.DuckDBDriver");
+                        if (db.hasKey("url")) {
+                            config.setJdbcUrl(db.getString("url"));
+                        }
+                        loadHikariConfig(app, config, db);
+                        org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
                     } else {
                         String message = "App "+ app +" with invalid database engine: "+ dbEngine;
                         throw new DBError(message).setLogFatal(true);
@@ -444,6 +452,9 @@ public class ProteuEvents implements Events {
                 proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.MariaDB(proteu, hili, key));
             } else if (dbEngine.equalsIgnoreCase("mssql")) {
                 proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.MSSQL(proteu, hili, key));
+            } else if (dbEngine.equalsIgnoreCase("duck")
+                || dbEngine.equalsIgnoreCase("duckdb")) {
+                proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.DuckDB(proteu, hili, key));
             }
             proteu.getConfig().set("_database:naming:base:"+ key, "");
             if (db.hasKey("uuidFunction")) {
