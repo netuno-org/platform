@@ -67,7 +67,7 @@ public class Table extends ManagerBase {
         try {
             String newRawSQLName = DB.sqlInjectionRawName(newName);
             if (!new CheckExists(this).table(newRawSQLName)) {
-                if (isH2() || isPostgreSQL()) {
+                if (isH2() || isPostgreSQL() || isDuckDB()) {
                     getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " rename to " + getBuilder().escape(newRawSQLName) + "");
                 } else if (isMariaDB()) {
                     getExecutor().execute("rename table " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " to " + getBuilder().escape(newRawSQLName) + "");
@@ -112,7 +112,7 @@ public class Table extends ManagerBase {
         try {
             CheckExists checkExists = new CheckExists(this);
             if (!checkExists.table(name)) {
-                if ((isH2() || isPostgreSQL() || isMariaDB() || isMSSQL())) {
+                if (isH2() || isPostgreSQL() || isMariaDB() || isMSSQL() || isDuckDB()) {
                     String columnsDefinitions = "";
                     String extraDefinitions = "";
                     for (Column column : columns) {
@@ -148,9 +148,9 @@ public class Table extends ManagerBase {
                     if (!checkExists.column(name, column.getName())) {
                         String command = "alter table "
                                 + getBuilder().escape(DB.sqlInjectionRawName(name))
-                                + " add " + (isH2() || isPostgreSQL() ? "column " : "") +
+                                + " add " + (isH2() || isPostgreSQL() || isDuckDB() ? "column " : "") +
                                 column +";";
-                        if (isPostgreSQL() || isH2()) {
+                        if (isPostgreSQL() || isH2() || isDuckDB()) {
                             alterTableCommands += command;
                         } else if (isMariaDB()) {
                             getExecutor().execute(command);

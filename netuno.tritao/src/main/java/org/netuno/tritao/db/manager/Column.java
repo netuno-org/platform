@@ -98,7 +98,7 @@ public class Column extends ManagerBase {
                 } else if (this == Type.VARCHAR) {
                     return "varchar";
                 }
-            } else if (isPostgreSQL(builder)) {
+            } else if (isPostgreSQL(builder) || isDuckDB(builder)) {
                 if (this == Type.FLOAT) {
                     return "real";
                 }
@@ -325,7 +325,7 @@ public class Column extends ManagerBase {
 
     public Column setDefault(String _default) {
         if (getType() == Type.VARCHAR || getType() == Type.TEXT) {
-            if (isH2() || isPostgreSQL()) {
+            if (isH2() || isPostgreSQL() || isDuckDB()) {
                 this._default = "'"+ DB.sqlInjection(_default) +"'";
             }
         } else {
@@ -428,7 +428,7 @@ public class Column extends ManagerBase {
                 getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " modify column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
             } else if (isMSSQL()) {
                 getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
-            } else if (isPostgreSQL()) {
+            } else if (isPostgreSQL() || isDuckDB()) {
                 //getManager().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " drop default;");
                 getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " type " + toTypeDefinition()
                  + " using " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + "::" + toTypeDefinition() + ";");
@@ -454,7 +454,7 @@ public class Column extends ManagerBase {
                 DBVersion version = new DBVersion(this);
                 if (isH2()) {
                     getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
-                } else if (isPostgreSQL() || (isMariaDB() && version.getVersion() > 10.5)) {
+                } else if (isPostgreSQL() || (isMariaDB() && version.getVersion() > 10.5) || isDuckDB()) {
                     getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " rename column " + getBuilder().escape(oldRawSQLName) + " to " + getBuilder().escape(newRawSQLName) + "");
                 } else if (isMSSQL()) {
                 	getExecutor().execute("exec sp_rename '" + DB.sqlInjectionRawName(table) + "." + getBuilder().escape(oldRawSQLName) + "', '" + newRawSQLName + "', 'COLUMN'");

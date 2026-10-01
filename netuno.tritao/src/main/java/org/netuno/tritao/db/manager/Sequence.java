@@ -56,7 +56,6 @@ import java.util.List;
         )
 })
 public class Sequence extends ManagerBase {
-    private static Logger logger = LogManager.getLogger(Sequence.class);
 
     public Sequence(BuilderBase base) {
         super(base);
@@ -67,7 +66,7 @@ public class Sequence extends ManagerBase {
     }
 
     public boolean supported() {
-        return isH2() || isPostgreSQL();
+        return isH2() || isPostgreSQL() || isDuckDB();
     }
 
     public Sequence create(String name) {
@@ -77,7 +76,7 @@ public class Sequence extends ManagerBase {
     public Sequence create(String name, int startWith) {
         try {
             String rawSQLName = DB.sqlInjectionRawName(name);
-            if ((isH2() || isPostgreSQL())
+            if ((isH2() || isPostgreSQL() || isDuckDB())
                 && !new CheckExists(this).sequence(rawSQLName)
             ) {
                 getExecutor().execute("create sequence "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(rawSQLName) + " start with " + startWith + ";");
@@ -90,7 +89,7 @@ public class Sequence extends ManagerBase {
 
     public Sequence drop(String name) {
         try {
-            if ((isH2() || isPostgreSQL())
+            if ((isH2() || isPostgreSQL() || isDuckDB())
                 && new CheckExists(this).sequence(name)
             ) {
                 getExecutor().execute("drop sequence "+ getBuilder().appendIfExists() +" "+ getBuilder().escape(DB.sqlInjectionRawName(name)) + "");
@@ -109,7 +108,7 @@ public class Sequence extends ManagerBase {
                 if (isH2()) {
                     getExecutor().execute("create sequence "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(newRawSQLName) + " start with (next value for "+ getBuilder().escape(oldRawSQLName) +");");
                     drop(oldRawSQLName);
-                } else if (isPostgreSQL()) {
+                } else if (isPostgreSQL() || isDuckDB()) {
                     getExecutor().execute("alter sequence " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
                 }
             }
@@ -136,7 +135,7 @@ public class Sequence extends ManagerBase {
             int value = 0;
             if (isH2()) {
                 value = getExecutor().query("select current_value from information_schema.sequences where sequence_name = " + getBuilder().escape(DB.sqlInjectionRawName(sequenceName)) + "").get(0).getInt("current_value");
-            } else if (isPostgreSQL()) {
+            } else if (isPostgreSQL() || isDuckDB()) {
                 value = getExecutor().query("select last_value from " + getBuilder().escape(DB.sqlInjectionRawName(sequenceName)) + "").get(0).getInt("last_value");
             }
             return value <= 0 ? 1 : value;
@@ -151,7 +150,7 @@ public class Sequence extends ManagerBase {
 
     public Sequence restart(String sequenceName, int nextValue) {
         try {
-            if (isH2() || isPostgreSQL()) {
+            if (isH2() || isPostgreSQL() || isDuckDB()) {
                 getExecutor().execute("alter sequence " + getBuilder().escape(sequenceName) + " restart with " + nextValue + ";");
             }
         } catch (Exception e) {
@@ -163,7 +162,7 @@ public class Sequence extends ManagerBase {
 
     public Sequence restart(String sequenceName, String tableName, String column) {
         try {
-            if (isH2() || isPostgreSQL()) {
+            if (isH2() || isPostgreSQL() || isDuckDB()) {
                 List<Values> result = getExecutor().query("select max(" + getBuilder().escape(column) + ") from " + getBuilder().escape(tableName));
                 if (result.size() == 1) {
                     int total = Integer.parseInt(result.get(0).values().iterator().next().toString());

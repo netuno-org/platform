@@ -98,6 +98,10 @@ public abstract class ManagerBase implements BuilderBase {
         return builder instanceof PostgreSQL;
     }
 
+    public static boolean isDuckDB(Builder builder) {
+        return builder instanceof DuckDB;
+    }
+
     public static boolean isMariaDB(Builder builder) {
         return builder instanceof MariaDB;
     }

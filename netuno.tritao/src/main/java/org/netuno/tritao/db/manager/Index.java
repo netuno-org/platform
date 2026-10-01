@@ -67,7 +67,7 @@ public class Index extends ManagerBase {
     public Index create(String table, String column) {
         try {
             String indexName = DB.sqlInjectionRawName(table + "_" + column + "_idx");
-            if ((isH2() || isPostgreSQL())
+            if ((isH2() || isPostgreSQL() || isDuckDB())
                     && !new CheckExists(this).index(indexName)) {
                 getExecutor().execute("create index "+ getBuilder().appendIfNotExists() +" " + getBuilder().escape(indexName) + " on " + getBuilder().escape(DB.sqlInjectionRawName(table)) + "(" + getBuilder().escape(DB.sqlInjectionRawName(column)) + ")");
             }

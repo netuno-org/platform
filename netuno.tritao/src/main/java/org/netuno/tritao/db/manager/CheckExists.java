@@ -53,7 +53,6 @@ import org.netuno.tritao.hili.Hili;
         )
 })
 public class CheckExists extends ManagerBase {
-    private static Logger logger = LogManager.getLogger(CheckExists.class);
 
     public CheckExists(BuilderBase base) {
         super(base);
@@ -72,6 +71,8 @@ public class CheckExists extends ManagerBase {
             return getExecutor().query("select sequence_name from INFORMATION_SCHEMA.sequences where sequence_name = '"+ DB.sqlInjection(name) +"'").size() > 0;
         } else if (isPostgreSQL()) {
             return getExecutor().query("select * from pg_class where relname = '" + DB.sqlInjection(name) + "' and relkind = 'S'").size() == 1;
+        } else if (isDuckDB()) {
+            return getExecutor().query("select * from duckdb_sequences() where sequence_name = '" + DB.sqlInjection(name) + "'").size() == 1;
         }
         return false;
     }
@@ -85,6 +86,8 @@ public class CheckExists extends ManagerBase {
             return getExecutor().query("select * from INFORMATION_SCHEMA.tables where table_schema = DATABASE() and table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
         } else if (isMSSQL()) {
             return getExecutor().query("select * from INFORMATION_SCHEMA.tables where table_schema = 'dbo' and table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
+        } else if (isDuckDB()) {
+            return getExecutor().query("select * from INFORMATION_SCHEMA.tables where table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
         }
         return false;
     }
@@ -98,6 +101,8 @@ public class CheckExists extends ManagerBase {
             return getExecutor().query("select * from INFORMATION_SCHEMA.columns where table_schema = DATABASE() and table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
         } else if (isMSSQL()) {
             return getExecutor().query("select * from INFORMATION_SCHEMA.columns where table_schema = 'dbo' and table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
+        } else if (isDuckDB()) {
+            return getExecutor().query("select * from INFORMATION_SCHEMA.columns where table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
         }
         return false;
     }
@@ -115,6 +120,8 @@ public class CheckExists extends ManagerBase {
             return getExecutor().query("select * from INFORMATION_SCHEMA.statistics where table_schema = DATABASE() and index_name = '"+ DB.sqlInjection(index) +"'").size() == 1;
         } else if (isMSSQL()) {
             return getExecutor().query("select * from sys.indexes where name = '"+ DB.sqlInjection(index) +"'").size() == 1;
+        } else if (isDuckDB()) {
+            return getExecutor().query("select * from duckdb_indexes() where index_name = '"+ DB.sqlInjection(index) +"'").size() == 1;
         }
         return false;
     }

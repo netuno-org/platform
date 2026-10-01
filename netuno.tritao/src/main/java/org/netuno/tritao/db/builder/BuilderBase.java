@@ -58,8 +58,12 @@ public interface BuilderBase {
         return getBuilder() instanceof MSSQL;
     }
 
+    default boolean isDuckDB() {
+        return getBuilder() instanceof DuckDB;
+    }
+
     default boolean sequence() {
-        return isPostgreSQL() || isH2();
+        return isPostgreSQL() || isH2() || isDuckDB();
     }
 
     default boolean isId(String id) {
