@@ -237,8 +237,8 @@ public class OperationEngine extends Data {
         final List<Values> recordsId = getExecutor().query(mainSQl.toString());
 
         for (Populate populate : query.getFormsToPopulate()) {
-            StringBuilder populateQuerySQL = new StringBuilder();
-            populateQuerySQL.append("SELECT ")
+            StringBuilder populateSelectPartQuerySQL = new StringBuilder();
+            populateSelectPartQuerySQL.append("SELECT ")
                     .append(!populate.getFields().isEmpty()
                                     ? populate.getFields().stream().map(
                                     field -> populate.getRelationship().getForm() + "." + field.getColumn() + ((field.getAlias() != null && !field.getAlias().isBlank() && !field.getAlias().isEmpty()) ? " AS " + field.getAlias().trim() : "")
@@ -247,19 +247,21 @@ public class OperationEngine extends Data {
                     );
 
             for (int i = 0; i < items.size(); i++) {
+                StringBuilder populateFromPartQuerySQL = new StringBuilder();
                 switch (populate.getRelationship().getRelationshipType()) {
                     case ManyToOne -> {
-                        populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
                                 .append("INNER JOIN ").append(populate.getForm())
                                 .append(" ON ").append(populate.getForm()).append(".").append(populate.getRelationship().getColumnLink())
                                 .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
                                 .append("WHERE ").append(populate.getForm()).append(".id")
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
+                        final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
 
                         if (populate.getOperation().isDebug()) {
-                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), populateQuerySQL.toString());
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), finalQuerySQL);
                         }
-                        final Values populateRecord = getExecutor().queryFirst(populateQuerySQL.toString());
+                        final Values populateRecord = getExecutor().queryFirst(finalQuerySQL);
                         items.get(i).set(
                                 populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
                                     ? populate.getAlias()
@@ -267,17 +269,18 @@ public class OperationEngine extends Data {
                                 , populateRecord);
                     }
                     case OneToMany -> {
-                        populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
                                 .append("INNER JOIN ").append(populate.getForm())
                                 .append(" ON ").append(populate.getForm()).append(".id")
                                 .append(" = ").append(populate.getRelationship().getForm()).append(".").append(populate.getRelationship().getColumnLink()).append("\n")
                                 .append("WHERE ").append(populate.getForm()).append(".id")
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
+                        final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
 
                         if (populate.getOperation().isDebug()) {
-                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), populateQuerySQL.toString());
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), finalQuerySQL);
                         }
-                        final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
+                        final List<Values> populateRecords = getExecutor().query(finalQuerySQL);
                         items.get(i).set(
                                 populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
                                         ? populate.getAlias()
@@ -285,16 +288,18 @@ public class OperationEngine extends Data {
                                 , populateRecords);
                     }
                     case ManyToMany -> {
-                        populateQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
                                 .append("INNER JOIN ").append(populate.getRelationship().getFormLink())
                                 .append(" ON ").append(populate.getRelationship().getFormLink()).append(".").append(populate.getRelationship().getColumnLink())
                                 .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
                                 .append("WHERE ").append(populate.getRelationship().getFormLink()).append(".").append(populate.getRelationship().getColumnReference())
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
+                        final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
+
                         if (populate.getOperation().isDebug()) {
-                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), populateQuerySQL.toString());
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), finalQuerySQL);
                         }
-                        final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
+                        final List<Values> populateRecords = getExecutor().query(finalQuerySQL);
                         items.get(i).set(
                                 populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
                                         ? populate.getAlias()
