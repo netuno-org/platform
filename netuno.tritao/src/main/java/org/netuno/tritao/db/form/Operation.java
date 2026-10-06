@@ -38,7 +38,7 @@ public class Operation {
     private String formName;
     private List<Field> fieldsToGet = new ArrayList<>();
     private List<Field> fieldsToSet = new ArrayList<>();
-    private Where where;
+    private List<Where> where = new ArrayList<>();
     private Map<String, Join> join = new HashMap<>();
     private Order order;
     private Group group;
@@ -61,7 +61,7 @@ public class Operation {
     public Operation(String formName, Where where, OperationEngine operationalEngine, LinkEngine linkEngine, PopulateEngine populateEngine) {
         this.formName = formName;
         where.setTable(formName);
-        this.where = where;
+        this.where.add(where);
         this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
         this.populateEngine = populateEngine;
@@ -258,7 +258,7 @@ public class Operation {
             )
         }
     )
-    public Where getWhere() {
+    public List<Where> getWhere() {
         return where;
     }
 
@@ -299,7 +299,7 @@ public class Operation {
             )
         }
     )
-    public Operation setWhere(Where where) {
+    public Operation setWhere(List<Where> where) {
         this.where = where;
         return this;
     }
@@ -1356,7 +1356,7 @@ public class Operation {
 
     public Operation where(Where where) {
         where.setTable(this.formName);
-        this.where = where;
+        this.where.add(where);
         return this;
     }
 

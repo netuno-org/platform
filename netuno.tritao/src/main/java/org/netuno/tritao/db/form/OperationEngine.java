@@ -40,10 +40,12 @@ public class OperationEngine extends Data {
     public String buildQuerySQL(Operation query) {
         StringBuilder joinSQL = new StringBuilder();
         StringBuilder whereSQL = new StringBuilder();
-        if (query.getWhere() != null && !query.getWhere().getConditions().isEmpty()) {
-            final ConditionalOperator firstConditional = query.getWhere().getConditions().getFirst();
-            whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                    .append(this.buildWhereSQL(query.getWhere()));
+        if (!query.getWhere().isEmpty()) {
+            for (Where queryWhere : query.getWhere()) {
+                final ConditionalOperator firstConditional = queryWhere.getConditions().getFirst();
+                whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
+                        .append(this.buildWhereSQL(queryWhere));
+            }
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
             final Join join = entryJoin.getValue();
