@@ -220,8 +220,8 @@ public class OperationEngine extends Data {
         }
         if (query.getPagination() != null) {
             bottomSQL
-                    .append("\nLIMIT ").append(query.getPagination().getPageSize())
-                    .append(" OFFSET ").append(query.getPagination().getOffset());
+                .append("\nLIMIT ").append(query.getPagination().getPageSize())
+                .append(" OFFSET ").append(query.getPagination().getOffset());
         } else {
             bottomSQL.append("\nLIMIT ").append(query.getLimit());
         }
@@ -255,8 +255,10 @@ public class OperationEngine extends Data {
                                 .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
                                 .append("WHERE ").append(populate.getForm()).append(".id")
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
-                        var sql = populateQuerySQL.toString();
-                        logger.warn(populateQuerySQL.toString());
+
+                        if (populate.getOperation().isDebug()) {
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), populateQuerySQL.toString());
+                        }
                         final Values populateRecord = getExecutor().queryFirst(populateQuerySQL.toString());
                         items.get(i).set(
                                 populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
@@ -271,8 +273,10 @@ public class OperationEngine extends Data {
                                 .append(" = ").append(populate.getRelationship().getForm()).append(".").append(populate.getRelationship().getColumnLink()).append("\n")
                                 .append("WHERE ").append(populate.getForm()).append(".id")
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
-                        var sql = populateQuerySQL.toString();
-                        logger.warn(populateQuerySQL.toString());
+
+                        if (populate.getOperation().isDebug()) {
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), populateQuerySQL.toString());
+                        }
                         final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
                         items.get(i).set(
                                 populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
@@ -287,6 +291,9 @@ public class OperationEngine extends Data {
                                 .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
                                 .append("WHERE ").append(populate.getRelationship().getFormLink()).append(".").append(populate.getRelationship().getColumnReference())
                                 .append(" = ").append(recordsId.get(i).getInt("id"));
+                        if (populate.getOperation().isDebug()) {
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), populateQuerySQL.toString());
+                        }
                         final List<Values> populateRecords = getExecutor().query(populateQuerySQL.toString());
                         items.get(i).set(
                                 populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
@@ -317,7 +324,7 @@ public class OperationEngine extends Data {
         if (items.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        return items;
+        return !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items) : items;
     }
 
     public Values first(Operation query) {
@@ -374,8 +381,9 @@ public class OperationEngine extends Data {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
         List<Values> items = getExecutor().query(selectCommandSQL);
+        var finalItems = !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items) : items;
         int total = this.count(query);
-        return new Page(items.isEmpty() ? Collections.EMPTY_LIST : items , total, query.getPagination());
+        return new Page(finalItems.isEmpty() ? Collections.EMPTY_LIST : finalItems , total, query.getPagination());
     }
 
     public List<Values> getRecordIDs(Operation query) {

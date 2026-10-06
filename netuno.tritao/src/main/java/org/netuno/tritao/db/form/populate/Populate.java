@@ -1,6 +1,7 @@
 package org.netuno.tritao.db.form.populate;
 
 import org.netuno.tritao.db.form.Field;
+import org.netuno.tritao.db.form.Operation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +10,16 @@ public class Populate {
     private String form;
     private RelationshipPopulate relationship;
     private List<Field> fields = new ArrayList<>();
-    private String Alias;
+    private String alias;
+    private Operation operation;
 
     public Populate() {}
 
-    public Populate(String form, RelationshipPopulate relationship, List<Field> fields) {
+    public Populate(String form, RelationshipPopulate relationship, List<Field> fields, Operation operation) {
         this.form = form;
         this.relationship = relationship;
         this.fields = fields;
+        this.operation = operation;
     }
 
     public String getForm() {
@@ -47,11 +50,20 @@ public class Populate {
     }
 
     public String getAlias() {
-        return Alias;
+        return alias;
     }
 
     public Populate setAlias(String alias) {
-        Alias = alias;
+        this.alias = alias;
+        return this;
+    }
+
+    public Operation getOperation() {
+        return operation;
+    }
+
+    public Populate setOperation(Operation operation) {
+        this.operation = operation;
         return this;
     }
 }

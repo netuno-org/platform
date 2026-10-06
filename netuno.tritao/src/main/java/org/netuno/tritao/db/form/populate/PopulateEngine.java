@@ -18,7 +18,7 @@ public class PopulateEngine extends TableBuilderResourceBase {
     public Populate buildPopulate(String formName, Operation formToLink) {
         RelationshipPopulate relationship = new RelationshipPopulate();
         relationship.setForm(formToLink.getFormName());
-        Populate populate = new Populate(formName, relationship, formToLink.getFieldsToGet());
+        Populate populate = new Populate(formName, relationship, formToLink.getFieldsToGet(), formToLink);
         return buildRelation(populate);
     }
 
