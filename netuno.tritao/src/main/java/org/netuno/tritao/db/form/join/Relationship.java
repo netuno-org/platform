@@ -466,7 +466,7 @@ public class Relationship {
         join.setTable(this.getTableName());
         join.setRelation(relation);
         if (relation.getWhere() != null) {
-            join.setWhere(relation.getWhere());
+            join.getWhere().add(relation.getWhere());
         }
         this.subRelations.put(new Random().toString(), join);
         return this;
@@ -515,7 +515,7 @@ public class Relationship {
         join.setTable(this.getTableName());
         join.setRelation(relation);
         if (relation.getWhere() != null) {
-            join.setWhere(relation.getWhere());
+            join.getWhere().add(relation.getWhere());
         }
         this.subRelations.put(new Random().toString(), join);
         return this;
@@ -564,7 +564,7 @@ public class Relationship {
         join.setTable(this.getTableName());
         join.setRelation(relation);
         if (relation.getWhere() != null) {
-            join.setWhere(relation.getWhere());
+            join.getWhere().add(relation.getWhere());
         }
         this.subRelations.put(new Random().toString(), join);
         return this;

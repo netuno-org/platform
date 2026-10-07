@@ -12,6 +12,9 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Link - Main object to link different forms via form resource
  * @author Jailton de Araujo Santos - @jailtonaraujo
@@ -29,7 +32,7 @@ public class Link {
     private String alias;
     private RelationshipLink relationLink;
     private JoinType joinType = JoinType.INNER_JOIN;
-    private Where where;
+    private List<Where> where = new ArrayList<>();
 
     public Link(String form, RelationshipLink relationLink) {
         this.form = form;
@@ -42,7 +45,7 @@ public class Link {
 
     public Link(RelationshipLink relationLink, Where where) {
         this.relationLink = relationLink;
-        this.where = where;
+        this.where.add(where);
     }
 
     @MethodDoc(
@@ -221,7 +224,7 @@ public class Link {
             )
         }
     )
-    public Where getWhere() {
+    public List<Where> getWhere() {
         return where;
     }
 
@@ -262,7 +265,7 @@ public class Link {
             )
         }
     )
-    public Link setWhere(Where where) {
+    public Link setWhere(List<Where> where) {
         this.where = where;
         return this;
     }
@@ -340,7 +343,7 @@ public class Link {
                         ? this.relationLink.getAlias()
                         : this.relationLink.getFormLink()
         );
-        setWhere(where);
+        this.where.add(where);
         return this;
     }
 

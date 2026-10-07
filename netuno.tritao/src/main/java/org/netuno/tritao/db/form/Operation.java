@@ -791,7 +791,7 @@ public class Operation {
         newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
-            newJoin.setWhere(relation.getWhere());
+            newJoin.getWhere().add(relation.getWhere());
         }
         this.join.put(relation.getTableName(), newJoin);
         return this;
@@ -840,7 +840,7 @@ public class Operation {
         newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
-            newJoin.setWhere(relation.getWhere());
+            newJoin.getWhere().add(relation.getWhere());
         }
         this.join.put(relation.getTableName(), newJoin);
         return this;
@@ -889,7 +889,7 @@ public class Operation {
         newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
-            newJoin.setWhere(relation.getWhere());
+            newJoin.getWhere().add(relation.getWhere());
         }
         this.join.put(relation.getTableName(), newJoin);
         return this;
@@ -989,7 +989,7 @@ public class Operation {
     public Operation link(String formLink, Where where) {
         Link link = new Link(this.formName, new RelationshipLink(formLink));
         Join join = linkEngine.buildJoin(link);
-        join.setWhere(where.setTable(formLink));
+        join.getWhere().add(where.setTable(formLink));
         this.join.put(formLink, join);
         return this;
     }
@@ -1112,7 +1112,7 @@ public class Operation {
         relationLink.setForm(formLink);
         Link link = new Link(this.formName, new RelationshipLink(formLink, relationLink));
         Join join = linkEngine.buildJoin(link);
-        join.setWhere(where.setTable(formLink));
+        join.getWhere().add(where.setTable(formLink));
         this.join.put(formLink, join);
         return this;
     }

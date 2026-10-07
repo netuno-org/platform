@@ -4948,7 +4948,7 @@ public class DB extends ResourceBase {
 
     public Link link(String formLink, org.netuno.tritao.db.form.where.Where where, Link link) {
         link.getRelationLink().setFormLink(formLink);
-        link.setWhere(where);
+        link.getWhere().add(where);
         return link;
     }
 

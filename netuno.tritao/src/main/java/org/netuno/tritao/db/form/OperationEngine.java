@@ -42,25 +42,35 @@ public class OperationEngine extends Data {
         StringBuilder whereSQL = new StringBuilder();
         if (!query.getWhere().isEmpty()) {
             for (Where queryWhere : query.getWhere()) {
-                final ConditionalOperator firstConditional = queryWhere.getConditions().getFirst();
-                whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                        .append(this.buildWhereSQL(queryWhere));
+                if (queryWhere != null && queryWhere.getConditions() != null && !queryWhere.getConditions().isEmpty()) {
+                    final ConditionalOperator firstConditional = queryWhere.getConditions().getFirst();
+                    whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
+                            .append(this.buildWhereSQL(queryWhere));
+                }
             }
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
             final Join join = entryJoin.getValue();
             joinSQL.append("\t").append("\t").append(this.buildJoinSQL(join));
-            if (join.getWhere() != null && !join.getWhere().getConditions().isEmpty()) {
-                final ConditionalOperator firstConditional = join.getWhere().getConditions().getFirst();
-                whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                        .append(this.buildWhereSQL(join.getWhere()));
+            if (!join.getWhere().isEmpty()) {
+                for (Where joinWhere : join.getWhere()) {
+                    if (joinWhere != null && joinWhere.getConditions() != null && !joinWhere.getConditions().isEmpty()) {
+                        final ConditionalOperator firstConditional = joinWhere.getConditions().getFirst();
+                        whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
+                                .append(this.buildWhereSQL(joinWhere));
+                    }
+                }
             }
             for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
                 final Join subJoin = entrySubJoin.getValue();
-                if (subJoin.getWhere() != null && !subJoin.getWhere().getConditions().isEmpty()) {
-                    final ConditionalOperator firstConditional = subJoin.getWhere().getConditions().getFirst();
-                    whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                            .append(this.buildWhereSQL(subJoin.getWhere()));
+                if (!subJoin.getWhere().isEmpty()) {
+                    for (Where subjoinWhere : subJoin.getWhere()) {
+                        if (subjoinWhere != null && subjoinWhere.getConditions() != null && !subjoinWhere.getConditions().isEmpty()) {
+                            final ConditionalOperator firstConditional = subjoinWhere.getConditions().getFirst();
+                            whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
+                                    .append(this.buildWhereSQL(subjoinWhere));
+                        }
+                    }
                 }
             }
         }

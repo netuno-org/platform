@@ -11,6 +11,9 @@ import org.netuno.library.doc.ParameterDoc;
 import org.netuno.library.doc.ParameterTranslationDoc;
 import org.netuno.library.doc.ReturnTranslationDoc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Join - Main object to construct database columns join operations manually
  * @author Jailton de Araujo Santos - @jailtonaraujo
@@ -28,7 +31,7 @@ public class Join {
     private String alias;
     private JoinType joinType = JoinType.INNER_JOIN;
     private Relationship relation;
-    private Where where;
+    private List<Where> where = new ArrayList<>();
 
     
     @MethodDoc(
@@ -278,7 +281,7 @@ public class Join {
             )
         }
     )
-    public Where getWhere() {
+    public List<Where> getWhere() {
         return where;
     }
 
@@ -319,7 +322,7 @@ public class Join {
             )
         }
     )
-    public Join setWhere(Where where) {
+    public Join setWhere(List<Where> where) {
         this.where = where;
         return this;
     }
