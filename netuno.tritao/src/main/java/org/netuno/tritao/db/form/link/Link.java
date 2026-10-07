@@ -347,6 +347,18 @@ public class Link {
         return this;
     }
 
+    public Link whereIf(boolean condition, Where where) {
+        if (condition) {
+            where.setTable(
+                    this.relationLink.getAlias() != null && !this.relationLink.getAlias().isBlank() && !this.relationLink.getAlias().isEmpty()
+                            ? this.relationLink.getAlias()
+                            : this.relationLink.getFormLink()
+            );
+            this.where.add(where);
+        }
+        return this;
+    }
+
     public Link withLeft() {
         return this.setJoinType(JoinType.LEFT_JOIN);
     }
