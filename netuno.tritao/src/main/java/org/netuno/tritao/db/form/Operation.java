@@ -1360,6 +1360,14 @@ public class Operation {
         return this;
     }
 
+    public Operation whereIf(boolean condition, Where where) {
+        if (condition) {
+            where.setTable(this.formName);
+            this.where.add(where);
+        }
+        return this;
+    }
+
     public Operation subform(Operation formToPopulate) {
         this.populateEngine.checkForm(formToPopulate.getFormName());
         this.formsToPopulate.add(this.populateEngine.buildPopulate(this.getFormName(), formToPopulate));
