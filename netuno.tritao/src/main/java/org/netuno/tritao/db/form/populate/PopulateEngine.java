@@ -26,8 +26,9 @@ public class PopulateEngine extends TableBuilderResourceBase {
         final Values manyToOneLink = getManyToOneLink(populate.getForm(), populate.getRelationship().getForm());
 
         if(manyToOneLink != null) {
-            String column = manyToOneLink.getString("name");
+            String column = manyToOneLink.getString("formColumn");
             populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.ManyToOne);
+            populate.getRelationship().setForm(manyToOneLink.getString("formTableLink"));
             return populate;
         } else {
             final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
@@ -83,11 +84,28 @@ public class PopulateEngine extends TableBuilderResourceBase {
     }
 
     public Values getManyToOneLink(String form, String formToLink) {
+        final String formToLinkTable = formToLink.split("\\.")[0];
+        final String formToLinkColumn = formToLink.split("\\.").length > 1 ? formToLink.split("\\.")[1] : null;
+        Values relationMapping = new Values();
+        relationMapping.set("form", form);
         List<Values> componentsOfTheForm = getSelectComponents(form);
+
         for (Values value : componentsOfTheForm) {
             String properties = value.getString("properties");
-            if (formToLink.equals(this.extractFormOfTheLink(properties))) {
-                return value;
+            String name = value.getString("name");
+
+            if (formToLinkTable.equals(this.extractFormOfTheLink(properties)) && formToLinkColumn == null) {
+                relationMapping.set("formTableLink", formToLinkTable);
+                relationMapping.set("formColumn", name);
+                return relationMapping;
+            } else if (formToLinkTable.equals(form) && formToLinkColumn != null && formToLinkColumn.equals(name)) {
+                relationMapping.set("formTableLink", this.extractFormOfTheLink(properties));
+                relationMapping.set("formColumn", name);
+                return relationMapping;
+            } else if (formToLinkColumn == null && formToLinkTable.equals(name)) {
+                relationMapping.set("formTableLink", this.extractFormOfTheLink(properties));
+                relationMapping.set("formColumn", name);
+                return relationMapping;
             }
         }
         return null;

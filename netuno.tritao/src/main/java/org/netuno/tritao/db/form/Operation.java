@@ -1371,13 +1371,11 @@ public class Operation {
     }
 
     public Operation subform(Operation formToPopulate) {
-        this.populateEngine.checkForm(formToPopulate.getFormName());
         this.formsToPopulate.add(this.populateEngine.buildPopulate(this.getFormName(), formToPopulate));
         return this;
     }
 
     public Operation subform(Operation formToLink, String alias) {
-        this.populateEngine.checkForm(formToLink.getFormName());
         this.formsToPopulate.add(
                 this.populateEngine.buildPopulate(this.getFormName(), formToLink)
                         .setAlias(alias)
