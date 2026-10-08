@@ -26,15 +26,14 @@ public class PopulateEngine extends TableBuilderResourceBase {
         final Values manyToOneLink = getManyToOneLink(populate.getForm(), populate.getRelationship().getForm());
 
         if(manyToOneLink != null) {
-            String column = manyToOneLink.getString("formColumn");
-            populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.ManyToOne);
+            populate.getRelationship().setColumnLink(manyToOneLink.getString("formColumn")).setRelationshipType(RelationshipType.ManyToOne);
             populate.getRelationship().setForm(manyToOneLink.getString("formTableLink"));
             return populate;
         } else {
             final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
             if(oneToManyLink != null) {
-                String column = oneToManyLink.getString("name");
-                populate.getRelationship().setColumnLink(column).setRelationshipType(RelationshipType.OneToMany);
+                populate.getRelationship().setColumnLink(oneToManyLink.getString("formColumn")).setRelationshipType(RelationshipType.OneToMany);
+                populate.getRelationship().setForm(oneToManyLink.getString("formTableLink"));
                 return populate;
             } else {
                 final Values manyToManyLink = getManyToManyLink(populate.getForm(), populate.getRelationship().getForm());
@@ -112,11 +111,24 @@ public class PopulateEngine extends TableBuilderResourceBase {
     }
 
     public Values getOneToManyLink(String form, String formToLink) {
-        List<Values> componentsOfTheForm = getSelectComponents(formToLink);
+        final String formToLinkTable = formToLink.split("\\.")[0];
+        final String formToLinkColumn = formToLink.split("\\.").length > 1 ? formToLink.split("\\.")[1] : null;
+        Values relationMapping = new Values();
+        relationMapping.set("form", form);
+        List<Values> componentsOfTheForm = getSelectComponents(formToLinkTable);
+
         for (Values value : componentsOfTheForm) {
             String properties = value.getString("properties");
-            if (form.equals(this.extractFormOfTheLink(properties))) {
-                return value;
+            String name = value.getString("name");
+
+            if (form.equals(this.extractFormOfTheLink(properties)) && formToLinkColumn == null) {
+                relationMapping.set("formTableLink", formToLinkTable);
+                relationMapping.set("formColumn", name);
+                return relationMapping;
+            } else if (form.equals(this.extractFormOfTheLink(properties)) && formToLinkColumn.equals(name)) {
+                relationMapping.set("formTableLink", formToLinkTable);
+                relationMapping.set("formColumn", name);
+                return relationMapping;
             }
         }
         return null;
