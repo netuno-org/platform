@@ -1355,8 +1355,10 @@ public class Operation {
     }
 
     public Operation where(Where where) {
-        where.setTable(this.formName);
-        this.where.add(where);
+        if (where.isValid()) {
+            where.setTable(this.formName);
+            this.where.add(where);
+        }
         return this;
     }
 

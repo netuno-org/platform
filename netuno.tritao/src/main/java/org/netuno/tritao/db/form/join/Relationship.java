@@ -571,8 +571,18 @@ public class Relationship {
     }
 
     public Relationship where(Where where) {
-        where.setTable(this.getTableName());
-        this.setWhere(where);
+        if (where.isValid()) {
+            where.setTable(this.getTableName());
+            this.setWhere(where);
+        }
+        return this;
+    }
+
+    public Relationship whereIf(boolean condition, Where where) {
+        if (condition) {
+            where.setTable(this.getTableName());
+            this.setWhere(where);
+        }
         return this;
     }
 }

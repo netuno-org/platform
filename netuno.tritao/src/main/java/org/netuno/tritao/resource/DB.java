@@ -4993,6 +4993,10 @@ public class DB extends ResourceBase {
         return new org.netuno.tritao.db.form.where.Where(column);
     }
 
+    public org.netuno.tritao.db.form.where.Where whereIf(boolean condition, org.netuno.tritao.db.form.where.Where where) {
+        return where.setValid(condition);
+    }
+
     public org.netuno.tritao.db.form.where.Where where() {
         return new org.netuno.tritao.db.form.where.Where();
     }

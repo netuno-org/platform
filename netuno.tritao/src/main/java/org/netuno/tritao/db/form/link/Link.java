@@ -338,12 +338,14 @@ public class Link {
     }
 
     public Link where(Where where) {
-        where.setTable(
+        if (where.isValid()) {
+            where.setTable(
                 this.relationLink.getAlias() != null && !this.relationLink.getAlias().isBlank() && !this.relationLink.getAlias().isEmpty()
-                        ? this.relationLink.getAlias()
-                        : this.relationLink.getFormLink()
-        );
-        this.where.add(where);
+                    ? this.relationLink.getAlias()
+                    : this.relationLink.getFormLink()
+            );
+            this.where.add(where);
+        }
         return this;
     }
 
