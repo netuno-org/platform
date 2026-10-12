@@ -731,6 +731,43 @@ public class Operation {
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Ativa ou desativa o debug da consulta.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Enables or disables the debug of the query.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "enabled", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Se o debug deve estar ativo ou não.",
+                    name = "ativo"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Whether the debug should be active or not."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Operation debug(boolean enabled) {
         this.debug = enabled;
         return this;
@@ -745,6 +782,43 @@ public class Operation {
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define o número máximo de registros retornados pela consulta (máximo de 1000).",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines the maximum number of records returned by the query (maximum of 1000).",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "limit", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Número máximo de registros a retornar, valores acima de 1000 são limitados a 1000.",
+                    name = "limite"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Maximum number of records to return, values above 1000 are capped at 1000."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Operation limit(int limit) {
         return setLimit(limit);
     }
@@ -1123,11 +1197,96 @@ public class Operation {
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Adiciona uma coluna a ser retornada pela consulta.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Adds a column to be returned by the query.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "column", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome da coluna a ser retornada.",
+                    name = "coluna"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Name of the column to be returned."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Operation get(String column) {
         this.fieldsToGet.add(new Field(column));
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Adiciona uma coluna a ser retornada pela consulta com um apelido (alias).",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Adds a column to be returned by the query with an alias.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "column", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome da coluna a ser retornada.",
+                    name = "coluna"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Name of the column to be returned."
+                )
+            }),
+            @ParameterDoc(name = "alias", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Apelido da coluna no resultado da consulta.",
+                    name = "apelido"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Alias of the column in the query result."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Operation get(String column, String alias) {
         this.fieldsToGet.add(new Field(column, alias));
         return this;
@@ -1186,11 +1345,85 @@ public class Operation {
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define o agrupamento (GROUP BY) da consulta por uma coluna.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines the grouping (GROUP BY) of the query by a column.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "column", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Coluna para agrupamento.",
+                    name = "coluna"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Column for grouping."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Operation group(String column) {
         this.group = new Group(List.of(column));
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Define o agrupamento (GROUP BY) da consulta por uma ou mais colunas.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Defines the grouping (GROUP BY) of the query by one or more columns.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "columns", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Colunas para agrupamento.",
+                    name = "colunas"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Columns for grouping."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Operation group(String ...columns) {
         this.group = new Group(Arrays.stream(columns).toList());
         return this;
@@ -1354,6 +1587,43 @@ public class Operation {
         ).toValues();
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Adiciona uma condição Where à consulta, aplicada somente se o Where for válido.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Adds a Where condition to the query, applied only if the Where is valid.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "where", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto Where com as condições da consulta.",
+                    name = "where"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Where object with the query conditions."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Operation where(Where where) {
         if (where.isValid()) {
             where.setTable(this.formName);
@@ -1362,6 +1632,54 @@ public class Operation {
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Aplica a condição Where somente se a condição informada for verdadeira, caso contrário a condição é ignorada na construção da consulta.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Applies the Where condition only if the given condition is true, otherwise the condition is ignored when building the query.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "condition", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Condição que define se o Where será aplicado.",
+                    name = "condicao"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition that defines whether the Where will be applied."
+                )
+            }),
+            @ParameterDoc(name = "where", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto Where a ser aplicado condicionalmente.",
+                    name = "where"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Where object to be conditionally applied."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Query atual."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Current Query object."
+            )
+        }
+    )
     public Operation whereIf(boolean condition, Where where) {
         if (condition) {
             where.setTable(this.formName);
