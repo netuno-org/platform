@@ -45,7 +45,6 @@ public class DBExecutor {
     private Proteu proteu = null;
     private Hili hili = null;
     private String key = null;
-    private String dbName = null;
 
     public DBExecutor(Proteu proteu, Hili hili, String key) {
         this.proteu = proteu;
