@@ -17,8 +17,6 @@
 
 package org.netuno.tritao.db.manager;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
@@ -53,7 +51,6 @@ import org.netuno.tritao.db.DBError;
         )
 })
 public class Table extends ManagerBase {
-    private static Logger logger = LogManager.getLogger(Table.class);
 
     public Table(BuilderBase base) {
         super(base);
@@ -65,12 +62,15 @@ public class Table extends ManagerBase {
 
     public Table rename(String oldName, String newName) {
         try {
+            String oldRawSQLName = DB.sqlInjectionRawName(oldName);
             String newRawSQLName = DB.sqlInjectionRawName(newName);
             if (!new CheckExists(this).table(newRawSQLName)) {
                 if (isH2() || isPostgreSQL() || isDuckDB()) {
-                    getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " rename to " + getBuilder().escape(newRawSQLName) + "");
-                } else if (isMariaDB()) {
-                    getExecutor().execute("rename table " + getBuilder().escape(DB.sqlInjectionRawName(oldName)) + " to " + getBuilder().escape(newRawSQLName) + "");
+                    getExecutor().execute("alter table " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
+                } else if (isMariaDB() || isClickHouse()) {
+                    getExecutor().execute("rename table " + getBuilder().escape(oldRawSQLName) + " to " + getBuilder().escape(newRawSQLName) + "");
+                } else if (isMSSQL()) {
+                    getExecutor().execute("EXEC sp_rename 'dbo."+ oldRawSQLName +"', '"+ newRawSQLName +"';");
                 }
             }
         } catch (Exception e) {
@@ -110,9 +110,12 @@ public class Table extends ManagerBase {
 
     public Table create(String name, Column... columns) {
         try {
+            for (Column column : columns) {
+                column.setTableName(name);
+            }
             CheckExists checkExists = new CheckExists(this);
             if (!checkExists.table(name)) {
-                if (isH2() || isPostgreSQL() || isMariaDB() || isMSSQL() || isDuckDB()) {
+                if (isH2() || isPostgreSQL() || isMariaDB() || isMSSQL() || isDuckDB() || isClickHouse()) {
                     String columnsDefinitions = "";
                     String extraDefinitions = "";
                     for (Column column : columns) {
@@ -131,6 +134,9 @@ public class Table extends ManagerBase {
                                 extraDefinitions += getBuilder().escape(column.getName());
                             }
                         }
+                        if (isClickHouse() && column.isPrimaryKey() && column.getType() == Column.Type.INT) {
+                            getExecutor().execute("select generateSerialID('"+ getDatabaseName() +"."+ name +"."+ column.getName() +"')");
+                        }
                     }
                     if (!extraDefinitions.isEmpty()) {
                         extraDefinitions += ")";
@@ -148,13 +154,11 @@ public class Table extends ManagerBase {
                     if (!checkExists.column(name, column.getName())) {
                         String command = "alter table "
                                 + getBuilder().escape(DB.sqlInjectionRawName(name))
-                                + " add " + (isH2() || isPostgreSQL() || isDuckDB() ? "column " : "") +
+                                + " add " + (isH2() || isPostgreSQL() || isDuckDB() || isClickHouse() ? "column " : "") +
                                 column +";";
-                        if (isPostgreSQL() || isH2() || isDuckDB()) {
+                        if (isPostgreSQL() || isH2() || isDuckDB() || isClickHouse()) {
                             alterTableCommands += command;
-                        } else if (isMariaDB()) {
-                            getExecutor().execute(command);
-                        } else if (isMSSQL()) {
+                        } else if (isMariaDB() || isMSSQL()) {
                             getExecutor().execute(command);
                         } else {
                             throw new Exception("Not supported!");
@@ -164,6 +168,9 @@ public class Table extends ManagerBase {
                 if (!alterTableCommands.isEmpty()) {
                     getExecutor().execute(alterTableCommands);
                 }
+            }
+            if (isClickHouse()) {
+                getExecutor().execute("alter table "+ getBuilder().escape(DB.sqlInjectionRawName(name)) +" modify setting enable_block_number_column = 1, enable_block_offset_column = 1;");
             }
         } catch (Exception e) {
             throw new DBError(e).setLogFatal("Creating table "+ name +".");
