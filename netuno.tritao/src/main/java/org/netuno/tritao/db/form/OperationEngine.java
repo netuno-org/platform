@@ -7,9 +7,9 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.form.join.Join;
 import org.netuno.tritao.db.form.join.Relationship;
+import org.netuno.tritao.db.form.populate.Populate;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.db.form.pagination.Page;
-import org.netuno.tritao.db.form.populate.Populate;
 import org.netuno.tritao.db.form.where.ConditionalOperator;
 import org.netuno.tritao.db.form.where.RelationalOperator;
 import org.netuno.tritao.db.form.where.Where;
@@ -40,25 +40,37 @@ public class OperationEngine extends Data {
     public String buildQuerySQL(Operation query) {
         StringBuilder joinSQL = new StringBuilder();
         StringBuilder whereSQL = new StringBuilder();
-        if (query.getWhere() != null && !query.getWhere().getConditions().isEmpty()) {
-            final ConditionalOperator firstConditional = query.getWhere().getConditions().getFirst();
-            whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                    .append(this.buildWhereSQL(query.getWhere()));
+        if (!query.getWhere().isEmpty()) {
+            for (Where queryWhere : query.getWhere()) {
+                if (queryWhere != null && queryWhere.getConditions() != null && !queryWhere.getConditions().isEmpty()) {
+                    final ConditionalOperator firstConditional = queryWhere.getConditions().getFirst();
+                    whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
+                            .append(this.buildWhereSQL(queryWhere));
+                }
+            }
         }
         for(Map.Entry<String, Join> entryJoin : query.getJoin().entrySet()) {
             final Join join = entryJoin.getValue();
             joinSQL.append("\t").append("\t").append(this.buildJoinSQL(join));
-            if (join.getWhere() != null && !join.getWhere().getConditions().isEmpty()) {
-                final ConditionalOperator firstConditional = join.getWhere().getConditions().getFirst();
-                whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                        .append(this.buildWhereSQL(join.getWhere()));
+            if (!join.getWhere().isEmpty()) {
+                for (Where joinWhere : join.getWhere()) {
+                    if (joinWhere != null && joinWhere.getConditions() != null && !joinWhere.getConditions().isEmpty()) {
+                        final ConditionalOperator firstConditional = joinWhere.getConditions().getFirst();
+                        whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
+                                .append(this.buildWhereSQL(joinWhere));
+                    }
+                }
             }
             for(Map.Entry<String, Join> entrySubJoin : join.getRelation().getSubRelations().entrySet()) {
                 final Join subJoin = entrySubJoin.getValue();
-                if (subJoin.getWhere() != null && !subJoin.getWhere().getConditions().isEmpty()) {
-                    final ConditionalOperator firstConditional = subJoin.getWhere().getConditions().getFirst();
-                    whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                            .append(this.buildWhereSQL(subJoin.getWhere()));
+                if (!subJoin.getWhere().isEmpty()) {
+                    for (Where subjoinWhere : subJoin.getWhere()) {
+                        if (subjoinWhere != null && subjoinWhere.getConditions() != null && !subjoinWhere.getConditions().isEmpty()) {
+                            final ConditionalOperator firstConditional = subjoinWhere.getConditions().getFirst();
+                            whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
+                                    .append(this.buildWhereSQL(subjoinWhere));
+                        }
+                    }
                 }
             }
         }
@@ -210,33 +222,106 @@ public class OperationEngine extends Data {
         return select;
     }
 
-    public List<Values> populateResults(List<Values> results, Operation query) {
-        String querySQLPart = this.buildQuerySQL(query);
-        for (int i = 0; i < results.size();i++) {
-            for (Populate populate : query.getTablesToPopulate()) {
-                List<String> fieldList = populate.getFields().stream().map(
-                        field -> field.getAlias() != null ? field.getColumn() + " AS " + field.getAlias() : field.getColumn())
-                        .collect(Collectors.toList());
-                String selectSQLPart = "SELECT DISTINCT "
-                        + (!fieldList.isEmpty() ? String.join(", ", fieldList) : populate.getTable() + ".*")
-                        + " FROM " + query.getFormName();
-                String commandSQL = selectSQLPart + " " + querySQLPart;
-                commandSQL += " AND "
-                        + populate.getFilter().getColumn() + " = "
-                        + "'" + results.get(i).get((
-                                populate.getFilter().getAlias() != null
-                                        ? populate.getFilter().getAlias()
-                                        : populate.getFilter().getColumn().split("\\.")[1]
-                )).toString() + "'";
-                List<Values> items = getExecutor().query(commandSQL);
-                if (items.isEmpty()) {
-                    results.get(i).set(populate.getTable(), Collections.EMPTY_LIST);
-                    continue;
+    public String buildBottomSQL(Operation query) {
+        StringBuilder bottomSQL = new StringBuilder();
+        if (query.getGroup() != null) {
+            bottomSQL.append("\nGROUP BY ").append(query.getGroup().getColumns().stream().map(this::escape).collect(Collectors.joining(", ")));
+        }
+        if (query.getOrder() != null) {
+            bottomSQL.append("\nORDER BY ").append(query.getOrder().getColumn()).append(" ").append(query.getOrder().getOrder());
+        }
+        if (query.getPagination() != null) {
+            bottomSQL
+                .append("\nLIMIT ").append(query.getPagination().getPageSize())
+                .append(" OFFSET ").append(query.getPagination().getOffset());
+        } else {
+            bottomSQL.append("\nLIMIT ").append(query.getLimit());
+        }
+        return  bottomSQL.toString();
+    }
+
+    public List<Values> populateForms(Operation query, List<Values> items) {
+        StringBuilder mainSQl = new StringBuilder();
+        mainSQl.append("SELECT ").append(query.getFormName()).append(".id")
+                .append(" FROM ").append(query.getFormName())
+                .append(this.buildQuerySQL(query))
+                .append(this.buildBottomSQL(query));
+        final List<Values> recordsId = getExecutor().query(mainSQl.toString());
+
+        for (Populate populate : query.getFormsToPopulate()) {
+            StringBuilder populateSelectPartQuerySQL = new StringBuilder();
+            populateSelectPartQuerySQL.append("SELECT ")
+                    .append(!populate.getFields().isEmpty()
+                                    ? populate.getFields().stream().map(
+                                    field -> populate.getRelationship().getForm() + "." + field.getColumn() + ((field.getAlias() != null && !field.getAlias().isBlank() && !field.getAlias().isEmpty()) ? " AS " + field.getAlias().trim() : "")
+                            ).collect(Collectors.joining(", "))
+                                    : populate.getRelationship().getForm() + ".*"
+                    );
+
+            for (int i = 0; i < items.size(); i++) {
+                StringBuilder populateFromPartQuerySQL = new StringBuilder();
+                switch (populate.getRelationship().getRelationshipType()) {
+                    case ManyToOne -> {
+                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                                .append("INNER JOIN ").append(populate.getForm())
+                                .append(" ON ").append(populate.getForm()).append(".").append(populate.getRelationship().getColumnLink())
+                                .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
+                                .append("WHERE ").append(populate.getForm()).append(".id")
+                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
+
+                        if (populate.getOperation().isDebug()) {
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), finalQuerySQL);
+                        }
+                        final Values populateRecord = getExecutor().queryFirst(finalQuerySQL);
+                        items.get(i).set(
+                                populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
+                                    ? populate.getAlias()
+                                    : populate.getRelationship().getForm()
+                                , populateRecord);
+                    }
+                    case OneToMany -> {
+                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                                .append("INNER JOIN ").append(populate.getForm())
+                                .append(" ON ").append(populate.getForm()).append(".id")
+                                .append(" = ").append(populate.getRelationship().getForm()).append(".").append(populate.getRelationship().getColumnLink()).append("\n")
+                                .append("WHERE ").append(populate.getForm()).append(".id")
+                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
+
+                        if (populate.getOperation().isDebug()) {
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), finalQuerySQL);
+                        }
+                        final List<Values> populateRecords = getExecutor().query(finalQuerySQL);
+                        items.get(i).set(
+                                populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
+                                        ? populate.getAlias()
+                                        : populate.getRelationship().getForm()
+                                , populateRecords);
+                    }
+                    case ManyToMany -> {
+                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
+                                .append("INNER JOIN ").append(populate.getRelationship().getFormLink())
+                                .append(" ON ").append(populate.getRelationship().getFormLink()).append(".").append(populate.getRelationship().getColumnLink())
+                                .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
+                                .append("WHERE ").append(populate.getRelationship().getFormLink()).append(".").append(populate.getRelationship().getColumnReference())
+                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
+
+                        if (populate.getOperation().isDebug()) {
+                            logger.warn("Executed subform query [{}]: {}", populate.getRelationship().getForm(), finalQuerySQL);
+                        }
+                        final List<Values> populateRecords = getExecutor().query(finalQuerySQL);
+                        items.get(i).set(
+                                populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
+                                        ? populate.getAlias()
+                                        : populate.getRelationship().getForm()
+                                , populateRecords);
+                    }
                 }
-                results.get(i).set(populate.getTable(), items.size() > 1 ? items : items.get(0));
             }
         }
-        return results;
+        return items;
     }
 
     public List<Values> all(Operation query) {
@@ -256,7 +341,7 @@ public class OperationEngine extends Data {
         if (items.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        return !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
+        return !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items) : items;
     }
 
     public Values first(Operation query) {
@@ -276,8 +361,7 @@ public class OperationEngine extends Data {
         if (items.isEmpty()) {
             return null;
         }
-        items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
-        return items.getFirst();
+        return !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items).getFirst() : items.getFirst();
     }
 
     public int count(Operation query) {
@@ -314,9 +398,9 @@ public class OperationEngine extends Data {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
         List<Values> items = getExecutor().query(selectCommandSQL);
-        items = !query.getTablesToPopulate().isEmpty() ? populateResults(items, query) : items;
+        var finalItems = !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items) : items;
         int total = this.count(query);
-        return new Page(items.isEmpty() ? Collections.EMPTY_LIST : items , total, query.getPagination());
+        return new Page(finalItems.isEmpty() ? Collections.EMPTY_LIST : finalItems , total, query.getPagination());
     }
 
     public List<Values> getRecordIDs(Operation query) {

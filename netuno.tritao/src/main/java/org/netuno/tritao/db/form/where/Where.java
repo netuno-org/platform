@@ -27,6 +27,7 @@ import org.netuno.psamata.Values;
 public class Where {
     private String table;
     private List<ConditionalOperator> conditions = new ArrayList<ConditionalOperator>();
+    private boolean isValid = true;
 
     public Where(String column) {
         RelationalOperator relationalOperator = new RelationalOperator(null, "");
@@ -174,6 +175,15 @@ public class Where {
     )
     public Where setConditions(List<ConditionalOperator> conditions) {
         this.conditions = conditions;
+        return this;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public Where setValid(boolean valid) {
+        isValid = valid;
         return this;
     }
 

@@ -32,6 +32,7 @@ import org.netuno.tritao.db.form.link.Link;
 import org.netuno.tritao.db.form.link.LinkEngine;
 import org.netuno.tritao.db.form.link.RelationshipLink;
 import org.netuno.tritao.db.form.pagination.Pagination;
+import org.netuno.tritao.db.form.populate.PopulateEngine;
 import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DataItem;
@@ -119,6 +120,7 @@ public class DB extends ResourceBase {
     private org.netuno.psamata.DB dbOps = null;
     private OperationEngine operationEngine = new OperationEngine(getProteu(), getHili());
     private LinkEngine linkEngine = new LinkEngine(getProteu(), getHili());
+    private PopulateEngine populateEngine = new PopulateEngine(getProteu(), getHili());
 
     public DB(Proteu proteu, Hili hili) {
         super(proteu, hili);
@@ -4664,11 +4666,11 @@ public class DB extends ResourceBase {
         }
     )
     public Operation form(String formName) {
-        return new Operation(formName, operationEngine, linkEngine);
+        return new Operation(formName, operationEngine, linkEngine, populateEngine);
     }
 
     public Operation form(String formName, org.netuno.tritao.db.form.where.Where where) {
-        return new Operation(formName, where, operationEngine, linkEngine);
+        return new Operation(formName, where, operationEngine, linkEngine, populateEngine);
     }
 
     @MethodDoc(
@@ -4928,7 +4930,7 @@ public class DB extends ResourceBase {
             ),
             @ReturnTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Objeto Link."
+                description = "Link object."
             )
         }
     )
@@ -4936,6 +4938,54 @@ public class DB extends ResourceBase {
         return new Link(new RelationshipLink(formLink));
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna uma relação com um formulário utilizando um alias (apelido) na junção.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns a relationship with a form using an alias in the join.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "formLink", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Nome do formulário a ser relacionado.",
+                    name = "formLink"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Name of the form to be related."
+                )
+            }),
+            @ParameterDoc(name = "alias", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Alias (apelido) do formulário relacionado na consulta.",
+                    name = "apelido"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Alias of the related form in the query."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto Link."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Link object."
+            )
+        }
+    )
     public Link link(String formLink, String alias) {
         return new Link(new RelationshipLink(formLink, alias));
     }
@@ -4946,7 +4996,7 @@ public class DB extends ResourceBase {
 
     public Link link(String formLink, org.netuno.tritao.db.form.where.Where where, Link link) {
         link.getRelationLink().setFormLink(formLink);
-        link.setWhere(where);
+        link.getWhere().add(where);
         return link;
     }
 
@@ -4991,6 +5041,82 @@ public class DB extends ResourceBase {
         return new org.netuno.tritao.db.form.where.Where(column);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Aplica a condição Where somente se a condição informada for verdadeira, caso contrário a condição é ignorada na construção da consulta.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Applies the Where condition only if the given condition is true, otherwise the condition is ignored when building the query.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "condition", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Condição que define se o Where será aplicado.",
+                    name = "condicao"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition that defines whether the Where will be applied."
+                )
+            }),
+            @ParameterDoc(name = "where", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Objeto Where a ser aplicado condicionalmente."
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Where object to be conditionally applied."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "O objeto Where com a validade definida pela condição."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The Where object with its validity set by the condition."
+            )
+        }
+    )
+    public org.netuno.tritao.db.form.where.Where whereIf(boolean condition, org.netuno.tritao.db.form.where.Where where) {
+        return where.setValid(condition);
+    }
+
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna um novo objeto Where vazio, sem coluna definida, pronto para ser configurado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns a new empty Where object, without a defined column, ready to be configured.",
+                howToUse = {}
+            )
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Novo objeto Where."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "A new Where object."
+            )
+        }
+    )
     public org.netuno.tritao.db.form.where.Where where() {
         return new org.netuno.tritao.db.form.where.Where();
     }

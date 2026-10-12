@@ -17,6 +17,7 @@ import org.netuno.tritao.db.form.link.LinkEngine;
 import org.netuno.tritao.db.form.link.RelationshipLink;
 import org.netuno.tritao.db.form.pagination.Pagination;
 import org.netuno.tritao.db.form.populate.Populate;
+import org.netuno.tritao.db.form.populate.PopulateEngine;
 import org.netuno.tritao.db.form.where.Where;
 
 import java.util.*;
@@ -37,30 +38,33 @@ public class Operation {
     private String formName;
     private List<Field> fieldsToGet = new ArrayList<>();
     private List<Field> fieldsToSet = new ArrayList<>();
-    private Where where;
+    private List<Where> where = new ArrayList<>();
     private Map<String, Join> join = new HashMap<>();
     private Order order;
     private Group group;
     private boolean distinct;
     private Pagination pagination;
     private boolean debug = false;
-    private List<Populate> tablesToPopulate = new ArrayList<>();
     private int limit = 1000;
+    private List<Populate> formsToPopulate = new ArrayList<>();
     private final OperationEngine operationalEngine;
     private final LinkEngine linkEngine;
+    private final PopulateEngine populateEngine;
 
-    public Operation(String formName, OperationEngine operationalEngine, LinkEngine linkEngine) {
+    public Operation(String formName, OperationEngine operationalEngine, LinkEngine linkEngine, PopulateEngine populateEngine) {
         this.formName = formName;
         this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
+        this.populateEngine = populateEngine;
     }
 
-    public Operation(String formName, Where where, OperationEngine operationalEngine, LinkEngine linkEngine) {
+    public Operation(String formName, Where where, OperationEngine operationalEngine, LinkEngine linkEngine, PopulateEngine populateEngine) {
         this.formName = formName;
         where.setTable(formName);
-        this.where = where;
+        this.where.add(where);
         this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
+        this.populateEngine = populateEngine;
     }
 
     @MethodDoc(
@@ -90,6 +94,15 @@ public class Operation {
     )
     public String getFormName() {
         return formName;
+    }
+
+    public List<Populate> getFormsToPopulate() {
+        return formsToPopulate;
+    }
+
+    public Operation setFormsToPopulate(List<Populate> formsToPopulate) {
+        this.formsToPopulate = formsToPopulate;
+        return this;
     }
 
     @MethodDoc(
@@ -245,7 +258,7 @@ public class Operation {
             )
         }
     )
-    public Where getWhere() {
+    public List<Where> getWhere() {
         return where;
     }
 
@@ -286,7 +299,7 @@ public class Operation {
             )
         }
     )
-    public Operation setWhere(Where where) {
+    public Operation setWhere(List<Where> where) {
         this.where = where;
         return this;
     }
@@ -723,15 +736,6 @@ public class Operation {
         return this;
     }
 
-    public List<Populate> getTablesToPopulate() {
-        return tablesToPopulate;
-    }
-
-    public Operation setTablesToPopulate(List<Populate> tablesToPopulate) {
-        this.tablesToPopulate = tablesToPopulate;
-        return this;
-    }
-
     public int getLimit() {
         return limit;
     }
@@ -787,7 +791,7 @@ public class Operation {
         newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
-            newJoin.setWhere(relation.getWhere());
+            newJoin.getWhere().add(relation.getWhere());
         }
         this.join.put(relation.getTableName(), newJoin);
         return this;
@@ -836,7 +840,7 @@ public class Operation {
         newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
-            newJoin.setWhere(relation.getWhere());
+            newJoin.getWhere().add(relation.getWhere());
         }
         this.join.put(relation.getTableName(), newJoin);
         return this;
@@ -885,7 +889,7 @@ public class Operation {
         newJoin.setTable(this.formName);
         newJoin.setRelation(relation);
         if (relation.getWhere() != null) {
-            newJoin.setWhere(relation.getWhere());
+            newJoin.getWhere().add(relation.getWhere());
         }
         this.join.put(relation.getTableName(), newJoin);
         return this;
@@ -985,7 +989,7 @@ public class Operation {
     public Operation link(String formLink, Where where) {
         Link link = new Link(this.formName, new RelationshipLink(formLink));
         Join join = linkEngine.buildJoin(link);
-        join.setWhere(where.setTable(formLink));
+        join.getWhere().add(where.setTable(formLink));
         this.join.put(formLink, join);
         return this;
     }
@@ -1108,7 +1112,7 @@ public class Operation {
         relationLink.setForm(formLink);
         Link link = new Link(this.formName, new RelationshipLink(formLink, relationLink));
         Join join = linkEngine.buildJoin(link);
-        join.setWhere(where.setTable(formLink));
+        join.getWhere().add(where.setTable(formLink));
         this.join.put(formLink, join);
         return this;
     }
@@ -1194,16 +1198,6 @@ public class Operation {
 
     public Operation distinct(boolean distinct) {
         this.distinct = distinct;
-        return this;
-    }
-
-    public Operation populate(String table, Field filter) {
-        this.tablesToPopulate.add(new Populate(table, filter));
-        return this;
-    }
-
-    public Operation populate(String table, Field filter, List<Field> fields) {
-        this.tablesToPopulate.add(new Populate(table, filter, fields));
         return this;
     }
 
@@ -1361,8 +1355,31 @@ public class Operation {
     }
 
     public Operation where(Where where) {
-        where.setTable(this.formName);
-        this.where = where;
+        if (where.isValid()) {
+            where.setTable(this.formName);
+            this.where.add(where);
+        }
+        return this;
+    }
+
+    public Operation whereIf(boolean condition, Where where) {
+        if (condition) {
+            where.setTable(this.formName);
+            this.where.add(where);
+        }
+        return this;
+    }
+
+    public Operation subform(Operation formToPopulate) {
+        this.formsToPopulate.add(this.populateEngine.buildPopulate(this.getFormName(), formToPopulate));
+        return this;
+    }
+
+    public Operation subform(Operation formToLink, String alias) {
+        this.formsToPopulate.add(
+                this.populateEngine.buildPopulate(this.getFormName(), formToLink)
+                        .setAlias(alias)
+        );
         return this;
     }
 
