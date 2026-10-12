@@ -90,6 +90,10 @@ public abstract class ManagerBase implements BuilderBase {
         return this;
     }
 
+    public String getDatabaseName() {
+        return org.netuno.proteu.Config.getDataSources().getString(Config.getDBKey(proteu, key) +"$Name");
+    }
+
     public static boolean isH2(Builder builder) {
         return builder instanceof H2;
     }
@@ -104,6 +108,10 @@ public abstract class ManagerBase implements BuilderBase {
 
     public static boolean isMariaDB(Builder builder) {
         return builder instanceof MariaDB;
+    }
+
+    public static boolean isClickHouse(Builder builder) {
+        return builder instanceof ClickHouse;
     }
 
     public static boolean isMSSQL(Builder builder) {
