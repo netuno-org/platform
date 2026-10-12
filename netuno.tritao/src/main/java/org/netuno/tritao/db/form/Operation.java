@@ -1701,6 +1701,31 @@ public class Operation {
         return this;
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Insere um novo registro com os valores definidos na consulta.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Inserts a new record with the values set in the query.",
+                howToUse = {}
+            )
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto com o ID do registro inserido."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Object with the ID of the inserted record."
+            )
+        }
+    )
     public Values insert() {
         final var data = linkEngine.fieldToValues(this.fieldsToSet);
         if (data.values().stream().anyMatch(object -> object instanceof Values)) {
@@ -1711,11 +1736,61 @@ public class Operation {
         return operationalEngine.insert(linkEngine.fieldToValues(this.fieldsToSet), this);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Insere um novo registro com os valores definidos na consulta e retorna o registro inserido.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Inserts a new record with the values set in the query and returns the inserted record.",
+                howToUse = {}
+            )
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Registro inserido."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "The inserted record."
+            )
+        }
+    )
     public Values insertAndReturn() {
         linkEngine.checkForm(this.formName);
         return operationalEngine.insertAndReturn(linkEngine.fieldToValues(this.fieldsToSet), this);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Atualiza os registros que correspondem às condições da consulta com os valores definidos.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Updates the records matching the query conditions with the values set.",
+                howToUse = {}
+            )
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Objeto com a quantidade de registros afetados por formulário."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Object with the number of affected records by form."
+            )
+        }
+    )
     public Values update() {
         final var data = linkEngine.fieldToValues(this.fieldsToSet);
         if (data.values().stream().anyMatch(object -> object instanceof Values)) {
@@ -1735,6 +1810,31 @@ public class Operation {
         return operationalEngine.cascadeDelete(deleteLinks, this);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Retorna a quantidade de registros que correspondem às condições da consulta.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Returns the number of records matching the query conditions.",
+                howToUse = {}
+            )
+        },
+        parameters = {},
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Quantidade de registros."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Number of records."
+            )
+        }
+    )
     public int count() {
         return operationalEngine.count(this);
     }
