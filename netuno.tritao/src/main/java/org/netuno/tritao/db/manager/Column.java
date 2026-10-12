@@ -70,6 +70,8 @@ public class Column extends ManagerBase {
 
         private Builder builder;
 
+        private boolean primaryKey = false;
+
         public Builder getBuilder() {
             return builder;
         }
@@ -86,6 +88,15 @@ public class Column extends ManagerBase {
                 }
             }
         	return null;
+        }
+
+        public boolean isPrimaryKey() {
+            return primaryKey;
+        }
+
+        public Type setPrimaryKey(boolean primaryKey) {
+            this.primaryKey = primaryKey;
+            return this;
         }
 
         @Override
@@ -119,11 +130,43 @@ public class Column extends ManagerBase {
                 if (this == Type.UUID) {
                     return "char";
                 }
+            } else if (isClickHouse(builder)) {
+                if (this == Type.BOOLEAN) {
+                    return "Bool";
+                }
+                if (this == Type.TIMESTAMP) {
+                    return "DateTime";
+                }
+                if (this == Type.DATE) {
+                    return "Date";
+                }
+                if (this == Type.TIME) {
+                    return "Time";
+                }
+                if (this == Type.FLOAT) {
+                    return "Float32";
+                }
+                if (this == Type.INT) {
+                    if (isPrimaryKey()) {
+                        return "UInt32";
+                    }
+                    return "Int32";
+                }
+                if (this == Type.BIGINT) {
+                    return "Int64";
+                }
+                if (this == Type.UUID) {
+                    return "UUID";
+                }
+                if (this == Type.VARCHAR || this == Type.TEXT) {
+                    return "String";
+                }
             }
             return super.toString().toLowerCase();
         }
     }
 
+    protected String tableName;
     protected String name;
     protected Type type;
     protected boolean primaryKey;
@@ -141,6 +184,15 @@ public class Column extends ManagerBase {
         super(proteu, hili, key);
     }
 
+    public String getTableName() {
+        return tableName;
+    }
+
+    public Column setTableName(String tableName) {
+        this.tableName = tableName;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -155,6 +207,7 @@ public class Column extends ManagerBase {
     }
 
     public Type getType() {
+        type.setPrimaryKey(isPrimaryKey());
         return type;
     }
     
@@ -165,6 +218,7 @@ public class Column extends ManagerBase {
     public Column setType(Type type) {
         this.type = type;
         this.type.setBuilder(this.getBuilder());
+        this.type.setPrimaryKey(isPrimaryKey());
         if (getType() == Type.VARCHAR) {
             maxLength = 250;
         }
@@ -196,6 +250,9 @@ public class Column extends ManagerBase {
 
     public Column setPrimaryKey(boolean primaryKey) {
         this.primaryKey = primaryKey;
+        if (getType() != null) {
+            getType().setPrimaryKey(isPrimaryKey());
+        }
         return this;
     }
 
@@ -415,6 +472,9 @@ public class Column extends ManagerBase {
         if (isMariaDB()) {
             return isPrimaryKey() && getType() == Type.INT ? "auto_increment" : "";
         }
+        if (isClickHouse()) {
+            return isPrimaryKey() && getType() == Type.INT ? "default generateSerialID('"+ getDatabaseName() +"."+ getTableName() +"."+ getName() +"')" : "";
+        }
         return isPrimaryKey() ? "primary key"+ (isMSSQL() && getType() == Type.INT ? " identity" : "") : "";
     }
 
@@ -424,7 +484,7 @@ public class Column extends ManagerBase {
 
     public Column changeType(String table) {
         try {
-            if (isMariaDB()) {
+            if (isMariaDB() || isClickHouse()) {
                 getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " modify column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
             } else if (isMSSQL()) {
                 getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(DB.sqlInjectionRawName(getName())) + " " + toTypeDefinition() + " " + toDefaultDefinition() + ";");
@@ -454,10 +514,10 @@ public class Column extends ManagerBase {
                 DBVersion version = new DBVersion(this);
                 if (isH2()) {
                     getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " alter column " + getBuilder().escape(oldRawSQLName) + " rename to " + getBuilder().escape(newRawSQLName) + "");
-                } else if (isPostgreSQL() || (isMariaDB() && version.getVersion() > 10.5) || isDuckDB()) {
+                } else if (isPostgreSQL() || (isMariaDB() && version.getVersion() > 10.5) || isDuckDB() || isClickHouse()) {
                     getExecutor().execute("alter table " + getBuilder().escape(DB.sqlInjectionRawName(table)) + " rename column " + getBuilder().escape(oldRawSQLName) + " to " + getBuilder().escape(newRawSQLName) + "");
                 } else if (isMSSQL()) {
-                	getExecutor().execute("exec sp_rename '" + DB.sqlInjectionRawName(table) + "." + getBuilder().escape(oldRawSQLName) + "', '" + newRawSQLName + "', 'COLUMN'");
+                	getExecutor().execute("exec sp_rename '" + DB.sqlInjectionRawName(table) + "." + oldRawSQLName + "', '" + newRawSQLName + "', 'COLUMN'");
                 } else if (isMariaDB() && version.getVersion() <= 10.5) {
                     Values dbColumnInfo = getExecutor().queryFirst("SELECT DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ DB.sqlInjectionRawName(table) +"' AND COLUMN_NAME = '"+ oldRawSQLName +"'");
                     String columnDefault = "";
