@@ -52,6 +52,7 @@ public class Setup extends ManagerBase {
         try {
             CheckExists checkExists = new CheckExists(this);
             Index index = new Index(this);
+
             Sequence sequence = new Sequence(this)
                     .renameIfExists("tritao_table_id", "netuno_table_id")
                     .renameIfExists("tritao_design_id", "netuno_design_id")
@@ -65,6 +66,7 @@ public class Setup extends ManagerBase {
                     .renameIfExists("tritao_statistic_type_id", "netuno_statistic_type_id")
                     .renameIfExists("tritao_statistic_moment_id", "netuno_statistic_moment_id")
                     .renameIfExists("tritao_statistic_avarage_id", "netuno_statistic_avarage_id");
+
             Table table = new Table(this)
                     .renameIfExists("tritao_table", "netuno_table")
                     .renameIfExists("tritao_design", "netuno_design")

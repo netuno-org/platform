@@ -17,8 +17,6 @@
 
 package org.netuno.tritao.db.manager;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.netuno.library.doc.LanguageDoc;
 import org.netuno.library.doc.LibraryDoc;
 import org.netuno.library.doc.LibraryTranslationDoc;
@@ -82,7 +80,7 @@ public class CheckExists extends ManagerBase {
             return getExecutor().query("select column_name from INFORMATION_SCHEMA.columns where table_name = '"+ DB.sqlInjection(table) +"'").size() > 0;
         } else if (isPostgreSQL()) {
             return getExecutor().query("select * from pg_class where relname = '" + DB.sqlInjection(table) + "' and relkind = 'r'").size() == 1;
-        } else if (isMariaDB()) {
+        } else if (isMariaDB() || isClickHouse()) {
             return getExecutor().query("select * from INFORMATION_SCHEMA.tables where table_schema = DATABASE() and table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
         } else if (isMSSQL()) {
             return getExecutor().query("select * from INFORMATION_SCHEMA.tables where table_schema = 'dbo' and table_name = '" + DB.sqlInjection(table) + "'").size() == 1;
@@ -97,7 +95,7 @@ public class CheckExists extends ManagerBase {
             return getExecutor().query("select column_name from INFORMATION_SCHEMA.columns where table_name = '"+ DB.sqlInjection(table) +"' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
         } else if (isPostgreSQL()) {
             return getExecutor().query("select attname from pg_attribute where attrelid = (select oid from pg_class where relname = '" + DB.sqlInjection(table) + "') and attname = '" + DB.sqlInjection(column) + "'").size() == 1;
-        } else if (isMariaDB()) {
+        } else if (isMariaDB() || isClickHouse()) {
             return getExecutor().query("select * from INFORMATION_SCHEMA.columns where table_schema = DATABASE() and table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
         } else if (isMSSQL()) {
             return getExecutor().query("select * from INFORMATION_SCHEMA.columns where table_schema = 'dbo' and table_name = '" + DB.sqlInjection(table) + "' and column_name = '"+ DB.sqlInjection(column) +"'").size() == 1;
@@ -116,7 +114,7 @@ public class CheckExists extends ManagerBase {
             return getExecutor().query("select index_name from INFORMATION_SCHEMA.indexes where index_name = '"+ DB.sqlInjection(index) +"'").size() == 1;
         } else if (isPostgreSQL()) {
             return getExecutor().query("select * from pg_class where relname = '" + DB.sqlInjection(index) + "' and relkind = 'i'").size() == 1;
-        } else if (isMariaDB()) {
+        } else if (isMariaDB() || isClickHouse()) {
             return getExecutor().query("select * from INFORMATION_SCHEMA.statistics where table_schema = DATABASE() and index_name = '"+ DB.sqlInjection(index) +"'").size() == 1;
         } else if (isMSSQL()) {
             return getExecutor().query("select * from sys.indexes where name = '"+ DB.sqlInjection(index) +"'").size() == 1;
