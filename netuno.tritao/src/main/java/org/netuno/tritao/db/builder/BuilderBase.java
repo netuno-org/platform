@@ -22,6 +22,7 @@ import org.netuno.proteu.Proteu;
 import org.netuno.psamata.DB;
 import org.netuno.psamata.Values;
 import org.netuno.tritao.com.ComponentData;
+import org.netuno.tritao.config.Config;
 import org.netuno.tritao.db.*;
 import org.netuno.tritao.db.manager.Column;
 import org.netuno.tritao.db.manager.ManagerBase;
@@ -42,6 +43,10 @@ public interface BuilderBase {
     DBExecutor getExecutor();
     ManagerBase getManager();
 
+    default String getDatabaseName() {
+        return org.netuno.proteu.Config.getDataSources().getString(Config.getDBKey(getProteu(), getKey()) +"$Name");
+    }
+
     default boolean isH2() {
         return getBuilder() instanceof H2;
     }
@@ -60,6 +65,10 @@ public interface BuilderBase {
 
     default boolean isDuckDB() {
         return getBuilder() instanceof DuckDB;
+    }
+
+    default boolean isClickHouse() {
+        return getBuilder() instanceof ClickHouse;
     }
 
     default boolean sequence() {
@@ -90,20 +99,24 @@ public interface BuilderBase {
                                 + new Sequence(getManager()).commandNextValue(tableName + "_id")
                                 + " as id"
                 );
-                id = sequence.get(0).getInt("id");
+                id = sequence.getFirst().getInt("id");
                 data.set("id", id);
             } else {
                 sequenceRestart = true;
             }
+        }
+        if (isClickHouse()) {
+            id = getExecutor().query("SELECT generateSerialID('"+ getDatabaseName() +"."+ tableName +".id') AS id").getFirst().getInt("id");
+            data.set("id", id);
         }
         String insertCommand = "insert into "
                 + getBuilder().escape(tableName) +"("
                 + getBuilder().escapeStart() + data.keysToString(getBuilder().escapeEnd() +", "+ getBuilder().escapeStart()) + getBuilder().escapeEnd()
                 +") values("
                 + data.valuesToString(", ", new Values()
-                .set("booleanTrue", getBuilder().booleanTrue())
-                .set("booleanFalse", getBuilder().booleanFalse())
-        )
+                        .set("booleanTrue", getBuilder().booleanTrue())
+                        .set("booleanFalse", getBuilder().booleanFalse())
+                )
                 +")";
         if (isMariaDB() || isMSSQL()) {
             if (id == 0) {
