@@ -140,11 +140,12 @@ public interface TableSelect extends BuilderBase {
     }
 
     default List<Values> selectTablesByOrphans() {
-        String select = " * ";
+        String select = " nt.* ";
         String from = " netuno_table as nt ";
-        String where = "where parent_id > 0 ";
+        from += " left join (select id from netuno_table) as p ON p.id = nt.parent_id ";
+        String where = "where nt.parent_id > 0 ";
         where += conditionToRestrictTables(getProteu().getRequestAll().getBoolean("report"));
-        where += " and parent_id not in (select id from netuno_table where id = nt.parent_id) ";
+        where += " and p.id is null ";
         where += " and report = " + getBuilder().booleanValue(getProteu().getRequestAll().getBoolean("report"));
         String order = " order by reorder, title ";
         String sql = "select " + select + " from " + from + where + order;
