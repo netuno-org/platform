@@ -17,6 +17,7 @@
 
 package org.netuno.tritao.proteu;
 
+import com.clickhouse.jdbc.DataSourceImpl;
 import com.vdurmont.emoji.EmojiParser;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -27,6 +28,7 @@ import org.netuno.psamata.Values;
 import org.netuno.psamata.io.SafePath;
 import org.netuno.tritao.config.Config;
 import org.netuno.tritao.config.ConfigError;
+import org.netuno.tritao.db.Builder;
 import org.netuno.tritao.db.DBExecutor;
 import org.netuno.tritao.event.EventId;
 import org.netuno.tritao.hili.Hili;
@@ -35,8 +37,10 @@ import org.netuno.tritao.resource.URL;
 import org.netuno.tritao.util.TemplateBuilder;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 import java.util.function.Function;
 import org.netuno.tritao.db.DBError;
 import org.netuno.tritao.resource.event.ResourceEventType;
@@ -282,6 +286,7 @@ public class ProteuEvents implements Events {
                 throw new DBError(message).setLogFatal(true);
             } else if (!org.netuno.proteu.Config.getDataSources().hasKey(Config.getDBKey(proteu, key))) {
             	org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key) +"$LastModified", appConfig.getLong("lastModified"));
+                org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key) +"$Name", db.getString("name", app + "_" + key));
                 try {
                     if (dbEngine.equalsIgnoreCase("h2")
                             || dbEngine.equalsIgnoreCase("h2database")) {
@@ -402,9 +407,37 @@ public class ProteuEvents implements Events {
                     } else if (dbEngine.equalsIgnoreCase("duck") || dbEngine.equalsIgnoreCase("duckdb")) {
                         HikariConfig config = new HikariConfig();
                         config.setDriverClassName("org.duckdb.DuckDBDriver");
+                        var dbsPath = java.nio.file.Path.of(Config.getPathAppBase(proteu), "dbs");
+                        if (!Files.exists(dbsPath)) {
+                            Files.createDirectory(dbsPath);
+                        }
                         if (db.hasKey("url")) {
                             config.setJdbcUrl(db.getString("url"));
+                        } else {
+                            config.setJdbcUrl("jdbc:duckdb:"
+                                    + Config.getPathAppBase(proteu)
+                                    + "/dbs/"+ db.getString("name", app));
                         }
+                        loadHikariConfig(app, config, db);
+                        org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
+                    } else if (dbEngine.equalsIgnoreCase("clickhouse") || dbEngine.equalsIgnoreCase("ch")) {
+                        String url = "";
+                        if (db.hasKey("url")) {
+                            url = db.getString("url");
+                        } else {
+                            url = "jdbc:clickhouse:http://"
+                                    + db.getString("host", "localhost")
+                                    + ":"
+                                    + db.getInt("port", 8123);
+                        }
+                        Properties info = new Properties();
+                        info.put("user", db.getString("username"));
+                        info.put("password", db.getString("password"));
+                        info.put("database", db.getString("name", app));
+                        info.put("compress", "0");
+                        HikariConfig config = new HikariConfig();
+                        config.setDriverClassName("com.clickhouse.jdbc.Driver");
+                        config.setDataSource(new DataSourceImpl(url, info));
                         loadHikariConfig(app, config, db);
                         org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
                     } else {
@@ -440,22 +473,27 @@ public class ProteuEvents implements Events {
             if (!db.getBoolean("enabled", true)) {
                 continue;
             }
-            String dbEngine = db.getString("engine");
             proteu.getConfig().set("_database:executor:"+ key, new DBExecutor(proteu, hili, key));
+            Builder builder = null;
+            String dbEngine = db.getString("engine");
             if (dbEngine.equalsIgnoreCase("h2")
                     || dbEngine.equalsIgnoreCase("h2database")) {
-                proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.H2(proteu, hili, key));
+                builder = new org.netuno.tritao.db.H2(proteu, hili, key);
             } else if (dbEngine.equalsIgnoreCase("pg")
                     || dbEngine.equalsIgnoreCase("postgresql")) {
-                proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.PostgreSQL(proteu, hili, key));
+                builder = new org.netuno.tritao.db.PostgreSQL(proteu, hili, key);
             } else if (dbEngine.equalsIgnoreCase("mariadb")) {
-                proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.MariaDB(proteu, hili, key));
+                builder = new org.netuno.tritao.db.MariaDB(proteu, hili, key);
             } else if (dbEngine.equalsIgnoreCase("mssql")) {
-                proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.MSSQL(proteu, hili, key));
+                builder = new org.netuno.tritao.db.MSSQL(proteu, hili, key);
             } else if (dbEngine.equalsIgnoreCase("duck")
                 || dbEngine.equalsIgnoreCase("duckdb")) {
-                proteu.getConfig().set("_database:builder:"+ key, new org.netuno.tritao.db.DuckDB(proteu, hili, key));
+                builder = new org.netuno.tritao.db.DuckDB(proteu, hili, key);
+            } else if (dbEngine.equalsIgnoreCase("clickhouse")
+                    || dbEngine.equalsIgnoreCase("ch")) {
+                builder = new org.netuno.tritao.db.ClickHouse(proteu, hili, key);
             }
+            proteu.getConfig().set("_database:builder:"+ key, builder);
             proteu.getConfig().set("_database:naming:base:"+ key, "");
             if (db.hasKey("uuidFunction")) {
                 proteu.getConfig().set("_database:builder:"+ key +":uuid-function", db.getString("uuidFunction"));
