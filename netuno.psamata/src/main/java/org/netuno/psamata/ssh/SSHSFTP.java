@@ -316,9 +316,10 @@ public class SSHSFTP implements AutoCloseable {
     )
     public SSHSFTP uploadBytes(String remotePath, byte[] bytes) throws IOException {
         try (java.io.ByteArrayInputStream in = new java.io.ByteArrayInputStream(bytes)) {
-            RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(CREAT, WRITE));
-            try (java.io.OutputStream out = remoteFile.new RemoteFileOutputStream()) {
-                IOUtils.copy(in, out);
+            try (RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(CREAT, WRITE))) {
+                try (java.io.OutputStream out = remoteFile.new RemoteFileOutputStream()) {
+                    IOUtils.copy(in, out);
+                }
             }
         }
         return this;
@@ -427,18 +428,20 @@ public class SSHSFTP implements AutoCloseable {
             )}
     )
     public SSHSFTP upload(String remotePath, java.io.InputStream in) throws IOException {
-        RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(CREAT, WRITE));
-        try (java.io.OutputStream out = remoteFile.new RemoteFileOutputStream()) {
-            IOUtils.copy(in, out);
+        try (RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(CREAT, WRITE))) {
+            try (java.io.OutputStream out = remoteFile.new RemoteFileOutputStream()) {
+                IOUtils.copy(in, out);
+            }
         }
         return this;
     }
 
     public SSHSFTP upload(String remotePath, File file) throws IOException {
         try (var in = file.getInputStream()) {
-            RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(CREAT, WRITE));
-            try (java.io.OutputStream out = remoteFile.new RemoteFileOutputStream()) {
-                IOUtils.copy(in, out);
+            try (RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(CREAT, WRITE))) {
+                try (java.io.OutputStream out = remoteFile.new RemoteFileOutputStream()) {
+                    IOUtils.copy(in, out);
+                }
             }
             return this;
         }
@@ -477,9 +480,10 @@ public class SSHSFTP implements AutoCloseable {
     )
     public byte[] downloadBytes(String remotePath) throws IOException {
         try (java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream()) {
-            RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(READ));
-            try (java.io.InputStream in = remoteFile.new RemoteFileInputStream()) {
-                IOUtils.copy(in, out);
+            try (RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(READ))) {
+                try (java.io.InputStream in = remoteFile.new RemoteFileInputStream()) {
+                    IOUtils.copy(in, out);
+                }
             }
             return out.toByteArray();
         }
@@ -577,18 +581,20 @@ public class SSHSFTP implements AutoCloseable {
             )}
     )
     public SSHSFTP download(String remotePath, java.io.OutputStream out) throws IOException {
-        RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(READ));
-        try (java.io.InputStream in = remoteFile.new RemoteFileInputStream()) {
-            IOUtils.copy(in, out);
+        try (RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(READ))) {
+            try (java.io.InputStream in = remoteFile.new RemoteFileInputStream()) {
+                IOUtils.copy(in, out);
+            }
         }
         return this;
     }
 
     public SSHSFTP download(String remotePath, File file) throws IOException {
         try (var out = file.getOutputStream()) {
-            RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(READ));
-            try (java.io.InputStream in = remoteFile.new RemoteFileInputStream()) {
-                IOUtils.copy(in, out);
+            try (RemoteFile remoteFile = sftp.open(remotePath, EnumSet.of(READ))) {
+                try (java.io.InputStream in = remoteFile.new RemoteFileInputStream()) {
+                    IOUtils.copy(in, out);
+                }
             }
             return this;
         }
