@@ -841,10 +841,84 @@ public class Where {
         return this.equal(localTime);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja diferente do valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is different from the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notEquals(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja diferente do valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is different from the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notEqual(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
     }
@@ -890,6 +964,43 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.StartsWith);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que não inicia com o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that does not start with the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notStartsWith(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotStartsWith);
     }
@@ -935,6 +1046,43 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.EndsWith);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que não termina com o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that does not end with the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notEndsWith(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotEndsWith);
     }
@@ -980,6 +1128,43 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.Contains);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que não contém o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that does not contain the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notContains(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotContains);
     }
