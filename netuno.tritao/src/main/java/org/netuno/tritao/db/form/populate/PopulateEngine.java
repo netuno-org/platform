@@ -28,12 +28,14 @@ public class PopulateEngine extends TableBuilderResourceBase {
         if(manyToOneLink != null) {
             populate.getRelationship().setColumnLink(manyToOneLink.getString("formColumn")).setRelationshipType(RelationshipType.ManyToOne);
             populate.getRelationship().setForm(manyToOneLink.getString("formTableLink"));
+            populate.getOperation().setFormName(manyToOneLink.getString("formTableLink"));
             return populate;
         } else {
             final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
             if(oneToManyLink != null) {
                 populate.getRelationship().setColumnLink(oneToManyLink.getString("formColumn")).setRelationshipType(RelationshipType.OneToMany);
                 populate.getRelationship().setForm(oneToManyLink.getString("formTableLink"));
+                populate.getOperation().setFormName(oneToManyLink.getString("formTableLink"));
                 return populate;
             } else {
                 final Values manyToManyLink = getManyToManyLink(populate.getForm(), populate.getRelationship().getForm());
@@ -43,6 +45,7 @@ public class PopulateEngine extends TableBuilderResourceBase {
                             .setColumnReference(manyToManyLink.getString("reference"))
                             .setFormLink(manyToManyLink.getString("formLink"))
                             .setRelationshipType(RelationshipType.ManyToMany);
+                    populate.getOperation().setFormName(manyToManyLink.getString("formLink"));
                     return populate;
                 }
                 throw new IllegalArgumentException("There is no link between the forms " + populate.getForm() + " and " + populate.getRelationship().getForm());
