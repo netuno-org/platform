@@ -281,12 +281,18 @@ public class OperationEngine extends Data {
                                 , populateRecord);
                     }
                     case OneToMany -> {
-                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
-                                .append("INNER JOIN ").append(populate.getForm())
-                                .append(" ON ").append(populate.getForm()).append(".id")
-                                .append(" = ").append(populate.getRelationship().getForm()).append(".").append(populate.getRelationship().getColumnLink()).append("\n")
-                                .append("WHERE ").append(populate.getForm()).append(".id")
-                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        var subOperation = populate.getOperation();
+                        subOperation.join(
+                            new Relationship(
+                                populate.getForm(),
+                                populate.getRelationship().getColumnLink(),
+                                RelationshipType.ManyToOne
+                            )
+                        );
+                        final String operationPartQuerySQL = this.buildQuerySQL(subOperation).replaceAll("\t", "");
+                        populateFromPartQuerySQL.append(populate.getRelationship()
+                            .getForm())
+                            .append(operationPartQuerySQL);
                         final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
 
                         if (populate.getOperation().isDebug()) {
@@ -294,10 +300,10 @@ public class OperationEngine extends Data {
                         }
                         final List<Values> populateRecords = getExecutor().query(finalQuerySQL);
                         items.get(i).set(
-                                populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
-                                        ? populate.getAlias()
-                                        : populate.getRelationship().getForm()
-                                , populateRecords);
+                            populate.getAlias() != null && !populate.getAlias().isBlank() && !populate.getAlias().isEmpty()
+                                ? populate.getAlias()
+                                : populate.getRelationship().getForm()
+                            , populateRecords);
                     }
                     case ManyToMany -> {
                         populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
