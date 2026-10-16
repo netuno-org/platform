@@ -45,7 +45,6 @@ public class PopulateEngine extends TableBuilderResourceBase {
                             .setColumnReference(manyToManyLink.getString("reference"))
                             .setFormLink(manyToManyLink.getString("formLink"))
                             .setRelationshipType(RelationshipType.ManyToMany);
-                    populate.getOperation().setFormName(manyToManyLink.getString("formLink"));
                     return populate;
                 }
                 throw new IllegalArgumentException("There is no link between the forms " + populate.getForm() + " and " + populate.getRelationship().getForm());
