@@ -1688,12 +1688,12 @@ public class Operation {
         return this;
     }
 
-    public Operation subform(Operation formToPopulate) {
+    public Operation form(Operation formToPopulate) {
         this.formsToPopulate.add(this.populateEngine.buildPopulate(this.getFormName(), formToPopulate));
         return this;
     }
 
-    public Operation subform(Operation formToLink, String alias) {
+    public Operation form(Operation formToLink, String alias) {
         this.formsToPopulate.add(
                 this.populateEngine.buildPopulate(this.getFormName(), formToLink)
                         .setAlias(alias)
