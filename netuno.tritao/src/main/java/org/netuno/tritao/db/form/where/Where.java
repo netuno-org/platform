@@ -435,12 +435,12 @@ public class Where {
         translations = {
             @MethodTranslationDoc(
                 language = LanguageDoc.PT,
-                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao padrão informado.",
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
                 howToUse = {}
             ),
             @MethodTranslationDoc(
                 language = LanguageDoc.EN,
-                description = "Relational operator that filters any occurrence that is exact to the given pattern.",
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
                 howToUse = {}
             )
         },
@@ -448,12 +448,12 @@ public class Where {
             @ParameterDoc(name = "value", translations = {
                 @ParameterTranslationDoc(
                     language = LanguageDoc.PT,
-                    description = "Volor da condição.",
+                    description = "Texto a ser comparado.",
                     name = "valor"
                 ),
                 @ParameterTranslationDoc(
                     language = LanguageDoc.EN,
-                    description = "Conditional value."
+                    description = "Text to be compared."
                 )
             })
         },
@@ -472,46 +472,453 @@ public class Where {
         return this.equal(value);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Número a ser comparado.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Number to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(Number value) {
         return this.equal(value);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Booleano a ser comparado.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Boolean to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(Boolean value) {
         return this.equal(value);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "uid", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "UUID a ser comparado.",
+                    name = "uid"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "UUID to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(UUID uid) {
         return this.equal(uid);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "timestamp", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Data e hora (Timestamp) a ser comparada.",
+                    name = "dataHora"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Date and time (Timestamp) to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(Timestamp timestamp) {
         return this.equal(timestamp);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "time", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Hora (Time) a ser comparada.",
+                    name = "hora"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Time to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(Time time) {
         return this.equal(time);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "date", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Data (Date) a ser comparada.",
+                    name = "data"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Date to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(Date date) {
         return this.equal(date);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "localDateTime", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Data e hora local (LocalDateTime) a ser comparada.",
+                    name = "dataHoraLocal"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Local date and time (LocalDateTime) to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(LocalDateTime localDateTime) {
         return this.equal(localDateTime);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "localDate", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Data local (LocalDate) a ser comparada.",
+                    name = "dataLocal"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Local date (LocalDate) to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(LocalDate localDate) {
         return this.equal(localDate);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja exata ao valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is exactly equal to the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "localTime", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Hora local (LocalTime) a ser comparada.",
+                    name = "horaLocal"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Local time (LocalTime) to be compared."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where equals(LocalTime localTime) {
         return this.equal(localTime);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja diferente do valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is different from the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notEquals(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que seja diferente do valor informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that is different from the given value.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notEqual(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotEquals);
     }
@@ -557,6 +964,43 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.StartsWith);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que não inicia com o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that does not start with the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notStartsWith(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotStartsWith);
     }
@@ -602,6 +1046,43 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.EndsWith);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que não termina com o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that does not end with the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notEndsWith(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotEndsWith);
     }
@@ -647,6 +1128,43 @@ public class Where {
         return this.addConditionalOperator(value, RelationalOperatorType.Contains);
     }
 
+    @MethodDoc(
+        translations = {
+            @MethodTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional que filtra qualquer ocorrência que não contém o padrão informado.",
+                howToUse = {}
+            ),
+            @MethodTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator that filters any occurrence that does not contain the given pattern.",
+                howToUse = {}
+            )
+        },
+        parameters = {
+            @ParameterDoc(name = "value", translations = {
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.PT,
+                    description = "Valor da condição.",
+                    name = "valor"
+                ),
+                @ParameterTranslationDoc(
+                    language = LanguageDoc.EN,
+                    description = "Condition value."
+                )
+            })
+        },
+        returns = {
+            @ReturnTranslationDoc(
+                language = LanguageDoc.PT,
+                description = "Operador relacional."
+            ),
+            @ReturnTranslationDoc(
+                language = LanguageDoc.EN,
+                description = "Relational operator."
+            )
+        }
+    )
     public Where notContains(Object value) {
         return this.addConditionalOperator(value, RelationalOperatorType.NotContains);
     }

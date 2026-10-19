@@ -7,6 +7,7 @@ import org.netuno.psamata.Values;
 import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.form.join.Join;
 import org.netuno.tritao.db.form.join.Relationship;
+import org.netuno.tritao.db.form.join.RelationshipType;
 import org.netuno.tritao.db.form.populate.Populate;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.db.form.pagination.Page;
@@ -45,7 +46,7 @@ public class OperationEngine extends Data {
                 if (queryWhere != null && queryWhere.getConditions() != null && !queryWhere.getConditions().isEmpty()) {
                     final ConditionalOperator firstConditional = queryWhere.getConditions().getFirst();
                     whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                            .append(this.buildWhereSQL(queryWhere));
+                            .append(this.buildWhereSQL(queryWhere.setTable(query.getFormName())));
                 }
             }
         }
@@ -68,7 +69,7 @@ public class OperationEngine extends Data {
                         if (subjoinWhere != null && subjoinWhere.getConditions() != null && !subjoinWhere.getConditions().isEmpty()) {
                             final ConditionalOperator firstConditional = subjoinWhere.getConditions().getFirst();
                             whereSQL.append(firstConditional.getOperator() != null ? "" : " AND")
-                                    .append(this.buildWhereSQL(subjoinWhere));
+                                    .append(this.buildWhereSQL(subjoinWhere.setTable(query.getFormName())));
                         }
                     }
                 }
@@ -242,32 +243,31 @@ public class OperationEngine extends Data {
 
     public List<Values> populateForms(Operation query, List<Values> items) {
         StringBuilder mainSQl = new StringBuilder();
-        mainSQl.append("SELECT ").append(query.getFormName()).append(".id")
-                .append(" FROM ").append(query.getFormName())
+        query.setFieldsToGet(List.of(new Field(query.getFormName() + ".id")));
+        mainSQl.append(this.buildSelectSQL(query)).append(query.getFormName())
                 .append(this.buildQuerySQL(query))
                 .append(this.buildBottomSQL(query));
         final List<Values> recordsId = getExecutor().query(mainSQl.toString());
 
         for (Populate populate : query.getFormsToPopulate()) {
             StringBuilder populateSelectPartQuerySQL = new StringBuilder();
-            populateSelectPartQuerySQL.append("SELECT ")
-                    .append(!populate.getFields().isEmpty()
-                                    ? populate.getFields().stream().map(
-                                    field -> populate.getRelationship().getForm() + "." + field.getColumn() + ((field.getAlias() != null && !field.getAlias().isBlank() && !field.getAlias().isEmpty()) ? " AS " + field.getAlias().trim() : "")
-                            ).collect(Collectors.joining(", "))
-                                    : populate.getRelationship().getForm() + ".*"
-                    );
+            populateSelectPartQuerySQL.append("\n").append(this.buildSelectSQL(populate.getOperation()));
 
             for (int i = 0; i < items.size(); i++) {
                 StringBuilder populateFromPartQuerySQL = new StringBuilder();
                 switch (populate.getRelationship().getRelationshipType()) {
                     case ManyToOne -> {
-                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
-                                .append("INNER JOIN ").append(populate.getForm())
-                                .append(" ON ").append(populate.getForm()).append(".").append(populate.getRelationship().getColumnLink())
-                                .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
-                                .append("WHERE ").append(populate.getForm()).append(".id")
-                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        var subOperation = populate.getOperation();
+                        subOperation.join(
+                            new Relationship(
+                                populate.getForm(),
+                                populate.getRelationship().getColumnLink(),
+                                RelationshipType.OneToMany
+                            ).where(new Where("id").equals(recordsId.get(i).getInt("id"))));
+                        final String operationPartQuerySQL = this.buildQuerySQL(subOperation).replaceAll("\t", "");
+                        populateFromPartQuerySQL
+                            .append(populate.getRelationship().getForm())
+                            .append(operationPartQuerySQL);
                         final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
 
                         if (populate.getOperation().isDebug()) {
@@ -281,12 +281,18 @@ public class OperationEngine extends Data {
                                 , populateRecord);
                     }
                     case OneToMany -> {
-                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
-                                .append("INNER JOIN ").append(populate.getForm())
-                                .append(" ON ").append(populate.getForm()).append(".id")
-                                .append(" = ").append(populate.getRelationship().getForm()).append(".").append(populate.getRelationship().getColumnLink()).append("\n")
-                                .append("WHERE ").append(populate.getForm()).append(".id")
-                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        var subOperation = populate.getOperation();
+                        subOperation.join(
+                            new Relationship(
+                                populate.getForm(),
+                                populate.getRelationship().getColumnLink(),
+                                RelationshipType.ManyToOne
+                            ).where(new Where("id").equals(recordsId.get(i).getInt("id")))
+                        );
+                        final String operationPartQuerySQL = this.buildQuerySQL(subOperation).replaceAll("\t", "");
+                        populateFromPartQuerySQL
+                            .append(populate.getRelationship().getForm())
+                            .append(operationPartQuerySQL);
                         final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
 
                         if (populate.getOperation().isDebug()) {
@@ -300,12 +306,18 @@ public class OperationEngine extends Data {
                                 , populateRecords);
                     }
                     case ManyToMany -> {
-                        populateFromPartQuerySQL.append(" FROM ").append(populate.getRelationship().getForm()).append("\n")
-                                .append("INNER JOIN ").append(populate.getRelationship().getFormLink())
-                                .append(" ON ").append(populate.getRelationship().getFormLink()).append(".").append(populate.getRelationship().getColumnLink())
-                                .append(" = ").append(populate.getRelationship().getForm()).append(".id").append("\n")
-                                .append("WHERE ").append(populate.getRelationship().getFormLink()).append(".").append(populate.getRelationship().getColumnReference())
-                                .append(" = ").append(recordsId.get(i).getInt("id"));
+                        var subOperation = populate.getOperation();
+                        subOperation.join(
+                            new Relationship(
+                                populate.getRelationship().getFormLink(),
+                                populate.getRelationship().getColumnLink(),
+                                RelationshipType.OneToMany
+                            ).where(new Where(populate.getRelationship().getColumnReference()).equals(recordsId.get(i).getInt("id")))
+                        );
+                        final String operationPartQuerySQL = this.buildQuerySQL(subOperation).replaceAll("\t", "");
+                        populateFromPartQuerySQL
+                                .append(populate.getRelationship().getForm())
+                                .append(operationPartQuerySQL);
                         final String finalQuerySQL = populateSelectPartQuerySQL.toString() + populateFromPartQuerySQL;
 
                         if (populate.getOperation().isDebug()) {
