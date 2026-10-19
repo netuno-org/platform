@@ -1,23 +1,23 @@
-package org.netuno.tritao.db.form.populate;
+package org.netuno.tritao.db.form.suboperation;
 
 import org.netuno.tritao.db.form.join.RelationshipType;
 
-public class RelationshipPopulate {
+public class RelationshipSuboperation {
     private String form;
     private String columnLink;
     private String formLink;
     private String columnReference;
     private RelationshipType relationshipType = RelationshipType.ManyToOne;
 
-    public RelationshipPopulate() {}
+    public RelationshipSuboperation() {}
 
-    public RelationshipPopulate(String form, String columnLink, RelationshipType relationshipType) {
+    public RelationshipSuboperation(String form, String columnLink, RelationshipType relationshipType) {
         this.form = form;
         this.columnLink = columnLink;
         this.relationshipType = relationshipType;
     }
 
-    public RelationshipPopulate(String form, String columnLink, String formLink, String columnReference, RelationshipType relationshipType) {
+    public RelationshipSuboperation(String form, String columnLink, String formLink, String columnReference, RelationshipType relationshipType) {
         this.form = form;
         this.columnLink = columnLink;
         this.formLink = formLink;
@@ -29,7 +29,7 @@ public class RelationshipPopulate {
         return form;
     }
 
-    public RelationshipPopulate setForm(String form) {
+    public RelationshipSuboperation setForm(String form) {
         this.form = form;
         return this;
     }
@@ -38,7 +38,7 @@ public class RelationshipPopulate {
         return formLink;
     }
 
-    public RelationshipPopulate setFormLink(String formLink) {
+    public RelationshipSuboperation setFormLink(String formLink) {
         this.formLink = formLink;
         return this;
     }
@@ -47,7 +47,7 @@ public class RelationshipPopulate {
         return columnReference;
     }
 
-    public RelationshipPopulate setColumnReference(String columnReference) {
+    public RelationshipSuboperation setColumnReference(String columnReference) {
         this.columnReference = columnReference;
         return this;
     }
@@ -56,7 +56,7 @@ public class RelationshipPopulate {
         return columnLink;
     }
 
-    public RelationshipPopulate setColumnLink(String columnLink) {
+    public RelationshipSuboperation setColumnLink(String columnLink) {
         this.columnLink = columnLink;
         return this;
     }
@@ -65,7 +65,7 @@ public class RelationshipPopulate {
         return relationshipType;
     }
 
-    public RelationshipPopulate setRelationshipType(RelationshipType relationshipType) {
+    public RelationshipSuboperation setRelationshipType(RelationshipType relationshipType) {
         this.relationshipType = relationshipType;
         return this;
     }

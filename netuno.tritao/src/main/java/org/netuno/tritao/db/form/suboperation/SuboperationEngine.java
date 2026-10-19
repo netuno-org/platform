@@ -1,4 +1,4 @@
-package org.netuno.tritao.db.form.populate;
+package org.netuno.tritao.db.form.suboperation;
 
 import org.json.JSONObject;
 import org.netuno.proteu.Proteu;
@@ -9,45 +9,44 @@ import org.netuno.tritao.hili.Hili;
 import org.netuno.tritao.resource.util.TableBuilderResourceBase;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class PopulateEngine extends TableBuilderResourceBase {
-    public PopulateEngine(Proteu proteu, Hili hili) {super(proteu, hili);}
+public class SuboperationEngine extends TableBuilderResourceBase {
+    public SuboperationEngine(Proteu proteu, Hili hili) {super(proteu, hili);}
 
-    public Populate buildPopulate(String formName, Operation formToLink) {
-        RelationshipPopulate relationship = new RelationshipPopulate();
+    public Suboperation buildSuboperation(String formName, Operation formToLink) {
+        RelationshipSuboperation relationship = new RelationshipSuboperation();
         relationship.setForm(formToLink.getFormName());
-        Populate populate = new Populate(formName, relationship, formToLink.getFieldsToGet(), formToLink);
-        return buildRelation(populate);
+        Suboperation suboperation = new Suboperation(formName, relationship, formToLink.getFieldsToGet(), formToLink);
+        return buildRelation(suboperation);
     }
 
-    public Populate buildRelation(Populate populate) {
-        final Values manyToOneLink = getManyToOneLink(populate.getForm(), populate.getRelationship().getForm());
+    public Suboperation buildRelation(Suboperation suboperation) {
+        final Values manyToOneLink = getManyToOneLink(suboperation.getForm(), suboperation.getRelationship().getForm());
 
         if(manyToOneLink != null) {
-            populate.getRelationship().setColumnLink(manyToOneLink.getString("formColumn")).setRelationshipType(RelationshipType.ManyToOne);
-            populate.getRelationship().setForm(manyToOneLink.getString("formTableLink"));
-            populate.getOperation().setFormName(manyToOneLink.getString("formTableLink"));
-            return populate;
+            suboperation.getRelationship().setColumnLink(manyToOneLink.getString("formColumn")).setRelationshipType(RelationshipType.ManyToOne);
+            suboperation.getRelationship().setForm(manyToOneLink.getString("formTableLink"));
+            suboperation.getOperation().setFormName(manyToOneLink.getString("formTableLink"));
+            return suboperation;
         } else {
-            final Values oneToManyLink = getOneToManyLink(populate.getForm(), populate.getRelationship().getForm());
+            final Values oneToManyLink = getOneToManyLink(suboperation.getForm(), suboperation.getRelationship().getForm());
             if(oneToManyLink != null) {
-                populate.getRelationship().setColumnLink(oneToManyLink.getString("formColumn")).setRelationshipType(RelationshipType.OneToMany);
-                populate.getRelationship().setForm(oneToManyLink.getString("formTableLink"));
-                populate.getOperation().setFormName(oneToManyLink.getString("formTableLink"));
-                return populate;
+                suboperation.getRelationship().setColumnLink(oneToManyLink.getString("formColumn")).setRelationshipType(RelationshipType.OneToMany);
+                suboperation.getRelationship().setForm(oneToManyLink.getString("formTableLink"));
+                suboperation.getOperation().setFormName(oneToManyLink.getString("formTableLink"));
+                return suboperation;
             } else {
-                final Values manyToManyLink = getManyToManyLink(populate.getForm(), populate.getRelationship().getForm());
+                final Values manyToManyLink = getManyToManyLink(suboperation.getForm(), suboperation.getRelationship().getForm());
                 if (manyToManyLink != null) {
-                    populate.getRelationship()
+                    suboperation.getRelationship()
                             .setColumnLink(manyToManyLink.getString("link"))
                             .setColumnReference(manyToManyLink.getString("reference"))
                             .setFormLink(manyToManyLink.getString("formLink"))
                             .setRelationshipType(RelationshipType.ManyToMany);
-                    return populate;
+                    return suboperation;
                 }
-                throw new IllegalArgumentException("There is no link between the forms " + populate.getForm() + " and " + populate.getRelationship().getForm());
+                throw new IllegalArgumentException("There is no link between the forms " + suboperation.getForm() + " and " + suboperation.getRelationship().getForm());
             }
         }
     }
