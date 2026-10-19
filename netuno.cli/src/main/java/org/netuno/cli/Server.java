@@ -67,6 +67,8 @@ import org.netuno.cli.ws.WSServletContextHandler;
 import org.netuno.psamata.crypto.RandomString;
 import org.netuno.psamata.net.Remote;
 
+import static org.netuno.cli.Config.host;
+
 /**
  * Server initialization with application commands.
  * 
@@ -83,10 +85,10 @@ public class Server implements MainArg {
     protected String app = "";
 
     @CommandLine.Option(names = { "-h", "host" }, paramLabel = "localhost", description = "Change the default IP or host name.")
-    protected String host = Config.getHost();
+    protected String host = null;
 
     @CommandLine.Option(names = { "-p", "port" }, paramLabel = "9000", description = "Change the default port from 9000.")
-    protected int port = Config.getPort();
+    protected int port = -1;
 
     @CommandLine.Option(names = { "home" }, paramLabel = "home", description = "Change the default home folder.")
     protected String home = Config.getHome();
@@ -145,6 +147,17 @@ public class Server implements MainArg {
             if (!ConfigScript.run()) {
                 logger.fatal("Script of the global configuration was not found.");
                 return;
+            }
+
+            if (host != null) {
+                Config.setHost(host);
+            } else {
+                host = Config.getHost();
+            }
+            if (port != -1) {
+                Config.setPort(port);
+            } else {
+                port = Config.getPort();
             }
 
             Temp.clear();
@@ -291,6 +304,7 @@ public class Server implements MainArg {
             server.setHandler(handlerList);
 
             ServerConnector connector = (ServerConnector)server.getConnectors()[0];
+            connector.setHost(host);
             connector.setIdleTimeout(0);
             HttpConfiguration httpConfiguration = connector.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration();
             httpConfiguration.setSendXPoweredBy(false);
@@ -299,7 +313,7 @@ public class Server implements MainArg {
             
             HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
             ServerConnector serverConnector = new ServerConnector(server, httpConnectionFactory);
-
+            serverConnector.setHost(host);
             serverConnector.setPort(port);
             //serverConnector.setDefaultProtocol("h2c");
             // curl -v --http2 http://localhost:9000
@@ -343,7 +357,7 @@ public class Server implements MainArg {
 
             logger.trace(server.dump());
 
-            (new Thread(new CheckServerStartedRunnable(this, appConfig, launch, code))).start();
+            (new Thread(new CheckServerStartedRunnable(host, this, appConfig, launch, code))).start();
             
             Monitor.start(this);
 
@@ -400,12 +414,14 @@ class CheckServerStartedRunnable implements Runnable {
 
     private static Logger logger = LogManager.getLogger(CheckServerStartedRunnable.class);
 
+    private String host;
     private Server server;
     private boolean launch = false;
     private boolean code = false;
     private Values appConfig = null;
 
-    public CheckServerStartedRunnable(Server server, Values appConfig, boolean launch, boolean code) {
+    public CheckServerStartedRunnable(String host, Server server, Values appConfig, boolean launch, boolean code) {
+        this.host = host;
         this.server = server;
         this.launch = launch;
         this.code = code;
@@ -418,10 +434,6 @@ class CheckServerStartedRunnable implements Runnable {
                 if (server.isStarted()) {
                     synchronized(this) {
                         wait(1000);
-                    }
-                    String host = server.getURI().getHost();
-                    if (host.equals("0.0.0.0")) {
-                        host = "localhost";
                     }
                     boolean isDev = Config.getEnv().toLowerCase().startsWith("dev");
                     System.out.println();
@@ -465,22 +477,30 @@ class CheckServerStartedRunnable implements Runnable {
                     System.out.println(OS.consoleOutput("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@"));
                     System.out.println();
                     Set<String> localhosts = LocalHosts.getAll();
-                    for (String localhost : localhosts) {
-                        if (!localhost.startsWith("127.0.0.1") && !localhost.startsWith("localhost")) {
-                            continue;
+                    if (host.equals("0.0.0.0") || host.equalsIgnoreCase("127.0.0.1") || host.equalsIgnoreCase("localhost")) {
+                        for (String localhost : localhosts) {
+                            if (!localhost.startsWith("127.0.0.1") && !localhost.startsWith("localhost")) {
+                                continue;
+                            }
+                            System.out.println(OS.consoleOutput("      - @|cyan http://" + localhost + ":" + server.getURI().getPort() + "/ |@"));
                         }
-                        System.out.println(OS.consoleOutput("      - @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
                     }
                     for (String localhost : localhosts) {
                         if (localhost.startsWith("127.0.0.1") || localhost.startsWith("localhost")) {
                             continue;
                         }
-                        System.out.println(OS.consoleOutput("      - @|cyan http://"+ localhost +":" + server.getURI().getPort() + "/ |@"));
+                        if (host.equals("0.0.0.0") || localhost.equalsIgnoreCase(host)) {
+                            System.out.println(OS.consoleOutput("      - @|cyan http://" + localhost + ":" + server.getURI().getPort() + "/ |@"));
+                        }
                     }
                     System.out.println();
                     System.out.println();
                     if (isDev) {
-                        String url = "http://" + host + ":" + server.getURI().getPort() + "/";
+                        String urlHost = host;
+                        if (urlHost.equals("0.0.0.0")) {
+                            urlHost = "localhost";
+                        }
+                        String url = "http://" + urlHost + ":" + server.getURI().getPort() + "/";
                         new Remote().get(url);
                         if (launch && Desktop.isDesktopSupported() && appConfig != null) {
                             try {
