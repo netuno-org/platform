@@ -49,22 +49,22 @@ public class Operation {
     private List<Suboperation> suboperations = new ArrayList<>();
     private final OperationEngine operationalEngine;
     private final LinkEngine linkEngine;
-    private final SuboperationEngine populateEngine;
+    private final SuboperationEngine suboperationEngine;
 
-    public Operation(String formName, OperationEngine operationalEngine, LinkEngine linkEngine, SuboperationEngine populateEngine) {
+    public Operation(String formName, OperationEngine operationalEngine, LinkEngine linkEngine, SuboperationEngine suboperationEngine) {
         this.formName = formName;
         this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
-        this.populateEngine = populateEngine;
+        this.suboperationEngine = suboperationEngine;
     }
 
-    public Operation(String formName, Where where, OperationEngine operationalEngine, LinkEngine linkEngine, SuboperationEngine populateEngine) {
+    public Operation(String formName, Where where, OperationEngine operationalEngine, LinkEngine linkEngine, SuboperationEngine suboperationEngine) {
         this.formName = formName;
         where.setTable(formName);
         this.where.add(where);
         this.operationalEngine = operationalEngine;
         this.linkEngine = linkEngine;
-        this.populateEngine = populateEngine;
+        this.suboperationEngine = suboperationEngine;
     }
 
     @MethodDoc(
@@ -1688,14 +1688,14 @@ public class Operation {
         return this;
     }
 
-    public Operation form(Operation formToPopulate) {
-        this.suboperations.add(this.populateEngine.buildPopulate(this.getFormName(), formToPopulate));
+    public Operation form(Operation suboperation) {
+        this.suboperations.add(this.suboperationEngine.buildSuboperation(this.getFormName(), suboperation));
         return this;
     }
 
     public Operation form(Operation formToLink, String alias) {
         this.suboperations.add(
-                this.populateEngine.buildPopulate(this.getFormName(), formToLink)
+                this.suboperationEngine.buildSuboperation(this.getFormName(), formToLink)
                         .setAlias(alias)
         );
         return this;
