@@ -8,7 +8,7 @@ import org.netuno.tritao.db.DataItem;
 import org.netuno.tritao.db.form.join.Join;
 import org.netuno.tritao.db.form.join.Relationship;
 import org.netuno.tritao.db.form.join.RelationshipType;
-import org.netuno.tritao.db.form.populate.Populate;
+import org.netuno.tritao.db.form.suboperation.Suboperation;
 import org.netuno.tritao.db.manager.Data;
 import org.netuno.tritao.db.form.pagination.Page;
 import org.netuno.tritao.db.form.where.ConditionalOperator;
@@ -241,7 +241,7 @@ public class OperationEngine extends Data {
         return  bottomSQL.toString();
     }
 
-    public List<Values> populateForms(Operation query, List<Values> items) {
+    public List<Values> execSuboperations(Operation query, List<Values> items) {
         StringBuilder mainSQl = new StringBuilder();
         query.setFieldsToGet(List.of(new Field(query.getFormName() + ".id")));
         mainSQl.append(this.buildSelectSQL(query)).append(query.getFormName())
@@ -249,7 +249,7 @@ public class OperationEngine extends Data {
                 .append(this.buildBottomSQL(query));
         final List<Values> recordsId = getExecutor().query(mainSQl.toString());
 
-        for (Populate populate : query.getFormsToPopulate()) {
+        for (Suboperation populate : query.getSuboperations()) {
             StringBuilder populateSelectPartQuerySQL = new StringBuilder();
             populateSelectPartQuerySQL.append("\n").append(this.buildSelectSQL(populate.getOperation()));
 
@@ -353,7 +353,7 @@ public class OperationEngine extends Data {
         if (items.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        return !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items) : items;
+        return !query.getSuboperations().isEmpty() ? this.execSuboperations(query, items) : items;
     }
 
     public Values first(Operation query) {
@@ -373,7 +373,7 @@ public class OperationEngine extends Data {
         if (items.isEmpty()) {
             return null;
         }
-        return !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items).getFirst() : items.getFirst();
+        return !query.getSuboperations().isEmpty() ? this.execSuboperations(query, items).getFirst() : items.getFirst();
     }
 
     public int count(Operation query) {
@@ -410,7 +410,7 @@ public class OperationEngine extends Data {
             logger.warn("SQL Command executed:\n {}",selectCommandSQL);
         }
         List<Values> items = getExecutor().query(selectCommandSQL);
-        var finalItems = !query.getFormsToPopulate().isEmpty() ? this.populateForms(query, items) : items;
+        var finalItems = !query.getSuboperations().isEmpty() ? this.execSuboperations(query, items) : items;
         int total = this.count(query);
         return new Page(finalItems.isEmpty() ? Collections.EMPTY_LIST : finalItems , total, query.getPagination());
     }
