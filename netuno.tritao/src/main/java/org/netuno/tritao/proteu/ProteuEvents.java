@@ -608,9 +608,10 @@ public class ProteuEvents implements Events {
             url = admin_url + "Index.netuno";
         }
         if ((hostType == Config.HostType.ADMIN && url.startsWith(public_url))
-        		|| (hostType == Config.HostType.BASE && url.startsWith(public_url) && !url.startsWith(services_url)
-        				&& (public_url.startsWith(admin_url) || (admin_url.startsWith(public_url) && !url.startsWith(admin_url))))
-        		) {
+        		|| (hostType == Config.HostType.BASE
+                    && ((url.startsWith(public_url) && !url.startsWith(services_url) && !url.startsWith(admin_url))
+                        || (admin_url.startsWith(public_url) && !url.startsWith(admin_url))
+                        || (url.startsWith(public_url) && public_url.startsWith(admin_url))))) {
             String publicPath = url.substring(public_url.length());
             if (publicPath.startsWith("/")) {
                 publicPath = publicPath.substring(1);
