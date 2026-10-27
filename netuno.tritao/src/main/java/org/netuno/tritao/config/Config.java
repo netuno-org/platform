@@ -877,7 +877,7 @@ public class Config {
                 }
             }
         } else if (hosts != null && hosts.isMap()) {
-            Values hostsAdmin = hosts.getValues("base");
+            Values hostsAdmin = hosts.getValues("admin");
             if (hostsAdmin != null && hostsAdmin.isList()) {
                 for (String hostAdmin : hostsAdmin.list(String.class)) {
                     if (!hostAdmin.isEmpty() && hostAdmin.equalsIgnoreCase(host)) {
@@ -901,7 +901,7 @@ public class Config {
                     }
                 }
             }
-            String hostAdmin = hosts.getString("base");
+            String hostAdmin = hosts.getString("admin");
             if (!hostAdmin.isEmpty() && hostAdmin.equalsIgnoreCase(host)) {
                 return HostType.ADMIN;
             }
