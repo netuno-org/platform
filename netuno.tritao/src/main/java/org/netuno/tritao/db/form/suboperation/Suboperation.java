@@ -1,4 +1,4 @@
-package org.netuno.tritao.db.form.populate;
+package org.netuno.tritao.db.form.suboperation;
 
 import org.netuno.tritao.db.form.Field;
 import org.netuno.tritao.db.form.Operation;
@@ -6,16 +6,16 @@ import org.netuno.tritao.db.form.Operation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Populate {
+public class Suboperation {
     private String form;
-    private RelationshipPopulate relationship;
+    private RelationshipSuboperation relationship;
     private List<Field> fields = new ArrayList<>();
     private String alias;
     private Operation operation;
 
-    public Populate() {}
+    public Suboperation() {}
 
-    public Populate(String form, RelationshipPopulate relationship, List<Field> fields, Operation operation) {
+    public Suboperation(String form, RelationshipSuboperation relationship, List<Field> fields, Operation operation) {
         this.form = form;
         this.relationship = relationship;
         this.fields = fields;
@@ -26,16 +26,16 @@ public class Populate {
         return form;
     }
 
-    public Populate setForm(String form) {
+    public Suboperation setForm(String form) {
         this.form = form;
         return this;
     }
 
-    public RelationshipPopulate getRelationship() {
+    public RelationshipSuboperation getRelationship() {
         return relationship;
     }
 
-    public Populate setRelationship(RelationshipPopulate relationship) {
+    public Suboperation setRelationship(RelationshipSuboperation relationship) {
         this.relationship = relationship;
         return this;
     }
@@ -44,7 +44,7 @@ public class Populate {
         return fields;
     }
 
-    public Populate setFields(List<Field> fields) {
+    public Suboperation setFields(List<Field> fields) {
         this.fields = fields;
         return this;
     }
@@ -53,7 +53,7 @@ public class Populate {
         return alias;
     }
 
-    public Populate setAlias(String alias) {
+    public Suboperation setAlias(String alias) {
         this.alias = alias;
         return this;
     }
@@ -62,7 +62,7 @@ public class Populate {
         return operation;
     }
 
-    public Populate setOperation(Operation operation) {
+    public Suboperation setOperation(Operation operation) {
         this.operation = operation;
         return this;
     }
