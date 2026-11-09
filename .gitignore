@@ -2,6 +2,7 @@
 .gitmodules
 
 .vscode
+.openidea
 
 .DS_Store
 
