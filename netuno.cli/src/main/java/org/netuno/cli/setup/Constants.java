@@ -27,6 +27,7 @@ import org.netuno.psamata.Values;
 public class Constants {
 
     public static Values GRAALVM_VERSIONS_DOWNLOAD_PATHS = new Values() {{
+        set("25.5.5.0.3", "graal-25.5.5.0.3/graalvm-community-jdk-25i5-25.0.5.0.3");
         set("25.4.4.1.1", "graal-25.4.4.1.1/graalvm-community-jdk-25i4-25.0.4.1.1");
         set("25.3.4.1", "graal-25.3.4.1/graalvm-community-jdk-25i3-25.0.4.1");
         set("25.2.4", "graal-25.2.4/graalvm-community-jdk-25i2-25.0.4");
@@ -48,7 +49,7 @@ public class Constants {
         set("21.0.0", "jdk-21.0.0/graalvm-community-jdk-21.0.0");
     }};
 
-    public static String GRAALVM_VERSION = "25.4.4.1.1";
+    public static String GRAALVM_VERSION = "25.5.5.0.3";
 
     public static String GRAALVM_FOLDER = "graalvm";
 

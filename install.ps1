@@ -6,7 +6,7 @@ $is_installed = Test-Path './netuno.jar' -PathType Leaf
 
 $versions = [ordered]@{
     'stable'  = 'graal-25.2.4/graalvm-community-jdk-25i2-25.0.4'
-    'testing' = 'graal-25.4.4.1.1/graalvm-community-jdk-25i4-25.0.4.1.1'
+    'testing' = 'graal-25.5.5.0.3/graalvm-community-jdk-25i5-25.0.5.0.3'
     '2026.06' = 'jdk-25.0.2/graalvm-community-jdk-25.0.2'
     '2026.02' = 'jdk-25.0.2/graalvm-community-jdk-25.0.2'
 }
