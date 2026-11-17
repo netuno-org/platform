@@ -269,10 +269,10 @@ public class MCP extends ResourceBase {
         try {
             Values mcpConfig = getProteu().getConfig()
                     .getValues("_app:config")
-                    .getValues("mcp")
-                    .getValues("server");
+                    .getValues("mcp", Values.newMap())
+                    .getValues("server", null);
 
-            if (mcpConfig == null || !mcpConfig.getBoolean("enabled")) {
+            if (mcpConfig == null || mcpConfig.isEmpty() || !mcpConfig.getBoolean("enabled")) {
                 this.isEnabled = false;
                 return;
             }
