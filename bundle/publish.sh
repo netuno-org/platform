@@ -54,11 +54,11 @@ echo
 
 cp netuno.cli/pom-base.xml netuno.cli/pom.xml
 
-node bundle/publish-mode.js "$PublishMode"
+bun bundle/publish-mode.js "$PublishMode"
 
 ./build.sh
 
-node bundle/publish-mode.js
+bun bundle/publish-mode.js
 
 mkdir -p netuno.cli/out
 
@@ -72,7 +72,7 @@ cp netuno.cli/target/core/lib/* netuno.cli/out/core/lib/
 
 cp netuno.cli/pom-setup.xml netuno.cli/pom.xml
 
-node bundle/publish-mode.js "$PublishMode"
+bun bundle/publish-mode.js "$PublishMode"
 
 # build netuno-web.jar
 mkdir -p netuno.tritao/out/temp
@@ -85,14 +85,14 @@ cd ../..
 
 mvn --projects netuno.cli,netuno.psamata,netuno.library.doc -Drevision=$REVISION -Dmaven.test.skip=true clean package
 
-node bundle/publish-mode.js
+bun bundle/publish-mode.js
 
 mv netuno.cli/target/netuno-setup.jar netuno.cli/out/netuno-setup.jar
 
 cp netuno.cli/pom-base.xml netuno.cli/pom.xml
 
 # executes bundle/index.js
-cd bundle && node index.js $REVISION && cd ..
+cd bundle && bun index.js $REVISION && cd ..
 
 cd bundle/out && zip -q -r netuno.zip netuno/ && cd ../..
 
@@ -123,7 +123,7 @@ select optPublishRelease in "${PublishReleaseOptions[@]}"
 do
     case $optPublishRelease in
         "Yes")
-            node bundle/publish-release.js "$PublishMode"
+            bun bundle/publish-release.js "$PublishMode"
             break
             ;;
         "No")

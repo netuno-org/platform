@@ -151,7 +151,7 @@
         <dependency>
             <groupId>org.duckdb</groupId>
             <artifactId>duckdb_jdbc</artifactId>
-            <version>1.5.6.0</version>
+            <version>2.0.0.1</version>
         </dependency>
 
         <dependency>
@@ -638,7 +638,7 @@
         <dependency>
             <groupId>uk.org.okapibarcode</groupId>
             <artifactId>okapibarcode</artifactId>
-            <version>0.5.6</version>
+            <version>0.5.7</version>
         </dependency>
         <dependency>
             <groupId>com.google.firebase</groupId>
@@ -654,7 +654,7 @@
         <dependency>
             <groupId>org.altcha</groupId>
             <artifactId>altcha</artifactId>
-            <version>2.0.3</version>
+            <version>2.1.1</version>
         </dependency>
 
         <dependency>
@@ -666,7 +666,7 @@
         <dependency>
             <groupId>com.openai</groupId>
             <artifactId>openai-java</artifactId>
-            <version>4.52.0</version>
+            <version>4.101.0</version>
         </dependency>
 
         <dependency>

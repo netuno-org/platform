@@ -13,7 +13,7 @@ chmod +x bundle/*.sh
 #
 ###########################################
 
-cd bundle && npm install && cd ..
+cd bundle && bun install && cd ..
 
 ###########################################
 #
