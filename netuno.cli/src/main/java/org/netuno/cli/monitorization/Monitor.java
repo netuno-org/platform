@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.cli.monitoring;
+package org.netuno.cli.monitorization;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

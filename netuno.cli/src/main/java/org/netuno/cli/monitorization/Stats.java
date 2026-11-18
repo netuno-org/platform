@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.netuno.cli.monitoring;
+package org.netuno.cli.monitorization;
 
 import com.vdurmont.emoji.EmojiParser;
 import java.io.IOException;
@@ -51,7 +51,7 @@ import picocli.CommandLine;
  * 
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-@CommandLine.Command(name = "stats", helpCommand = true, description = "Monitoring statistics.")
+@CommandLine.Command(name = "stats", helpCommand = true, description = "Monitorization statistics.")
 public class Stats implements MainArg {
     
     private static Logger logger = LogManager.getLogger(Stats.class);
@@ -334,7 +334,7 @@ public class Stats implements MainArg {
 
         NumberFormat numberFormat = new DecimalFormat("###,##0.0");
         String output = 
-                EmojiParser.parseToUnicode(":eyes:") + " "+ entryAfter.getString("moment") +" - Monitoring Statistics:\n"
+                EmojiParser.parseToUnicode(":eyes:") + " "+ entryAfter.getString("moment") +" - Monitorization Statistics:\n"
                 + "\t"+ (
                     entryBefore.getValues("cpu").getBoolean("critical") 
                         || entryAfter.getValues("cpu").getBoolean("critical") 

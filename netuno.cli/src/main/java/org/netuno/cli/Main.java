@@ -19,20 +19,15 @@ package org.netuno.cli;
 
 import java.io.File;
 
-import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.fusesource.jansi.AnsiConsole;
 import org.netuno.cli.migrate.Migrate;
-import org.netuno.cli.monitoring.Stats;
+import org.netuno.cli.monitorization.Stats;
 import org.netuno.cli.setup.Install;
 import org.netuno.cli.utils.Banner;
 import org.netuno.cli.utils.OS;

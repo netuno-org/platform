@@ -23,7 +23,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.session.DefaultSessionCacheFactory;
 import org.eclipse.jetty.session.FileSessionDataStoreFactory;
 import org.eclipse.jetty.session.SessionCache;
-import org.netuno.cli.monitoring.Monitor;
+import org.netuno.cli.monitorization.Monitor;
 import org.netuno.cli.app.AppCommand;
 import org.netuno.cli.setup.GraalVMSetup;
 
@@ -66,8 +66,6 @@ import java.util.stream.Stream;
 import org.netuno.cli.ws.WSServletContextHandler;
 import org.netuno.psamata.crypto.RandomString;
 import org.netuno.psamata.net.Remote;
-
-import static org.netuno.cli.Config.host;
 
 /**
  * Server initialization with application commands.
