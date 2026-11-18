@@ -27,16 +27,16 @@ import static org.fusesource.jansi.Ansi.ansi;
  * 
  * @author Eduardo Fonseca Velasques - @eduveks
  */
-public class OS {
-    public static Ansi consoleNetunoCommand(String parameters) {
-        return consoleCommand("netuno", parameters);
+public class Terminal {
+    public static Ansi netunoCommand(String parameters) {
+        return command("netuno", parameters);
     }
     
-    public static Ansi consoleCommand(String command) {
-        return consoleCommand(command, null);
+    public static Ansi command(String command) {
+        return command(command, null);
     }
     
-    public static Ansi consoleCommand(String command, String parameters) {
+    public static Ansi command(String command, String parameters) {
         if (parameters == null) {
             parameters = "";
         }
@@ -52,11 +52,11 @@ public class OS {
         }
     }
 
-    public static Ansi consoleGlobalCommand(String command) {
-        return consoleGlobalCommand(command, null);
+    public static Ansi globalCommand(String command) {
+        return globalCommand(command, null);
     }
 
-    public static Ansi consoleGlobalCommand(String command, String parameters) {
+    public static Ansi globalCommand(String command, String parameters) {
         if (parameters == null) {
             parameters = "";
         }
@@ -72,7 +72,7 @@ public class OS {
         }
     }
 
-    public static Ansi consoleOutput(String text) {
+    public static Ansi render(String text) {
         if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
             return ansi().render(text);
         } else {

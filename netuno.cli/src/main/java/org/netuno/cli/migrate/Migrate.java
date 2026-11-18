@@ -20,7 +20,7 @@ package org.netuno.cli.migrate;
 import org.netuno.cli.MainArg;
 import org.netuno.cli.migrate.h2.H2DatabaseMigration;
 import org.netuno.cli.utils.ConfigScript;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import picocli.CommandLine;
 
 import java.util.Scanner;
@@ -54,7 +54,7 @@ public class Migrate implements MainArg {
     @Override
     public void run() throws Exception {
         System.err.println();
-        System.out.println(OS.consoleOutput("@|yellow Migration Tools|@ "));
+        System.out.println(Terminal.render("@|yellow Migration Tools|@ "));
         System.err.println();
         System.err.println();
         ConfigScript.loadEnv();
@@ -72,10 +72,10 @@ public class Migrate implements MainArg {
             boolean clear = true;
             if (clear) {
                 clear = yes;
-                System.out.println(OS.consoleOutput("@|red ALL H2DATABASE BACKUPS AND SQL FILES WILL BE REMOVED|@ "));
+                System.out.println(Terminal.render("@|red ALL H2DATABASE BACKUPS AND SQL FILES WILL BE REMOVED|@ "));
                 System.out.println();
                 if (!yes) {
-                    System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
+                    System.out.print(Terminal.render("@|cyan Are you sure? [n]y : |@ "));
                     try (Scanner scanner = new Scanner(System.in)) {
                         clear = scanner.nextLine().equalsIgnoreCase("y");
                     }

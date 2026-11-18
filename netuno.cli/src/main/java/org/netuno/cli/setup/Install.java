@@ -26,7 +26,7 @@ import org.netuno.cli.Config;
 import org.netuno.cli.MainArg;
 import org.netuno.cli.migrate.h2.H2DatabaseMigration;
 import org.netuno.cli.utils.ConfigScript;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.net.Download;
 import org.netuno.psamata.net.Remote;
@@ -92,16 +92,16 @@ public class Install implements MainArg {
             homePathFile = homePathFile.getParentFile();
         }
         System.out.println();
-        System.out.println(OS.consoleOutput("@|white All will be set up in the directory: |@ "));
-        System.out.println(OS.consoleOutput("@|yellow "+ homePathFile.getAbsolutePath() +" |@ "));
+        System.out.println(Terminal.render("@|white All will be set up in the directory: |@ "));
+        System.out.println(Terminal.render("@|yellow "+ homePathFile.getAbsolutePath() +" |@ "));
         System.out.println();
         try (Scanner scanner = new Scanner(System.in)) {
             if (remove) {
                 remove = yes;
-                System.out.println(OS.consoleOutput("@|red ALL NETUNO FILES WILL BE REMOVED|@ "));
+                System.out.println(Terminal.render("@|red ALL NETUNO FILES WILL BE REMOVED|@ "));
                 System.out.println();
                 if (!yes) {
-                    System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
+                    System.out.print(Terminal.render("@|cyan Are you sure? [n]y : |@ "));
                     remove = scanner.nextLine().equalsIgnoreCase("y");
                 }
                 System.out.println();
@@ -112,10 +112,10 @@ public class Install implements MainArg {
 
             if (force) {
                 force = yes;
-                System.out.println(OS.consoleOutput("@|red WILL OVERRIDE ALL LOCAL CHANGES|@ "));
+                System.out.println(Terminal.render("@|red WILL OVERRIDE ALL LOCAL CHANGES|@ "));
                 System.out.println();
                 if (!yes) {
-                    System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
+                    System.out.print(Terminal.render("@|cyan Are you sure? [n]y : |@ "));
                         force = scanner.nextLine().equalsIgnoreCase("y");
                 }
                 System.out.println();
@@ -126,10 +126,10 @@ public class Install implements MainArg {
 
             if (checksum) {
                 checksum = yes;
-                System.out.println(OS.consoleOutput("@|red CHECKSUM OF ALL FILES WILL BE STORED AND CHANGES AT NETUNO FILES WILL BE DESTROYED IN THE NEXT UPDATE. |@ "));
+                System.out.println(Terminal.render("@|red CHECKSUM OF ALL FILES WILL BE STORED AND CHANGES AT NETUNO FILES WILL BE DESTROYED IN THE NEXT UPDATE. |@ "));
                 System.out.println();
                 if (!yes) {
-                    System.out.print(OS.consoleOutput("@|cyan Are you sure? [n]y : |@ "));
+                    System.out.print(Terminal.render("@|cyan Are you sure? [n]y : |@ "));
                     checksum = scanner.nextLine().equalsIgnoreCase("y");
                 }
                 System.out.println();
@@ -155,7 +155,7 @@ public class Install implements MainArg {
                     false
             );
             System.out.println();
-            System.out.println(OS.consoleOutput("@|green Checksum updated. |@ "));
+            System.out.println(Terminal.render("@|green Checksum updated. |@ "));
             System.out.println();
             System.out.println();
             return;
@@ -208,7 +208,7 @@ public class Install implements MainArg {
                             ProgressBar pb = null;
                             @Override
                             public void onInit(Download.Stats stats) {
-                                System.out.println(OS.consoleOutput(String.format(
+                                System.out.println(Terminal.render(String.format(
                                         "Downloading @|cyan %s|@ from @|yellow %s|@:",
                                         FileUtils.byteCountToDisplaySize(stats.getLength()),
                                         downloadURL
@@ -229,9 +229,9 @@ public class Install implements MainArg {
                                 if (bundleFile.exists()) {
                                     bundleFile.deleteOnExit();
                                     System.out.println();
-                                    System.out.print(OS.consoleOutput("@|green Netuno download was successfully completed.|@"));
+                                    System.out.print(Terminal.render("@|green Netuno download was successfully completed.|@"));
                                 } else {
-                                    System.out.print(OS.consoleOutput("@|red Netuno download failed.|@"));
+                                    System.out.print(Terminal.render("@|red Netuno download failed.|@"));
                                 }
                             }
 
@@ -248,15 +248,15 @@ public class Install implements MainArg {
                         System.out.println();
                         System.out.println();
                         if (e instanceof javax.net.ssl.SSLHandshakeException && e.getMessage().contains("github-releases.githubusercontent.com")) {
-                            System.out.println(OS.consoleOutput("@|red Temporarily offline, probably being propagated by GitHub. |@ "));
+                            System.out.println(Terminal.render("@|red Temporarily offline, probably being propagated by GitHub. |@ "));
                             System.out.println();
-                            System.out.println(OS.consoleOutput("@|red Please try again later, and it may take up to 15 minutes. |@ "));
+                            System.out.println(Terminal.render("@|red Please try again later, and it may take up to 15 minutes. |@ "));
                             System.out.println();
-                            System.out.println(OS.consoleOutput("@|yellow More details: |@https://github.com/netuno-org/platform/releases"));
+                            System.out.println(Terminal.render("@|yellow More details: |@https://github.com/netuno-org/platform/releases"));
                         } else if (e instanceof java.io.FileNotFoundException) {
-                            System.out.println(OS.consoleOutput("@|red The download link was not found: |@ " + e.getMessage()));
+                            System.out.println(Terminal.render("@|red The download link was not found: |@ " + e.getMessage()));
                         } else {
-                            System.out.println(OS.consoleOutput("@|red " + e.getClass().getName() + ": |@ " + e.getMessage()));
+                            System.out.println(Terminal.render("@|red " + e.getClass().getName() + ": |@ " + e.getMessage()));
                             System.out.println();
                             e.printStackTrace();
                         }
@@ -269,7 +269,7 @@ public class Install implements MainArg {
                 }
 
                 if (!checksumLocal.isEmpty()) {
-                    System.out.println(OS.consoleOutput("@|yellow Cleaning old version... |@ "));
+                    System.out.println(Terminal.render("@|yellow Cleaning old version... |@ "));
                     int countLocalFilesRemoved = 0;
                     for (String localFilePathKey : checksumLocal.keys()) {
                         Path localFilePath = Paths.get(path, localFilePathKey);
@@ -287,10 +287,10 @@ public class Install implements MainArg {
                     System.out.println();
                 }
 
-                System.out.println(OS.consoleOutput("@|green Unzipping Netuno... |@ "));
+                System.out.println(Terminal.render("@|green Unzipping Netuno... |@ "));
                 System.out.println();
                 if (remove) {
-                    System.out.println(OS.consoleOutput("@|red and removing... |@ "));
+                    System.out.println(Terminal.render("@|red and removing... |@ "));
                     System.out.println();
                 }
                 boolean allFilesUpdated = true;
@@ -363,7 +363,7 @@ public class Install implements MainArg {
                                 new File(entryDestination.getPath()).renameTo(newBundleFile);
                                 new File(localFile.getPath()).renameTo(entryDestination);
                                 System.out.println();
-                                System.out.println(OS.consoleOutput("@|yellow " +
+                                System.out.println(Terminal.render("@|yellow " +
                                         entryDestination.getPath() + " |@- @|red is not " +
                                         (remove ? "removed" : "updated") +
                                         " because has local changes |@ "));
@@ -403,7 +403,7 @@ public class Install implements MainArg {
                     netunoJarNew.deleteOnExit();
                 }
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|green Netuno removed. |@ "));
+                System.out.println(Terminal.render("@|green Netuno removed. |@ "));
             } else {
                 if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
                     if (new File(path, "netuno.sh").exists()) {
@@ -414,8 +414,8 @@ public class Install implements MainArg {
                         int exitCode = process.waitFor();
                         if (exitCode != 0) {
                             System.out.println();
-                            System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
-                            System.out.println(OS.consoleOutput("\t@|red > chmod +x netuno.sh && cp netuno.sh netuno |@ "));
+                            System.out.println(Terminal.render("@|yellow Please execute the command: |@"));
+                            System.out.println(Terminal.render("\t@|red > chmod +x netuno.sh && cp netuno.sh netuno |@ "));
                         }
                     }
                     if (new File(path, "bin-unix").isDirectory()) {
@@ -426,8 +426,8 @@ public class Install implements MainArg {
                         int exitCode = process.waitFor();
                         if (exitCode != 0) {
                             System.out.println();
-                            System.out.println(OS.consoleOutput("@|yellow Please execute the command: |@"));
-                            System.out.println(OS.consoleOutput("\t@|red > chmod +x bin-unix/*.sh |@ "));
+                            System.out.println(Terminal.render("@|yellow Please execute the command: |@"));
+                            System.out.println(Terminal.render("\t@|red > chmod +x bin-unix/*.sh |@ "));
                         }
                     }
                 }
@@ -459,23 +459,23 @@ public class Install implements MainArg {
                 H2DatabaseMigration.cleaning();
 
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|green Congrats, welcome to Netuno! |@ "));
+                System.out.println(Terminal.render("@|green Congrats, welcome to Netuno! |@ "));
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|yellow Netuno is ready then let's play... |@ "));
+                System.out.println(Terminal.render("@|yellow Netuno is ready then let's play... |@ "));
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|white Start the server with an application: |@ "));
-                System.out.println(OS.consoleNetunoCommand("server app=my-app"));
+                System.out.println(Terminal.render("@|white Start the server with an application: |@ "));
+                System.out.println(Terminal.netunoCommand("server app=my-app"));
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|white Start the server with the default application: |@ "));
-                System.out.println(OS.consoleNetunoCommand("server"));
+                System.out.println(Terminal.render("@|white Start the server with the default application: |@ "));
+                System.out.println(Terminal.netunoCommand("server"));
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|white Create a new application: |@ "));
-                System.out.println(OS.consoleNetunoCommand("app"));
+                System.out.println(Terminal.render("@|white Create a new application: |@ "));
+                System.out.println(Terminal.netunoCommand("app"));
 
                 if (SystemUtils.IS_OS_MAC) {
                     System.out.println();
-                    System.out.println(OS.consoleOutput("@|white On macOS, it's recommended to run the command below to disable the quarantine and avoid restrictions: |@ "));
-                    System.out.println(OS.consoleOutput("@|yellow \tsudo xattr -r -d com.apple.quarantine . |@ "));
+                    System.out.println(Terminal.render("@|white On macOS, it's recommended to run the command below to disable the quarantine and avoid restrictions: |@ "));
+                    System.out.println(Terminal.render("@|yellow \tsudo xattr -r -d com.apple.quarantine . |@ "));
                 }
 
                 if (netunoJarNew.exists()) {
@@ -501,13 +501,13 @@ public class Install implements MainArg {
             list = folderOrFile.listFiles();
             if (list == null || list.length == 0) {
                 if (folderOrFile.exists() && !folderOrFile.delete()) {
-                    System.out.println(OS.consoleOutput("@|yellow " +
+                    System.out.println(Terminal.render("@|yellow " +
                             folderOrFile.getPath() + " |@- @|red not deleted |@ "));
                 }
             }
         } else {
             if (folderOrFile.exists() && !folderOrFile.delete()) {
-                System.out.println(OS.consoleOutput("@|yellow " +
+                System.out.println(Terminal.render("@|yellow " +
                         folderOrFile.getPath() + " |@- @|red not deleted |@ "));
             }
         }

@@ -18,7 +18,7 @@
 package org.netuno.cli.app;
 
 import org.netuno.cli.Config;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
@@ -36,15 +36,15 @@ public class AppInstall {
     public static boolean fromGitHub(String github) throws IOException, InterruptedException {
         String urlGitHub = "https://github.com/"+ github +".git";
         System.out.println();
-        System.out.println(OS.consoleOutput("@|green     _____ _ _   _   _       _         |@"));
-        System.out.println(OS.consoleOutput("@|green    |  __ (_) | | | | |     | |        |@"));
-        System.out.println(OS.consoleOutput("@|green    | |  \\/_| |_| |_| |_   _| |__      |@"));
-        System.out.println(OS.consoleOutput("@|green    | | __| | __|  _  | | | | '_ \\     |@"));
-        System.out.println(OS.consoleOutput("@|green    | |_\\ \\ | |_| | | | |_| | |_) |    |@"));
-        System.out.println(OS.consoleOutput("@|green     \\____/_|\\__\\_| |_/\\__,_|_.__/     |@"));
+        System.out.println(Terminal.render("@|green     _____ _ _   _   _       _         |@"));
+        System.out.println(Terminal.render("@|green    |  __ (_) | | | | |     | |        |@"));
+        System.out.println(Terminal.render("@|green    | |  \\/_| |_| |_| |_   _| |__      |@"));
+        System.out.println(Terminal.render("@|green    | | __| | __|  _  | | | | '_ \\     |@"));
+        System.out.println(Terminal.render("@|green    | |_\\ \\ | |_| | | | |_| | |_) |    |@"));
+        System.out.println(Terminal.render("@|green     \\____/_|\\__\\_| |_/\\__,_|_.__/     |@"));
         System.out.println();
         System.out.println();
-        System.out.println(OS.consoleOutput("    App install: @|green "+ urlGitHub +" |@"));
+        System.out.println(Terminal.render("    App install: @|green "+ urlGitHub +" |@"));
         System.out.println();
         System.out.println();
         Pattern patternName = Pattern.compile("^[a-z0-9-_]+\\/("+ AppConstants.APP_NAME_REGEX +")$");
@@ -53,13 +53,13 @@ public class AppInstall {
             String app = matcherName.group(1);
             if (new File(AppFS.getPath(app)).exists()) {
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|red The "+ app +" application already exists inside the apps folder. |@"));
+                System.out.println(Terminal.render("@|red The "+ app +" application already exists inside the apps folder. |@"));
                 System.out.println();
                 return false;
             }
             ProcessBuilder builder = new ProcessBuilder();
             String cmd = "git clone " + urlGitHub;
-            if (OS.isWindows()) {
+            if (Terminal.isWindows()) {
                 builder.command("cmd.exe", "/c", cmd);
             } else {
                 builder.command("sh", "-c", cmd);
@@ -69,14 +69,14 @@ public class AppInstall {
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|yellow Please execute the command inside the apps folder: |@"));
-                System.out.println(OS.consoleOutput("\t@|red > git clone "+ urlGitHub +" |@ "));
+                System.out.println(Terminal.render("@|yellow Please execute the command inside the apps folder: |@"));
+                System.out.println(Terminal.render("\t@|red > git clone "+ urlGitHub +" |@ "));
                 System.out.println();
                 return false;
             }
             return config(app);
         } else {
-            System.out.println(OS.consoleOutput("@|red Invalid GitHub path. |@"));
+            System.out.println(Terminal.render("@|red Invalid GitHub path. |@"));
         }
         return false;
     }
@@ -96,14 +96,14 @@ public class AppInstall {
                         if (configBase != null) {
                             OutputStream.writeToFile(configBase.toJSON(2), fileConfig, false);
                         } else {
-                            System.out.println(OS.consoleOutput("@|yellow The "+ app +" application has empty config to environment "+ key +". |@"));
+                            System.out.println(Terminal.render("@|yellow The "+ app +" application has empty config to environment "+ key +". |@"));
                         }
                     } else {
-                        System.out.println(OS.consoleOutput("@|yellow Config file _"+ key +".json already exists. |@"));
+                        System.out.println(Terminal.render("@|yellow Config file _"+ key +".json already exists. |@"));
                     }
                 }
             } else {
-                System.out.println(OS.consoleOutput("@|yellow The "+ app +" application has the wrong type, and it must be the 'app' type. |@"));
+                System.out.println(Terminal.render("@|yellow The "+ app +" application has the wrong type, and it must be the 'app' type. |@"));
             }
         }
         AppCreated.printSuccess(app);

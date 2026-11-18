@@ -28,17 +28,17 @@ public class Banner {
     public static void show() {
         System.out.println();
         System.out.println();
-        System.out.println(OS.consoleOutput("@|white                            .,;o'                      |@"));
-        System.out.println(OS.consoleOutput("@|white                'o;,.   .,;oo~'                        |@"));
-        System.out.println(OS.consoleOutput("@|white  N     N  eEEEee  TtttttT  u     u  N     N   oOOo    |@"));
-        System.out.println(OS.consoleOutput("@|white  n n   N  E         |T|    u     u  n n   N  O    O   |@"));
-        System.out.println(OS.consoleOutput("@|white  n  N  n  eEEE      !t!    U     U  n  N  n  o    o   |@"));
-        System.out.println(OS.consoleOutput("@|white  N   n n  E         't'    U     U  N   n n  O    O   |@"));
-        System.out.println(OS.consoleOutput("@|white  N     n  eEEEee     T      UuuuU   N     n   OooO    |@"));
-        System.out.println(OS.consoleOutput("@|cyan                  ..,;ooddQOPttoc;,..                   |@"));
-        System.out.println(OS.consoleOutput("@|cyan          .,;odlKWQ[~;'         '~;]QWKldo;,.           |@"));
-        System.out.println(OS.consoleOutput("@|cyan      ,codloll=~'                     '~-+:={ldoc,      |@"));
-        System.out.println(OS.consoleOutput("@|cyan   ,td&=}~'                                  '~;=%&t,   |@"));
+        System.out.println(Terminal.render("@|white                            .,;o'                      |@"));
+        System.out.println(Terminal.render("@|white                'o;,.   .,;oo~'                        |@"));
+        System.out.println(Terminal.render("@|white  N     N  eEEEee  TtttttT  u     u  N     N   oOOo    |@"));
+        System.out.println(Terminal.render("@|white  n n   N  E         |T|    u     u  n n   N  O    O   |@"));
+        System.out.println(Terminal.render("@|white  n  N  n  eEEE      !t!    U     U  n  N  n  o    o   |@"));
+        System.out.println(Terminal.render("@|white  N   n n  E         't'    U     U  N   n n  O    O   |@"));
+        System.out.println(Terminal.render("@|white  N     n  eEEEee     T      UuuuU   N     n   OooO    |@"));
+        System.out.println(Terminal.render("@|cyan                  ..,;ooddQOPttoc;,..                   |@"));
+        System.out.println(Terminal.render("@|cyan          .,;odlKWQ[~;'         '~;]QWKldo;,.           |@"));
+        System.out.println(Terminal.render("@|cyan      ,codloll=~'                     '~-+:={ldoc,      |@"));
+        System.out.println(Terminal.render("@|cyan   ,td&=}~'                                  '~;=%&t,   |@"));
         System.out.println();
         System.out.println();
         System.out.println("    Netuno Platform " + Build.getNumber());

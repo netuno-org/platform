@@ -21,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.Config;
 import org.netuno.cli.setup.Constants;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.psamata.os.ProcessLauncher;
 
 import java.nio.file.Files;
@@ -43,10 +43,10 @@ class H2Process {
         System.out.println();
         switch (processInfo.type()) {
             case EXPORTATION:
-                System.out.println(OS.consoleOutput("@|white Exporting H2Database |@@|yellow " + processInfo.dbPath() + "|@ @|white to:|@ @|green " + processInfo.dbName() + "-" + processInfo.id() + ".sql|@"));
+                System.out.println(Terminal.render("@|white Exporting H2Database |@@|yellow " + processInfo.dbPath() + "|@ @|white to:|@ @|green " + processInfo.dbName() + "-" + processInfo.id() + ".sql|@"));
                 break;
             case IMPORTATION:
-                System.out.println(OS.consoleOutput("@|white Importing H2Database |@@|yellow " + processInfo.dbPath().getParent().resolve(Path.of(processInfo.dbName() + "-" + processInfo.id() + ".sql")) + "|@ @|white to:|@ @|green " + processInfo.dbPath().getFileName() + "|@"));
+                System.out.println(Terminal.render("@|white Importing H2Database |@@|yellow " + processInfo.dbPath().getParent().resolve(Path.of(processInfo.dbName() + "-" + processInfo.id() + ".sql")) + "|@ @|white to:|@ @|green " + processInfo.dbPath().getFileName() + "|@"));
                 break;
             default:
                 break;

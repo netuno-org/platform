@@ -19,7 +19,7 @@ package org.netuno.cli;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import org.netuno.psamata.io.OutputStream;
@@ -64,7 +64,7 @@ public class License implements MainArg {
 
     public void run(boolean server) {
         if (key) {
-            System.out.println(OS.consoleOutput("@|green "+ getKey() +"|@") );
+            System.out.println(Terminal.render("@|green "+ getKey() +"|@") );
             System.out.println();
             return;
         }
@@ -73,11 +73,11 @@ public class License implements MainArg {
                 System.out.println();
                 System.out.println();
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|yellow Paste your license registered on netuno.org here:|@"));
+                System.out.println(Terminal.render("@|yellow Paste your license registered on netuno.org here:|@"));
                 String newLicense = scanner.nextLine();
                 if (newLicense.length() <= 100) {
                     System.err.println();
-                    System.err.println(OS.consoleOutput("@|red Invalid license length...|@") );
+                    System.err.println(Terminal.render("@|red Invalid license length...|@") );
                     System.err.println();
                 }
                 License.setLicense(newLicense);
@@ -85,7 +85,7 @@ public class License implements MainArg {
                 System.out.println();
                 System.out.println();
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|green License saved with success! Please restart your Netuno server...|@") );
+                System.out.println(Terminal.render("@|green License saved with success! Please restart your Netuno server...|@") );
                 System.out.println();
                 System.out.println();
                 return;
@@ -93,12 +93,12 @@ public class License implements MainArg {
             System.out.println();
             System.out.println();
             System.out.println();
-            System.out.println(OS.consoleOutput("@|green Creating a new License...|@") );
+            System.out.println(Terminal.render("@|green Creating a new License...|@") );
             System.out.println();
             System.out.println();
             while (true) {
                 if (mail.isEmpty()) {
-                    System.out.print(OS.consoleOutput("@|yellow Your e-mail"+ (!getMail().isEmpty() ? " [ "+ getMail() +" ]" : "") +" :|@ ") );
+                    System.out.print(Terminal.render("@|yellow Your e-mail"+ (!getMail().isEmpty() ? " [ "+ getMail() +" ]" : "") +" :|@ ") );
                     mail = scanner.nextLine();
                     if (mail.isEmpty() && !getMail().isEmpty()) {
                         mail = getMail();
@@ -110,7 +110,7 @@ public class License implements MainArg {
                 } else {
                     mail = "";
                     System.err.println();
-                    System.err.println(OS.consoleOutput("@|red Invalid mail address.|@") );
+                    System.err.println(Terminal.render("@|red Invalid mail address.|@") );
                     System.err.println();
                 }
             }
@@ -124,11 +124,11 @@ public class License implements MainArg {
                         option = "3";
                     }
                     System.out.println();
-                    System.out.println(OS.consoleOutput("@|yellow License types available:|@ "));
-                    System.out.println(OS.consoleOutput("\t@|green 1|@ - Community (free)"));
-                    System.out.println(OS.consoleOutput("\t@|red 2|@ - Standard (coming soon)"));
-                    System.out.println(OS.consoleOutput("\t@|red 3|@ - Enterprise (coming soon)"));
-                    System.out.print(OS.consoleOutput("@|yellow Choose your license:|@ @|cyan ["+ option +"]|@ "));
+                    System.out.println(Terminal.render("@|yellow License types available:|@ "));
+                    System.out.println(Terminal.render("\t@|green 1|@ - Community (free)"));
+                    System.out.println(Terminal.render("\t@|red 2|@ - Standard (coming soon)"));
+                    System.out.println(Terminal.render("\t@|red 3|@ - Enterprise (coming soon)"));
+                    System.out.print(Terminal.render("@|yellow Choose your license:|@ @|cyan ["+ option +"]|@ "));
                     //Scanner scanner = new Scanner(System.in);
                     String inputOption = "1"; //scanner.nextLine();
                     if (!inputOption.isEmpty()) {
@@ -148,17 +148,17 @@ public class License implements MainArg {
                     break;
                 } else {
                     type = "";
-                    System.err.println(OS.consoleOutput("@|red Invalid license type. |@"));
+                    System.err.println(Terminal.render("@|red Invalid license type. |@"));
                 }
             }
             System.err.println();
             System.err.println();
-            System.err.println(OS.consoleOutput("@|green License file created. |@"));
+            System.err.println(Terminal.render("@|green License file created. |@"));
             System.err.println();
             if (!server) {
-                System.err.println(OS.consoleOutput("@|white Now you can start the server with the command below: |@"));
+                System.err.println(Terminal.render("@|white Now you can start the server with the command below: |@"));
                 System.err.println();
-                System.err.println(OS.consoleNetunoCommand("server"));
+                System.err.println(Terminal.netunoCommand("server"));
                 System.err.println();
             }
             System.err.println();

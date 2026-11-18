@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.netuno.cli.Config;
 import org.netuno.cli.MainArg;
 import org.netuno.cli.utils.ConfigScript;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.io.InputStream;
 import oshi.SystemInfo;
@@ -95,7 +95,7 @@ public class Stats implements MainArg {
         if (logLines.length >= 2) {
             beforeEntry = Values.fromJSON(logLines[logLines.length - 2]);
         } else {
-            System.err.println(OS.consoleOutput("@|red Not enough log entries|@"));
+            System.err.println(Terminal.render("@|red Not enough log entries|@"));
             return;
         }
         Values afterEntry = Values.fromJSON(logLines[logLines.length - 1]);

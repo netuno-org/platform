@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.fusesource.jansi.AnsiConsole;
 import org.netuno.cli.utils.Banner;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.cli.utils.Update;
 import org.netuno.cli.MainArg;
 import picocli.CommandLine;
@@ -113,11 +113,11 @@ public final class Main implements Runnable {
             commandLineList = null;
         } finally {
             if (commandLineList == null || commandLineList.size() < 2) {
-                System.out.println(OS.consoleOutput("@|red    The command-line argument is invalid. |@"));
+                System.out.println(Terminal.render("@|red    The command-line argument is invalid. |@"));
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|yellow    Please you can use the help command below for more information: |@"));
+                System.out.println(Terminal.render("@|yellow    Please you can use the help command below for more information: |@"));
                 System.out.println();
-                System.err.println(OS.consoleNetunoCommand("help"));
+                System.err.println(Terminal.netunoCommand("help"));
                 System.out.println();
                 System.out.println();
                 return;

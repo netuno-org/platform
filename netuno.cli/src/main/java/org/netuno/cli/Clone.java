@@ -23,7 +23,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.netuno.cli.app.AppFS;
 import org.netuno.cli.setup.GraalVMSetup;
 import org.netuno.cli.utils.ConfigScript;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.cli.utils.RunCommand;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.script.ScriptRunner;
@@ -62,13 +62,13 @@ public class Clone implements MainArg {
             return;
         }
         System.err.println();
-        System.out.print(OS.consoleOutput("@|yellow Clone Application|@ "));
+        System.out.print(Terminal.render("@|yellow Clone Application|@ "));
         System.err.println();
 
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
                 if (source.length() == 0) {
-                    System.out.print(OS.consoleOutput("@|yellow Source app name:|@ "));
+                    System.out.print(Terminal.render("@|yellow Source app name:|@ "));
                     source = scanner.nextLine();
                     System.err.println();
                 }
@@ -77,13 +77,13 @@ public class Clone implements MainArg {
                     break;
                 } else {
                     source = "";
-                    System.err.println(OS.consoleOutput("@|red Invalid application name.|@"));
+                    System.err.println(Terminal.render("@|red Invalid application name.|@"));
                     System.err.println();
                 }
             }
             while (true) {
                 if (target.length() == 0) {
-                    System.out.print(OS.consoleOutput("@|yellow Target app name:|@ "));
+                    System.out.print(Terminal.render("@|yellow Target app name:|@ "));
                     target = scanner.nextLine();
                     System.err.println();
                 }
@@ -92,7 +92,7 @@ public class Clone implements MainArg {
                     break;
                 } else {
                     target = "";
-                    System.err.println(OS.consoleOutput("@|red Invalid application name.|@"));
+                    System.err.println(Terminal.render("@|red Invalid application name.|@"));
                     System.err.println();
                 }
             }
@@ -100,12 +100,12 @@ public class Clone implements MainArg {
             if (result.getBoolean("error")) {
                 if (result.getString("code").equalsIgnoreCase("exists")) {
                     System.err.println();
-                    System.err.println(OS.consoleOutput("@|red Unable to clone because "+ target +" already exists.|@"));
+                    System.err.println(Terminal.render("@|red Unable to clone because "+ target +" already exists.|@"));
                     System.err.println();
                 }
             } else if (result.getBoolean("result")) {
                 System.err.println();
-                System.err.println(OS.consoleOutput("@|green Successfully cloned.|@ "));
+                System.err.println(Terminal.render("@|green Successfully cloned.|@ "));
                 System.err.println();
             }
         }
@@ -129,7 +129,7 @@ public class Clone implements MainArg {
             if (!toFilePath.exists()) {
                 logger.info("Cloning "+ fromAppName +" to "+ toAppName +".");
                 System.err.println();
-                System.err.println(OS.consoleOutput("@|cyan Cloning "+ fromAppName +" to "+ toAppName +".|@"));
+                System.err.println(Terminal.render("@|cyan Cloning "+ fromAppName +" to "+ toAppName +".|@"));
                 System.err.println();
                 FileUtils.copyDirectory(
                     new File(AppFS.getPath(fromAppName)),

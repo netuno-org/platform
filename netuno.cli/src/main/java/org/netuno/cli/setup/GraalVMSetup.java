@@ -24,7 +24,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.Config;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.psamata.net.Download;
 import org.netuno.psamata.os.ProcessLauncher;
 
@@ -57,17 +57,17 @@ public class GraalVMSetup {
             if (!graalCheck(Config.getCoreHome(), graalVMVersion)) {
                 System.out.println();
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|red Setting up the GraalVM is required.|@ "));
+                System.out.println(Terminal.render("@|red Setting up the GraalVM is required.|@ "));
                 execute(Config.getCoreHome(), graalVMVersion);
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|green GraalVM has been successfully updated.|@ "));
+                System.out.println(Terminal.render("@|green GraalVM has been successfully updated.|@ "));
                 System.out.println();
                 System.out.println();
                 System.exit(0);
             }
         } catch (Exception e) {
             logger.debug("GraalVM setup failed in the current path.", e);
-            System.out.println(OS.consoleOutput("@|red GraalVM Setup failed: |@ "+ e.getMessage()));
+            System.out.println(Terminal.render("@|red GraalVM Setup failed: |@ "+ e.getMessage()));
             ConsoleMessage.reinstall();
             System.exit(0);
         }
@@ -129,7 +129,7 @@ public class GraalVMSetup {
         if (installGraalVM == 0) {
             if (!Constants.GRAALVM_VERSIONS_DOWNLOAD_PATHS.hasKey(graalVMVersion)) {
                 System.out.println();
-                System.out.println(OS.consoleOutput("@|red    The GraalVM "+ graalVMVersion +" version is not supported yet. |@"));
+                System.out.println(Terminal.render("@|red    The GraalVM "+ graalVMVersion +" version is not supported yet. |@"));
                 System.out.println();
                 return;
             }
@@ -143,10 +143,10 @@ public class GraalVMSetup {
                     graalVMURL = graalVMURLPrefix + "macos-aarch64_bin.tar.gz";
                 } else {
                     System.out.println();
-                    System.out.println(OS.consoleOutput("@|red    GraalVM not support this architecture. |@"));
+                    System.out.println(Terminal.render("@|red    GraalVM not support this architecture. |@"));
                     System.out.println();
-                    System.out.println(OS.consoleOutput("@|yellow    To continue then install with: |@"));
-                    System.out.println(OS.consoleNetunoCommand("install graal=false"));
+                    System.out.println(Terminal.render("@|yellow    To continue then install with: |@"));
+                    System.out.println(Terminal.netunoCommand("install graal=false"));
                     System.out.println();
                     return;
                 }
@@ -158,10 +158,10 @@ public class GraalVMSetup {
                     graalVMURL = graalVMURLPrefix + "linux-aarch64_bin.tar.gz";
                 } else {
                     System.out.println();
-                    System.out.println(OS.consoleOutput("@|red    GraalVM not support this architecture. |@"));
+                    System.out.println(Terminal.render("@|red    GraalVM not support this architecture. |@"));
                     System.out.println();
-                    System.out.println(OS.consoleOutput("@|yellow    To continue then install with: |@"));
-                    System.out.println(OS.consoleNetunoCommand("install graal=false"));
+                    System.out.println(Terminal.render("@|yellow    To continue then install with: |@"));
+                    System.out.println(Terminal.netunoCommand("install graal=false"));
                     System.out.println();
                     return;
                 }
@@ -181,7 +181,7 @@ public class GraalVMSetup {
                             ProgressBar pb = null;
                             @Override
                             public void onInit(Download.Stats stats) {
-                                System.out.println(OS.consoleOutput(String.format(
+                                System.out.println(Terminal.render(String.format(
                                         "Downloading @|cyan %s|@ from @|yellow %s|@:",
                                         FileUtils.byteCountToDisplaySize(stats.getLength()),
                                         graalVMURLFinal
@@ -202,9 +202,9 @@ public class GraalVMSetup {
                                 System.out.println();
                                 if (graalVMFile.exists()) {
                                     graalVMFile.deleteOnExit();
-                                    System.out.println(OS.consoleOutput("@|green GraalVM download was successfully completed.|@"));
+                                    System.out.println(Terminal.render("@|green GraalVM download was successfully completed.|@"));
                                 } else {
-                                    System.out.println(OS.consoleOutput("@|red GraalVM download failed.|@"));
+                                    System.out.println(Terminal.render("@|red GraalVM download failed.|@"));
                                 }
                             }
 
@@ -218,14 +218,14 @@ public class GraalVMSetup {
                         });
                     } catch (Exception e) {
                         logger.debug("GraalVM Downloading: "+ graalVMURL, e);
-                        System.out.println(OS.consoleOutput("@|red GraalVM Download failed: |@ "+ e.getMessage()));
+                        System.out.println(Terminal.render("@|red GraalVM Download failed: |@ "+ e.getMessage()));
                         ConsoleMessage.reinstall();
                         System.exit(0);
                     }
                 }
 
                 System.out.println();
-                System.out.print(OS.consoleOutput("Extracting @|yellow GraalVM|@ . "));
+                System.out.print(Terminal.render("Extracting @|yellow GraalVM|@ . "));
                 if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
                     int strip = SystemUtils.IS_OS_MAC ? 3 : 1;
                     new File(path, Constants.GRAALVM_FOLDER).mkdirs();
@@ -244,7 +244,7 @@ public class GraalVMSetup {
                         if (result.exitCode() != 0) {
                             if (new File(path, graalVMFileName).delete() && installGraalVM == 0) {
                                 System.out.println();
-                                System.out.println(OS.consoleOutput("@|red The GraalVM file has corrupted... will try download again!|@ . "));
+                                System.out.println(Terminal.render("@|red The GraalVM file has corrupted... will try download again!|@ . "));
                                 System.out.println();
                                 installGraalVM++;
                                 continue installGraalVM;

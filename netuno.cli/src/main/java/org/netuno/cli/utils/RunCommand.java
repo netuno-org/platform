@@ -38,14 +38,14 @@ public class RunCommand {
         Process p = Runtime.getRuntime().exec(fullCommand);
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-        System.out.println(OS.consoleOutput("@|cyan # "+ new Values(fullCommand).toString(" ") +"|@ \n"));
+        System.out.println(Terminal.render("@|cyan # "+ new Values(fullCommand).toString(" ") +"|@ \n"));
         String s = "";
         while ((s = stdInput.readLine()) != null) {
-            System.out.println(OS.consoleOutput("@|yellow "+ s +"|@ "));
+            System.out.println(Terminal.render("@|yellow "+ s +"|@ "));
         }
         boolean error = false;
         while ((s = stdError.readLine()) != null) {
-            System.out.println(OS.consoleOutput("@|red "+ s +"|@ "));
+            System.out.println(Terminal.render("@|red "+ s +"|@ "));
             error = true;
         }
         if (error) {

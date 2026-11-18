@@ -23,7 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.netuno.cli.Config;
-import org.netuno.cli.setup.Constants;
 import org.netuno.psamata.script.GraalRunner;
 import org.netuno.psamata.script.ScriptRunner;
 import org.apache.logging.log4j.LogManager;
@@ -77,7 +76,7 @@ public class ConfigScript {
                     graalRunner.eval("js", script);
                     return true;
                 } catch (Throwable t) {
-                    System.out.println(org.netuno.cli.utils.OS.consoleOutput("@|red    Configuration script failed. |@"));
+                    System.out.println(Terminal.render("@|red    Configuration script failed. |@"));
                     System.out.println();
                     t.printStackTrace();
                     System.out.println();

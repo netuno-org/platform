@@ -38,7 +38,7 @@ import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import org.netuno.cli.utils.ConfigScript;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.cli.utils.Temp;
 import org.netuno.cli.ws.DevServletContextHandler;
 import org.netuno.psamata.io.StreamGobbler;
@@ -231,11 +231,11 @@ public class Server implements MainArg {
             
             System.out.println();
             System.out.println();
-            System.out.println(OS.consoleOutput("    @|green Server starting in:|@ @|cyan " + host + ":" + port + " |@"));
+            System.out.println(Terminal.render("    @|green Server starting in:|@ @|cyan " + host + ":" + port + " |@"));
             System.out.println();
-            System.out.println(OS.consoleOutput("    @|green Environment used:|@ @|cyan " + Config.getEnv() + " |@"));
+            System.out.println(Terminal.render("    @|green Environment used:|@ @|cyan " + Config.getEnv() + " |@"));
             System.out.println();
-            System.out.println(OS.consoleOutput("    @|yellow Please wait... |@"));
+            System.out.println(Terminal.render("    @|yellow Please wait... |@"));
             System.out.println();
             System.out.println();
 
@@ -343,9 +343,9 @@ public class Server implements MainArg {
                         && e.getMessage().startsWith("Failed to bind to ")) {
                     System.out.println();
                     System.out.println();
-                    System.out.println(OS.consoleOutput("    @|red The port "+ port +" is already in use, please try using another port, like: |@"));
+                    System.out.println(Terminal.render("    @|red The port "+ port +" is already in use, please try using another port, like: |@"));
                     System.out.println();
-                    System.out.println(OS.consoleNetunoCommand("server port=9999"));
+                    System.out.println(Terminal.netunoCommand("server port=9999"));
                     System.out.println();
                 } else {
                     logger.fatal(e);
@@ -435,7 +435,7 @@ class CheckServerStartedRunnable implements Runnable {
                     }
                     boolean isDev = Config.getEnv().toLowerCase().startsWith("dev");
                     System.out.println();
-                    System.out.println(OS.consoleOutput("    @|yellow Applications available:|@"));
+                    System.out.println(Terminal.render("    @|yellow Applications available:|@"));
                     for (String app : Config.getAppConfig().keys()) {
                         if (isDev && appConfig != null && !appConfig.getString("name").equals(app)) {
                             continue;
@@ -452,7 +452,7 @@ class CheckServerStartedRunnable implements Runnable {
                         String url = "http://"+ app.replace("_", "-") +".local.netu.no:"+ server.getURI().getPort() + adminPath;
 
                         System.out.println();
-                        System.out.println(OS.consoleOutput("      - @|cyan http://|@@|green "+ app.replace("_", "-") +"|@@|cyan .local.netu.no:"+ server.getURI().getPort() + adminPath +" |@"));
+                        System.out.println(Terminal.render("      - @|cyan http://|@@|green "+ app.replace("_", "-") +"|@@|cyan .local.netu.no:"+ server.getURI().getPort() + adminPath +" |@"));
 
                         new Remote().get(url);
 
@@ -472,7 +472,7 @@ class CheckServerStartedRunnable implements Runnable {
                     }
                     System.out.println();
                     System.out.println();
-                    System.out.println(OS.consoleOutput("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@"));
+                    System.out.println(Terminal.render("    "+ EmojiParser.parseToUnicode(":rocket:") +" @|green Netuno server started:|@"));
                     System.out.println();
                     Set<String> localhosts = LocalHosts.getAll();
                     if (host.equals("0.0.0.0") || host.equalsIgnoreCase("127.0.0.1") || host.equalsIgnoreCase("localhost")) {
@@ -480,7 +480,7 @@ class CheckServerStartedRunnable implements Runnable {
                             if (!localhost.startsWith("127.0.0.1") && !localhost.startsWith("localhost")) {
                                 continue;
                             }
-                            System.out.println(OS.consoleOutput("      - @|cyan http://" + localhost + ":" + server.getURI().getPort() + "/ |@"));
+                            System.out.println(Terminal.render("      - @|cyan http://" + localhost + ":" + server.getURI().getPort() + "/ |@"));
                         }
                     }
                     for (String localhost : localhosts) {
@@ -488,7 +488,7 @@ class CheckServerStartedRunnable implements Runnable {
                             continue;
                         }
                         if (host.equals("0.0.0.0") || localhost.equalsIgnoreCase(host)) {
-                            System.out.println(OS.consoleOutput("      - @|cyan http://" + localhost + ":" + server.getURI().getPort() + "/ |@"));
+                            System.out.println(Terminal.render("      - @|cyan http://" + localhost + ":" + server.getURI().getPort() + "/ |@"));
                         }
                     }
                     System.out.println();
@@ -521,11 +521,11 @@ class CheckServerStartedRunnable implements Runnable {
                         File homeCode = Path.of(Config.getCoreHome(), "web", "WEB-INF", "code-server").toFile();
                         if (new File(homeCode, "package.json").exists()
                                 && !new File(homeCode, "node_modules").exists()) {
-                            System.out.println(OS.consoleOutput("   @|green Code Server :|@ @|yellow Please wait... running NPM Install for the first time. |@"));
+                            System.out.println(Terminal.render("   @|green Code Server :|@ @|yellow Please wait... running NPM Install for the first time. |@"));
                             System.out.println();
                             ProcessBuilder builder = new ProcessBuilder();
                             // ../../../../graalvm/bin/npm
-                            if (OS.isWindows()) {
+                            if (Terminal.isWindows()) {
                                 builder.command("cmd.exe", "/c", "npm install");
                             } else {
                                 builder.command("sh", "-c", "npm install");
@@ -547,7 +547,7 @@ class CheckServerStartedRunnable implements Runnable {
                         }
                         if (env != null && !env.isEmpty()) {
                             for (String var : env.list(String.class)) {
-                                if (OS.isWindows()) {
+                                if (Terminal.isWindows()) {
                                     cmd = "set "+ var + " & " + cmd;
                                 } else {
                                     cmd = var + " " + cmd;
@@ -555,7 +555,7 @@ class CheckServerStartedRunnable implements Runnable {
                             }
                         }
                         ProcessBuilder builder = new ProcessBuilder();
-                        if (OS.isWindows()) {
+                        if (Terminal.isWindows()) {
                             builder.command("cmd.exe", "/c", cmd);
                         } else {
                             builder.command("sh", "-c", cmd);
@@ -568,7 +568,7 @@ class CheckServerStartedRunnable implements Runnable {
                         Executors.newSingleThreadExecutor().submit(errorStreamGobbler);
 
                         System.out.println();
-                        System.out.println(OS.consoleOutput("   @|yellow Code Server Password :|@ @|green "+ password +" |@"));
+                        System.out.println(Terminal.render("   @|yellow Code Server Password :|@ @|green "+ password +" |@"));
                         System.out.println();
 
                         new Thread(() -> {

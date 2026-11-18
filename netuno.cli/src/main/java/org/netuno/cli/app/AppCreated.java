@@ -18,7 +18,7 @@
 package org.netuno.cli.app;
 
 import org.netuno.cli.Config;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 
 /**
  * App Created
@@ -29,21 +29,21 @@ public class AppCreated {
         System.out.println();
         System.out.println();
         System.out.println();
-        System.out.println(OS.consoleOutput("@|green Application "+ app +" created! |@"));
+        System.out.println(Terminal.render("@|green Application "+ app +" created! |@"));
         System.out.println();
         System.out.println();
-        System.out.println(OS.consoleOutput("@|white New app home: |@"));
+        System.out.println(Terminal.render("@|white New app home: |@"));
         System.out.println();
-        System.err.println(OS.consoleOutput("    >    @|cyan apps/" + app + " |@"));
+        System.err.println(Terminal.render("    >    @|cyan apps/" + app + " |@"));
         System.out.println();
-        System.out.println(OS.consoleOutput("@|white Start the server using your new app: |@"));
+        System.out.println(Terminal.render("@|white Start the server using your new app: |@"));
         System.out.println();
-        System.err.println(OS.consoleNetunoCommand("server app="+ app));
+        System.err.println(Terminal.netunoCommand("server app="+ app));
         System.out.println();
-        System.out.println(OS.consoleOutput("@|white Then when the server is running, try open in your browser: |@"));
+        System.out.println(Terminal.render("@|white Then when the server is running, try open in your browser: |@"));
         System.out.println();
-        System.err.println(OS.consoleOutput("    >    @|cyan http://localhost:" + Config.getPort() + "/ |@"));
-        System.err.println(OS.consoleOutput("    >    @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + Config.getPort() + "/ |@"));
+        System.err.println(Terminal.render("    >    @|cyan http://localhost:" + Config.getPort() + "/ |@"));
+        System.err.println(Terminal.render("    >    @|cyan http://|@@|green " + app.replace("_", "-") + "|@@|cyan .local.netu.no:" + Config.getPort() + "/ |@"));
         System.out.println();
         System.out.println();
     }

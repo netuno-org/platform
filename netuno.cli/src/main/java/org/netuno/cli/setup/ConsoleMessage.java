@@ -17,7 +17,7 @@
 
 package org.netuno.cli.setup;
 
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 
 /**
  * Messages are shown in varying cases.
@@ -27,13 +27,13 @@ import org.netuno.cli.utils.OS;
 public class ConsoleMessage {
     public static void reinstall() {
         System.out.println();
-        System.out.println(OS.consoleOutput("@|green Please try to install again. |@ "));
+        System.out.println(Terminal.render("@|green Please try to install again. |@ "));
         System.out.println();
-        System.out.println(OS.consoleOutput("@|white For te current stable version: |@ "));
-        System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install"));
+        System.out.println(Terminal.render("@|white For te current stable version: |@ "));
+        System.out.println(Terminal.globalCommand("java", "-jar netuno.jar install"));
         System.out.println();
-        System.out.println(OS.consoleOutput("@|white For the testing version: |@ "));
-        System.out.println(OS.consoleGlobalCommand("java", "-jar netuno.jar install version=testing"));
+        System.out.println(Terminal.render("@|white For the testing version: |@ "));
+        System.out.println(Terminal.globalCommand("java", "-jar netuno.jar install version=testing"));
         System.out.println();
     }
 }

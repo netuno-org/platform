@@ -19,8 +19,7 @@ package org.netuno.cli.app;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.netuno.cli.Config;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.psamata.Values;
 import org.netuno.psamata.os.ProcessLauncher;
 
@@ -64,7 +63,7 @@ public class AppCommand {
                         executable = cmd.substring(0, cmd.indexOf(" "));
                     }
                     if (executable.equals("npm") || executable.equals("bun") || executable.equals("pnpm") || executable.equals("yarn")) {
-                        System.out.println(OS.consoleOutput("   @|green "+ appConfig.getString("name") +"/"+ path +":|@ @|yellow Please wait... running "+ executable.toUpperCase() +" for the first time. |@"));
+                        System.out.println(Terminal.render("   @|green "+ appConfig.getString("name") +"/"+ path +":|@ @|yellow Please wait... running "+ executable.toUpperCase() +" for the first time. |@"));
                         System.out.println();
                         String installCommand = command.getString("install", executable +" install");
                         ProcessLauncher.Result result = processLauncher.execute(installCommand);
@@ -76,7 +75,7 @@ public class AppCommand {
                 Values env = command.getValues("env");
                 if (env != null && !env.isEmpty()) {
                     for (String var : env.list(String.class)) {
-                        if (OS.isWindows()) {
+                        if (Terminal.isWindows()) {
                             cmd = "set "+ var + " & " + cmd;
                         } else {
                             cmd = var + " " + cmd;

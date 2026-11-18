@@ -52,15 +52,15 @@ public class Update {
             }
             if (compareVersion < 0) {
                 if (data.getString("type").equals("critical")) {
-                    System.out.println(OS.consoleOutput("@|red    Critical upgrade required! |@"));
+                    System.out.println(Terminal.render("@|red    Critical upgrade required! |@"));
                 }
                 System.out.println();
-                System.out.println("   " + OS.consoleOutput("@|green New version released! |@") + " Upgrade with this command:");
+                System.out.println("   " + Terminal.render("@|green New version released! |@") + " Upgrade with this command:");
                 System.out.println();
-                if (!OS.isWindows()) {
-                    System.err.println(OS.consoleGlobalCommand("bash <(curl -fsSL https://netu.no/install.sh)"));
+                if (!Terminal.isWindows()) {
+                    System.err.println(Terminal.globalCommand("bash <(curl -fsSL https://netu.no/install.sh)"));
                 } else {
-                    System.err.println(OS.consoleGlobalCommand("powershell -c \"irm https://netu.no/install.ps1|iex\""));
+                    System.err.println(Terminal.globalCommand("powershell -c \"irm https://netu.no/install.ps1|iex\""));
                 }
                 System.out.println();
                 System.out.println();
@@ -72,11 +72,11 @@ public class Update {
                 String command = message.getString("command");
                 if (!content.isEmpty()) {
                     System.out.println();
-                    System.out.println("   " + OS.consoleOutput(content));
+                    System.out.println("   " + Terminal.render(content));
                 }
                 if (!command.isEmpty()) {
                     System.out.println();
-                    System.err.println(OS.consoleCommand(command));
+                    System.err.println(Terminal.command(command));
                 }
                 if (!content.isEmpty() || !command.isEmpty()) {
                     System.out.println();

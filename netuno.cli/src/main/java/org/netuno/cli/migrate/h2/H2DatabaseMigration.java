@@ -20,10 +20,8 @@ package org.netuno.cli.migrate.h2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.Config;
-import org.netuno.cli.setup.Constants;
-import org.netuno.cli.utils.OS;
+import org.netuno.cli.utils.Terminal;
 import org.netuno.psamata.Values;
-import org.netuno.psamata.io.GlobFileVisitor;
 import org.netuno.psamata.io.InputStream;
 
 import java.io.IOException;
@@ -89,7 +87,7 @@ public class H2DatabaseMigration {
                                 );
                                 try {
                                     Files.deleteIfExists(file);
-                                    System.out.println(OS.consoleOutput("@|red File deleted:|@ @|yellow "+ file +"|@ "));
+                                    System.out.println(Terminal.render("@|red File deleted:|@ @|yellow "+ file +"|@ "));
                                 } catch (IOException e) {
                                     fail.set(true);
                                     logger.warn("Fail to remove the old file: " + file, e);
