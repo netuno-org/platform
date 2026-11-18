@@ -88,7 +88,7 @@ public class Monitor extends ResourceBase {
         if (!getProteu().getRequestAll().getString("alert").isEmpty() && !getProteu().getRequestAll().getString("secret").isEmpty()) {
             if (GLOBAL_SECRET == null) {
                 try {
-                    GLOBAL_SECRET = org.netuno.cli.monitoring.Monitor.getGlobalSecret();
+                    GLOBAL_SECRET = org.netuno.cli.monitorization.Monitor.getGlobalSecret();
                 } catch (Exception e) {
                     logger.fatal("Monitor failed to load the global secret.", e);
                 }
@@ -143,7 +143,7 @@ public class Monitor extends ResourceBase {
     })
     public Values performanceData() throws ResourceException {
         try {
-            return org.netuno.cli.monitoring.Stats.performanceData();
+            return org.netuno.cli.monitorization.Stats.performanceData();
         } catch (Exception e) {
             throw new ResourceException("monitor.performanceData()", e);
         }
@@ -173,7 +173,7 @@ public class Monitor extends ResourceBase {
     }, parameters = { }, returns = { })
     public void stats() throws ResourceException {
         try {
-            org.netuno.cli.monitoring.Stats.execute();
+            org.netuno.cli.monitorization.Stats.execute();
         } catch (Exception e) {
             throw new ResourceException("monitor.stats()", e);
         }

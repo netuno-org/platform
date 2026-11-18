@@ -44,7 +44,7 @@ public class System extends Web {
         Out out = resource(Out.class);
         if (req.getString("action").equals("data")) {
             try {
-                Values data = org.netuno.cli.monitoring.Stats.performanceData();
+                Values data = org.netuno.cli.monitorization.Stats.performanceData();
                 out.json(data);
             } catch (Exception e) {
                 logger.debug(e);
