@@ -472,6 +472,12 @@ public class Install implements MainArg {
                 System.out.println(Terminal.render("@|white Create a new application: |@ "));
                 System.out.println(Terminal.netunoCommand("app"));
 
+                if (SystemUtils.IS_OS_LINUX) {
+                    System.out.println();
+                    System.out.println(Terminal.render("@|white On Linux Server, it's recommended to run the command below to integrate as a system service with log rotation: |@ "));
+                    System.out.println(Terminal.render("@|yellow \tsudo ./netuno linux-server |@ "));
+                }
+
                 if (SystemUtils.IS_OS_MAC) {
                     System.out.println();
                     System.out.println(Terminal.render("@|white On macOS, it's recommended to run the command below to disable the quarantine and avoid restrictions: |@ "));
