@@ -96,6 +96,7 @@ public final class Main implements Runnable {
             commandLine.addSubcommand("clone", new Clone());
             commandLine.addSubcommand("stats", new Stats());
             commandLine.addSubcommand("migrate", new Migrate());
+            commandLine.addSubcommand("linux-server", new LinuxServer());
             
             commandLineParseResult = commandLine.parseArgs(args);
             commandLineList = commandLineParseResult.asCommandLineList();
