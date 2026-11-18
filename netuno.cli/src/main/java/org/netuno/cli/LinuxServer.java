@@ -17,6 +17,7 @@
 
 package org.netuno.cli;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.netuno.cli.utils.Terminal;
@@ -48,7 +49,7 @@ public class LinuxServer implements MainArg {
             + "User=netuno\n"
             + "Group=netuno\n"
             + "WorkingDirectory=%s\n"
-            + "ExecStart=core/graalvm/bin/java -jar netuno.jar server\n"
+            + "ExecStart=%s/core/graalvm/bin/java -jar netuno.jar server\n"
             + "ExecStop=kill -TERM $MAINPID\n"
             + "ExecStop=timeout 15 tail --pid=${MAINPID} -f /dev/null\n"
             + "SuccessExitStatus=143\n"
@@ -85,6 +86,12 @@ public class LinuxServer implements MainArg {
 
     @Override
     public void run() throws Exception {
+        if (!SystemUtils.IS_OS_LINUX) {
+            System.out.println();
+            System.out.println(Terminal.render("@|red It's available only on Linux. |@ "));
+            System.out.println();
+            return;
+        }
         if (path == null || path.isBlank()) {
             path = Config.getHome();
         } else {
@@ -103,11 +110,14 @@ public class LinuxServer implements MainArg {
         ProcessLauncher processLauncher = new ProcessLauncher();
         processLauncher.readOutput(false);
         processLauncher.readErrorOutput(true);
-        execute(processLauncher, "useradd -r -M -s /bin/false netuno");
+        var result = processLauncher.execute("id -u netuno");
+        if (result.exitCode != 0) {
+            execute(processLauncher, "useradd -r -M -s /bin/false netuno");
+        }
         execute(processLauncher, "chown -R netuno:netuno "+ path);
         {
             String filePath = "/etc/systemd/system/netuno.service";
-            String content = String.format(serviceDefinition, path);
+            String content = String.format(serviceDefinition, path, path);
             try {
                 Files.writeString(
                         Paths.get(filePath),
