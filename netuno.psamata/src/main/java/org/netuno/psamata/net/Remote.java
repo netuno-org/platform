@@ -604,6 +604,12 @@ public class Remote {
 
             HttpRequest.Builder builder = HttpRequest.newBuilder()
                     .uri(URI.create(fullUrl));
+            // The JDK HttpClient applies the request timeout until the response
+            // headers are received (reading the body is not covered).
+            // Values <= 0 keep the old HttpURLConnection behavior of no timeout.
+            if (readTimeout > 0) {
+                builder.timeout(Duration.ofMillis(readTimeout));
+            }
             boolean isRequestBodyString = dataReady != null && !dataReady.isEmpty() && !contentType.equals(contentTypeMultipartFormData);
             boolean isContentTypeLoaded = false;
             if (isRequestBodyString) {
