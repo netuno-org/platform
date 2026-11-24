@@ -112,9 +112,15 @@ public class LinuxServer implements MainArg {
         processLauncher.readErrorOutput(true);
         var result = processLauncher.execute("id -u netuno");
         if (result.exitCode != 0) {
-            execute(processLauncher, "useradd -r -M -s /bin/false netuno");
+            if (execute(processLauncher, "useradd -r -M -s /bin/false netuno")) {
+                System.out.println(Terminal.render("@|green Netuno's system user was created. |@ "));
+                System.out.println();
+            }
         }
-        execute(processLauncher, "chown -R netuno:netuno "+ path);
+        if (execute(processLauncher, "chown -R netuno:netuno "+ path)) {
+            System.out.println(Terminal.render("@|green Current folder with Netuno user ownership. |@ "));
+            System.out.println();
+        }
         {
             String filePath = "/etc/systemd/system/netuno.service";
             String content = String.format(serviceDefinition, path, path);
@@ -124,13 +130,18 @@ public class LinuxServer implements MainArg {
                         content,
                         StandardCharsets.UTF_8
                 );
+                System.out.println(Terminal.render("@|green System service file created. |@ "));
+                System.out.println();
             } catch (IOException e) {
                 logger.error("Fail to write the service file: " + filePath, e);
                 System.out.println("# " + filePath);
                 System.out.println("# " + content);
             }
         }
-        execute(processLauncher, "systemctl daemon-reload");
+        if (execute(processLauncher, "systemctl daemon-reload")) {
+            System.out.println(Terminal.render("@|green Netuno's system service is loaded. |@ "));
+            System.out.println();
+        }
         {
             var filePath = "/etc/logrotate.d/netuno";
             var content = String.format(logDefinition, path, path);
@@ -140,6 +151,8 @@ public class LinuxServer implements MainArg {
                         content,
                         StandardCharsets.UTF_8
                 );
+                System.out.println(Terminal.render("@|green System log rotate file created. |@ "));
+                System.out.println();
             } catch (IOException e) {
                 logger.error("Fail to write the log rotate file: " + filePath, e);
                 System.out.println("# " + filePath);
@@ -150,13 +163,15 @@ public class LinuxServer implements MainArg {
         System.out.println(Terminal.render("@|yellow \tsudo service netuno status |@ "));
     }
 
-    private void execute(ProcessLauncher processLauncher, String command) throws Exception {
+    private boolean execute(ProcessLauncher processLauncher, String command) throws Exception {
         var result = processLauncher.execute(command);
         if (result.exitCode != 0) {
             logger.error("Fail to execute the command: "+ command);
             System.out.println(Terminal.globalCommand(command));
             System.err.println(result.getOutputError());
             System.out.println();
+            return false;
         }
+        return true;
     }
 }
