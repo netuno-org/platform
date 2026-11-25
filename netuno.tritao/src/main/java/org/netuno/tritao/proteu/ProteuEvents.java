@@ -297,7 +297,11 @@ public class ProteuEvents implements Events {
                             if (db.hasKey("url")) {
                                 config.setJdbcUrl(db.getString("url"));
                             } else if (db.hasKey("path")) {
-                                config.setJdbcUrl("jdbc:h2:./" + db.getString("path") + dbURLConfigs);
+                                if (db.getString("path").startsWith("/") || db.getString("path").startsWith("~")) {
+                                    config.setJdbcUrl("jdbc:h2:" + db.getString("path") + dbURLConfigs);
+                                } else {
+                                    config.setJdbcUrl("jdbc:h2:./" + db.getString("path") + dbURLConfigs);
+                                }
                             } else if (db.hasKey("home")) {
                                 if (db.getString("home").startsWith("/") || db.getString("home").startsWith("~")) {
                                     config.setJdbcUrl("jdbc:h2:" + db.getString("home") + "/" + db.getString("name") + dbURLConfigs);
@@ -413,10 +417,24 @@ public class ProteuEvents implements Events {
                         }
                         if (db.hasKey("url")) {
                             config.setJdbcUrl(db.getString("url"));
+                        } else if (db.getBoolean("memory")) {
+                            config.setJdbcUrl("jdbc:duckdb:memory:"+ db.getString("name", app));
                         } else {
-                            config.setJdbcUrl("jdbc:duckdb:"
-                                    + Config.getPathAppBase(proteu)
-                                    + "/dbs/"+ db.getString("name", app));
+                            String path = "";
+                            if (db.hasKey("path")) {
+                                if (db.getString("path").startsWith("/") || db.getString("path").startsWith("~")) {
+                                    path = db.getString("path");
+                                } else {
+                                    path = "./" + db.getString("path");
+                                }
+                                if (!path.endsWith("/")) {
+                                    path += "/";
+                                }
+                                path += db.getString("name", app);
+                            } else {
+                                path = Config.getPathAppBase(proteu) + "/dbs/" + db.getString("name", app);
+                            }
+                            config.setJdbcUrl("jdbc:duckdb:"+ path);
                         }
                         loadHikariConfig(app, config, db);
                         org.netuno.proteu.Config.getDataSources().set(Config.getDBKey(proteu, key), new HikariDataSource(config));
